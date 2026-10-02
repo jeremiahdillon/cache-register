@@ -316,8 +316,14 @@ published/       # selected final outputs committed (only if all sources permit;
 ```
 
 **Promotion** (manual in v1; `cachereg promote` is backlog): `git mv` into `series/`, add
-cadence, leave a stub `README.md` at the old path pointing to the new one — so URLs already
-stamped on posted images never 404.
+cadence. Posted images carry the short link (below), which keeps redirecting, so nothing 404s.
+
+**Short links (decided 2026-10-02):** each analysis declares a human-readable `link:` in
+`story.yaml` (e.g. `openrouter-wallet-share`). `cachereg site` builds a static redirect site
+that a Pages workflow publishes on every push; `cacheregister.dev/<link>` → the analysis folder
+on GitHub. Links are unique and never reused; renamed/retired links stay alive via
+`config/link-aliases.yaml` (validated by tests). Later the same URL can become a landing page
+(chart + method) without changing any posted link.
 
 **Learning across analyses**: `docs/playbook.md` captures reusable lessons (chart forms that
 worked, engagement notes, data pitfalls). Reusable code graduates into `cachereg.viz` / `cachereg.marts`

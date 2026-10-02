@@ -25,7 +25,8 @@ The plan of record is `docs/PLAN.md`. Read the relevant section before changing 
   `analyses/series/<slug>/` with `git mv`, leaving a stub README at the old path.
 - Code ported from the author's earlier projects is re-implemented to these contracts and
   reviewed — never copied verbatim (PLAN §2.4).
-- **No branches or PRs.** Everything goes straight to `main`. **Don't commit unless asked**:
-  leave changes in the working tree and end with a short summary grouped into suggested
-  commits. The author sequences and pushes commits (typically 6–8am); the pre-push hook runs
-  the guard, gitleaks, lint and tests.
+- **No branches or PRs.** Commit in small logical steps and push straight to `main`; the
+  pre-push hook runs the guard, gitleaks, lint and tests.
+- **Short links:** every analysis sets `link:` in `story.yaml` (lowercase-hyphenated, ≤ 32
+  chars) → `cacheregister.dev/<link>`. Never reuse or change a link once posted; on a rename or
+  promotion, add the old one to `config/link-aliases.yaml`.
