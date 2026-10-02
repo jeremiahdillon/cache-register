@@ -1,0 +1,19 @@
+#!/bin/sh
+# Runs before every push to the public repo. We push straight to main, so this is the gate.
+# Checks only the commits being pushed, then lint + tests. Bypass only in an emergency: --no-verify.
+set -e
+zero=0000000000000000000000000000000000000000
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$local_sha" = "$zero" ] && continue          # deleting a ref: nothing to check
+  if [ "$remote_sha" = "$zero" ]; then            # new remote branch: everything reachable from it
+    python3 scripts/guard.py --range "$local_sha"
+    scripts/gitleaks.sh git --redact --no-banner --exit-code 1 --log-opts="$local_sha" .
+  else
+    python3 scripts/guard.py --range "$remote_sha..$local_sha"
+    scripts/gitleaks.sh git --redact --no-banner --exit-code 1 --log-opts="$remote_sha..$local_sha" .
+  fi
+done
+uv run --frozen --quiet ruff check --quiet
+uv run --frozen --quiet ruff format --check --quiet
+uv run --frozen --quiet pytest -q -p no:cacheprovider >/dev/null
+echo "pre-push: checks passed"
