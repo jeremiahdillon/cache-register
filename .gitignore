@@ -1,0 +1,30 @@
+# Licensed / downloaded data and generated outputs never enter git (see docs/PLAN.md §7–8)
+/data/
+/outputs/
+*.parquet
+*.duckdb
+*.duckdb.wal
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python / tooling
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Local review / delegation scratch
+.delegate/
+_review/

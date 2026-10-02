@@ -1,0 +1,15 @@
+# Source registry (docs/PLAN.md §2, §4.2). One entry per folder in src/cachereg/sources/.
+#
+# Fields:
+#   id:             folder name under src/cachereg/sources/
+#   history:        native | snapshot | curated
+#   revisions:      none | append-only | revised          -> reproducibility class (§4.4)
+#   redistribution: allowed | allowed-with-attribution | forbidden | unknown   (raw / inlined data)
+#   derived_charts: allowed | allowed-with-attribution | forbidden | unknown   (images / video)
+#   attribution:    exact credit string used by the footer stamp
+#   cadence:        daily | weekly | monthly
+#   requires:       secret names from .env.example, if any
+#   enabled:        true | false
+# `unknown` is treated as forbidden.
+
+sources: []

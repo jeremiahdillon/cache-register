@@ -1,0 +1,24 @@
+# Swappable brand settings. Every renderer reads from here (docs/PLAN.md §9).
+name: Cache Register
+tagline: Receipts for the AI economy
+repo_url: https://github.com/jeremiahdillon/cache-register
+site_url: https://cacheregister.dev     # stamp uses repo_url until the site is live
+author_url: https://jeremiahdillon.com
+
+colors:
+  canvas: "#0A0B0F"
+  text: "#F2F4F8"
+  muted: ["#5B6070", "#8A90A2"]
+  signal: "#C8FF2E"            # electric lime: the one thing the takeaway is about
+  categorical:                 # neon set; validated for contrast/CVD in Phase 0.5
+    - "#00E5FF"                # cyan
+    - "#FF2BD6"                # hot magenta
+    - "#FF6A3D"                # signal orange
+    - "#9D7BFF"                # ultraviolet
+    - "#FFE14D"                # laser yellow
+  vendor_colors: {}            # fixed per vendor across all charts; filled in Phase 0.5
+
+fonts:                         # SIL OFL, vendored for reproducible renders (Phase 0.5)
+  display: Space Grotesk
+  body: Inter
+  mono: JetBrains Mono

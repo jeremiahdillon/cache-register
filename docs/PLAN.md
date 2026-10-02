@@ -1,0 +1,541 @@
+# Cache Register — Project Plan
+
+Status: DRAFT v5 · 2026-10-02 · reviewed twice by DeepSeek (v2: 4 rounds; v4: 2 rounds), both converged
+
+## 1. Purpose
+
+A public, reproducible toolkit for analyzing the AI market from **public/published data**:
+token usage and pricing, model benchmarks, business adoption, task-level usage, and the capital
+spending behind it. The goal is to rapidly find insightful trends — especially *cross-dataset*
+intersections — and turn each into compelling content (interactive blog embeds on
+jeremiahdillon.com, autoplay video for X/LinkedIn, static images) that carries a link back to the
+exact code that produced it.
+
+**Non-goals (v1):** the author's private usage/spend data; web scraping; paid data products
+(SemiAnalysis, Similarweb, Sensor Tower); real-time dashboards.
+
+**Guiding principles**
+
+1. Public repo, private data: code, config, entity mappings, and curated disclosures are
+   committed; downloaded source data is not (unless its license explicitly allows).
+2. Anyone with their own API keys can reproduce every dataset, analysis, and visual.
+3. Prefer sources with **native time series** (history downloadable today) over sources that
+   only expose current state and must be snapshotted.
+4. One canonical analysis → many renderings.
+5. Extend by adding folders, not by editing core.
+
+---
+
+## 2. Data sources
+
+Every source gets classified on the fields below, recorded in its `SOURCE.md` and the source registry:
+
+- `history`: `native` (full series downloadable) | `snapshot` (current state only; we build
+  history by fetching on a schedule) | `curated` (hand-entered from published documents)
+- `redistribution` (raw/bulk data, incl. data inlined in interactive HTML): `allowed` |
+  `allowed-with-attribution` | `forbidden` | `unknown` (unknown is treated as forbidden)
+- `derived_charts` (publishing images/videos derived from the data): `allowed` |
+  `allowed-with-attribution` | `forbidden` | `unknown` (unknown is treated as forbidden)
+- `attribution`: exact required credit string (and link), used verbatim by the footer stamp
+- `revisions`: `none` | `append-only` | `revised` (values for past periods can change later),
+  which drives the reproducibility class in §4.4
+
+### 2.1 Tier 1 (v1)
+
+| # | Source | Content | Access | history | Redistribution (to verify) |
+|---|---|---|---|---|---|
+| 1 | **LiteLLM `model_prices_and_context_window.json`** | Per-model input/output/cache prices, context windows, ~2023→today | Public GitHub file; replay its **git history** for a native price time series | native | allowed (MIT) |
+| 2 | **OpenRouter models API** (`/api/v1/models`) | Catalog, pricing (prompt/completion), context, modality, created date | Public; key optional | snapshot | unknown (verify) |
+| 3 | **OpenRouter datasets API** (verified 2026-10-02) — `GET /api/v1/datasets/rankings-daily` (top-50 models by tokens per day/week/month + one `other` row; `total_tokens` only, no input/output split, no $), `GET /api/v1/datasets/app-rankings` (top public apps by tokens, incl. `trending`), `GET /api/v1/datasets/session-cost` (weekly median **USD per session** by harness × model) | Market token share by model/vendor/app; real per-session spend for coding harnesses | Any OpenRouter API key; 30 req/min per key, 500 req/day per account; history from **2025-01-01** | native | **CC BY 4.0** — reuse and republish with attribution to OpenRouter |
+| 4 | **Artificial Analysis API** | Intelligence index, per-eval scores, price, output speed, latency | Free API key; attribution required | snapshot (verify whether historical endpoints exist) | attribution required; raw redistribution likely forbidden |
+| 5 | **LMArena leaderboard** | Arena scores over time | Public (HF datasets / published leaderboard files) — VERIFY historical availability | native? | verify |
+| 6 | **Epoch AI datasets** | Notable models, training compute, params, release dates, benchmark hub, GPU clusters | CSV downloads | native | CC-BY |
+| 7 | **Hugging Face Hub API** | Downloads/likes for open-weight models | Public API | snapshot (only rolling 30-day downloads) | verify |
+| 8 | **Ramp AI Index API** (verified 2026-10-02) — base `https://api.ramp.com/v1/public/ai-index`: `GET /adoption` (overall `ai_adoption_share` + vendor breakdown), `GET /adoption/sectors`, `GET /adoption/sizes`; `months` param 1–120 | Monthly % of US businesses paying for AI, by vendor, NAICS sector, company size (50k+ firms) | `Authorization: Bearer $RAMP_DATA_API_KEY`; **provisioned key via the Ramp Data Partner Program** (free, but requires application — replicators must apply). Distinct from the Ramp customer Developer API. **Tested 2026-10-02:** REST without a key → 401 `RampDataApiKeyRequired`; the Ramp Data MCP (`mcp.ramp.com/ramp-data/mcp`) accepts unauthenticated sessions but its tools proxy to the same REST API → 401; the unauthenticated *Developer MCP* serves docs only, no data. Fallback for keyless replicators: `cachereg fetch ramp --from-file <path>` (same adapter, local file instead of HTTP; no new command) for a manually downloaded file **if** ramp.com/data offers one (verify in Phase 1); otherwise Ramp-based analyses are marked key-required | native (revised monthly → Latest-only) | Ramp states it "does not license this data" and provides it aggregated to the public; exact redistribution terms to confirm in Phase 1 (default: derived charts with attribution, raw not committed) |
+| 8b | **Ramp Rate API** — base `https://api.ramp.com/v1/public/ramp-rate`: categories, category vendor leaderboards, vendor profiles, vendor compare | Software vendor adoption, growth, new-adopter and **switch rates** within categories (trailing 12 months), incl. AI vendors | Same Ramp Data key | snapshot (trailing-12-month window) | as #8 |
+| 9 | **US Census BTOS** (Business Trends & Outlook Survey) | AI use by firms, biweekly, by sector/size/state | Public downloads / Census API | native | public domain |
+| 10 | **Anthropic Economic Index** | Claude usage by task/occupation (O*NET), automation vs augmentation, over releases | HF dataset | native (release-over-release) | CC-BY |
+| 11 | **SEC EDGAR XBRL `companyfacts` / `frames` APIs** | Structured quarterly financials: capex (`PaymentsToAcquirePropertyPlantAndEquipment`), revenue, etc. for MSFT, GOOGL, AMZN, META, ORCL, NVDA, … | Public JSON; requires a descriptive `User-Agent` with contact email (kept in local env, never committed) | native | public domain |
+
+**EDGAR scope limit (per author):** only standardized XBRL tags from `companyfacts`. Segment-level
+numbers (e.g. Nvidia *Data Center* revenue, Azure growth) live in dimensional/segment facts or
+filing text and are **out of scope for v1**; if wanted later they go in the curated disclosures
+dataset (§2.3).
+
+### 2.2 Answer: other sources of token usage / spend
+
+There is no single public, authoritative "tokens consumed by the market" dataset. Options,
+ranked by value-to-effort:
+
+| Source | What | Verdict |
+|---|---|---|
+| **Curated disclosures dataset** (ours, §2.3) | Hyperscaler/lab statements: Google monthly tokens processed (I/O and earnings calls), Microsoft tokens processed (earnings), OpenAI/Anthropic revenue run-rates, weekly active users, API tokens/minute | **Tier 1.** Highest-signal public numbers on market-wide token volume and spend; small, hand-maintained, each row cited. This becomes *our* licensable dataset |
+| OpenRouter `rankings-daily` / `app-rankings` (#3) | Token volume & share by model, vendor, app — daily since 2025-01-01 | **Tier 1, verified, CC BY 4.0** |
+| OpenRouter `session-cost` (#3) | Actual median USD per session by harness × model — the only *published dollar* usage figure found | **Tier 1, verified** |
+| Ramp AI Index + Ramp Rate (#8, #8b) | Spend *adoption* (share of businesses paying) by vendor/sector/size; vendor switch rates | **Tier 1, verified** (key via partner program) |
+| Stock prices ("ticker trends") | Daily OHLC for AI-exposed tickers (NVDA, MSFT, GOOGL, AMD, AVGO, TSM, CRWV, …) | **Tier 2.** Licensing is the issue: Yahoo/yfinance ToS forbids this use; options are Alpha Vantage / Tiingo (free keys, non-redistributable) or Stooq CSVs. Use for overlays (e.g. "price-per-intelligence vs NVDA") |
+| Census construction spending (data center category) / FRED | US data-center construction $ monthly | Tier 2; public domain, native series |
+| Kalshi / Polymarket AI markets | Market-implied odds (e.g. "top model on LMArena at month end") | Tier 2; public APIs |
+| Stanford AI Index | Annual compiled data | Tier 2; annual, good for context |
+| Vast.ai marketplace API | GPU rental prices | Tier 3; snapshot only |
+| SemiAnalysis | Token/compute/GPU models | **Excluded**: paid subscription, redistribution forbidden |
+| Menlo / a16z / OpenRouter reports | Enterprise spend share, usage studies | Use as curated disclosures (cite specific figures), not as feeds |
+
+Spend derivation (`rankings-daily` publishes tokens, not dollars): `est_spend = Σ tokens × blended_price`,
+`blended_price = 0.8 × prompt_price + 0.2 × completion_price`, using price at that date (LiteLLM
+history / OpenRouter models snapshot). **Join keys:** `rankings-daily.model_permaslug` ↔
+`/api/v1/models.canonical_slug` (the method used in `openrouter-charts`); LiteLLM keys
+(provider-prefixed, e.g. `bedrock/…`) reach the same rows only through the entity resolver
+(§4.3), which maps both to a canonical `model_id` + `variant`. Unmatched permaslugs are
+reported with their token share, never silently dropped. This method is already
+proven in the author's earlier `openrouter-charts` project (reconstructed OpenRouter's published
+OpenAI-vs-Anthropic wallet-share chart; results nearly blend-invariant between 50/50 and 90/10).
+Known biases: caching ignored (overstates spend, most for heavily-cached coding traffic); list
+prices only (no negotiated discounts, no per-provider/host price variance); top-50 truncation
+(tail in `other`); `:free` variants have zero price and are reported separately, not blended;
+**price-date staleness** — pricing history from a single current `/models` pull misprices past
+weeks, so historical weeks use LiteLLM price history or our own daily `/models` snapshots, and
+weeks priced with a later price are flagged. Must be presented as an
+**estimate with bounds**: input/output split may be unknown (use published split or a bounded
+range), cache discounts and per-provider price variance ignored or bounded. Each derived metric
+documents its assumptions in its mart.
+
+### 2.3 "Our" datasets (author-owned, shareable)
+
+1. **Curated disclosures** — `config/curated/disclosures.csv`, committed, **CC-BY 4.0**.
+   Columns: `date, entity, metric, value, unit, period, source_url, source_quote, retrieved_at,
+   notes`. Validated by schema test (URL present, units from controlled vocabulary).
+2. **Raw archive** — accumulated raw pulls of `snapshot` sources **and of native sources that
+   are revised in place** (Latest-only class). Can be published
+   (e.g. separate HF dataset / Zenodo / GitHub release) **only for sources whose
+   `redistribution` permits it**. Publication tooling (`cachereg export-archive`, backlog) filters by that
+   flag automatically and attaches per-source attribution/license files. Default: not published,
+   **except OpenRouter datasets (CC BY 4.0)**: their raw vintages are the first archive to be
+   published (GitHub Release asset or HF dataset, with OpenRouter attribution), which upgrades
+   OpenRouter-based figures to *Exact* for replicators who download it. `export-archive` is
+   therefore the first backlog item scheduled after Phase 6.
+3. **Derived aggregates** — mart outputs that are sufficiently transformed (e.g. monthly
+   price-per-intelligence index) may be publishable where licenses allow; same flag-driven export.
+
+### 2.4 Prior art in the author's other projects — reuse policy
+
+These were quick, single-purpose builds and have not been carefully reviewed. **Port the ideas,
+not the files.** Each reused piece is re-implemented under this repo's contracts (source
+contract, entity YAML, Story model, curated dataset), gets tests on synthetic fixtures, and
+is reviewed with the `code` lens before merging. Nothing is copied verbatim without that review.
+
+| Project | Worth keeping (idea / method) | Must change when ported |
+|---|---|---|
+| `openrouter-charts` (README only; generator scripts lived in `/tmp` and are lost) | `rankings-daily` pull; token→spend method (0.8/0.2 blend, caveats); wallet-share reconstruction; revenue run-rate figures with citations | Rewrite from the documented method as the Phase 0.5 slice; figures → `curated/disclosures.csv` rows with URLs |
+| `ai-frontier-chart/build.py` (~300 lines) | Epoch benchmark zip loader; "best score so far per lab" frontier logic; AA "best reasoning-effort variant per model" collapse; disambiguating same-name releases | Hard-coded lab mapping (`lab_of`, `RACE_LABS`) → `entities/vendors.yaml`; hand-entered vendor/leaderboard scores (`VENDOR`, `RACE_GOOGLE`, `RACE_LEADERBOARD`) → curated dataset with source URLs; string-munged model names → entity resolver; single script → source adapters + marts + analysis; silent `continue` on unparseable/undated rows → counted, logged and surfaced in coverage; silent "max score per cleaned name" → explicit, documented variant-selection rule in a mart |
+| `ai-frontier-chart/video/capture.mjs` + `encode.swift` | **Deterministic `renderAt(t_ms)` page contract** + `window.ready` duration handshake + frame capture → MP4 (proven 1080×1350/30fps) | Hard-coded macOS Chrome path & raw DevTools protocol → Playwright (bundled Chromium); Swift/AVFoundation → ffmpeg (cross-platform); frames to a cache dir, not `/tmp`; browser always closed in `try/finally`; viewport/size parameterized per render target (was fixed 1080×1350); custom canvas chart **not** ported — only the frame-capture idea informs candidate B (§6.3) |
+| `linkedin-carousel/build_carousel.py` | Carousel/PDF layout for LinkedIn document posts | Backlog render target |
+
+---
+
+## 3. Repository layout
+
+```
+cache-register/
+├── README.md                     # what, how to reproduce, license matrix
+├── LICENSE                       # code: Apache-2.0
+├── LICENSE-content               # charts/text/curated data: CC-BY 4.0
+├── SECURITY.md
+├── pyproject.toml / uv.lock      # Python 3.12+, pinned
+├── Makefile                      # thin wrappers over the CLI
+├── .env.example                  # every variable, documented, no values
+├── .gitignore                    # data/, outputs/, .env*, *.duckdb, logs
+├── .pre-commit-config.yaml
+├── CLAUDE.md                     # rules for AI collaborators (layers, conventions, security)
+├── .claude/skills/               # v1: new-analysis, make-post (add-source, promote: backlog)
+├── .github/workflows/ci.yml      # lint/type/test/render-on-synthetic; no secrets
+├── config/
+│   ├── sources.yaml              # registry: id, history, redistribution, derived_charts,
+│   │                             #   attribution, revisions, cadence, enabled
+│   ├── entities/
+│   │   ├── models.yaml           # canonical model IDs ↔ per-source aliases
+│   │   ├── vendors.yaml          # canonical vendors, open/closed weights, HQ country
+│   │   └── tickers.yaml          # vendor ↔ ticker/CIK (for EDGAR & prices)
+│   ├── curated/disclosures.csv   # §2.3, committed
+│   └── brand/                    # brand.yaml, fonts (OFL), logo SVG
+├── src/cachereg/
+│   ├── core/                     # http, snapshot store, settings/secrets, lineage, logging
+│   ├── sources/<id>/             # one package per source (contract §4)
+│   ├── entities/                 # resolver + `entities check`
+│   ├── marts/                    # *.sql + mart registry (inputs, assumptions)
+│   ├── story/                    # Story model, render targets, renderers (§6)
+│   ├── viz/                      # theme, chart helpers, stamp, motion
+│   └── cli.py                    # `cachereg …`
+├── analyses/
+│   ├── _template/
+│   ├── explore/                  # dated, exploratory: 2026-10-02-price-per-iq/
+│   └── series/                   # promoted, recurring, stable slugs: cost-of-intelligence/
+├── docs/
+│   ├── PLAN.md
+│   ├── playbook.md               # lessons learned: chart patterns, what performed, pitfalls
+│   └── sources/                  # (generated) source catalog
+├── ops/launchd/cachereg.fetch.plist.template   # placeholders only; installed by script
+├── tests/
+│   └── fixtures/                 # SYNTHETIC data only (no recorded real responses)
+├── data/                         # gitignored
+│   ├── raw/<source>/<YYYY-MM-DD>/<fetch_id>/…   # immutable, as fetched + manifest.json
+│   ├── staged/<source>/<table>/snapshot_date=…/part.parquet
+│   └── warehouse.duckdb          # views over staged + marts (rebuildable)
+└── outputs/                      # gitignored render outputs
+```
+
+**Brand:** Cache Register. **Package / CLI:** `cachereg`. **Repo:**
+`github.com/jeremiahdillon/cache-register` (public). **Domain:** `cacheregister.dev`.
+The stamp URL is derived from config (`config/brand/brand.yaml`).
+
+---
+
+## 4. Data pipeline & core rules
+
+### 4.1 Layers (one-way flow)
+
+`raw → staged → marts → analyses`
+
+- **raw**: exactly what the source returned, written once, never modified. Each fetch writes
+  `manifest.json` (source id, URL template — no secrets, timestamp, HTTP status, content hash,
+  adapter version).
+- **staged**: tidy, typed Parquet with a declared schema (pandera/polars validation), adds
+  `snapshot_date` / `observed_at`, source-native IDs preserved.
+- **marts**: cross-source SQL views/tables in DuckDB using canonical entity IDs. Each mart
+  declares its inputs and documented assumptions. Analyses read **marts only** (enforced by a
+  lint rule / import check: analyses may not import `cachereg.sources`).
+- `cachereg build` is idempotent and fully rebuilds staged + marts from raw.
+
+### 4.2 Source contract
+
+Each `src/cachereg/sources/<id>/` contains:
+
+- `SOURCE.md` — description, URLs, ToS link, license, attribution string, history type,
+  `derived_charts`, `revisions` (reproducibility class),
+  redistribution flag, known quirks, last verified date.
+- `fetch.py` — `fetch(ctx) -> FetchResult`; writes to raw; handles pagination, rate limits,
+  retries; respects `ctx.as_of` for native-history backfills.
+- `stage.py` — `stage(raw_paths) -> dict[table, DataFrame]` + schema definitions.
+- `tests/` — schema/contract tests on synthetic fixtures.
+
+Registered in `config/sources.yaml`. Adding a source touches only its folder + one registry
+entry (+ entity aliases). Core is never edited for a new source. In v1 a new source is scaffolded by copying an existing source folder; `cachereg add-source <id>` is backlog.
+
+### 4.3 Entity resolution (cross-source joins)
+
+- `models.yaml`: canonical `model_id` (e.g. `anthropic/claude-sonnet-4.5`), vendor, family,
+  release date, open_weights, plus `aliases: {openrouter: [...], artificial_analysis: [...],
+  lmarena: [...], litellm: [...], epoch: [...], hf: [...]}`.
+- Resolver: exact alias match → normalized-string match (lowercasing, punctuation, provider
+  prefixes; date/version suffixes are **preserved**, never normalized away) → **unresolved queue**. No fuzzy auto-accept; fuzzy candidates
+  are *suggested* by `cachereg entities check` for human/Claude confirmation.
+- Variants (thinking/non-thinking, dated snapshots, quantizations, provider-hosted versions)
+  map to a canonical model with a `variant` field so analyses choose granularity.
+- **Bootstrap, not hand-typing**: `cachereg entities suggest` generates candidate aliases from
+  every source's distinct model keys (LiteLLM's thousands of provider-prefixed keys collapse via
+  rules: strip provider prefixes such as `bedrock/`, `azure/`, `vertex_ai/` and region
+  qualifiers). Only provider-prefix/region collapses are applied automatically. **Date or version
+  suffixes are never stripped automatically**: dated snapshots (e.g. `…-20240620` vs
+  `…-20241022`) are distinct priced/benchmarked models, so they are kept as separate `variant`
+  entries under a canonical `model_id` (proposed by `suggest`, confirmed by a human/Claude) or
+  queued as unresolved. Unmapped keys are written to `data/entities/unresolved_<source>.csv` for triage.
+- Not every key needs mapping: only models that appear in a mart an analysis uses. Long-tail
+  keys stay source-native and are excluded from cross-source joins (and reported).
+- **Coverage metric (defined)**: for each cross-source mart, the share of the *measure* that
+  resolves — e.g. share of OpenRouter tokens, or share of the top-50 Artificial Analysis models
+  by intelligence index, or share of LiteLLM keys for the top-15 vendors. Target: ≥95% per
+  mart measure; marts warn below threshold and record coverage in the manifest.
+
+### 4.4 Time & reproducibility
+
+- Every render takes `--as-of DATE` (default: latest). Marts are computed from data observed
+  ≤ as-of.
+- Every fetch records a **vintage**: `fetched_at` plus the most specific source revision
+  available (git commit SHA for LiteLLM, dataset version/commit for HF datasets, release id for
+  BTOS/Epoch/Economic Index, `filed`/accession number per EDGAR fact, response content hash
+  otherwise). Staged rows carry `vintage_id`. `--as-of` selects data by **source time, not fetch time**:
+  - **Exact** (`revisions: none | append-only`, native history): the latest *source revision*
+    dated on or before as-of (LiteLLM commit date, EDGAR `filed` date, dataset/release
+    publication date) — so a replicator fetching today still resolves any past as-of;
+  - **Latest-only** (`revisions: revised`): the latest local vintage *fetched* on or before
+    as-of; if none exists (e.g. a replicator's only fetch is today), the earliest available
+    vintage is used and the manifest records `vintage_after_as_of: true`. Observations are
+    still filtered to periods ≤ as-of;
+  - **Author-only** (snapshot): the latest snapshot *fetched* on or before as-of; none →
+    the analysis reports the gap rather than substituting later data.
+- **Reproducibility classes** (declared per source, shown in each analysis README and in the
+  public manifest) — the guarantee is stated honestly, not uniformly:
+
+  | Class (selection key) | Sources (expected) | Author can regenerate a past figure | A replicator can |
+  |---|---|---|---|
+  | **Exact** (source revision date) | LiteLLM (pinned commit SHAs), EDGAR (facts carry filing accession; restatements are new facts), versioned HF datasets (Economic Index, possibly LMArena) | yes | yes, same values |
+  | **Latest-only** (fetch date, fallback to earliest vintage) | BTOS, Epoch, Ramp AI Index, OpenRouter datasets until their revision behavior is confirmed (revised/replaced in place) | yes, from local raw vintages | gets current values; differences explained by the vintage recorded in the public manifest — **unless the published archive (§2.3) is used, which makes them Exact (OpenRouter datasets first)** |
+  | **Author-only** (fetch date, no fallback) | Snapshot sources (OpenRouter models, Artificial Analysis, HF downloads, Ramp Rate) | yes, from local raw archive | only from their own first snapshot onward, unless the archive is publishable (§2.3) |
+
+- "Anyone can reproduce" therefore means: identical code, identical method, identical results
+  for *Exact* sources; same method on current or self-collected data otherwise. Analyses should
+  prefer *Exact* sources for headline claims.
+- Each render writes `run_manifest.json`: git SHA, dirty flag, as-of, per-source snapshot
+  dates + vintage ids + content hashes, package lock hash, reproducibility class per source.
+  It contains **no** absolute paths, hostnames, usernames, or timestamps finer than the date
+  (all paths repo-relative; a schema test enforces this).
+- When an output is published, `cachereg publish` copies the output **and** its manifest to
+  `analyses/<…>/published/<as_of>/` (committed). The stamp's URL points to that folder, so the
+  manifest a published image refers to is always in the repo.
+- Snapshot sources: missing days are explicit gaps (never forward-filled silently in marts).
+
+### 4.5 Scheduling
+
+- `launchd` agent runs `cachereg fetch --due` daily; each source declares a cadence
+  (daily/weekly/monthly) in `sources.yaml`; `--due` fetches only what's stale.
+- Plist is a **template** with placeholders; `make install-schedule` renders it into
+  `~/Library/LaunchAgents/` locally. The rendered plist is never committed.
+- `cachereg status`: freshness per source, last error, coverage, disk usage.
+- Logs go to `~/Library/Logs/cachereg/` (outside the repo).
+
+---
+
+## 5. Analyses: explore → series
+
+Two kinds, sharing one structure:
+
+- `analyses/explore/YYYY-MM-DD-<slug>/` — dated, exploratory, cheap; many will die. Dated so
+  they sort chronologically and capture *when* the question was asked.
+- `analyses/series/<slug>/` — **promoted**, recurring/long-running, undated stable slug,
+  declares a refresh cadence, re-rendered on new data (e.g. monthly "Cost of Intelligence").
+
+Each analysis folder:
+
+```
+README.md        # question, hypothesis, method, findings, caveats, post copy drafts
+analysis.py      # build(warehouse, as_of) -> Story   (the single canonical analysis)
+charts.py        # chart(story, target) -> Altair chart  (format-aware)
+story.yaml       # metadata + render targets (see §6); for series: cadence
+notebook.py      # optional notebook (marimo; backlog)
+published/       # selected final outputs committed (only if all sources permit; see §7)
+```
+
+**Promotion** (manual in v1; `cachereg promote` is backlog): `git mv` into `series/`, add
+cadence, leave a stub `README.md` at the old path pointing to the new one — so URLs already
+stamped on posted images never 404.
+
+**Learning across analyses**: `docs/playbook.md` captures reusable lessons (chart forms that
+worked, engagement notes, data pitfalls). Reusable code graduates into `cachereg.viz` / `cachereg.marts`
+(rule: second use → extract). Analyses never import each other.
+
+---
+
+## 6. One canonical analysis → many renderings
+
+### 6.1 Story model
+
+`analysis.py` returns a `Story`:
+
+- `frames`: tidy polars DataFrames (the *only* data any rendering uses; aggregated, minimal)
+- `title`, `subtitle`, `takeaway` (one-sentence headline claim), `annotations` (callouts tied to
+  data points)
+- `time_field` (optional; enables motion), `highlight` (entities to emphasize)
+- `sources`: **auto-derived** from mart lineage → attribution strings from each `SOURCE.md`
+- `as_of`, `analysis_url` (computed from repo URL + path)
+
+### 6.2 Render targets (declared in `story.yaml`)
+
+| Target | Format | Size | Notes |
+|---|---|---|---|
+| `blog_html` | Self-contained HTML (Vega-Embed) | responsive | tooltips, hover, legend toggles; data inlined = aggregated frames only |
+| `blog_svg` | SVG | responsive | static fallback / RSS |
+| `x_video` | MP4 H.264 yuv420p, 30fps | 1920×1080 (16:9) | autoplay-muted safe: all text in-frame; ends with 3s hold on final frame |
+| `linkedin_video` | MP4 | 1080×1350 (4:5) | same |
+| `square_video` | MP4 | 1080×1080 | backlog |
+| `web_video` | WebM VP9 | any | for blog autoplay `<video>` |
+| `gif` | GIF (palettegen) | ≤ 1080 wide | backlog |
+| `x_png` / `linkedin_png` / `square_png` | PNG (WebP, square: backlog) | 1600×900 / 1080×1350 / 1080×1080 | 2× pixel density |
+| `table_png` | PNG via great_tables | per preset | for ranking tables |
+
+`cachereg render <analysis> [--targets …] [--as-of …]` → `outputs/<analysis>/<as_of>/<target>.*`
+plus `run_manifest.json`.
+
+### 6.3 Rendering engines
+
+- **Altair (Vega-Lite) is the single chart engine** for static (vl-convert → PNG/SVG; WebP via
+  Pillow is backlog), interactive HTML, **and** motion.
+- **Motion = frame sequences of the same Altair chart function, fed precomputed frame data.**
+  Vega-Lite has no tweening, so all motion is computed in Python *before* rendering:
+  1. **Keyframes**: one per `time_field` value from the Story frame.
+  2. **Interpolation**: values interpolated between keyframes (linear for values, log-linear
+     for prices spanning orders of magnitude) with an easing curve (ease-in-out cubic) at N
+     frames per keyframe.
+  3. **Explicit positions**: for rank-ordered charts (bar races), each frame carries a
+     continuous `y_pos` = interpolated rank, encoded as a *quantitative* position (not a sorted
+     nominal axis), so bars slide smoothly when they overtake; labels are text marks at the same
+     `y_pos`. For line reveals, each frame filters to `t ≤ current` plus an interpolated
+     partial final segment.
+  4. **Fixed scales**: domains for value axes and colour are computed once over all frames
+     (`scale=alt.Scale(domain=…)`), so nothing jitters.
+  5. **Render**: each frame rendered via vl-convert to PNG at target size (parallel, cached by
+     frame-data hash), then ffmpeg encodes; final frame held 3s.
+  Two motion primitives in v1: `bar_race` and `line_reveal`. Anything else is an explicit
+  matplotlib story (`motion_backend: matplotlib`, same theme tokens).
+- **Alternative B (same spec, different driver)**: inspired by the author's `ai-frontier-chart`
+  frame-capture pipeline, but **not** its hand-written canvas chart. B loads the *same Altair
+  spec* in a headless Playwright page via vega-embed, and a small generic `setFrame(i)` shim
+  swaps in precomputed frame *i*'s rows (`view.data('frame', rows).run()`) and exports the view
+  to PNG. Frame data comes from the same Python step 1–4 above, so there is still one chart
+  definition; A and B differ only in how frames are rasterized (vl-convert process vs one live
+  Vega view). No custom JS chart code is allowed in either.
+- **A-vs-B decision rule** (spike output): both must produce visually identical frames
+  (pixel diff within tolerance) at both v1 video sizes (1920×1080 and 1080×1350; re-checked if square is promoted); choose the one with lower total render
+  time for a 12s/30fps video; tie → A (fewer moving parts, no browser). Encoding uses ffmpeg
+  (cross-platform), not AVFoundation.
+- **Phase-gated**: this approach is proven by a spike (Phase 0.5 slice) rendering one
+  `line_reveal` and one `bar_race` at 1080×1350, 12s/30fps, before the target matrix is built.
+  If frame rendering exceeds ~2 min per video or quality is poor, matplotlib becomes the motion
+  backend and the plan is updated.
+- **Single source per chart, per format family**: `charts.py` defines a chart function used by
+  HTML, static, and motion targets (motion adds the frame-data step). Tables are a separate
+  `table(story)` function (great_tables), since a table is a different form, not a rendering.
+- Tables: great_tables with the brand theme.
+- ffmpeg is a system dependency (documented; `cachereg status` checks it).
+
+### 6.4 Stamp / footer (every output)
+
+Auto-generated: `Source: <attributions> · Data as of <date> · <repo-url>/analyses/<…>` plus
+brand wordmark. Short URL form used where space is tight. Attribution text comes from
+`SOURCE.md`, so license-required credits can't be forgotten. Video: footer persists all frames.
+
+---
+
+## 7. Licensing & what may be published
+
+- Code: Apache-2.0. Charts/text/curated data: CC-BY 4.0.
+- The publish check (internal to `cachereg publish`, also runnable as `cachereg publish --check`)
+  evaluates two rights
+  independently, for every source in the story's lineage:
+  - **Images/video** (PNG, SVG, WebP, MP4, WebM): every source must have
+    `derived_charts ∈ {allowed, allowed-with-attribution}`; required attributions must appear in
+    the stamp (checked against the rendered footer text).
+  - **Inlined data** (blog_html embeds the Story frames as JSON): every source must have
+    `redistribution ∈ {allowed, allowed-with-attribution}`. Otherwise blog_html is built in
+    **no-data mode**: an SVG embed with hover titles baked into SVG elements, with no JSON
+    dataset in the page.
+  - Curated disclosures: `source_quote` is a short factual excerpt (≤ 25 words); the figure
+    itself is a fact. Quotes are not inlined in published HTML.
+  - `unknown` on any right = blocked, with a message naming the source and right.
+- Artificial Analysis attribution format followed exactly per their terms.
+
+---
+
+## 8. Security (public from day one)
+
+- **Secrets**: the loader reads environment variables only. Locally they come from a file
+  outside the repo whose path is set by `CACHEREG_SECRETS_FILE` (the author reuses the existing
+  machine-wide secrets file that earlier projects already source; never named in the repo);
+  replicators can instead use a repo-local `.env` (gitignored). Variables: `OPENROUTER_API_KEY`,
+  `ARTIFICIAL_ANALYSIS_API_KEY`, `RAMP_DATA_API_KEY`, `SEC_EDGAR_USER_AGENT`, optional `HF_TOKEN`. macOS Keychain backend is backlog.
+  Secrets never logged; HTTP client redacts auth headers/query params in errors and manifests.
+- **Pre-commit**: gitleaks; block `data/`, `outputs/`, `*.parquet`, `*.duckdb`, `.env*`; block
+  files > 1 MB outside `published/`; block absolute home paths, usernames, hostnames, local IPs
+  (`/Users/`, `/home/`, machine name patterns) in committed text.
+- **CI is the enforcement of record** (pre-commit is a convenience, bypassable with
+  `--no-verify`): a required CI job on every push/PR runs gitleaks over full history of the
+  pushed range, plus the same forbidden-pattern guards (data file types, size limits, absolute
+  home paths, `.local` hostnames, private IP ranges, the author's machine/user names supplied
+  via an *encrypted CI variable*, not committed). Branch protection requires it to pass.
+  Residual risk: a direct push to `main` lands before CI; mitigated by branch protection
+  (PRs required, even for the owner), and a failing check triggers history-rewrite guidance in
+  SECURITY.md.
+- **GitHub**: secret scanning + push protection on; Dependabot; Actions pinned by SHA,
+  `permissions: read-all` default; CI never receives secrets and runs only on synthetic
+  fixtures; branch protection on `main`.
+- **Operational opsec**: no machine names, paths, schedules-with-local-detail, IPs, or account
+  identifiers in commits; launchd plist only as template; EDGAR contact email from env only.
+- **Supply chain**: deps added via `sfw`-routed installs; new deps scored (Socket/Endor) before
+  adding; lockfile committed; minimal dependency set.
+- `SECURITY.md` with reporting instructions.
+
+---
+
+## 9. Brand proposal (swappable via `config/brand/brand.yaml`)
+
+Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
+
+- **Canvas**: near-black `#0A0B0F` (stands out on LinkedIn's light feed; native on X dark mode).
+  Light variant available for blog.
+- **Neon palette** (agreed direction; multiple colours allowed):
+  - Primary signal: electric lime `#C8FF2E`
+  - Categorical neons: cyan `#00E5FF`, hot magenta `#FF2BD6`, signal orange `#FF6A3D`,
+    ultraviolet `#9D7BFF`, laser yellow `#FFE14D`
+  - Context/greys: `#5B6070`, `#8A90A2`; text `#F2F4F8`
+  - Default rule: highlight what the takeaway is about in neon, put the rest in grey. Up to 6
+    neon categories when a comparison needs it (e.g. vendors). Vendor colours are **fixed
+    across all charts** (`brand.yaml: vendor_colors`) so OpenAI/Anthropic/Google/etc. stay
+    recognizable from post to post.
+  - Validated for contrast on the dark canvas and colour-vision deficiency in Phase 0.5/4 (dataviz
+    palette validator); hues adjusted if they fail, with direct labels (not legends) as backup.
+- **Type**: *Space Grotesk* (headlines, big numbers) + *Inter* (labels) + *JetBrains Mono*
+  (data/footer). All SIL OFL → fonts vendored in repo for reproducible renders.
+- **Layout**: big takeaway headline as the title (the claim, not the chart description), small
+  subtitle with metric definition, huge annotated end-value, footer stamp.
+- **Name: Cache Register** (chosen 2026-10-02 after availability checks). Puns on *cash
+  register* (money, spend, "ringing up" the market) and *cache* (prompt caching drives AI token
+  economics); *register* = the official dated record. Tagline candidates: "Receipts for the AI
+  economy" / "Ringing up the AI economy".
+- **Receipt motif**: every post "comes with receipts" — the footer stamp is styled as a receipt
+  line (sources, data date, repo link); ranking tables can use an itemized-receipt style.
+  Series names: *Rung Up* (weekly moves), *Z-Report* (monthly summary), *Price Check*,
+  *No Sale* (flops).
+- **Footer URL**: `cacheregister.dev` (redirects to the repo / analysis) once registered;
+  `github.com/jeremiahdillon/cache-register` until then. Handle/URL in footer: `jeremiahdillon.com` + repo link.
+
+---
+
+## 10. Build phases
+
+| Phase | Deliverable | Done when |
+|---|---|---|
+| **0. Scaffold & security** | git init, uv project, CLI skeleton, settings/secrets loader, gitignore, pre-commit + CI guards (gitleaks + custom), LICENSEs, SECURITY.md, CLAUDE.md, public GitHub repo with push protection + branch protection | CI green; a deliberate fake secret / data file / home path is blocked by **CI** (not just pre-commit) |
+| **0.5 Vertical slice** | OpenRouter `rankings-daily` adapter (native, CC BY 4.0, verified, method already proven) + OpenRouter models adapter (snapshot, redistribution to verify; prices only) — CI runs the slice on synthetic fixtures, the author runs it with a key → staged → `usage_share` mart → port the `openrouter-charts` wallet-share analysis as the first explore → `x_png` + `blog_html` + one `bar_race` MP4, stamped, with manifest; plus the motion spike (A vs B) | One command renders all three from a clean clone; motion spike meets the §6.3 gate or the backend decision is changed |
+| **1. Source verification** | For each Tier-1 source: confirm endpoints, auth, rate limits, ToS, license, `redistribution`, `derived_charts`, `revisions`, historical availability → fill `SOURCE.md` + registry | All `unknown` flags resolved or explicitly deferred; Phase-5 analysis list re-confirmed |
+| **2. Tier-1 adapters** | Native-history first: LiteLLM, Epoch (port the `ai-frontier-chart` loader), Ramp AI Index, OpenRouter `app-rankings`/`session-cost`, BTOS, Anthropic Economic Index, EDGAR, LMArena; then snapshot: Artificial Analysis (endpoint already used in `ai-frontier-chart`), Ramp Rate, HF; curated disclosures seeded (incl. the revenue run-rate figures already sourced in `openrouter-charts`) | `cachereg fetch && cachereg build` works from a clean clone with keys |
+| **3. Entities & marts** | Resolver + `entities suggest/check`; marts: `model_dim`, `price_history`, `benchmarks`, `usage_share`, `adoption`, `capex`, `disclosures` | Coverage ≥95% per mart measure as defined in §4.3 |
+| **4. Story & viz kit (full)** | Generalize the slice: theme, remaining v1 targets, `table`, `publish` (with its check), `_template` | Template analysis renders every v1 target on synthetic data in CI |
+| **5. Starter analyses** | See table below | Each has README findings + v1 targets rendered |
+| **6. Scheduling & ops** | launchd install script, `fetch --due`, `status` | Runs unattended a week with no gaps |
+| **7. Claude skills & playbook** | `/new-analysis`, `/make-post`; playbook seeded | New exploration scaffolded and rendered in one command |
+
+**Starter analyses: dependencies and fallbacks** (built in this order; each is contingent on
+Phase 1 only where marked):
+
+| Analysis | Primary sources | Depends on unverified? | Fallback |
+|---|---|---|---|
+| (a) **Cost of intelligence** — motion hero: cheapest price to reach a given capability level, over time | LiteLLM price history × Epoch benchmark hub / LMArena scores (native history) | No (Exact/native) | Artificial Analysis index used as the *current* cross-section only, not for history |
+| (b) **Capex vs price collapse** | EDGAR hyperscaler capex × (a) | No | — |
+| (c) **Two lenses on adoption** | BTOS AI use × Ramp AI Index (by sector & size) | No (Ramp verified; needs provisioned key) | BTOS-only if a replicator has no Ramp key |
+| (d) **Does quality win usage?** | Benchmarks × OpenRouter `rankings-daily` | No (verified) | — |
+| (e) **Developer wallet vs enterprise wallet** — three *separately labelled* lenses on the same vendors, never put on one axis or converted into each other: (1) share of estimated $ on OpenRouter, (2) share of US businesses paying (Ramp), (3) reported revenue run-rates. Output: vendor **rank/share comparison** across lenses (small multiples or slope chart) plus where they disagree | OpenRouter est. spend; Ramp AI Index vendor breakdown; curated disclosures | No | If lenses aren't comparable enough for a claim, publish as "three views" without a ranking claim |
+
+**v1 scope vs backlog** (to keep the first weeks lean):
+- v1 render targets: `blog_html`, `blog_svg`, `x_png`, `linkedin_png`, `x_video` (MP4 16:9),
+  `linkedin_video` (MP4 4:5), `web_video` (WebM), `table_png`.
+- Backlog: GIF, WebP, square formats, `export-archive`, Keychain backend, marimo notebooks,
+  `/add-source` and `/promote` skills (do manually until needed), `doctor` (fold into `status`),
+  Tier-2 sources.
+- v1 CLI: `fetch`, `build`, `render`, `publish`, `status`, `entities` (6 commands).
+
+## 11. Risks & open questions
+
+1. **OpenRouter datasets** cover only OpenRouter traffic (third-party developer routing), top-50
+   models per period, tokens without input/output split; 500 requests/day per account limits
+   backfill speed (plan backfills in monthly windows). Every chart must say "on OpenRouter",
+   not "the market".
+2. **Artificial Analysis history**: if no historical API, AA-based time series start at our
+   first snapshot (unreplicable by others before that date; cannot be republished).
+   Mitigation: LMArena/Epoch benchmark history as native-history alternatives.
+3. **Entity resolution drift** as vendors rename/alias models — ongoing maintenance cost.
+4. **Ramp Data access** requires a provisioned key from the Ramp Data Partner Program; replicators
+   must apply. API is marked "subject to change". Analyses using Ramp state this in their README.
+5. **Licensing of derived charts** from restrictive sources — verify per source in Phase 1.
+6. **vl-convert motion performance** (hundreds of frames) — mitigated by caching + parallel
+   render; matplotlib fallback.
+7. **Spend estimates** are model-derived; risk of overclaiming — require bounds + method note
+   on every spend figure.
