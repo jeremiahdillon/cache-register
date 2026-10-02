@@ -7,6 +7,7 @@ rendered from the same chart function used for static and HTML targets.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import multiprocessing
 import subprocess
@@ -125,14 +126,19 @@ def encode(frames: list[bytes], page: Frame, out: Path, fps: int, fmt: str = "mp
         "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{w}x{h}", "-r", str(fps), "-i", "-",
         *codec, str(out),
     ]  # fmt: skip
-    proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+    proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
     try:
         for png in frames:
             proc.stdin.write(page.compose(png).tobytes())
+    except BrokenPipeError:
+        pass  # ffmpeg exited early; its exit code and stderr are reported below
     finally:
-        proc.stdin.close()
-        if proc.wait() != 0:
-            raise RuntimeError(f"ffmpeg failed encoding {out.name}")
+        with contextlib.suppress(BrokenPipeError):
+            proc.stdin.close()
+        err = proc.stderr.read().decode("utf-8", errors="replace").strip()
+        code = proc.wait()  # always reap the child
+    if code != 0:
+        raise RuntimeError(f"ffmpeg failed encoding {out.name} (exit {code}): {err[-500:]}")
     return out
 
 

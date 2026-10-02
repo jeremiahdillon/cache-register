@@ -350,8 +350,8 @@ worked, engagement notes, data pitfalls). Reusable code graduates into `cachereg
 
 | Target | Format | Size | Notes |
 |---|---|---|---|
-| `blog_html` | Self-contained HTML (Vega-Embed) | responsive | tooltips, hover, legend toggles; data inlined = aggregated frames only |
-| `blog_svg` | SVG | responsive | static fallback / RSS |
+| `blog_html` | Single-file HTML (Vega-Embed + data inlined; brand fonts from Google Fonts, system fallback) | responsive | tooltips, hover, legend toggles; data inlined = aggregated frames only |
+| `blog_svg` | SVG | responsive | static fallback / RSS — **backlog** (needs vector chrome + footer) |
 | `x_video` | MP4 H.264 yuv420p, 30fps | 1920×1080 (16:9) | autoplay-muted safe: all text in-frame; ends with 3s hold on final frame |
 | `linkedin_video` | MP4 | 1080×1350 (4:5) | same |
 | `square_video` | MP4 | 1080×1080 | backlog |
@@ -532,7 +532,7 @@ Phase 1 only where marked):
 | (e) **Developer wallet vs enterprise wallet** — three *separately labelled* lenses on the same vendors, never put on one axis or converted into each other: (1) share of estimated $ on OpenRouter, (2) share of US businesses paying (Ramp), (3) reported revenue run-rates. Output: vendor **rank/share comparison** across lenses (small multiples or slope chart) plus where they disagree | OpenRouter est. spend; Ramp AI Index vendor breakdown; curated disclosures | No | If lenses aren't comparable enough for a claim, publish as "three views" without a ranking claim |
 
 **v1 scope vs backlog** (to keep the first weeks lean):
-- v1 render targets: `blog_html`, `blog_svg`, `x_png`, `linkedin_png`, `x_video` (MP4 16:9),
+- v1 render targets: `blog_html`, `x_png`, `linkedin_png`, `x_video` (MP4 16:9),
   `linkedin_video` (MP4 4:5), `web_video` (WebM), `table_png`.
 - Backlog: GIF, WebP, square formats, `export-archive`, Keychain backend, marimo notebooks,
   `/add-source` and `/promote` skills (do manually until needed), `doctor` (fold into `status`),

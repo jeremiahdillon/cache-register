@@ -43,3 +43,14 @@ def test_missing_keyframe_values_enter_from_offscreen():
     f = bar_race_frames(k, "name", "share", "week", top_n=1, timing=Timing(10, 4, 1, 0.1))
     c = f.filter(pl.col("name") == "C").sort("frame")
     assert c["share"][0] == 0 and c["rank_pos"][0] == 2  # starts off-screen (top_n + 1)
+
+
+def test_real_timing_frame_count():
+    weeks = [date(2026, 1, 5 + 7 * i) for i in range(4)]
+    k = pl.DataFrame({"week": weeks, "name": ["A"] * 4, "share": [0.1, 0.2, 0.3, 0.4]})
+    t = Timing()  # production defaults
+    f = bar_race_frames(k, "name", "share", "week", top_n=8)
+    expected = (len(weeks) - 1) * (t.hold_frames + t.move_frames) + int(t.final_hold_s * t.fps)
+    assert f["frame"].max() + 1 == expected
+    last = f.filter(pl.col("frame") >= expected - int(t.final_hold_s * t.fps))
+    assert last["share"].unique().to_list() == [pytest.approx(0.4)]  # final hold rests on the last week

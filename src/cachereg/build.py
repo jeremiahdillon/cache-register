@@ -57,11 +57,27 @@ def _vendor_alias_frame() -> pl.DataFrame:
     return pl.DataFrame(rows)
 
 
-def _cutoff(source: str, as_of: date) -> tuple[date, bool]:
-    """Latest fetch date on/before as_of; else the earliest fetch, flagged (PLAN §4.4)."""
+class VintageGapError(RuntimeError):
+    """An Author-only (snapshot) source has no fetch on or before the requested as-of date."""
+
+
+def cutoff(source: str, as_of: date) -> tuple[date, bool]:
+    """The fetch date to use for ``as_of`` and whether it is *after* as_of (PLAN §4.4).
+
+    Latest-only sources (``revisions: revised``) fall back to their earliest fetch, flagged.
+    Snapshot sources (Author-only) never substitute later data: the gap is an error.
+    """
     dates = sorted({f.fetched_at.date() for f in list_fetches(source)})
+    if not dates:
+        raise VintageGapError(f"{source}: no fetches at all")
     on_or_before = [d for d in dates if d <= as_of]
-    return (on_or_before[-1], False) if on_or_before else (dates[0], True)
+    if on_or_before:
+        return on_or_before[-1], False
+    if load_sources()[source].history == "snapshot":
+        raise VintageGapError(
+            f"{source}: no snapshot on or before {as_of} (first is {dates[0]}); snapshot sources cannot be back-filled"
+        )
+    return dates[0], True
 
 
 def build(as_of: date) -> BuildReport:
@@ -84,9 +100,16 @@ def build(as_of: date) -> BuildReport:
             "CREATE OR REPLACE TABLE dim_vendor_alias AS SELECT * FROM read_parquet(?)", [vendor_file.as_posix()]
         )
         con.execute("SET VARIABLE as_of = ?::DATE", [as_of])
-        if list_fetches("openrouter_rankings") and list_fetches("openrouter_models"):
-            rank_cut, rank_after = _cutoff("openrouter_rankings", as_of)
-            price_cut, price_after = _cutoff("openrouter_models", as_of)
+        # Marts are rebuilt from scratch every time: drop first so a stale table can never survive.
+        for table in ("or_vendor_weekly", "or_model_daily", "or_rankings_daily"):
+            con.execute(f"DROP TABLE IF EXISTS {table}")
+        have = {s: bool(list_fetches(s)) for s in ("openrouter_rankings", "openrouter_models")}
+        if any(have.values()) and not all(have.values()):
+            missing = ", ".join(s for s, ok in have.items() if not ok)
+            raise RuntimeError(f"OpenRouter marts need both sources; no fetches yet for: {missing}")
+        if all(have.values()):
+            rank_cut, rank_after = cutoff("openrouter_rankings", as_of)
+            price_cut, price_after = cutoff("openrouter_models", as_of)
             con.execute("SET VARIABLE rankings_fetch_cutoff = ?::DATE", [rank_cut])
             con.execute("SET VARIABLE price_snapshot = ?::DATE", [price_cut])
             report.vintages["openrouter_rankings"] = {"fetch_cutoff": str(rank_cut), "vintage_after_as_of": rank_after}

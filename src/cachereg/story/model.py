@@ -47,7 +47,6 @@ TARGETS = {
         Target("x_png", "static", 1600, 900, 50, 24, 15, 56, 1.15),
         Target("linkedin_png", "static", 1080, 1350, 54, 26, 16, 56, 1.15),
         Target("blog_html", "html", 960, 560, fmt="html"),
-        Target("blog_svg", "static", 1200, 760, 40, 20, 13, 40, 1.0, fmt="svg"),
         Target("x_video", "video", 1920, 1080, 56, 26, 17, 64, 1.3, fmt="mp4"),
         Target("linkedin_video", "video", 1080, 1350, 54, 26, 16, 56, 1.2, fmt="mp4"),
         Target("web_video", "video", 1080, 1350, 54, 26, 16, 56, 1.2, fmt="webm"),

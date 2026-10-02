@@ -25,7 +25,16 @@ def rules(path: str, text: str, extra: list[str] | None = None) -> set[str]:
 
 @pytest.mark.parametrize(
     "path",
-    ["data/raw/openrouter/x.json", "outputs/a/b.png", "x/warehouse.duckdb", "t.parquet", ".env", "a/.env.prod"],
+    [
+        "data/raw/openrouter/x.json",
+        "outputs/a/b.png",
+        "x/warehouse.duckdb",
+        "t.parquet",
+        ".env",
+        "a/.env.prod",
+        ".envrc",
+        ".direnv/x",
+    ],
 )
 def test_blocked_paths(path):
     assert guard.check_path(path, 10)
@@ -44,6 +53,7 @@ def test_size_limit_outside_published():
 def test_home_paths():
     assert "home directory path" in rules("a.md", f"see {USERS}someone/Projects")
     assert "home directory path" in rules("a.md", "/" + "home/" + "someone/x")
+    assert "home directory path" in rules("a.md", "c:" + "\\users\\" + "someone\\proj")  # any case
     assert not rules("a.md", f"e.g. {USERS}example/Projects or {USERS}you/x")
     assert not rules("a.md", "/home/runner/work is fine in CI docs")
 

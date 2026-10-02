@@ -42,12 +42,23 @@ def group_of(vendor_id: str, hq: str | None) -> str:
     return "Everyone else"
 
 
+def headline(a0: float, a1: float, n_weeks: int) -> str:
+    """The claim, with the verb taken from the data (never assumed)."""
+    span = f"{n_weeks} week" + ("s" if n_weeks != 1 else "")
+    if round(a0, 2) == round(a1, 2):
+        return f"Anthropic's share of OpenRouter spend held at {a1:.0%} over {span}"
+    verb = "fell" if a1 < a0 else "rose"
+    return f"Anthropic's share of OpenRouter spend {verb} from {a0:.0%} to {a1:.0%} in {span}"
+
+
 def build(con, as_of: date, cfg: dict) -> Story:
     w = _weekly(con, as_of)
     # A week is complete when the data covers all 7 days for *some* vendor. Judge per week, never per
     # vendor, or vendors active only part of a week (launches, stealth models) silently drop out.
     complete = w.group_by("week").agg(pl.col("days").max()).filter(pl.col("days") == 7)["week"]
     weeks = sorted(complete.to_list())[-cfg["weeks"] :]
+    if len(weeks) < 2:
+        raise ValueError(f"need at least 2 complete weeks on or before {as_of}, found {len(weeks)}")
     w = w.filter(pl.col("week").is_in(weeks)).with_columns(
         pl.struct("vendor_id", "hq")
         .map_elements(lambda r: group_of(r["vendor_id"], r["hq"]), return_dtype=pl.String)
@@ -70,15 +81,19 @@ def build(con, as_of: date, cfg: dict) -> Story:
     flagged = totals.filter(pl.col("unpriced_share") > cfg["unpriced_flag"]).sort("week")
 
     first, last = weeks[0], weeks[-1]
-    a0 = groups.filter((pl.col("week") == first) & (pl.col("group") == "Anthropic"))["share"].item()
-    a1 = groups.filter((pl.col("week") == last) & (pl.col("group") == "Anthropic"))["share"].item()
-    o1 = groups.filter((pl.col("week") == last) & (pl.col("group") == "OpenAI"))["share"].item()
-    cn1 = groups.filter((pl.col("week") == last) & (pl.col("group") == "Chinese labs"))["share"].item()
+
+    def share(week, group) -> float:
+        """A group's share that week; 0 when it had no priced spend at all."""
+        s = groups.filter((pl.col("week") == week) & (pl.col("group") == group))["share"]
+        return float(s.sum()) if s.len() else 0.0
+
+    a0, a1 = share(first, "Anthropic"), share(last, "Anthropic")
+    o1, cn1 = share(last, "OpenAI"), share(last, "Chinese labs")
     spend_last = totals.filter(pl.col("week") == last)["spend_total"].item()
 
     return Story(
         slug="openrouter-wallet-share",
-        title=f"Anthropic's share of OpenRouter spend fell from {a0:.0%} to {a1:.0%} in {len(weeks) - 1} weeks",
+        title=headline(a0, a1, len(weeks) - 1),
         subtitle=(
             f"Share of estimated weekly spend on OpenRouter's top-50 models, by developer. "
             f"Week of {last:%b %-d}: Anthropic {a1:.0%}, OpenAI {o1:.0%}, Chinese labs {cn1:.0%}."

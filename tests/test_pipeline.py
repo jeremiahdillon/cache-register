@@ -65,3 +65,81 @@ def test_render_wallet_share_on_synthetic_data(synthetic_raw, monkeypatch):
     assert "/Users/" not in text and "/home/" not in text  # repo-relative only
     assert manifest["sources"]["openrouter_rankings"]["class"] == "Latest-only"
     assert "Anthropic" in result["title"]
+
+
+def test_snapshot_source_never_backfills_but_revised_source_does(synthetic_raw):
+    from cachereg.build import VintageGapError, cutoff
+
+    before = date(2026, 8, 1)  # both synthetic fetches are dated 2026-08-31
+    day, after = cutoff("openrouter_rankings", before)  # Latest-only: fall back, flagged
+    assert day == date(2026, 8, 31) and after
+    with pytest.raises(VintageGapError, match="snapshot"):
+        cutoff("openrouter_models", before)  # Author-only: report the gap
+
+
+def test_duplicate_catalog_slug_does_not_multiply_tokens(synthetic_raw):
+    from datetime import UTC, datetime
+
+    from cachereg.core.store import RawFetch
+    from tests.conftest import synthetic_models
+
+    models = synthetic_models()
+    base = models["data"][0]
+    models["data"].append(dict(base, id=base["id"] + ":batch", pricing={"prompt": "1e-9", "completion": "1e-9"}))
+    m = RawFetch("openrouter_models", "1", fetched_at=datetime(2026, 8, 31, 13, tzinfo=UTC))
+    m.add("models.json", json.dumps(models).encode(), "https://example.test", 200)
+    m.write()
+    build(date(2026, 8, 31))
+    con = connect()
+    try:
+        n = query(con, "SELECT count(*) AS n FROM or_model_daily")["n"][0]
+        px = query(
+            con,
+            "SELECT DISTINCT prompt_usd_per_token AS p FROM or_model_daily WHERE model_permaslug = ?",
+            [base["canonical_slug"]],
+        )["p"].to_list()
+    finally:
+        con.close()
+    assert n == 91 * 7  # no fan-out
+    assert px == [float(base["pricing"]["prompt"])]  # base price, not the :batch variant
+
+
+def test_headline_verb_follows_the_data():
+    from cachereg.render import load_analysis
+
+    analysis, _ = load_analysis(WALLET)
+    assert analysis.headline(0.69, 0.32, 12).startswith("Anthropic's share of OpenRouter spend fell from 69%")
+    assert " rose from 20% to 35% in 1 week" in analysis.headline(0.20, 0.35, 1)
+    assert "held at 50%" in analysis.headline(0.501, 0.499, 3)
+
+
+def test_build_refuses_half_the_inputs_and_drops_stale_marts(synthetic_raw):
+    import shutil
+
+    from cachereg.core.paths import raw_dir
+
+    build(date(2026, 8, 31))  # marts exist
+    shutil.rmtree(raw_dir("openrouter_models"))
+    with pytest.raises(RuntimeError, match="openrouter_models"):
+        build(date(2026, 8, 31))
+    con = connect()
+    try:
+        tables = set(query(con, "SELECT table_name FROM information_schema.tables")["table_name"])
+    finally:
+        con.close()
+    assert "or_vendor_weekly" not in tables  # a stale mart can't be reused
+
+
+def test_encode_reports_ffmpeg_failure(tmp_path, monkeypatch):
+    import io as _io
+
+    from PIL import Image
+
+    from cachereg.viz import motion
+    from cachereg.viz.layout import Frame
+
+    buf = _io.BytesIO()
+    Image.new("RGB", (8, 8)).save(buf, "PNG")
+    page = Frame(Image.new("RGB", (16, 16)), (0, 0, 8, 8))
+    with pytest.raises(RuntimeError, match="ffmpeg failed"):
+        motion.encode([buf.getvalue()] * 300, page, tmp_path / "no-such-dir" / "x.mp4", fps=10)

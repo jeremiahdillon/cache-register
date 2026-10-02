@@ -24,7 +24,7 @@ class HttpError(RuntimeError):
 
 @dataclass(frozen=True)
 class Response:
-    url: str  # without query-string secrets; safe to log
+    url: str  # full URL with any configured secret values redacted; safe to log and store
     status: int
     body: bytes
 
@@ -48,7 +48,7 @@ def get(
         req = urllib.request.Request(full, headers=req_headers)  # noqa: S310 (https URLs from adapters)
         try:
             with urllib.request.urlopen(req, timeout=timeout) as r:  # noqa: S310
-                return Response(url=full, status=r.status, body=r.read())
+                return Response(url=redact(full), status=r.status, body=r.read())
         except urllib.error.HTTPError as e:
             body = e.read()[:500].decode("utf-8", errors="replace")
             if e.code in RETRY_STATUSES and attempt < retries:

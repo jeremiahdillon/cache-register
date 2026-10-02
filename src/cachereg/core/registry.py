@@ -30,6 +30,13 @@ class Source:
         return importlib.import_module(f"cachereg.sources.{self.id}.{name}")
 
 
+def reproducibility_class(src: Source) -> str:
+    """PLAN §4.4: Exact (native, not revised) · Latest-only (revised in place) · Author-only (snapshot)."""
+    if src.history == "snapshot":
+        return "Author-only"
+    return "Latest-only" if src.revisions == "revised" else "Exact"
+
+
 def load_sources(path=None) -> dict[str, Source]:
     data = yaml.safe_load((path or REPO_ROOT / "config" / "sources.yaml").read_text()) or {}
     out = {}

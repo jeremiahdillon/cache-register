@@ -17,8 +17,9 @@ import vl_convert as vlc
 import yaml
 
 from cachereg import __version__
+from cachereg.build import cutoff
 from cachereg.core.paths import REPO_ROOT, outputs_dir, repo_relative
-from cachereg.core.registry import load_sources
+from cachereg.core.registry import load_sources, reproducibility_class
 from cachereg.core.store import list_fetches
 from cachereg.core.warehouse import connect
 from cachereg.story.model import TARGETS, Story, Target
@@ -51,19 +52,14 @@ def _manifest(story: Story, analysis_path: Path, outputs: dict[str, str], timing
     sources = load_sources()
     vintages = {}
     for sid in story.sources:
-        fetches = [f for f in list_fetches(sid) if f.fetched_at.date() <= story.as_of] or list_fetches(sid)[:1]
-        latest = fetches[-1] if fetches else None
+        day, after = cutoff(sid, story.as_of)  # same selection rule as the build
+        latest = [f for f in list_fetches(sid) if f.fetched_at.date() == day][-1]
         vintages[sid] = {
-            "class": {
-                "revised": "Latest-only",
-                "none": "Author-only" if sources[sid].history == "snapshot" else "Exact",
-                "append-only": "Exact",
-            }[sources[sid].revisions],
-            "fetch_date": str(latest.fetched_at.date()) if latest else None,
-            "vintage": latest.manifest.get("vintage") if latest else None,
-            "content_sha256": hashlib.sha256(json.dumps(latest.manifest["files"], sort_keys=True).encode()).hexdigest()
-            if latest
-            else None,
+            "class": reproducibility_class(sources[sid]),
+            "fetch_date": str(day),
+            "vintage_after_as_of": after,
+            "vintage": latest.manifest.get("vintage"),
+            "content_sha256": hashlib.sha256(json.dumps(latest.manifest["files"], sort_keys=True).encode()).hexdigest(),
         }
     lock = (REPO_ROOT / "uv.lock").read_bytes()
     return {
@@ -86,6 +82,8 @@ def render_static(story, charts, target: Target, rec, out: Path) -> None:
     frame = page(story, target, rec)
     _, _, w, h = frame.plot_box
     spec = charts.line_chart(story, w, h, target.font_scale).to_dict()
+    if target.fmt != "png":
+        raise ValueError(f"static target {target.name!r}: only PNG is supported (got {target.fmt!r})")
     png = vlc.vegalite_to_png(vl_spec=json.dumps(spec), scale=1)
     frame.compose(png).save(out, optimize=True)
 
@@ -110,7 +108,7 @@ HTML_TEMPLATE = REPO_ROOT / "assets" / "templates" / "story.html"
 def render_html(story, charts, target: Target, rec, out: Path) -> None:
     spec = charts.line_chart(story, "container", target.height, 1.0, interactive=True).to_dict()
     groups = story.frames["groups"]
-    pivot = groups.pivot(on="group", index="week", values="share").sort("week")
+    pivot = groups.pivot(on="group", index="week", values="share").sort("week").fill_null(0.0)
     cols = ["week", *[c for c in charts.GROUP_ORDER if c in pivot.columns]]
     table = (
         "<table><tr>"

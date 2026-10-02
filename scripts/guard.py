@@ -30,14 +30,14 @@ BLOCKED_PATHS = [
     ("data directory", re.compile(r"^data/")),
     ("outputs directory", re.compile(r"^outputs/")),
     ("warehouse/data file", re.compile(r"\.(parquet|duckdb|duckdb\.wal|sqlite3?|db)$", re.I)),
-    ("env file", re.compile(r"(^|/)\.env(\.(?!example$)[^/]+)?$")),
+    ("env file", re.compile(r"(^|/)\.env(\.(?!example$)[^/]+)?$|(^|/)\.envrc$|(^|/)\.direnv/")),
     ("private key file", re.compile(r"\.(pem|key|p12|pfx)$", re.I)),
 ]
 
 CONTENT_RULES = [
     ("home directory path", re.compile(r"/Users/(?!(?:example|you|me|USER|username)\b)[A-Za-z0-9._-]+")),
     ("home directory path", re.compile(r"/home/(?!(?:runner|user|example|you|USER|username)\b)[a-z0-9._-]+")),
-    ("home directory path", re.compile(r"[A-Za-z]:\\Users\\(?!(?:example|you|USER|username)\b)[A-Za-z0-9._-]+")),
+    ("home directory path", re.compile(r"(?i)[a-z]:\\users\\(?!(?:example|you|user|username)\b)[a-z0-9._-]+")),
     ("local hostname", re.compile(r"\b[A-Za-z0-9-]+\.(?:local|lan|home\.arpa)\b")),
     ("private IP address", re.compile(r"\b(?:10\.\d{1,3}|192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}\b")),
     ("OpenRouter key", re.compile(r"sk-or-v1-[0-9a-f]{32,}")),
