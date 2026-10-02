@@ -6,6 +6,9 @@ Secrets are read from, in order of precedence:
 2. the file named by ``CACHEREG_SECRETS_FILE`` (kept outside the repo);
 3. a gitignored ``.env`` at the repo root (convenient for replicators).
 
+``CACHEREG_SECRETS_FILE`` itself may be set in the environment or in the repo ``.env``, so a
+one-line ``.env`` can point at an existing secrets file without editing shell profiles.
+
 Values are never logged, printed or written to manifests. Use :func:`redact` on any text
 that might contain one (error messages, URLs) before it leaves the process.
 """
@@ -65,10 +68,12 @@ def parse_env_file(path: Path) -> dict[str, str]:
 
 
 def _file_sources(env: dict[str, str]) -> list[Path]:
-    paths = []
-    if env.get(SECRETS_FILE_ENV):
-        paths.append(Path(env[SECRETS_FILE_ENV]).expanduser())
-    paths.append(REPO_ROOT / ".env")
+    repo_env = REPO_ROOT / ".env"
+    pointer = env.get(SECRETS_FILE_ENV)
+    if not pointer and repo_env.is_file():
+        pointer = parse_env_file(repo_env).get(SECRETS_FILE_ENV)
+    paths = [Path(os.path.expandvars(pointer)).expanduser()] if pointer else []
+    paths.append(repo_env)
     return paths
 
 

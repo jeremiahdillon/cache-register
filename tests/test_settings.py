@@ -42,3 +42,12 @@ def test_redact():
     dummy = "dummy" + "-value-" + "123"  # assembled so secret scanners don't flag the test itself
     env = {"OPENROUTER_API_KEY": dummy}
     assert redact(f"GET ?key={dummy} failed", env) == "GET ?key=[REDACTED:OPENROUTER_API_KEY] failed"
+
+
+def test_secrets_file_pointer_can_live_in_repo_env(tmp_path):
+    secrets_file = tmp_path / "outside" / "secrets.env"
+    secrets_file.parent.mkdir()
+    secrets_file.write_text("export ARTIFICIAL_ANALYSIS_API_KEY=from-pointer\n")
+    (tmp_path / ".env").write_text(f"CACHEREG_SECRETS_FILE={secrets_file}\n")
+    assert get_secret("ARTIFICIAL_ANALYSIS_API_KEY", {}) == "from-pointer"
+    assert secret_status({})["OPENROUTER_API_KEY"] is False
