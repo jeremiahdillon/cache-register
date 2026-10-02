@@ -12,4 +12,23 @@
 #   enabled:        true | false
 # `unknown` is treated as forbidden.
 
-sources: []
+sources:
+  - id: openrouter_rankings
+    history: native
+    revisions: revised
+    redistribution: allowed-with-attribution
+    derived_charts: allowed-with-attribution
+    attribution: "OpenRouter (openrouter.ai/rankings), as of {as_of}"
+    cadence: daily
+    requires: [OPENROUTER_API_KEY]
+    enabled: true
+
+  - id: openrouter_models
+    history: snapshot
+    revisions: none
+    redistribution: unknown
+    derived_charts: allowed-with-attribution
+    attribution: "OpenRouter model pricing (openrouter.ai/models)"
+    cadence: daily
+    requires: []
+    enabled: true

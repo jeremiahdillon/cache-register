@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{{--canvas:{canvas};--ink:{ink};--ink2:{ink2};--muted:{muted};--signal:{signal}}}
+*{{box-sizing:border-box}} body{{margin:0;background:var(--canvas);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}}
+.cr{{max-width:1000px;margin:0 auto;padding:32px 16px}}
+.mark{{font:700 13px 'JetBrains Mono',monospace;letter-spacing:.08em;display:flex;gap:8px;align-items:center}}
+.mark i{{display:inline-block;width:12px;height:12px;background:var(--signal)}}
+h1{{font:700 clamp(26px,4vw,40px)/1.12 'Space Grotesk',sans-serif;margin:18px 0 8px}}
+.sub{{color:var(--ink2);margin:0 0 20px}} #chart{{width:100%}}
+.receipt{{border-top:1px dashed var(--muted);margin-top:20px;padding-top:12px;font:13px/1.6 'JetBrains Mono',monospace;color:var(--ink2)}}
+.receipt b{{color:var(--muted);display:inline-block;min-width:88px}} .receipt a{{color:var(--ink2)}}
+details{{margin-top:16px;color:var(--ink2);font-size:14px}} table{{border-collapse:collapse;margin-top:8px;width:100%;font:13px 'JetBrains Mono',monospace}}
+td,th{{padding:4px 8px;border-bottom:1px solid #1C1F27;text-align:right}} td:first-child,th:first-child{{text-align:left}}
+ul{{padding-left:18px}}
+</style></head><body><div class="cr">
+<div class="mark"><i></i>{brand_name}</div>
+<h1>{title}</h1><p class="sub">{subtitle}</p>
+<div id="chart" role="img" aria-label="{title}"></div>
+<div class="receipt">{receipt_html}</div>
+<details><summary>Caveats</summary><ul>{caveats}</ul></details>
+<details><summary>Data table</summary>{table}</details>
+</div>
+<script>{bundle}</script>
+<script>
+const spec = {spec};
+vegaEmbed('#chart', spec, {{actions:false, renderer:'svg'}});
+</script></body></html>

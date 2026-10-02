@@ -391,6 +391,15 @@ plus `run_manifest.json`.
   `line_reveal` and one `bar_race` at 1080×1350, 12s/30fps, before the target matrix is built.
   If frame rendering exceeds ~2 min per video or quality is poor, matplotlib becomes the motion
   backend and the plan is updated.
+- **Spike result (2026-10-02, Phase 0.5):** 426-frame bar race at 1080×1350 — A (vl-convert)
+  5.6 s, B (live Vega view in headless Chrome) 2.6 s, mean pixel difference 0.6% (anti-aliasing).
+  Both are far under the gate and encoding dominates total time (~14 s per video), so the
+  difference is treated as a tie → **A is the motion renderer**: no browser dependency for
+  replicators or CI. B stays reproducible via `scripts/spike_motion_b.py`; revisit if videos get
+  long enough for render time to matter.
+- **Chrome vs. layout:** the chart comes from Vega; the headline, subtitle and receipt footer are
+  drawn by `cachereg.viz.layout` (Pillow) for raster targets and by an HTML template for the blog,
+  so every format shares one chart definition and one footer source.
 - **Single source per chart, per format family**: `charts.py` defines a chart function used by
   HTML, static, and motion targets (motion adds the frame-data step). Tables are a separate
   `table(story)` function (great_tables), since a table is a different form, not a rendering.

@@ -1,0 +1,54 @@
+"""Source registry: config/sources.yaml + one package per source under cachereg.sources."""
+
+from __future__ import annotations
+
+import importlib
+from dataclasses import dataclass
+from types import ModuleType
+
+import yaml
+
+from cachereg.core.paths import REPO_ROOT
+
+FIELDS = {"id", "history", "revisions", "redistribution", "derived_charts", "attribution", "cadence", "requires"}
+RIGHTS = {"allowed", "allowed-with-attribution", "forbidden", "unknown"}
+
+
+@dataclass(frozen=True)
+class Source:
+    id: str
+    history: str
+    revisions: str
+    redistribution: str
+    derived_charts: str
+    attribution: str
+    cadence: str
+    requires: tuple[str, ...]
+    enabled: bool
+
+    def module(self, name: str) -> ModuleType:
+        return importlib.import_module(f"cachereg.sources.{self.id}.{name}")
+
+
+def load_sources(path=None) -> dict[str, Source]:
+    data = yaml.safe_load((path or REPO_ROOT / "config" / "sources.yaml").read_text()) or {}
+    out = {}
+    for entry in data.get("sources") or []:
+        missing = FIELDS - entry.keys()
+        if missing:
+            raise ValueError(f"source {entry.get('id')!r} missing fields: {sorted(missing)}")
+        for right in ("redistribution", "derived_charts"):
+            if entry[right] not in RIGHTS:
+                raise ValueError(f"source {entry['id']!r}: {right} must be one of {sorted(RIGHTS)}")
+        out[entry["id"]] = Source(
+            id=entry["id"],
+            history=entry["history"],
+            revisions=entry["revisions"],
+            redistribution=entry["redistribution"],
+            derived_charts=entry["derived_charts"],
+            attribution=entry["attribution"].strip(),
+            cadence=entry["cadence"],
+            requires=tuple(entry.get("requires") or ()),
+            enabled=bool(entry.get("enabled", True)),
+        )
+    return out

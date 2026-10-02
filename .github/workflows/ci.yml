@@ -63,4 +63,5 @@ jobs:
           uv run ruff format --check
 
       - name: Test
+        timeout-minutes: 10
         run: uv run pytest -q
