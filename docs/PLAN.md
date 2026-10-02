@@ -11,7 +11,9 @@ intersections — and turn each into compelling content (interactive blog embeds
 jeremiahdillon.com, autoplay video for X/LinkedIn, static images) that carries a link back to the
 exact code that produced it.
 
-**Non-goals (v1):** the author's private usage/spend data; web scraping; paid data products
+**Non-goals:** writing post copy, captions or social text of any kind — the project does
+analysis and synthesis and produces the visuals; the author writes the words. **Non-goals (v1):**
+the author's private usage/spend data; web scraping; paid data products
 (SemiAnalysis, Similarweb, Sensor Tower); real-time dashboards.
 
 **Guiding principles**
@@ -147,7 +149,7 @@ cache-register/
 ├── .gitignore                    # data/, outputs/, .env*, *.duckdb, logs
 ├── .pre-commit-config.yaml
 ├── CLAUDE.md                     # rules for AI collaborators (layers, conventions, security)
-├── .claude/skills/               # v1: new-analysis, make-post (add-source, promote: backlog)
+├── .claude/skills/               # v1: new-analysis, render-check (add-source, promote: backlog)
 ├── .github/workflows/ci.yml      # lint/type/test/render-on-synthetic; no secrets
 ├── config/
 │   ├── sources.yaml              # registry: id, history, redistribution, derived_charts,
@@ -307,7 +309,7 @@ Two kinds, sharing one structure:
 Each analysis folder:
 
 ```
-README.md        # question, hypothesis, method, findings, caveats, post copy drafts
+README.md        # question, hypothesis, method, findings, caveats (no post copy — see §1)
 analysis.py      # build(warehouse, as_of) -> Story   (the single canonical analysis)
 charts.py        # chart(story, target) -> Altair chart  (format-aware)
 story.yaml       # metadata + render targets (see §6); for series: cadence
@@ -516,7 +518,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | **4. Story & viz kit (full)** | Generalize the slice: theme, remaining v1 targets, `table`, `publish` (with its check), `_template` | Template analysis renders every v1 target on synthetic data in CI |
 | **5. Starter analyses** | See table below | Each has README findings + v1 targets rendered |
 | **6. Scheduling & ops** | launchd install script, `fetch --due`, `status` | Runs unattended a week with no gaps |
-| **7. Claude skills & playbook** | `/new-analysis`, `/make-post`; playbook seeded | New exploration scaffolded and rendered in one command |
+| **7. Claude skills & playbook** | `/new-analysis`, `/render-check` (render all targets and eyeball them); playbook seeded | New exploration scaffolded and rendered in one command |
 
 **Starter analyses: dependencies and fallbacks** (built in this order; each is contingent on
 Phase 1 only where marked):

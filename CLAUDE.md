@@ -15,6 +15,9 @@ The plan of record is `docs/PLAN.md`. Read the relevant section before changing 
 - **Tests use synthetic fixtures only** — never recorded real API responses (licensing).
 - **Every derived number states its method and caveats** in the analysis README; spend figures
   are estimates with bounds.
+- **Analysis and synthesis only — never draft post copy**, captions, hooks or social text. An
+  analysis README ends at findings and caveats; the visuals' own headline/subtitle state the
+  finding plainly.
 - **Charts credit sources** via the auto-generated footer; never hand-write attributions.
 
 ## Conventions

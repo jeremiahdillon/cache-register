@@ -44,14 +44,3 @@ cachereg fetch openrouter_rankings && cachereg fetch openrouter_models
 cachereg build
 cachereg render analyses/explore/2026-10-02-openrouter-wallet-share
 ```
-
-## Draft post copy
-**X:** Anthropic's share of OpenRouter spend: 69% → 32% in 12 weeks. OpenAI (31%) and Chinese
-labs (31%) caught up fast — while total spend grew ~36%. Estimated from OpenRouter's public
-token data × list prices. Code + method 👇
-
-**LinkedIn:** Three months ago, about 7 of every 10 dollars developers spent through OpenRouter
-went to Anthropic models. Last week it was about 1 in 3 — a near three-way tie with OpenAI and
-a cluster of Chinese labs (Z.ai, Moonshot, Tencent, DeepSeek). The market didn't shrink; it grew
-~36%. Caveats matter: these are list-price estimates that ignore caching, and OpenRouter is one
-slice of the market. Every number is reproducible from the public repo.
