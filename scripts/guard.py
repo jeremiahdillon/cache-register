@@ -131,9 +131,8 @@ def scan_tracked(extra: list[str]) -> list[Finding]:
     return findings
 
 
-def scan_range(rev_range: str, extra: list[str]) -> list[Finding]:
-    """Check every version of every file touched by each commit in the range."""
-    rev_args = ["--all"] if rev_range == "--all" else [rev_range]
+def scan_commits(rev_args: list[str], extra: list[str]) -> list[Finding]:
+    """Check every version of every file touched by each commit selected by ``git rev-list``."""
     findings = []
     for commit in git("rev-list", *rev_args).decode().split():
         short = commit[:10]
@@ -151,7 +150,8 @@ def main(argv: list[str] | None = None) -> int:
     mode = ap.add_mutually_exclusive_group(required=True)
     mode.add_argument("--staged", action="store_true", help="files staged for commit (pre-commit hook)")
     mode.add_argument("--tracked", action="store_true", help="all tracked files in the working tree")
-    mode.add_argument("--range", metavar="A..B|--all", help="every commit in a revision range")
+    mode.add_argument("--range", metavar="A..B", help="every commit in a revision range")
+    mode.add_argument("--history", action="store_true", help="every commit reachable from any ref")
     args = ap.parse_args(argv)
 
     extra = load_extra_patterns()
@@ -159,8 +159,10 @@ def main(argv: list[str] | None = None) -> int:
         findings = scan_staged(extra)
     elif args.tracked:
         findings = scan_tracked(extra)
+    elif args.history:
+        findings = scan_commits(["--all"], extra)
     else:
-        findings = scan_range(args.range, extra)
+        findings = scan_commits([args.range], extra)
 
     if findings:
         print(f"guard: {len(findings)} problem(s) — matched text is not shown:", file=sys.stderr)

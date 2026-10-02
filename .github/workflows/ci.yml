@@ -33,7 +33,7 @@ jobs:
           BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
           if [ -z "$BASE" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
-            python3 scripts/guard.py --range --all
+            python3 scripts/guard.py --history
           else
             python3 scripts/guard.py --range "$BASE..HEAD"
           fi

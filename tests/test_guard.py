@@ -83,3 +83,23 @@ def test_staged_mode_blocks_commit(tmp_path):
     assert result.returncode == 1
     assert "OpenRouter key" in result.stderr
     assert FAKE_OR_KEY not in result.stderr + result.stdout
+
+
+def test_history_mode_catches_leak_removed_later(tmp_path):
+    def run(*args):
+        return subprocess.run(args, cwd=tmp_path, capture_output=True, text=True)
+
+    run("git", "init", "-q")
+    run("git", "config", "user.email", "t@example.com")
+    run("git", "config", "user.name", "t")
+    (tmp_path / "notes.md").write_text(f"key {FAKE_OR_KEY}\n")
+    run("git", "add", "notes.md")
+    run("git", "commit", "-qm", "leak", "--no-verify")
+    (tmp_path / "notes.md").write_text("clean\n")
+    run("git", "commit", "-qam", "remove", "--no-verify")
+    script = str(ROOT / "scripts" / "guard.py")
+    assert run("python3", script, "--tracked").returncode == 0
+    for mode in (["--history"], ["--range", "HEAD~1..HEAD"]):
+        result = run("python3", script, *mode)
+        expected = 1 if mode == ["--history"] else 0
+        assert result.returncode == expected, (mode, result.stderr)
