@@ -1,6 +1,7 @@
 # Licensed / downloaded data and generated outputs never enter git (see docs/PLAN.md §7–8)
 /data/
 /outputs/
+/_site/
 *.parquet
 *.duckdb
 *.duckdb.wal

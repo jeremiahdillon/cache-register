@@ -97,6 +97,17 @@ def entities(action: str = typer.Argument("check", help="check | suggest")) -> N
 
 
 @app.command()
+def site(out: str = typer.Option("_site", help="Output folder (gitignored).")) -> None:
+    """Build the short-link site published to GitHub Pages (cacheregister.dev/<link>)."""
+    from pathlib import Path
+
+    from cachereg.site import build_site, short_url
+
+    for link in build_site(Path(out)):
+        typer.echo(f"  {short_url(link.slug):<45} -> {link.analysis}")
+
+
+@app.command()
 def status() -> None:
     """Show which credentials are configured (never their values)."""
     configured = secret_status()

@@ -157,7 +157,7 @@ def render(analysis_path: Path, as_of: date, only: list[str] | None = None) -> d
     finally:
         con.close()
     rel = repo_relative(analysis_path)
-    rec = receipt(story.sources, _data_as_of(story), story.method, rel)
+    rec = receipt(story.sources, _data_as_of(story), story.method, rel, cfg.get("link"))
     out_dir = outputs_dir() / analysis_path.name / str(as_of)
     out_dir.mkdir(parents=True, exist_ok=True)
     outputs, timings = {}, {}
