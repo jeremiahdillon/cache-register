@@ -2,6 +2,7 @@
 -- openrouter_models (snapshot prices). Variables set by cachereg.build:
 --   as_of, rankings_fetch_cutoff, price_snapshot.
 -- Assumptions (documented in every analysis that uses these marts):
+--   * list price of the base model; catalog variants (`:batch`, …) are not used for pricing.
 --   * est_spend = tokens × (0.8 × prompt + 0.2 × completion) list price; caching ignored.
 --   * `:free` variants priced at 0 and reported separately.
 --   * rows priced with a snapshot newer than the row's date are flagged price_date_stale.
@@ -19,7 +20,12 @@ WHERE rn = 1;
 
 CREATE OR REPLACE TABLE or_model_daily AS
 WITH px AS (
-    SELECT * FROM stg_openrouter_models_prices WHERE snapshot_date = getvariable('price_snapshot')
+    -- One price row per canonical_slug, so the join can never fan out token counts. The catalog
+    -- lists variants under the same canonical_slug (e.g. `…:batch` at half price); rankings report
+    -- the model itself, so prefer the entry without a `:variant` suffix, then the lowest id.
+    SELECT * FROM stg_openrouter_models_prices
+    WHERE snapshot_date = getvariable('price_snapshot')
+    QUALIFY row_number() OVER (PARTITION BY canonical_slug ORDER BY (id LIKE '%:%'), id) = 1
 ), r AS (
     SELECT *,
         model_permaslug = 'other' AS is_other,
