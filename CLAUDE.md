@@ -25,4 +25,7 @@ The plan of record is `docs/PLAN.md`. Read the relevant section before changing 
   `analyses/series/<slug>/` with `git mv`, leaving a stub README at the old path.
 - Code ported from the author's earlier projects is re-implemented to these contracts and
   reviewed — never copied verbatim (PLAN §2.4).
-- `main` is protected: work on a branch and open a pull request.
+- **No branches or PRs.** Everything goes straight to `main`. **Don't commit unless asked**:
+  leave changes in the working tree and end with a short summary grouped into suggested
+  commits. The author sequences and pushes commits (typically 6–8am); the pre-push hook runs
+  the guard, gitleaks, lint and tests.

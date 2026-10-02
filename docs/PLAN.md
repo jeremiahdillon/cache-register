@@ -445,17 +445,17 @@ brand wordmark. Short URL form used where space is tight. Attribution text comes
 - **Pre-commit**: gitleaks; block `data/`, `outputs/`, `*.parquet`, `*.duckdb`, `.env*`; block
   files > 1 MB outside `published/`; block absolute home paths, usernames, hostnames, local IPs
   (`/Users/`, `/home/`, machine name patterns) in committed text.
-- **CI is the enforcement of record** (pre-commit is a convenience, bypassable with
-  `--no-verify`): a required CI job on every push/PR runs gitleaks over full history of the
-  pushed range, plus the same forbidden-pattern guards (data file types, size limits, absolute
-  home paths, `.local` hostnames, private IP ranges, the author's machine/user names supplied
-  via an *encrypted CI variable*, not committed). Branch protection requires it to pass.
-  Residual risk: a direct push to `main` lands before CI; mitigated by branch protection
-  (PRs required, even for the owner), and a failing check triggers history-rewrite guidance in
-  SECURITY.md.
+- **Workflow (decided 2026-10-02): solo, straight to `main`, no branches or PRs.** The author
+  sequences commits (typically 6–8am) and pushes directly. The gate is the local **pre-push
+  hook** (`.githooks/pre-push`): guard + pinned gitleaks over exactly the commits being
+  pushed, then lint + tests. GitHub **push protection** blocks known secret formats server-side
+  regardless. CI is a single backstop job after the push (full-history guard + gitleaks, lint,
+  tests), with the author's machine/user patterns supplied via an *encrypted CI secret*.
+  Residual risk (accepted): a non-secret leak (e.g. a home path) reaches public `main` if the
+  hook is bypassed with `--no-verify`; SECURITY.md has the clean-up steps.
 - **GitHub**: secret scanning + push protection on; Dependabot; Actions pinned by SHA,
-  `permissions: read-all` default; CI never receives secrets and runs only on synthetic
-  fixtures; branch protection on `main`.
+  `contents: read`; CI never receives API keys and runs only on synthetic fixtures; `main`
+  blocks force-pushes and deletion (lift temporarily only to purge a leak).
 - **Operational opsec**: no machine names, paths, schedules-with-local-detail, IPs, or account
   identifiers in commits; launchd plist only as template; EDGAR contact email from env only.
 - **Supply chain**: deps added via `sfw`-routed installs; new deps scored (Socket/Endor) before
