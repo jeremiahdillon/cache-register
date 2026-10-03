@@ -45,9 +45,11 @@ def test_allowed_paths(path):
     assert not guard.check_path(path, 10)
 
 
-def test_size_limit_outside_published():
+def test_size_limit_outside_receipt_outputs():
     assert guard.check_path("docs/big.png", 2_000_000)
-    assert not guard.check_path("analyses/series/x/published/2026-10-01/x.mp4", 2_000_000)
+    assert not guard.check_path("receipts/some-topic/output/share-race.x_video.mp4", 2_000_000)
+    assert guard.check_path("receipts/output/x.mp4", 2_000_000)  # not a receipt folder
+    assert guard.check_path("explore/2026-01-01-a/output/x.mp4", 2_000_000)
 
 
 def test_home_paths():

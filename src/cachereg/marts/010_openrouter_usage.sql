@@ -1,6 +1,7 @@
--- OpenRouter usage marts (PLAN §2.2). Inputs: openrouter_rankings (native, Latest-only),
+-- inputs: openrouter_rankings, openrouter_models
+-- OpenRouter usage marts (PLAN §2.2): openrouter_rankings (native, Latest-only) and
 -- openrouter_models (snapshot prices). Variables set by cachereg.build:
---   as_of, rankings_fetch_cutoff, price_snapshot.
+--   as_of, openrouter_rankings_cutoff, openrouter_models_cutoff.
 -- Assumptions (documented in every analysis that uses these marts):
 --   * list price of the base model; catalog variants (`:batch`, …) are not used for pricing.
 --   * est_spend = tokens × (0.8 × prompt + 0.2 × completion) list price; caching ignored.
@@ -14,7 +15,7 @@ FROM (
     SELECT *, row_number() OVER (PARTITION BY date, model_permaslug ORDER BY fetched_at DESC) AS rn
     FROM stg_openrouter_rankings_daily
     WHERE date <= getvariable('as_of')
-      AND CAST(fetched_at AS DATE) <= getvariable('rankings_fetch_cutoff')
+      AND CAST(fetched_at AS DATE) <= getvariable('openrouter_rankings_cutoff')
 )
 WHERE rn = 1;
 
@@ -24,7 +25,7 @@ WITH px AS (
     -- lists variants under the same canonical_slug (e.g. `…:batch` at half price); rankings report
     -- the model itself, so prefer the entry without a `:variant` suffix, then the lowest id.
     SELECT * FROM stg_openrouter_models_prices
-    WHERE snapshot_date = getvariable('price_snapshot')
+    WHERE snapshot_date = getvariable('openrouter_models_cutoff')
     QUALIFY row_number() OVER (PARTITION BY canonical_slug ORDER BY (id LIKE '%:%'), id) = 1
 ), r AS (
     SELECT *,
@@ -50,8 +51,8 @@ SELECT
         WHEN r.is_free THEN 0.0
         ELSE r.total_tokens * (0.8 * px.prompt_usd_per_token + 0.2 * px.completion_usd_per_token)
     END AS est_spend_usd,
-    getvariable('price_snapshot') AS price_snapshot_date,
-    getvariable('price_snapshot') > r.date AS price_date_stale
+    getvariable('openrouter_models_cutoff') AS price_snapshot_date,
+    getvariable('openrouter_models_cutoff') > r.date AS price_date_stale
 FROM r
 LEFT JOIN dim_vendor_alias v ON v.source = 'openrouter' AND v.alias = r.author_prefix
 LEFT JOIN px ON px.canonical_slug = r.price_key;

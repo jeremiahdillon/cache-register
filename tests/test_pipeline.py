@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import date
 from pathlib import Path
 
@@ -14,7 +15,7 @@ from cachereg.core.warehouse import connect, query
 from cachereg.sources.openrouter_rankings.fetch import month_windows
 
 ROOT = Path(__file__).resolve().parents[1]
-WALLET = ROOT / "analyses" / "explore" / "2026-10-02-openrouter-wallet-share"
+WALLET = ROOT / "receipts" / "openrouter-wallet-share"
 
 
 def test_month_windows_cover_range_without_gaps():
@@ -47,24 +48,128 @@ def test_build_marts(synthetic_raw):
         con.close()
 
 
-def test_render_wallet_share_on_synthetic_data(synthetic_raw, monkeypatch):
-    from cachereg.render import render
+def _fast_video(monkeypatch):
     from cachereg.viz import motion
 
     real = motion.Timing
     monkeypatch.setattr(motion, "Timing", lambda: real(fps=10, move_frames=2, hold_frames=1, final_hold_s=0.2))
+
+
+def _receipt_copy(tmp_path) -> Path:
+    """A copy of the real receipt (code + config) in a temp repo-like folder, without its outputs."""
+    import shutil
+
+    dest = tmp_path / "receipts" / "openrouter-wallet-share"
+    dest.mkdir(parents=True)
+    for name in ("analysis.py", "charts.py", "receipt.yaml"):
+        shutil.copy(WALLET / name, dest / name)
+    text = (dest / "receipt.yaml").read_text()
+    (dest / "receipt.yaml").write_text(re.sub(r"(?m)^as_of:.*$", "as_of: 2026-08-31", text))
+    return dest
+
+
+def test_render_receipt_on_synthetic_data(synthetic_raw, monkeypatch, tmp_path):
+    from cachereg.render import render
+
+    _fast_video(monkeypatch)
     build(date(2026, 8, 31))
-    result = render(WALLET, date(2026, 8, 31), ["x_png", "blog_html", "linkedin_video"])
-    out = result["out_dir"]
-    assert (out / "x_png.png").stat().st_size > 10_000
-    html = (out / "blog_html.html").read_text()
-    assert "OpenRouter (openrouter.ai/rankings), as of 2026-08-31" in html  # required citation
-    assert (out / "linkedin_video.mp4").stat().st_size > 10_000
-    manifest = json.loads((out / "run_manifest.json").read_text())
+    receipt = _receipt_copy(tmp_path)
+    result = render(receipt)
+    out = receipt / "output"
+    assert result.out_dir == out and not result.skipped
+    assert (out / "share-lines.x_png.png").stat().st_size > 10_000
+    assert (out / "share-race.linkedin_video.mp4").stat().st_size > 10_000
+    # licence gate: openrouter_models redistribution is unknown -> no inlined data committed
+    assert not (out / "share-lines.blog_html.html").exists() and not (out / "data.json").exists()
+    assert not (out / "story_frames.json").exists()
+    manifest = json.loads((out / "manifest.json").read_text())
+    assert set(manifest["withheld"]) == {"share-lines.blog_html.html", "data.json"}
     text = json.dumps(manifest)
     assert "/Users/" not in text and "/home/" not in text  # repo-relative only
     assert manifest["sources"]["openrouter_rankings"]["class"] == "Latest-only"
-    assert "Anthropic" in result["title"]
+    assert manifest["sources"]["openrouter_models"]["class"] == "Author-only"
+    assert "Anthropic" in result.title
+    # unchanged data and code -> nothing rewritten
+    assert render(receipt).skipped
+
+
+def test_exploration_renders_html_with_data_and_citation(synthetic_raw, tmp_path, monkeypatch):
+    import shutil
+
+    from cachereg.render import render
+
+    monkeypatch.setenv("CACHEREG_OUTPUTS_DIR", str(tmp_path / "outputs"))
+    build(date(2026, 8, 31))
+    ex = tmp_path / "explore" / "2026-08-01-test"
+    ex.mkdir(parents=True)
+    for name in ("analysis.py", "charts.py"):
+        shutil.copy(WALLET / name, ex / name)
+    (ex / "explore.yaml").write_text(
+        "sources: [openrouter_rankings, openrouter_models]\n"
+        "config: {weeks: 13, unpriced_flag: 0.03, race_top_n: 8}\n"
+        "visuals:\n  - {name: share-lines, chart: line_chart, targets: [blog_html]}\n"
+    )
+    result = render(ex, date(2026, 8, 31))
+    html = (result.out_dir / "share-lines.blog_html.html").read_text()
+    assert "OpenRouter (openrouter.ai/rankings), as of 2026-08-31" in html  # required citation
+    assert "cacheregister.dev" not in html  # explorations have no short link
+    assert (result.out_dir / "story_frames.json").exists() and not result.withheld
+
+
+def test_reproduce_identical_then_differs(synthetic_raw, monkeypatch, tmp_path):
+    from datetime import UTC, datetime
+
+    from cachereg.core.store import RawFetch
+    from cachereg.render import render
+    from cachereg.reproduce import reproduce
+    from tests.conftest import synthetic_rankings
+
+    _fast_video(monkeypatch)
+    build(date(2026, 8, 31))
+    receipt = _receipt_copy(tmp_path)
+    render(receipt)
+    assert reproduce(receipt, no_fetch=True).status == "identical"
+
+    revised = synthetic_rankings(date(2026, 6, 1), 91)
+    revised["data"][0]["total_tokens"] = str(int(revised["data"][0]["total_tokens"]) * 3)  # a revision
+    r = RawFetch("openrouter_rankings", "1", fetched_at=datetime(2026, 8, 31, 18, tzinfo=UTC))
+    r.add("rankings.json", json.dumps(revised).encode(), "https://example.test", 200)
+    r.write()
+    result = reproduce(receipt, no_fetch=True)
+    assert result.status == "differs"
+    assert any("openrouter_rankings" in reason for reason in result.reasons)
+    assert (receipt / "output" / "manifest.json").exists()  # committed outputs untouched
+
+
+def test_reproduce_reports_missing_snapshot(synthetic_raw, monkeypatch, tmp_path):
+    from cachereg.render import render
+    from cachereg.reproduce import reproduce
+
+    _fast_video(monkeypatch)
+    build(date(2026, 8, 31))
+    receipt = _receipt_copy(tmp_path)
+    render(receipt)
+    text = (receipt / "receipt.yaml").read_text()
+    (receipt / "receipt.yaml").write_text(re.sub(r"(?m)^as_of:.*$", "as_of: 2026-08-01", text))
+    result = reproduce(receipt, no_fetch=True)
+    assert result.status == "cannot-reproduce"
+    assert "openrouter_models" in result.reasons[0] and "--latest" in result.reasons[0]
+
+
+def test_build_sources_scope(synthetic_raw):
+    report = build(date(2026, 8, 31), [])
+    assert report.marts_built == [] and report.marts_skipped == ["010_openrouter_usage"]
+    con = connect()
+    try:
+        tables = set(query(con, "SELECT table_name FROM information_schema.tables")["table_name"])
+    finally:
+        con.close()
+    assert "or_vendor_weekly" not in tables  # skipped mart's tables are dropped, never stale
+    with pytest.raises(RuntimeError, match="missing: openrouter_rankings"):
+        build(date(2026, 8, 31), ["openrouter_models"])
+    assert build(date(2026, 8, 31), ["openrouter_rankings", "openrouter_models"]).marts_built == [
+        "010_openrouter_usage"
+    ]
 
 
 def test_snapshot_source_never_backfills_but_revised_source_does(synthetic_raw):

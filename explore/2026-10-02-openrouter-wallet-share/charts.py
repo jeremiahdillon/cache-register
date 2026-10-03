@@ -9,6 +9,7 @@ import polars as pl
 from analysis import GROUP_COLOR_KEY, GROUP_ORDER
 
 from cachereg.story.model import Story
+from cachereg.viz import motion
 from cachereg.viz.brand import brand, color
 from cachereg.viz.theme import vl_config
 
@@ -148,6 +149,18 @@ def race_keyframes(story: Story, top_n: int) -> pl.DataFrame:
         .to_list()
     )
     return v.filter(pl.col("vendor_name").is_in(keep)).select("week", "vendor_name", "group", "share")
+
+
+def race_specs(story: Story, width: int, height: int, font_scale: float, cfg: dict) -> tuple[list[dict], int]:
+    """Motion contract: one Vega-Lite spec per video frame (eased bar race), plus the frame rate."""
+    top_n = cfg.get("race_top_n", 8)
+    keys = race_keyframes(story, top_n)
+    groups = dict(zip(keys["vendor_name"], keys["group"], strict=False))
+    timing = motion.Timing()
+    frames = motion.bar_race_frames(keys, "vendor_name", "share", "week", top_n, timing)
+    x_max = round(keys["share"].max() * 1.22, 2)
+    specs = motion.build_specs(frames, lambda f: race_spec(f, groups, width, height, font_scale, top_n, x_max))
+    return specs, timing.fps
 
 
 def race_spec(

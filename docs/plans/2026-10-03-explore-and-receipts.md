@@ -101,7 +101,7 @@ outputs/  data/                            gitignored (exploration renders, raw/
    and `src/cachereg/{render.py,viz/*.py,story/*.py}`, in sorted path order), per-output file
    hashes, and any outputs withheld by the licence gate with the reason. No absolute paths, hostnames or usernames.
    *Canonical data hash*: for each Story frame (frames in name order), sort columns by name and rows
-   by all columns; dates as ISO strings; integers as-is; floats rounded to 9 significant digits;
+   by all columns; dates as ISO strings; integers as-is; floats rounded to 7 significant digits (float32-safe);
    serialise each frame as CSV with fixed options; sha256 over `name\ncsv\n` for all frames.
    Defined once in `cachereg.story` and unit-tested for order/dtype invariance.
 

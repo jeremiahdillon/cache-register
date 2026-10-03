@@ -1,0 +1,47 @@
+{
+  "as_of": "2026-10-02",
+  "cache_register_version": "0.0.1",
+  "data_hash": "676502c386f17749baf0747dd9076e65f592a829fdbf5b0bd0955c6593f33ef9",
+  "folder": "receipts/openrouter-wallet-share",
+  "git_dirty": true,
+  "git_sha": "aa18d05e59d2375521856bf746bc156292c15c43",
+  "inputs_hash": "79dd0fc519d5ac55a4fa0dfe2e3d3fbbf0042f60714e0b9e58425d8acd0d7449",
+  "kind": "receipt",
+  "outputs": {
+    "share-lines.linkedin_png.png": "b66b920c76dcf904f3108e0f1c8f3d5712a7bd8c29ce1a7c2a4a7c83cb2d6a75",
+    "share-lines.x_png.png": "7bc1b5b9f2406231bb6ef854666cdf4b355eb944aab49477176135de3c0faeb3",
+    "share-race.linkedin_video.mp4": "57a0a8260f3e54019f354a415fbb19e96b518c36d2dccaccb078c0de99fbca6c",
+    "share-race.x_video.mp4": "37971e1ec23749a8b83f1cffc1742e5b1654e863eb18dd430ee35c1cf7aa8528"
+  },
+  "sources": {
+    "openrouter_models": {
+      "class": "Author-only",
+      "content_sha256": "377f563c8e15ea843573a917ababcb79ba44415a34eabca5b1d42c766f3a9767",
+      "fetch_date": "2026-10-02",
+      "vintage": {
+        "kind": "snapshot",
+        "value": "2026-10-02"
+      },
+      "vintage_after_as_of": false
+    },
+    "openrouter_rankings": {
+      "class": "Latest-only",
+      "content_sha256": "9a5e85445e289727298bc87271ed1bc7893d464fdca767b50e0f4b9fe6d5cd0e",
+      "fetch_date": "2026-10-02",
+      "vintage": {
+        "kind": "api_as_of",
+        "value": "2026-10-02T18:28:51.489Z",
+        "window": [
+          "2025-01-01",
+          "2026-10-01"
+        ]
+      },
+      "vintage_after_as_of": false
+    }
+  },
+  "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "withheld": {
+    "data.json": "redistribution not confirmed for: openrouter_models",
+    "share-lines.blog_html.html": "redistribution not confirmed for: openrouter_models"
+  }
+}

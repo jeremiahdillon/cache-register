@@ -1,8 +1,8 @@
 """`cachereg site`: the static short-link site published to GitHub Pages (cacheregister.dev).
 
-Each analysis declares a human-readable `link:` in its story.yaml; `cacheregister.dev/<link>`
-redirects to the analysis folder on GitHub. Retired or renamed links live on in
-config/link-aliases.yaml so URLs printed on posted images never break.
+Only receipts get short links: the folder name *is* the link, so `receipts/<topic>/` is
+`cacheregister.dev/<topic>`, which redirects to that folder on GitHub. Explorations never get one.
+Retired or renamed links live on in config/link-aliases.yaml so URLs on posted images never break.
 """
 
 from __future__ import annotations
@@ -32,6 +32,9 @@ class Link:
 
 
 def _title(folder: Path) -> str:
+    cfg = yaml.safe_load((folder / "receipt.yaml").read_text()) or {}
+    if cfg.get("title"):
+        return str(cfg["title"])
     readme = folder / "README.md"
     if readme.is_file():
         for line in readme.read_text(encoding="utf-8").splitlines():
@@ -41,18 +44,13 @@ def _title(folder: Path) -> str:
 
 
 def collect_links(root: Path = REPO_ROOT) -> list[Link]:
-    """Every analysis link plus aliases, validated: well-formed, unique, pointing at real folders."""
+    """Every receipt (folder name = link) plus aliases, validated: well-formed and pointing at real receipts."""
     links: dict[str, Link] = {}
-    for story in sorted((root / "analyses").glob("*/*/story.yaml")):
-        cfg = yaml.safe_load(story.read_text()) or {}
-        slug = cfg.get("link")
-        if not slug:
-            continue
-        _check_slug(slug, story)
-        if slug in links:
-            raise ValueError(f"link {slug!r} used by both {links[slug].analysis} and {story.parent}")
-        rel = story.parent.relative_to(root).as_posix()
-        links[slug] = Link(slug, rel, _title(story.parent))
+    for spec in sorted((root / "receipts").glob("*/receipt.yaml")):
+        folder = spec.parent
+        _check_slug(folder.name, folder)
+        rel = folder.relative_to(root).as_posix()
+        links[folder.name] = Link(folder.name, rel, _title(folder))
     aliases_file = root / "config" / "link-aliases.yaml"
     aliases = (yaml.safe_load(aliases_file.read_text()) or {}).get("aliases") or {} if aliases_file.is_file() else {}
     for slug, target in aliases.items():

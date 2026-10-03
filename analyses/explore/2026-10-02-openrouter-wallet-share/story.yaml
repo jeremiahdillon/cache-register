@@ -1,6 +1,0 @@
-# Render targets for this analysis (PLAN §6.2). `cachereg render <path>` builds all of them.
-link: openrouter-wallet-share  # cacheregister.dev/openrouter-wallet-share — never reuse or change once posted
-targets: [x_png, linkedin_png, blog_html, linkedin_video, x_video]
-weeks: 13                 # trailing complete weeks shown
-unpriced_flag: 0.03       # weeks with more unpriced tokens than this are shaded
-race_top_n: 8

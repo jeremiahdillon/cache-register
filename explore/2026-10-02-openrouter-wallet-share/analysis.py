@@ -13,6 +13,7 @@ from cachereg.core.warehouse import query
 from cachereg.story.model import Story
 
 GROUP_ORDER = ["Anthropic", "OpenAI", "Chinese labs", "Google", "Everyone else"]
+TABLE_PERCENT_COLUMNS = GROUP_ORDER
 GROUP_COLOR_KEY = {"Anthropic": "anthropic", "OpenAI": "openai", "Chinese labs": "_china", "Google": "google"}
 
 
@@ -125,3 +126,10 @@ def build(con, as_of: date, cfg: dict) -> Story:
         ],
         extra={"weeks": [str(x) for x in weeks], "spend_last_week_usd": spend_last},
     )
+
+
+def table(story: Story) -> pl.DataFrame:
+    """Weekly share by group, for the HTML data table."""
+    g = story.frames["groups"]
+    wide = g.pivot(on="group", index="week", values="share").sort("week").fill_null(0.0)
+    return wide.select(["week", *[c for c in GROUP_ORDER if c in wide.columns]])

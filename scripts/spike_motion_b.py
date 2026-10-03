@@ -4,7 +4,7 @@ Both render the *same* Altair spec from the analysis's charts.race_spec; B swaps
 named datasets instead of re-parsing a spec. Decision rule (PLAN §6.3): frames must match visually;
 the faster wins; tie → A. Usage:
 
-    uv run --group spike python scripts/spike_motion_b.py analyses/explore/2026-10-02-openrouter-wallet-share
+    uv run --group spike python scripts/spike_motion_b.py receipts/openrouter-wallet-share
 """
 
 from __future__ import annotations
@@ -18,12 +18,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import vl_convert as vlc
-import yaml
 from PIL import Image, ImageChops
 
 from cachereg.core.paths import REPO_ROOT
-from cachereg.core.warehouse import connect
-from cachereg.render import load_analysis
+from cachereg.render import build_story
+from cachereg.story import config as folder_config
 from cachereg.story.model import TARGETS
 from cachereg.viz import motion
 from cachereg.viz.brand import FONT_DIR, register_fonts
@@ -53,21 +52,12 @@ def main(analysis_dir: str) -> None:
     from playwright.sync_api import sync_playwright
 
     register_fonts()
-    path = Path(analysis_dir).resolve()
-    cfg = yaml.safe_load((path / "story.yaml").read_text())
-    analysis, charts = load_analysis(path)
-    con = connect()
-    story = analysis.build(con, datetime.now(UTC).date(), cfg)
-    con.close()
+    cfg = folder_config.load(Path(analysis_dir))
+    story, _, charts = build_story(cfg, cfg.as_of or datetime.now(UTC).date())
     target = TARGETS["linkedin_video"]
     frame_page = page(story, target, receipt(story.sources, story.as_of, story.method, "x"))
     _, _, w, h = frame_page.plot_box
-    top_n = cfg["race_top_n"]
-    keys = charts.race_keyframes(story, top_n)
-    groups = dict(zip(keys["vendor_name"], keys["group"], strict=False))
-    frames = motion.bar_race_frames(keys, "vendor_name", "share", "week", top_n)
-    x_max = round(keys["share"].max() * 1.22, 2)
-    specs = motion.build_specs(frames, lambda f: charts.race_spec(f, groups, w, h, target.font_scale, top_n, x_max))
+    specs, _fps = charts.race_specs(story, w, h, target.font_scale, cfg.config)
     n = len(specs)
 
     t0 = time.perf_counter()

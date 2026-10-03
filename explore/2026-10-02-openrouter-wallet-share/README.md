@@ -1,6 +1,6 @@
 # Who gets paid on OpenRouter?
 
-*Explore · started 2026-10-02 · status: first draft (Phase 0.5 vertical slice)*
+*Exploration · started 2026-10-02 · **Promoted to [`receipts/openrouter-wallet-share`](../../receipts/openrouter-wallet-share/)**, which is the maintained version.*
 
 ## Question
 How is estimated developer spend on OpenRouter split between model makers, and how fast is
@@ -48,5 +48,5 @@ spend ~1.5×; prices are now taken from the base model only, and a test guards a
 ```sh
 cachereg fetch openrouter_rankings && cachereg fetch openrouter_models
 cachereg build
-cachereg render analyses/explore/2026-10-02-openrouter-wallet-share
+cachereg render explore/2026-10-02-openrouter-wallet-share   # renders to gitignored outputs/
 ```

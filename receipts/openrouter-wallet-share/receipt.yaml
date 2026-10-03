@@ -1,0 +1,13 @@
+# Receipt: cacheregister.dev/openrouter-wallet-share (the folder name is the short link — never rename
+# without adding an alias in config/link-aliases.yaml).
+title: Who gets paid on OpenRouter?
+sources: [openrouter_rankings, openrouter_models]
+as_of: 2026-10-02
+promoted_from: explore/2026-10-02-openrouter-wallet-share
+config:
+  weeks: 13             # trailing complete weeks shown
+  unpriced_flag: 0.03   # weeks with more unpriced tokens than this are shaded
+  race_top_n: 8
+visuals:
+  - {name: share-lines, chart: line_chart, targets: [x_png, linkedin_png, blog_html]}
+  - {name: share-race, chart: race, targets: [linkedin_video, x_video]}

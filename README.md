@@ -4,14 +4,15 @@
 usage, model prices, benchmarks, business adoption and the capital behind it — turned into
 charts and videos. Every published visual links back to the exact code that made it.
 
-> **Status:** Phase 0 (scaffold and security). Nothing fetches data yet. The full plan is in
+> **Status:** early. One source family (OpenRouter) and one receipt,
+> [`receipts/openrouter-wallet-share`](receipts/openrouter-wallet-share/). The plan is in
 > [`docs/PLAN.md`](docs/PLAN.md).
 
 ## How it works
 
 ```
-sources (APIs) ──fetch──▶ data/raw ──build──▶ staged ──▶ marts ──▶ analyses ──render──▶ HTML · PNG · MP4
-                         (gitignored; never committed)                     (committed code + published outputs)
+sources (APIs) ──fetch──▶ data/raw ──build──▶ staged ──▶ marts ──▶ explore/ · receipts/ ──render──▶ PNG · MP4 · HTML
+                         (gitignored; never committed)                   (committed code; receipts also commit their visuals)
 ```
 
 - **Data is not in this repo.** Most sources' terms don't allow redistribution, so you
@@ -20,8 +21,11 @@ sources (APIs) ──fetch──▶ data/raw ──build──▶ staged ──�
 - **Reproducibility is stated honestly per source.** Some sources keep full history (anyone
   gets identical numbers); some revise past values; some only expose the current state, so
   history exists only from the day you start collecting. See `docs/PLAN.md` §4.4.
-- **Analyses are independent folders** under `analyses/explore/` (dated, exploratory) and
-  `analyses/series/` (recurring). Each has a README with the question, method and caveats.
+- **Explorations** live in `explore/` (dated, scratch). Work worth showing is promoted to
+  **`receipts/<topic>/`**: each has a README (question, findings, method, caveats), its code, and
+  its rendered visuals in `output/`. Every visual links back to `cacheregister.dev/<topic>`.
+- **Reproduce one receipt on its own:** `cachereg reproduce receipts/<topic>` fetches only that
+  receipt's sources, builds only what it needs and compares the result with the committed run.
 
 ## Reproduce
 

@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 MAX_BYTES = 1_000_000
-PUBLISHED_RE = re.compile(r"^analyses/.+/published/")
+PUBLISHED_RE = re.compile(r"^receipts/[^/]+/output/")  # committed receipt visuals may exceed the size limit
 ALLOW_MARKER = "guard: allow"
 EXTRA_ENV = "CACHEREG_GUARD_EXTRA"
 EXTRA_FILE = Path.home() / ".config" / "cachereg" / "guard-extra.txt"
@@ -79,7 +79,7 @@ def load_extra_patterns() -> list[str]:
 def check_path(path: str, size: int | None) -> list[Finding]:
     findings = [Finding(path, f"blocked path ({name})") for name, rx in BLOCKED_PATHS if rx.search(path)]
     if size is not None and size > MAX_BYTES and not PUBLISHED_RE.match(path):
-        findings.append(Finding(path, f"file larger than {MAX_BYTES // 1_000_000} MB outside published/"))
+        findings.append(Finding(path, f"file larger than {MAX_BYTES // 1_000_000} MB outside receipts/*/output/"))
     return findings
 
 

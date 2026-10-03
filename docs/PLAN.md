@@ -168,10 +168,8 @@ cache-register/
 │   ├── story/                    # Story model, render targets, renderers (§6)
 │   ├── viz/                      # theme, chart helpers, stamp, motion
 │   └── cli.py                    # `cachereg …`
-├── analyses/
-│   ├── _template/
-│   ├── explore/                  # dated, exploratory: 2026-10-02-price-per-iq/
-│   └── series/                   # promoted, recurring, stable slugs: cost-of-intelligence/
+├── explore/                      # dated explorations, no short links: 2026-10-02-<slug>/
+├── receipts/                     # promoted topics; folder name = short link; committed output/
 ├── docs/
 │   ├── PLAN.md
 │   ├── playbook.md               # lessons learned: chart patterns, what performed, pitfalls
@@ -281,9 +279,9 @@ entry (+ entity aliases). Core is never edited for a new source. In v1 a new sou
   dates + vintage ids + content hashes, package lock hash, reproducibility class per source.
   It contains **no** absolute paths, hostnames, usernames, or timestamps finer than the date
   (all paths repo-relative; a schema test enforces this).
-- When an output is published, `cachereg publish` copies the output **and** its manifest to
-  `analyses/<…>/published/<as_of>/` (committed). The stamp's URL points to that folder, so the
-  manifest a published image refers to is always in the repo.
+- Receipts commit their visuals **and** manifest in `receipts/<topic>/output/` (see §5), so the
+  manifest a posted image refers to is always in the repo; explorations render to gitignored
+  `outputs/`.
 - Snapshot sources: missing days are explicit gaps (never forward-filled silently in marts).
 
 ### 4.5 Scheduling
@@ -297,35 +295,39 @@ entry (+ entity aliases). Core is never edited for a new source. In v1 a new sou
 
 ---
 
-## 5. Analyses: explore → series
+## 5. Explorations and receipts
 
-Two kinds, sharing one structure:
+*Decided 2026-10-03; full design in `docs/plans/2026-10-03-explore-and-receipts.md`.*
 
-- `analyses/explore/YYYY-MM-DD-<slug>/` — dated, exploratory, cheap; many will die. Dated so
-  they sort chronologically and capture *when* the question was asked.
-- `analyses/series/<slug>/` — **promoted**, recurring/long-running, undated stable slug,
-  declares a refresh cadence, re-rendered on new data (e.g. monthly "Cost of Intelligence").
+- `explore/YYYY-MM-DD-<slug>/` — explorations: dated by start, cheap, free-form, may be
+  abandoned. No short link; renders go to gitignored `outputs/`; CI only checks they compile.
+- `receipts/<topic>/` — topics promoted as post-worthy. **The folder name is the short link**
+  (`cacheregister.dev/<topic>`); one link per topic, carried on every visual's footer. A receipt
+  has one analysis and one or more visuals, and commits its rendered visuals + manifest in
+  `output/` (licence-gated: see §7). The repo knows nothing about where visuals get posted.
 
-Each analysis folder:
+Receipt folder:
 
 ```
-README.md        # question, hypothesis, method, findings, caveats (no post copy — see §1)
-analysis.py      # build(warehouse, as_of) -> Story   (the single canonical analysis)
-charts.py        # chart(story, target) -> Altair chart  (format-aware)
-story.yaml       # metadata + render targets (see §6); for series: cadence
-notebook.py      # optional notebook (marimo; backlog)
-published/       # selected final outputs committed (only if all sources permit; see §7)
+README.md        # question, finding(s), method, caveats, how to reproduce (no post copy — see §1)
+receipt.yaml     # title, sources, as_of (pinned), promoted_from, config, visuals
+analysis.py      # build(con, as_of, config) -> Story   (the single canonical analysis)
+charts.py        # chart functions named by receipt.yaml visuals (contract in render.py)
+output/          # committed: <visual>.<target>.<ext>, manifest.json (+ data.json if licences allow)
 ```
 
-**Promotion** (manual in v1; `cachereg promote` is backlog): `git mv` into `series/`, add
-cadence. Posted images carry the short link (below), which keeps redirecting, so nothing 404s.
+**Promotion** (manual; `promote` command is backlog): copy the exploration's `analysis.py`,
+`charts.py` and README into `receipts/<topic>/`, write `receipt.yaml`, clean up, and add a
+"Promoted to receipts/<topic>" line to the exploration's README (the exploration stays).
 
-**Short links (decided 2026-10-02):** each analysis declares a human-readable `link:` in
-`story.yaml` (e.g. `openrouter-wallet-share`). `cachereg site` builds a static redirect site
-that a Pages workflow publishes on every push; `cacheregister.dev/<link>` → the analysis folder
-on GitHub. Links are unique and never reused; renamed/retired links stay alive via
-`config/link-aliases.yaml` (validated by tests). Later the same URL can become a landing page
-(chart + method) without changing any posted link.
+**Standalone reproduction:** `cachereg reproduce receipts/<topic> [--latest]` fetches only the
+receipt's sources, checks vintages, builds only the marts whose inputs those sources cover,
+renders into a temp folder and compares a canonical data hash with the committed manifest
+(identical / differs with reason / cannot reproduce exactly).
+
+**Short links:** `cachereg site` builds a static redirect site from `receipts/*/` that a Pages
+workflow publishes; renamed/retired topics stay alive via `config/link-aliases.yaml`. Later the
+same URL can become a landing page without changing any posted link.
 
 **Learning across analyses**: `docs/playbook.md` captures reusable lessons (chart forms that
 worked, engagement notes, data pitfalls). Reusable code graduates into `cachereg.viz` / `cachereg.marts`
@@ -416,8 +418,9 @@ plus `run_manifest.json`.
 
 ### 6.4 Stamp / footer (every output)
 
-Auto-generated: `Source: <attributions> · Data as of <date> · <repo-url>/analyses/<…>` plus
-brand wordmark. Short URL form used where space is tight. Attribution text comes from
+Auto-generated receipt lines: `SOURCE` (attributions + data as-of), `METHOD`, and `RECEIPTS` —
+`cacheregister.dev/<topic>` for receipts, the long GitHub URL for explorations — plus the brand
+wordmark. Attribution text comes from
 `SOURCE.md`, so license-required credits can't be forgotten. Video: footer persists all frames.
 
 ---
@@ -425,16 +428,16 @@ brand wordmark. Short URL form used where space is tight. Attribution text comes
 ## 7. Licensing & what may be published
 
 - Code: Apache-2.0. Charts/text/curated data: CC-BY 4.0.
-- The publish check (internal to `cachereg publish`, also runnable as `cachereg publish --check`)
-  evaluates two rights
-  independently, for every source in the story's lineage:
+- The licence gate (applied by `cachereg render` to everything written into
+  `receipts/<topic>/output/`) evaluates two rights independently, for every source in the
+  receipt's `sources`:
   - **Images/video** (PNG, SVG, WebP, MP4, WebM): every source must have
     `derived_charts ∈ {allowed, allowed-with-attribution}`; required attributions must appear in
     the stamp (checked against the rendered footer text).
   - **Inlined data** (blog_html embeds the Story frames as JSON): every source must have
-    `redistribution ∈ {allowed, allowed-with-attribution}`. Otherwise blog_html is built in
-    **no-data mode**: an SVG embed with hover titles baked into SVG elements, with no JSON
-    dataset in the page.
+    `redistribution ∈ {allowed, allowed-with-attribution}`; the same applies to `data.json`.
+    Otherwise neither is written and the manifest's `withheld` section names the blocking
+    source. (A "no-data" vector blog version is backlog, together with `blog_svg`.)
   - Curated disclosures: `source_quote` is a short factual excerpt (≤ 25 words); the figure
     itself is a fact. Quotes are not inlined in published HTML.
   - `unknown` on any right = blocked, with a message naming the source and right.
