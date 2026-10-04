@@ -18,9 +18,14 @@ pie grew.
 counted 84 models twice (each also listed as a half-price `:batch` variant), overstating their
 spend ~1.5×; prices are now taken from the base model only, and a test guards against it.
 
+*Note (2026-10-04):* the finding above was priced with one OpenRouter catalog snapshot. The mart
+now prices each day from LiteLLM's price history (`litellm_prices`), so re-rendering this
+exploration uses that method; see the receipt for the current numbers.
+
 ## Data
 - `openrouter_rankings` — daily tokens for the top-50 models (CC BY 4.0, OpenRouter).
-- `openrouter_models` — current list prices (snapshot).
+- `litellm_prices` — each day's list prices from LiteLLM's price-file history (MIT); until
+  2026-10-04, `openrouter_models` (one current catalog snapshot).
 - Marts: `or_vendor_weekly`, `dim_vendor_alias` (see `src/cachereg/marts/010_openrouter_usage.sql`).
 
 ## Method

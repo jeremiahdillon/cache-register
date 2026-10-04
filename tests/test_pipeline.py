@@ -40,9 +40,28 @@ def test_build_marts(synthetic_raw):
         assert not retired["price_matched"].any() and retired["est_spend_usd"].is_null().all()
         a = daily.filter(pl.col("model_permaslug").str.starts_with("anthropic")).row(0, named=True)
         assert a["est_spend_usd"] == pytest.approx(a["total_tokens"] * (0.8 * 3e-6 + 0.2 * 15e-6))
-        assert a["vendor_id"] == "anthropic" and a["price_date_stale"]  # priced with a later snapshot
+        assert a["vendor_id"] == "anthropic" and a["price_basis"] == "current" and not a["price_date_stale"]
+        assert daily.height == daily.select("date", "model_permaslug").unique().height  # no fan-out
+
+        def row(slug, day):
+            return daily.filter((pl.col("model_permaslug") == slug) & (pl.col("date") == day)).row(0, named=True)
+
+        before, after = date(2026, 7, 14), date(2026, 7, 15)  # synthetic LiteLLM commit on Jul 15
+        # preferred key not listed yet: the rank-2 key that *is* listed that day wins, unflagged
+        o = row("openai/gpt-9-20260101", before)
+        assert (o["price_key"], o["price_basis"], o["prompt_usd_per_token"]) == ("gpt-9-20260101", "current", 1.25e-6)
+        o = row("openai/gpt-9-20260101", after)
+        assert (o["price_key"], o["prompt_usd_per_token"]) == ("openrouter/openai/gpt-9", 1e-6)
+        assert o["price_commit"] == "c_mid"
+        k = row("moonshotai/kimi-9", before)  # not in LiteLLM yet: first later listing, flagged
+        assert k["price_basis"] == "before_listing" and k["price_date_stale"] and k["prompt_usd_per_token"] == 0.6e-6
+        assert row("moonshotai/kimi-9", after)["price_basis"] == "current"
+        g = row("google/gemini-9-pro", after)  # removed upstream: last known price, flagged
+        assert g["price_basis"] == "after_removal" and g["price_date_stale"] and g["prompt_usd_per_token"] == 1.25e-6
         weekly = query(con, "SELECT * FROM or_vendor_weekly WHERE vendor_id = 'xai'")
         assert (weekly["unpriced_tokens"] == weekly["tokens"]).all()
+        kimi = query(con, "SELECT * FROM or_vendor_weekly WHERE vendor_id = 'moonshot' ORDER BY week")
+        assert kimi["stale_priced_tokens"][0] == kimi["tokens"][0] and kimi["stale_priced_tokens"][-1] == 0
         assert query(con, "SELECT count(*) AS n FROM or_model_daily WHERE vendor_id = '_unmapped'")["n"][0] == 0
     finally:
         con.close()
@@ -79,15 +98,17 @@ def test_render_receipt_on_synthetic_data(synthetic_raw, monkeypatch, tmp_path):
     assert result.out_dir == out and not result.skipped
     assert (out / "share-lines.x_png.png").stat().st_size > 10_000
     assert (out / "share-race.linkedin_video.mp4").stat().st_size > 10_000
-    # licence gate: openrouter_models redistribution is unknown -> no inlined data committed
-    assert not (out / "share-lines.blog_html.html").exists() and not (out / "data.json").exists()
+    # licence gate: both sources allow redistribution with attribution -> HTML and data committed
+    assert (out / "share-lines.blog_html.html").exists() and (out / "data.json").exists()
     assert not (out / "story_frames.json").exists()
     manifest = json.loads((out / "manifest.json").read_text())
-    assert set(manifest["withheld"]) == {"share-lines.blog_html.html", "data.json"}
+    assert manifest["withheld"] == {}
     text = json.dumps(manifest)
     assert "/Users/" not in text and "/home/" not in text  # repo-relative only
     assert manifest["sources"]["openrouter_rankings"]["class"] == "Latest-only"
-    assert manifest["sources"]["openrouter_models"]["class"] == "Author-only"
+    lp = manifest["sources"]["litellm_prices"]
+    assert lp["class"] == "Exact" and "fetch_date" not in lp and lp["revision_date"] == "2026-08-30"
+    assert lp["vintage"] == {"kind": "git_commit", "value": "c_mid", "date": "2026-08-30"}
     assert "Anthropic" in result.title
     # unchanged data and code -> nothing rewritten
     assert render(receipt).skipped
@@ -105,7 +126,7 @@ def test_exploration_renders_html_with_data_and_citation(synthetic_raw, tmp_path
     for name in ("analysis.py", "charts.py"):
         shutil.copy(WALLET / name, ex / name)
     (ex / "explore.yaml").write_text(
-        "sources: [openrouter_rankings, openrouter_models]\n"
+        "sources: [openrouter_rankings, litellm_prices]\n"
         "config: {weeks: 13, unpriced_flag: 0.03, race_top_n: 8}\n"
         "visuals:\n  - {name: share-lines, chart: line_chart, targets: [blog_html]}\n"
     )
@@ -114,6 +135,17 @@ def test_exploration_renders_html_with_data_and_citation(synthetic_raw, tmp_path
     assert "OpenRouter (openrouter.ai/rankings), as of 2026-08-31" in html  # required citation
     assert "cacheregister.dev" not in html  # explorations have no short link
     assert (result.out_dir / "story_frames.json").exists() and not result.withheld
+
+
+def _add_source(receipt: Path, sid: str) -> None:
+    """Add a source to a receipt copy's receipt.yaml and its analysis (they must match)."""
+    for name, old, new in (
+        ("receipt.yaml", "litellm_prices]", f"litellm_prices, {sid}]"),
+        ("analysis.py", '"litellm_prices"]', f'"litellm_prices", "{sid}"]'),
+    ):
+        f = receipt / name
+        assert old in f.read_text()
+        f.write_text(f.read_text().replace(old, new))
 
 
 def test_reproduce_identical_then_differs(synthetic_raw, monkeypatch, tmp_path):
@@ -148,6 +180,7 @@ def test_reproduce_reports_missing_snapshot(synthetic_raw, monkeypatch, tmp_path
     _fast_video(monkeypatch)
     build(date(2026, 8, 31))
     receipt = _receipt_copy(tmp_path)
+    _add_source(receipt, "openrouter_models")  # a receipt that also uses a snapshot source
     render(receipt)
     text = (receipt / "receipt.yaml").read_text()
     (receipt / "receipt.yaml").write_text(re.sub(r"(?m)^as_of:.*$", "as_of: 2026-08-01", text))
@@ -166,10 +199,9 @@ def test_build_sources_scope(synthetic_raw):
         con.close()
     assert "or_vendor_weekly" not in tables  # skipped mart's tables are dropped, never stale
     with pytest.raises(RuntimeError, match="missing: openrouter_rankings"):
-        build(date(2026, 8, 31), ["openrouter_models"])
-    assert build(date(2026, 8, 31), ["openrouter_rankings", "openrouter_models"]).marts_built == [
-        "010_openrouter_usage"
-    ]
+        build(date(2026, 8, 31), ["litellm_prices"])
+    assert build(date(2026, 8, 31), ["openrouter_models"]).marts_skipped == ["010_openrouter_usage"]
+    assert build(date(2026, 8, 31), ["openrouter_rankings", "litellm_prices"]).marts_built == ["010_openrouter_usage"]
 
 
 def test_snapshot_source_never_backfills_but_revised_source_does(synthetic_raw):
@@ -182,31 +214,65 @@ def test_snapshot_source_never_backfills_but_revised_source_does(synthetic_raw):
         cutoff("openrouter_models", before)  # Author-only: report the gap
 
 
-def test_duplicate_catalog_slug_does_not_multiply_tokens(synthetic_raw):
+def test_price_join_never_fans_out_and_ignores_post_as_of_data(synthetic_raw):
+    # as_of before the synthetic LiteLLM commit of Jul 15: its entries must be invisible, so kimi
+    # (listed only from Jul 15) is unpriced rather than priced from the future, and the two openai
+    # keys can't both match.
+    build(date(2026, 7, 1), ["openrouter_rankings", "litellm_prices"])
+    con = connect()
+    try:
+        daily = query(con, "SELECT * FROM or_model_daily")
+    finally:
+        con.close()
+    assert daily.height == daily.select("date", "model_permaslug").unique().height
+    kimi = daily.filter(pl.col("model_permaslug") == "moonshotai/kimi-9")
+    assert not kimi["price_matched"].any()
+    assert set(daily.filter(pl.col("model_permaslug") == "openai/gpt-9-20260101")["price_key"]) == {"gpt-9-20260101"}
+
+
+def test_dates_after_the_litellm_history_are_flagged(data_env, synthetic_entities):
     from datetime import UTC, datetime
 
     from cachereg.core.store import RawFetch
-    from tests.conftest import synthetic_models
+    from tests.conftest import synthetic_rankings, write_synthetic_litellm
 
-    models = synthetic_models()
-    base = models["data"][0]
-    models["data"].append(dict(base, id=base["id"] + ":batch", pricing={"prompt": "1e-9", "completion": "1e-9"}))
-    m = RawFetch("openrouter_models", "1", fetched_at=datetime(2026, 8, 31, 13, tzinfo=UTC))
-    m.add("models.json", json.dumps(models).encode(), "https://example.test", 200)
-    m.write()
+    fetched = datetime(2026, 8, 31, 12, tzinfo=UTC)
+    r = RawFetch("openrouter_rankings", "1", fetched_at=fetched)
+    r.add("rankings.json", json.dumps(synthetic_rankings(date(2026, 6, 1), 91)).encode(), "https://example.test", 200)
+    r.write()
+    write_synthetic_litellm(datetime(2026, 8, 16, 6, tzinfo=UTC), date(2026, 8, 15))  # history ends Aug 15
     build(date(2026, 8, 31))
     con = connect()
     try:
-        n = query(con, "SELECT count(*) AS n FROM or_model_daily")["n"][0]
-        px = query(
+        a = query(
             con,
-            "SELECT DISTINCT prompt_usd_per_token AS p FROM or_model_daily WHERE model_permaslug = ?",
-            [base["canonical_slug"]],
-        )["p"].to_list()
+            "SELECT date, price_basis, price_date_stale FROM or_model_daily WHERE model_permaslug LIKE 'anthropic%'",
+        )
     finally:
         con.close()
-    assert n == 91 * 7  # no fan-out
-    assert px == [float(base["pricing"]["prompt"])]  # base price, not the :batch variant
+    late = a.filter(pl.col("date") > date(2026, 8, 15))
+    assert set(late["price_basis"]) == {"beyond_history"} and late["price_date_stale"].all()
+    assert set(a.filter(pl.col("date") <= date(2026, 8, 15))["price_basis"]) == {"current"}
+
+
+def test_exact_source_is_selected_by_source_time(synthetic_raw):
+    from datetime import UTC, datetime
+
+    from cachereg.build import cutoff, exact_vintage
+    from tests.conftest import write_synthetic_litellm
+
+    # A replicator's only fetch is long after as_of: no "vintage after as-of", same revision.
+    assert exact_vintage("litellm_prices", date(2026, 7, 20)) == {
+        "kind": "git_commit",
+        "value": "c_mid",
+        "date": "2026-07-20",
+    }
+    assert exact_vintage("litellm_prices", date(2026, 7, 1))["value"] == "c_early"
+    assert exact_vintage("openrouter_rankings", date(2026, 7, 1)) is None  # other classes: unchanged
+    write_synthetic_litellm(datetime(2026, 9, 20, 6, tzinfo=UTC), date(2026, 9, 19))
+    assert cutoff("litellm_prices", date(2026, 7, 1)) == (date(2026, 8, 31), False)  # earliest covering
+    assert cutoff("litellm_prices", date(2026, 9, 10)) == (date(2026, 9, 20), False)
+    assert cutoff("litellm_prices", date(2026, 12, 1)) == (date(2026, 9, 20), False)  # none covers: latest
 
 
 def test_headline_verb_follows_the_data():
@@ -224,8 +290,8 @@ def test_build_refuses_half_the_inputs_and_drops_stale_marts(synthetic_raw):
     from cachereg.core.paths import raw_dir
 
     build(date(2026, 8, 31))  # marts exist
-    shutil.rmtree(raw_dir("openrouter_models"))
-    with pytest.raises(RuntimeError, match="openrouter_models"):
+    shutil.rmtree(raw_dir("litellm_prices"))
+    with pytest.raises(RuntimeError, match="litellm_prices"):
         build(date(2026, 8, 31))
     con = connect()
     try:
@@ -280,9 +346,9 @@ def test_reproduce_rejects_sources_that_dont_cover_the_marts(synthetic_raw, tmp_
     receipt = _receipt_copy(tmp_path)
     text = (receipt / "receipt.yaml").read_text()
     (receipt / "receipt.yaml").write_text(
-        text.replace("sources: [openrouter_rankings, openrouter_models]", "sources: [openrouter_rankings]")
+        text.replace("sources: [openrouter_rankings, litellm_prices]", "sources: [openrouter_rankings]")
     )
-    with pytest.raises(ValueError, match="add openrouter_models"):
+    with pytest.raises(ValueError, match="add litellm_prices"):
         check_mart_coverage(folder_config.load(receipt))
 
 
@@ -294,7 +360,7 @@ def test_receipt_sources_must_match_story_sources(synthetic_raw, monkeypatch, tm
     analysis = receipt / "analysis.py"
     analysis.write_text(
         analysis.read_text().replace(
-            'sources=["openrouter_rankings", "openrouter_models"]', 'sources=["openrouter_rankings"]'
+            'sources=["openrouter_rankings", "litellm_prices"]', 'sources=["openrouter_rankings"]'
         )
     )
     with pytest.raises(ValueError, match="differ from the analysis"):

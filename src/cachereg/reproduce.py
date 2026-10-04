@@ -46,6 +46,11 @@ def check_mart_coverage(cfg: folder_config.FolderConfig) -> None:
             )
 
 
+def _when(record: dict) -> str:
+    """How a manifest source record is dated: fetch date, or source revision date for Exact sources."""
+    return record.get("fetch_date") or record.get("revision_date") or "?"
+
+
 @contextlib.contextmanager
 def _temporary_build_dir():
     """Build staged data and the warehouse in a temp folder so the author's warehouse is untouched."""
@@ -111,8 +116,7 @@ def reproduce(folder: Path, *, latest: bool = False, no_fetch: bool = False) -> 
         old = committed.get("sources", {}).get(sid, {})
         if v.get("content_sha256") != old.get("content_sha256"):
             reasons.append(
-                f"{sid} ({v['class']}): your data ({v['fetch_date']}) differs from the committed run's "
-                f"({old.get('fetch_date', '?')})"
+                f"{sid} ({v['class']}): your data ({_when(v)}) differs from the committed run's ({_when(old)})"
             )
     if not reasons:
         reasons.append("same source vintages but different results: the analysis code or a dependency changed")

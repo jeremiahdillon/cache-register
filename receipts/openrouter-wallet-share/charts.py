@@ -43,14 +43,15 @@ def line_chart(story: Story, width: int, height: int, font_scale: float = 1.0, i
     y_max = min(1.0, round(g["share"].max() * 1.12 + 0.05, 1))
     x_dom = [weeks[0].isoformat(), (last + timedelta(days=24)).isoformat()]  # room for end labels
     x_scale = alt.Scale(type="utc", domain=x_dom)
+    if len(weeks) > 16:  # long windows: ticks on month starts, at most ~8 of them
+        months = [d for d in (weeks[0] + timedelta(days=i) for i in range((last - weeks[0]).days + 1)) if d.day == 1]
+        ticks, label = months[:: max(1, -(-len(months) // 8))], "%b '%y"
+    else:  # ticks on data weeks
+        ticks, label = weeks[:: 2 if len(weeks) > 8 else 1], "%b %-d"
     x_axis = alt.Axis(
         # formatType="utc" makes this Vega-Lite build ignore `format`; format labels explicitly in UTC.
-        labelExpr="utcFormat(datum.value, '%b %-d')",
-        # ticks on data weeks only, as UTC epoch ms
-        values=[
-            int(datetime(w.year, w.month, w.day, tzinfo=UTC).timestamp() * 1000)
-            for w in weeks[:: 2 if len(weeks) > 8 else 1]
-        ],
+        labelExpr=f'utcFormat(datum.value, "{label}")',
+        values=[int(datetime(t.year, t.month, t.day, tzinfo=UTC).timestamp() * 1000) for t in ticks],  # UTC epoch ms
         labelFontSize=15 * font_scale,
     )
 
@@ -139,8 +140,11 @@ def line_chart(story: Story, width: int, height: int, font_scale: float = 1.0, i
     )
 
 
-def race_keyframes(story: Story, top_n: int) -> pl.DataFrame:
+def race_keyframes(story: Story, top_n: int, every: int = 1) -> pl.DataFrame:
+    """Vendor shares per keyframe week; ``every`` > 1 keeps every Nth week counted back from the last."""
     v = story.frames["vendors"]
+    weeks = sorted(v["week"].unique().to_list())
+    v = v.filter(pl.col("week").is_in(weeks[::-1][::every]))
     keep = (
         v.group_by("vendor_name")
         .agg(pl.col("share").max())
@@ -154,7 +158,7 @@ def race_keyframes(story: Story, top_n: int) -> pl.DataFrame:
 def race_specs(story: Story, width: int, height: int, font_scale: float, cfg: dict) -> tuple[list[dict], int]:
     """Motion contract: one Vega-Lite spec per video frame (eased bar race), plus the frame rate."""
     top_n = cfg.get("race_top_n", 8)
-    keys = race_keyframes(story, top_n)
+    keys = race_keyframes(story, top_n, cfg.get("race_every_weeks", 1))
     groups = dict(zip(keys["vendor_name"], keys["group"], strict=False))
     timing = motion.Timing()
     frames = motion.bar_race_frames(keys, "vendor_name", "share", "week", top_n, timing)

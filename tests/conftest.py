@@ -70,8 +70,68 @@ def synthetic_models() -> dict:
     return {"data": data}
 
 
+LITELLM_MID = date(2026, 7, 15)  # synthetic LiteLLM commit that changes the price file mid-window
+
+# model_id -> (openrouter permaslugs, litellm keys in preference order)
+SYNTHETIC_MODELS = {
+    "anthropic/claude-sonnet-9": (["anthropic/claude-sonnet-9-20260101"], ["openrouter/anthropic/claude-sonnet-9"]),
+    "openai/gpt-9": (["openai/gpt-9-20260101"], ["openrouter/openai/gpt-9", "gpt-9-20260101"]),
+    "moonshotai/kimi-9": (["moonshotai/kimi-9"], ["openrouter/moonshotai/kimi-9"]),
+    "google/gemini-9-pro": (["google/gemini-9-pro"], ["gemini/gemini-9-pro"]),
+}
+
+
+def synthetic_litellm_files() -> dict[str, dict]:
+    """Two synthetic LiteLLM states: before and from LITELLM_MID (keys -> entries)."""
+
+    def entry(i, o):
+        return {"input_cost_per_token": i, "output_cost_per_token": o, "litellm_provider": "x", "mode": "chat"}
+
+    early = {
+        "sample_spec": {"input_cost_per_token": 0},
+        "openrouter/anthropic/claude-sonnet-9": entry(3e-6, 15e-6),
+        "gpt-9-20260101": entry(1.25e-6, 10e-6),
+        "gemini/gemini-9-pro": entry(1.25e-6, 10e-6),
+    }
+    late = dict(early)
+    del late["gemini/gemini-9-pro"]  # removed upstream: later days use its last price, flagged
+    late["openrouter/openai/gpt-9"] = entry(1e-6, 8e-6)  # preferred key appears mid-window
+    late["openrouter/moonshotai/kimi-9"] = entry(0.6e-6, 2.5e-6)  # earlier days: first later price, flagged
+    return {"c_early": early, "c_mid": late}
+
+
+def write_synthetic_litellm(fetched: datetime, end: date) -> None:
+    files = synthetic_litellm_files()
+    t_early = int(datetime(2024, 12, 31, 12, tzinfo=UTC).timestamp())
+    t_mid = int(datetime.combine(LITELLM_MID, datetime.min.time(), tzinfo=UTC).timestamp()) + 3600
+    r = RawFetch("litellm_prices", "1", fetched_at=fetched)
+    r.add("first_parent.tsv", f"c_mid\t{t_mid}\nc_early\t{t_early}\n".encode(), "https://example.test/x.git", 200)
+    for sha, body in files.items():
+        r.add(f"prices_{sha}.json", json.dumps(body).encode(), "https://example.test", 200)
+    r.vintage = {"kind": "git_commit", "value": "c_mid", "window": ["2025-01-01", end.isoformat()]}
+    r.write()
+
+
 @pytest.fixture
-def synthetic_raw(data_env):
+def synthetic_entities(tmp_path, monkeypatch):
+    """Synthetic config/entities: the real vendors.yaml plus a models.yaml for the synthetic models."""
+    import shutil
+
+    import yaml
+
+    from cachereg import build as build_mod
+
+    d = tmp_path / "entities"
+    d.mkdir()
+    shutil.copy(build_mod.ENTITIES_DIR / "vendors.yaml", d / "vendors.yaml")
+    models = {m: {"aliases": {"openrouter": o, "litellm": lk}} for m, (o, lk) in SYNTHETIC_MODELS.items()}
+    (d / "models.yaml").write_text(yaml.safe_dump({"models": models}))
+    monkeypatch.setattr(build_mod, "ENTITIES_DIR", d)
+    return d
+
+
+@pytest.fixture
+def synthetic_raw(data_env, synthetic_entities):
     """Write one rankings fetch (2026-06-01..2026-08-30, 13 full weeks) and one price snapshot."""
     fetched = datetime(2026, 8, 31, 12, tzinfo=UTC)
     r = RawFetch("openrouter_rankings", "1", fetched_at=fetched)
@@ -82,4 +142,5 @@ def synthetic_raw(data_env):
     m.add("models.json", json.dumps(synthetic_models()).encode(), "https://example.test", 200)
     m.vintage = {"kind": "snapshot", "value": "2026-08-31"}
     m.write()
+    write_synthetic_litellm(fetched, date(2026, 8, 30))
     return data_env

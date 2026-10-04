@@ -69,7 +69,9 @@ def build(
             typer.echo(f"  WARN    {sid}: {n} raw rows rejected during staging", err=True)
     for sid, v in report.vintages.items():
         flag = "  (vintage after as-of!)" if v.get("vintage_after_as_of") else ""
-        typer.echo(f"  vintage {sid:<24} {v['fetch_date']}{flag}")
+        rev = v.get("revision")
+        what = f"{rev.get('date')} {str(rev.get('value'))[:12]} (source revision)" if rev else v["fetch_date"]
+        typer.echo(f"  vintage {sid:<24} {what}{flag}")
     typer.echo(
         f"  marts   built: {', '.join(report.marts_built) or '-'}; skipped: {', '.join(report.marts_skipped) or '-'}"
     )

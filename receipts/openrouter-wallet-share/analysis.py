@@ -23,7 +23,7 @@ def _weekly(con, as_of: date) -> pl.DataFrame:
         """
         WITH v AS (SELECT DISTINCT vendor_id, vendor_name, hq FROM dim_vendor_alias)
         SELECT w.week, w.vendor_id, coalesce(v.vendor_name, w.vendor_id) AS vendor_name, v.hq,
-               w.tokens, w.est_spend_usd, w.unpriced_tokens, w.days
+               w.tokens, w.est_spend_usd, w.unpriced_tokens, w.stale_priced_tokens, w.days
         FROM or_vendor_weekly w LEFT JOIN v USING (vendor_id)
         WHERE w.vendor_id <> '_other' AND w.week + INTERVAL 6 DAY <= ?
         """,
@@ -52,12 +52,22 @@ def headline(a0: float, a1: float, n_weeks: int) -> str:
     return f"Anthropic's share of OpenRouter spend {verb} from {a0:.0%} to {a1:.0%} in {span}"
 
 
+def flagged_weeks_note(flagged: list[date], n_weeks: int, threshold: float) -> str:
+    """Names the flagged weeks when there are few, else counts them (video frames have no shading)."""
+    if len(flagged) <= 3:
+        which = "Weeks of " + " and ".join(f"{d:%b %-d}" for d in flagged)
+    else:
+        which = f"{len(flagged)} of {n_weeks} weeks"
+    return f"{which}: >{threshold:.0%} of tokens have no list price."
+
+
 def build(con, as_of: date, cfg: dict) -> Story:
     w = _weekly(con, as_of)
     # A week is complete when the data covers all 7 days for *some* vendor. Judge per week, never per
     # vendor, or vendors active only part of a week (launches, stealth models) silently drop out.
-    complete = w.group_by("week").agg(pl.col("days").max()).filter(pl.col("days") == 7)["week"]
-    weeks = sorted(complete.to_list())[-cfg["weeks"] :]
+    complete = sorted(w.group_by("week").agg(pl.col("days").max()).filter(pl.col("days") == 7)["week"].to_list())
+    # `start`: every complete week from that Monday; else the trailing `weeks` complete weeks.
+    weeks = [x for x in complete if x >= cfg["start"]] if cfg.get("start") else complete[-cfg["weeks"] :]
     if len(weeks) < 2:
         raise ValueError(f"need at least 2 complete weeks on or before {as_of}, found {len(weeks)}")
     w = w.filter(pl.col("week").is_in(weeks)).with_columns(
@@ -68,15 +78,21 @@ def build(con, as_of: date, cfg: dict) -> Story:
     totals = w.group_by("week").agg(
         pl.col("est_spend_usd").sum().alias("spend_total"),
         (pl.col("unpriced_tokens").sum() / pl.col("tokens").sum()).alias("unpriced_share"),
+        (pl.col("stale_priced_tokens").sum() / pl.col("tokens").sum()).alias("stale_share"),
     )
     vendor = (
         w.join(totals, on="week")
         .with_columns((pl.col("est_spend_usd") / pl.col("spend_total")).alias("share"))
-        .select("week", "vendor_id", "vendor_name", "group", "share", "est_spend_usd", "unpriced_share")
+        .select("week", "vendor_id", "vendor_name", "group", "share", "est_spend_usd", "unpriced_share", "stale_share")
     )
     groups = (
         vendor.group_by("week", "group")
-        .agg(pl.col("share").sum(), pl.col("est_spend_usd").sum(), pl.col("unpriced_share").first())
+        .agg(
+            pl.col("share").sum(),
+            pl.col("est_spend_usd").sum(),
+            pl.col("unpriced_share").first(),
+            pl.col("stale_share").first(),
+        )
         .sort("week", "group")
     )
     flagged = totals.filter(pl.col("unpriced_share") > cfg["unpriced_flag"]).sort("week")
@@ -91,6 +107,12 @@ def build(con, as_of: date, cfg: dict) -> Story:
     a0, a1 = share(first, "Anthropic"), share(last, "Anthropic")
     o1, cn1 = share(last, "OpenAI"), share(last, "Chinese labs")
     spend_last = totals.filter(pl.col("week") == last)["spend_total"].item()
+    spend_first = totals.filter(pl.col("week") == first)["spend_total"].item()
+    stale_max = float(totals["stale_share"].max())
+    stale_note = (
+        f"Up to {stale_max:.0%} of a week's tokens are priced with a model's first LiteLLM listing after that "
+        "day (models LiteLLM hadn't listed yet)."
+    )
 
     return Story(
         title=headline(a0, a1, len(weeks) - 1),
@@ -99,18 +121,21 @@ def build(con, as_of: date, cfg: dict) -> Story:
             f"Week of {last:%b %-d}: Anthropic {a1:.0%}, OpenAI {o1:.0%}, Chinese labs {cn1:.0%}."
         ),
         frames={"groups": groups, "vendors": vendor, "flagged": flagged, "totals": totals},
-        sources=["openrouter_rankings", "openrouter_models"],
+        sources=["openrouter_rankings", "litellm_prices"],
         as_of=as_of,
-        method="est. spend = tokens × list price (80% input / 20% output); caching ignored; top-50 models only",
-        notes=[f"Shaded weeks: >{cfg['unpriced_flag']:.0%} of tokens have no list price."] if flagged.height else [],
+        method=(
+            "est. spend = tokens × that day's list price in LiteLLM (80% input / 20% output); caching ignored; "
+            "top-50 models only"
+        ),
+        notes=([f"Shaded weeks: >{cfg['unpriced_flag']:.0%} of tokens have no list price."] if flagged.height else [])
+        + ([stale_note] if stale_max > 0 else []),
         notes_by_kind={
-            "video": [
-                "Weeks of "
-                + " and ".join(f"{d:%b %-d}" for d in flagged["week"].to_list())
-                + f": >{cfg['unpriced_flag']:.0%} of tokens have no list price."
-            ]
-            if flagged.height
-            else []
+            "video": (
+                [flagged_weeks_note(flagged["week"].to_list(), len(weeks), cfg["unpriced_flag"])]
+                if flagged.height
+                else []
+            )
+            + ([stale_note] if stale_max > 0 else [])
         },
         caveats=[
             "Estimated spend, not revenue: list prices, no negotiated discounts, prompt caching ignored. "
@@ -120,10 +145,18 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "across developers.",
             "OpenRouter traffic only (third-party developer routing), not the whole market. Models outside the "
             "daily top 50 are excluded (no per-model price).",
-            "Prices come from a single current price snapshot; weeks where models without a list price "
-            "(retired or pre-release) exceed the threshold are shaded.",
+            "Each day is priced from LiteLLM's price file as it stood that day. Models LiteLLM had not listed "
+            "yet are priced with their first later LiteLLM listing; weeks where models without any list price "
+            "(stealth or pre-release) exceed the threshold are shaded.",
         ],
-        extra={"weeks": [str(x) for x in weeks], "spend_last_week_usd": spend_last},
+        extra={
+            "weeks": [str(x) for x in weeks],
+            "spend_first_week_usd": spend_first,
+            "spend_last_week_usd": spend_last,
+            "stale_share_max": stale_max,
+            "stale_share_mean": float(totals["stale_share"].mean()),
+            "unpriced_share_max": float(totals["unpriced_share"].max()),
+        },
     )
 
 

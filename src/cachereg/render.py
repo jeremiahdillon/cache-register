@@ -26,7 +26,7 @@ import polars as pl
 import vl_convert as vlc
 
 from cachereg import __version__
-from cachereg.build import cutoff
+from cachereg.build import cutoff, exact_vintage
 from cachereg.core.paths import REPO_ROOT, outputs_dir, repo_relative
 from cachereg.core.registry import load_sources, reproducibility_class
 from cachereg.core.store import list_fetches
@@ -180,6 +180,16 @@ def source_vintages(source_ids, as_of: date) -> dict:
     sources = load_sources()
     out = {}
     for sid in source_ids:
+        revision = exact_vintage(sid, as_of)
+        if revision:  # Exact: the source revision itself, identical for whoever fetched it, whenever
+            out[sid] = {
+                "class": reproducibility_class(sources[sid]),
+                "revision_date": revision.get("date"),
+                "vintage_after_as_of": False,
+                "vintage": revision,
+                "content_sha256": hashlib.sha256(json.dumps(revision, sort_keys=True).encode()).hexdigest(),
+            }
+            continue
         day, after = cutoff(sid, as_of)  # same selection rule as the build
         latest = [f for f in list_fetches(sid) if f.fetched_at.date() == day][-1]
         out[sid] = {

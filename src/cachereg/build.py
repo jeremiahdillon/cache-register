@@ -19,9 +19,10 @@ import polars as pl
 import yaml
 
 from cachereg.core.paths import REPO_ROOT, staged_dir, warehouse_path
-from cachereg.core.registry import load_sources
+from cachereg.core.registry import load_sources, reproducibility_class
 from cachereg.core.store import list_fetches
 
+ENTITIES_DIR = REPO_ROOT / "config" / "entities"  # tests point this at synthetic files
 INPUTS_RE = re.compile(r"^--\s*inputs:\s*(.+)$", re.M)
 TABLE_RE = re.compile(r"CREATE\s+OR\s+REPLACE\s+TABLE\s+([A-Za-z_][A-Za-z0-9_]*)", re.I)
 
@@ -66,20 +67,41 @@ def load_marts() -> list[Mart]:
 def cutoff(source: str, as_of: date) -> tuple[date, bool]:
     """The fetch date to use for ``as_of`` and whether it is *after* as_of (PLAN §4.4).
 
-    Latest-only sources (``revisions: revised``) fall back to their earliest fetch, flagged.
-    Snapshot sources (Author-only) never substitute later data: the gap is an error.
+    Exact sources (native, not revised) whose fetches record a ``vintage.window`` are selected by
+    source time and are never flagged. Latest-only sources (``revisions: revised``) fall back to
+    their earliest fetch, flagged. Snapshot sources (Author-only) never substitute later data: the
+    gap is an error.
     """
-    dates = sorted({f.fetched_at.date() for f in list_fetches(source)})
+    fetches = list_fetches(source)
+    dates = sorted({f.fetched_at.date() for f in fetches})
     if not dates:
         raise VintageGapError(f"{source}: no fetches at all")
+    src = load_sources()[source]
+    if reproducibility_class(src) == "Exact":
+        # Selected by source time (marts filter by revision date), so a later fetch is never "after":
+        # the earliest fetch whose history reaches as_of, else the latest (marts flag the gap).
+        ends = [(f, (f.manifest.get("vintage") or {}).get("window", [None, None])[1]) for f in fetches]
+        if all(end for _, end in ends):
+            covering = [f for f, end in ends if date.fromisoformat(end) >= as_of]
+            return (covering[0] if covering else fetches[-1]).fetched_at.date(), False
     on_or_before = [d for d in dates if d <= as_of]
     if on_or_before:
         return on_or_before[-1], False
-    if load_sources()[source].history == "snapshot":
+    if src.history == "snapshot":
         raise VintageGapError(
             f"{source}: no snapshot on or before {as_of} (first is {dates[0]}); snapshot sources cannot be back-filled"
         )
     return dates[0], True
+
+
+def exact_vintage(source: str, as_of: date) -> dict | None:
+    """The source revision an Exact source resolves for ``as_of`` (PLAN §4.4), if its stage module
+    provides ``vintage_at(as_of)``; None for other classes. Independent of when it was fetched."""
+    src = load_sources()[source]
+    if reproducibility_class(src) != "Exact":
+        return None
+    hook = getattr(src.module("stage"), "vintage_at", None)
+    return hook(as_of) if hook else None
 
 
 def _stage(source_ids: list[str]) -> tuple[dict[str, int], dict[str, int]]:
@@ -98,7 +120,7 @@ def _stage(source_ids: list[str]) -> tuple[dict[str, int], dict[str, int]]:
 
 
 def _vendor_alias_frame() -> pl.DataFrame:
-    data = yaml.safe_load((REPO_ROOT / "config" / "entities" / "vendors.yaml").read_text())
+    data = yaml.safe_load((ENTITIES_DIR / "vendors.yaml").read_text())
     rows = [
         {
             "vendor_id": vid,
@@ -113,6 +135,27 @@ def _vendor_alias_frame() -> pl.DataFrame:
         for a in aliases
     ]
     return pl.DataFrame(rows)
+
+
+def _model_alias_frame() -> pl.DataFrame:
+    """config/entities/models.yaml → one row per (model_id, source, alias); rank = position in the list.
+
+    For sources whose list is a preference order (``litellm``), rank 1 is preferred. A source alias
+    may belong to one model only, or a join through it would fan out.
+    """
+    f = ENTITIES_DIR / "models.yaml"
+    models = (yaml.safe_load(f.read_text()) or {}).get("models") or {} if f.is_file() else {}
+    rows, owner = [], {}
+    for mid, m in models.items():
+        for src, aliases in ((m or {}).get("aliases") or {}).items():
+            for rank, alias in enumerate(aliases, start=1):
+                if owner.setdefault((src, alias), mid) != mid:
+                    raise ValueError(
+                        f"models.yaml: {src} alias {alias!r} is listed under {owner[(src, alias)]} and {mid}"
+                    )
+                rows.append({"model_id": mid, "source": src, "alias": alias, "rank": rank})
+    schema = {"model_id": pl.String, "source": pl.String, "alias": pl.String, "rank": pl.Int64}
+    return pl.DataFrame(rows, schema=schema)
 
 
 def select_sources(requested: list[str] | None) -> list[str]:
@@ -152,12 +195,18 @@ def build(as_of: date, sources: list[str] | None = None) -> BuildReport:
         con.execute(
             "CREATE OR REPLACE TABLE dim_vendor_alias AS SELECT * FROM read_parquet(?)", [vendor_file.as_posix()]
         )
+        model_file = staged_dir("_entities") / "model_alias.parquet"
+        _model_alias_frame().write_parquet(model_file)
+        con.execute("CREATE OR REPLACE TABLE dim_model_alias AS SELECT * FROM read_parquet(?)", [model_file.as_posix()])
 
         con.execute("SET VARIABLE as_of = ?::DATE", [as_of])
         for sid in selected:
             day, after = cutoff(sid, as_of)
             con.execute(f"SET VARIABLE {sid}_cutoff = ?::DATE", [day])
             report.vintages[sid] = {"fetch_date": str(day), "vintage_after_as_of": after}
+            revision = exact_vintage(sid, as_of)
+            if revision:
+                report.vintages[sid]["revision"] = revision
 
         # Every mart's tables are dropped first, so a table from an earlier or broader build can
         # never be read as if it were current.

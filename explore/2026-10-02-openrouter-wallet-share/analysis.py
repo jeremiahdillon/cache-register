@@ -99,9 +99,12 @@ def build(con, as_of: date, cfg: dict) -> Story:
             f"Week of {last:%b %-d}: Anthropic {a1:.0%}, OpenAI {o1:.0%}, Chinese labs {cn1:.0%}."
         ),
         frames={"groups": groups, "vendors": vendor, "flagged": flagged, "totals": totals},
-        sources=["openrouter_rankings", "openrouter_models"],
+        sources=["openrouter_rankings", "litellm_prices"],
         as_of=as_of,
-        method="est. spend = tokens × list price (80% input / 20% output); caching ignored; top-50 models only",
+        method=(
+            "est. spend = tokens × that day's list price in LiteLLM (80% input / 20% output); caching ignored; "
+            "top-50 models only"
+        ),
         notes=[f"Shaded weeks: >{cfg['unpriced_flag']:.0%} of tokens have no list price."] if flagged.height else [],
         notes_by_kind={
             "video": [
