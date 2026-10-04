@@ -1,6 +1,6 @@
 # Plan: LiteLLM price history (Phase 2, first source)
 
-Status: DRAFT · 2026-10-04 · for adversarial review
+Status: APPROVED · 2026-10-04 · adversarial review converged (2 rounds)
 
 ## Goal
 
@@ -28,6 +28,10 @@ Status: DRAFT · 2026-10-04 · for adversarial review
   vendor-direct keys too (`claude-…`, `gpt-…`, `gemini/…`, `xai/…`, `deepseek/…`, …).
 - With today's file, `openrouter/<catalog id>` covers 90.9% of non-free, non-`other` top-50
   tokens since 2025-01; the rest are retired or stealth models absent from today's catalog.
+- LiteLLM's `openrouter/` entries are re-synced from OpenRouter almost daily and swing with
+  OpenRouter's displayed price (e.g. `openrouter/deepseek/deepseek-v4.1-flash` input moved between
+  $0.02 and $0.30 per million tokens in two weeks of Sep 2026). Daily pricing inherits this; the
+  receipt measures and reports it (§5) rather than smoothing it.
 - Licence: the repo LICENSE is MIT for everything outside `enterprise/`; the price file is at the
   repo root (MIT).
 
@@ -54,14 +58,17 @@ resolve the same commit for every past day.
 3. Window: `end` = yesterday UTC (complete days only, so a day's commit never changes later);
    `start` = FLOOR on the first or `--full` fetch, else the day after the latest window end in
    earlier fetches' manifests.
-4. For each day in the window, the day-end sha; download only shas not already stored by any
-   earlier fetch: `GET https://raw.githubusercontent.com/BerriAI/litellm/<sha>/model_prices_and_context_window.json`
+4. For each day in the window, the day-end sha. Shas are **deduplicated** (days without
+   commits share the previous day's sha): one raw file per *distinct* sha, and only shas not
+   already stored by any earlier fetch are downloaded: `GET https://raw.githubusercontent.com/BerriAI/litellm/<sha>/model_prices_and_context_window.json`
    with `Accept-Encoding: gzip`. Stored as returned: `prices_<sha>.json.gz` when the body is
    gzip (magic bytes), else `prices_<sha>.json`. Each body must decode to a JSON object.
    Needs a small, backwards-compatible change to `core/http.get` only if it rejects the header;
    it already passes custom headers and does not decompress.
 5. `vintage = {"kind": "git_commit", "value": <sha of day end>, "window": [start, end]}`.
-   First fetch: ~640 files, ~100 MB on disk; later fetches: one file a day.
+   The day → sha map is not stored; stage recomputes it from `first_parent.tsv`. Measured first
+   fetch: 555 distinct shas for 641 days, 27 MB on disk, ~2.5 min; later fetches: about one
+   file a day.
 
 **`stage.py`** → two tables:
 - `days`: `date, commit_sha, committed_at` for FLOOR … latest window end, recomputed with
@@ -93,8 +100,8 @@ models:
 ```
 
 - `build.py` loads it into `dim_model_alias(model_id, source, alias, rank)` beside
-  `dim_vendor_alias` (one generic loader; the file path is a module constant so tests can point
-  it at a synthetic file). Validation: an `openrouter` alias may belong to one model only.
+  `dim_vendor_alias`. Both files are read from `build.ENTITIES_DIR` (a module constant, replacing
+  the hard-coded `config/entities` path) so tests can point it at a synthetic directory. Validation: an `openrouter` alias may belong to one model only.
 - **Bootstrap, then review:** `scripts/suggest_model_aliases.py` (author tool; reads the local
   warehouse) proposes entries for every top-50 permaslug, by token volume, with the rule used:
   (a) `openrouter/<catalog id>` via the author's local `openrouter_models` snapshot
@@ -106,7 +113,12 @@ models:
   in the history is a candidate, not just today's.
 - **Check:** for each proposed entry the script prints the LiteLLM price on 2026-10-01 next to
   the OpenRouter snapshot price; entries that differ by more than 10% are reviewed by hand.
-- Target: aliases covering ≥ 98% of non-free, non-`other` tokens over the window. The remainder
+- **Variants:** `:free` rows are priced at $0 and never looked up. Other `:variant` permaslugs
+  (`:beta`, `:thinking`, …) are listed explicitly under their base model when the variant has
+  the base model's list price (the old mart's effective behaviour); a variant with its own price
+  that LiteLLM doesn't list (e.g. Gemini 2.5 Flash preview `:thinking`) stays unpriced and counted.
+- Target: aliases covering ≥ 98% of non-free, non-`other` tokens over the window, stealth
+  models without a list price excluded from the denominator. The remainder
   stays unpriced and is reported (stealth models without a list price stay unpriced, as today).
 - `cachereg entities` stays a Phase 3 stub; the script is folded into `entities suggest` then.
 
@@ -114,14 +126,17 @@ models:
 
 - `or_rankings_daily` unchanged.
 - Price per (date, permaslug) from candidates = `dim_model_alias` (openrouter alias =
-  permaslug without `:free`) → its `litellm` keys (rank) → `stg_litellm_prices_prices`
+  the permaslug itself; `:free` rows are not looked up) → its `litellm` keys (rank) → `stg_litellm_prices_prices`
   intervals with non-null input and output price. Only data on or before `as_of` is visible:
   intervals with `valid_from > as_of` are dropped and `valid_to > as_of` is read as null, so a
   later fetch cannot change any result.
 - Each candidate gets a basis: `current` (valid on that date), `after_removal` (the key's last
   interval ended before the date), `before_listing` (the key's first interval starts after the
-  date but on/before `as_of`). Choose per (date, permaslug): basis order current →
-  after_removal → before_listing, then alias rank, then the nearest interval. Exactly one row
+  date but on/before `as_of`), `beyond_history` (the date is after the last staged LiteLLM day,
+  e.g. rankings fetched later than LiteLLM; the last staged price is used). Choose per (date,
+  permaslug): basis order current → beyond_history → after_removal → before_listing, then alias
+  rank, then the nearest interval. Every basis except `current` sets `price_date_stale`, so a
+  shorter LiteLLM history is flagged, never silently forward-filled. Exactly one row
   per (date, permaslug), asserted by a test (no fan-out).
 - `or_model_daily` keeps its columns (`price_matched`, `est_spend_usd`, `blended_usd_per_token`,
   `price_date_stale` = basis ≠ current) and adds `price_key`, `price_basis`, `price_valid_from`,
@@ -137,11 +152,14 @@ so `reproduce` reports a difference that isn't one.
 
 - `cutoff()` for **Exact** sources: the earliest fetch whose `vintage.window[1] ≥ as_of`
   (`after = False`; data is selected by source time in the mart); if none covers `as_of`, the
-  latest fetch, with `after = False` and the manifest noting `history_ends` = its window end.
-- `source_vintages()` for Exact sources: if the source's stage module defines
-  `vintage_at(as_of) -> dict`, the manifest records that (LiteLLM: the day-end commit of
-  `min(as_of, history end)`) and `content_sha256` hashes it, so author and replicator manifests
-  match. Other classes are unchanged.
+  latest fetch, with `after = False` (dates after its history end are flagged `beyond_history` in the mart; the manifest's `revision_date` shows where the history stops).
+- `source_vintages()` for Exact sources whose stage module defines `vintage_at(as_of) ->
+  dict`: the manifest record is `{class, vintage: vintage_at(as_of), revision_date:
+  vintage["date"], vintage_after_as_of: false, content_sha256: sha256(canonical JSON of
+  vintage)}`, with no `fetch_date`, so author and replicator records are identical. LiteLLM's
+  `vintage_at` returns the day-end commit of `min(as_of, history end)`. Other classes keep
+  today's record. `reproduce` prints `revision_date` when there is no `fetch_date`;
+  `build()`'s vintage report carries the revision for Exact sources and `cli.py`'s `build` output prints it (date and short sha) instead of the fetch date.
 - No source-specific code in core; the hook is optional.
 
 ### 5. Receipt and exploration
@@ -149,7 +167,7 @@ so `reproduce` reports a difference that isn't one.
 - `receipts/openrouter-wallet-share/receipt.yaml`: `sources: [openrouter_rankings,
   litellm_prices]`; `as_of` stays 2026-10-02; config `start: 2025-01-06` (first Monday of 2025;
   every complete week from it) replaces `weeks: 13` (`weeks` remains supported for the
-  exploration); `unpriced_flag` applies to unpriced + stale-priced tokens; `race_every_weeks: 4`
+  exploration); `unpriced_flag` still shades weeks by unpriced tokens only — stale-priced tokens reach 46% of a week in mid-2026, so shading them would cover most of the chart; their share is stated in the visuals' notes, `data.json` and the README instead (decided during implementation); `race_every_weeks: 4`
   (keyframes every 4th week counted back from the last, ~23 keyframes ≈ 25 s instead of ~85 s).
 - `analysis.py`: `start` option, Story `sources` updated, caveat on price history and basis,
   `extra` records stale and unpriced shares.
@@ -165,6 +183,25 @@ so `reproduce` reports a difference that isn't one.
   (both sources allow redistribution with attribution).
 
 ### 6. Tests (synthetic only)
+
+Existing tests that change with step 5 (the mart's inputs become `openrouter_rankings,
+litellm_prices`; `conftest.synthetic_raw` writes a synthetic LiteLLM fetch and a fixture patches
+`build.ENTITIES_DIR` to a temp directory holding a copy of the real `vendors.yaml` and a synthetic
+`models.yaml`, for every `build()`-calling test):
+- `test_build_marts`: prices and `price_date_stale` now come from the synthetic LiteLLM history.
+- `test_render_receipt_on_synthetic_data`: `blog_html` and `data.json` are now written; the
+  manifest has a `litellm_prices` Exact record instead of `openrouter_models`.
+- `test_duplicate_catalog_slug_does_not_multiply_tokens`: repurposed to the new join (two
+  LiteLLM keys and two intervals for one model → still one row per (date, permaslug)).
+- `test_reproduce_reports_missing_snapshot`: kept, on a receipt copy whose `receipt.yaml` and
+  analysis sources add `openrouter_models` (the pre-flight path is unchanged for snapshot sources).
+- `test_build_sources_scope`, `test_build_refuses_half_the_inputs_and_drops_stale_marts`:
+  use `litellm_prices` as the second input.
+- `test_reproduce_rejects_sources_that_dont_cover_the_marts`,
+  `test_receipt_sources_must_match_story_sources`: string literals follow the new sources.
+- `test_exploration_renders_html_with_data_and_citation`: its `explore.yaml` sources.
+
+New:
 
 - `day_end_commits`: non-monotonic committer times, days without commits, 23:59:59 boundary.
 - fetch with git and HTTP stubbed: window planning, incremental skip of stored shas, gzip vs
@@ -200,4 +237,4 @@ spend; per-provider price variance on OpenRouter.
   manifest pins the sha; `reproduce` reports a difference.
 - LiteLLM prices lag or err for some models: the cross-check and per-week stale share make it
   visible; mapping review flags >10% disagreements on the last day.
-- First fetch downloads ~640 files from raw.githubusercontent.com (~100 MB gzipped).
+- First fetch downloads 555 files (one per distinct day-end commit) from raw.githubusercontent.com, ~27 MB gzipped.
