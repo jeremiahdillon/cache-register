@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import compileall
 from datetime import date
 from pathlib import Path
 
@@ -37,5 +36,20 @@ def test_hash_changes_when_values_change():
 
 
 def test_explorations_and_receipts_compile():
+    # compile in memory: writing .pyc files into the tree would embed local absolute paths
     for tree in ("explore", "receipts"):
-        assert compileall.compile_dir(ROOT / tree, quiet=1, legacy=True) or not any((ROOT / tree).rglob("*.py"))
+        for path in (ROOT / tree).rglob("*.py"):
+            compile(path.read_text(encoding="utf-8"), path.name, "exec")
+
+
+def test_visual_without_chart_or_targets_is_a_clear_error(tmp_path):
+    import pytest
+
+    from cachereg.story import config
+
+    d = tmp_path / "explore" / "2026-01-01-x"
+    d.mkdir(parents=True)
+    for visual in ("{name: a, targets: [x_png]}", "{name: a, chart: line_chart}"):
+        (d / "explore.yaml").write_text(f"visuals:\n  - {visual}\n")
+        with pytest.raises(ValueError, match="needs a chart and at least one target"):
+            config.load(d)

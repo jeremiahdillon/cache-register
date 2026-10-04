@@ -58,11 +58,14 @@ class RenderResult:
 def load_analysis(path: Path):
     """Import a folder's analysis.py and charts.py (folders aren't packages)."""
     sys.path.insert(0, str(path))
+    dont_write = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True  # no __pycache__ in receipts/explore (bytecode embeds local paths)
     try:
         for name in ("analysis", "charts"):
             sys.modules.pop(name, None)
         return importlib.import_module("analysis"), importlib.import_module("charts")
     finally:
+        sys.dont_write_bytecode = dont_write
         sys.path.remove(str(path))
 
 
@@ -236,6 +239,12 @@ def render(
     as_of = as_of or cfg.as_of or datetime.now(UTC).date()
 
     story, analysis, charts = build_story(cfg, as_of)
+    if cfg.sources and set(story.sources) != set(cfg.sources):
+        raise ValueError(
+            f"{cfg.file.name} sources {sorted(cfg.sources)} differ from the analysis's Story.sources "
+            f"{sorted(story.sources)}; the licence gate and credits need them to match"
+        )
+    source_ids = list(cfg.sources) if cfg.sources else list(story.sources)
     d_hash, i_hash = data_hash(story.frames), inputs_hash(cfg.path)
     rel = repo_relative(cfg.path)
     if out_dir is None:
@@ -257,8 +266,8 @@ def render(
             folder_config.set_as_of(cfg, as_of)
             i_hash = inputs_hash(cfg.path)
 
-    charts_reason, data_reason = licence_gate(story.sources) if is_receipt else (None, None)
-    rec = receipt(story.sources, _data_as_of(story), story.method, rel, cfg.link)
+    charts_reason, data_reason = licence_gate(source_ids) if is_receipt else (None, None)
+    rec = receipt(source_ids, _data_as_of(story), story.method, rel, cfg.link)
     out_dir.mkdir(parents=True, exist_ok=True)
     if committing:
         for old in out_dir.iterdir():  # outputs are regenerated as a set; no stale files survive
@@ -306,7 +315,7 @@ def render(
         "uv_lock_sha256": _sha256(REPO_ROOT / "uv.lock"),
         "data_hash": d_hash,
         "inputs_hash": i_hash,
-        "sources": source_vintages(story.sources, as_of),
+        "sources": source_vintages(source_ids, as_of),
         "outputs": dict(sorted(result.outputs.items())),
         "withheld": dict(sorted(result.withheld.items())),
     }

@@ -16,12 +16,17 @@ def raw_dir(source: str) -> Path:
     return data_dir() / "raw" / source
 
 
+def build_dir() -> Path:
+    """Staged Parquet + warehouse. Separate from raw so `reproduce` can build in a temp folder."""
+    return Path(os.environ.get("CACHEREG_BUILD_DIR", data_dir()))
+
+
 def staged_dir(source: str) -> Path:
-    return data_dir() / "staged" / source
+    return build_dir() / "staged" / source
 
 
 def warehouse_path() -> Path:
-    return data_dir() / "warehouse.duckdb"
+    return build_dir() / "warehouse.duckdb"
 
 
 def outputs_dir() -> Path:

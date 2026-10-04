@@ -248,3 +248,69 @@ def test_encode_reports_ffmpeg_failure(tmp_path, monkeypatch):
     page = Frame(Image.new("RGB", (16, 16)), (0, 0, 8, 8))
     with pytest.raises(RuntimeError, match="ffmpeg failed"):
         motion.encode([buf.getvalue()] * 300, page, tmp_path / "no-such-dir" / "x.mp4", fps=10)
+
+
+def test_reproduce_leaves_the_authors_warehouse_alone(synthetic_raw, monkeypatch, tmp_path):
+    from cachereg.render import render
+    from cachereg.reproduce import reproduce
+
+    _fast_video(monkeypatch)
+    build(date(2026, 8, 31))
+    receipt = _receipt_copy(tmp_path)
+    render(receipt)
+    import duckdb
+
+    from cachereg.core.paths import warehouse_path
+
+    with duckdb.connect(str(warehouse_path())) as rw:
+        rw.execute("CREATE TABLE author_scratch AS SELECT 1 AS x")
+    reproduce(receipt, no_fetch=True)
+    con = connect()
+    try:
+        tables = set(query(con, "SELECT table_name FROM information_schema.tables")["table_name"])
+    finally:
+        con.close()
+    assert {"author_scratch", "or_vendor_weekly"} <= tables
+
+
+def test_reproduce_rejects_sources_that_dont_cover_the_marts(synthetic_raw, tmp_path):
+    from cachereg.reproduce import check_mart_coverage
+    from cachereg.story import config as folder_config
+
+    receipt = _receipt_copy(tmp_path)
+    text = (receipt / "receipt.yaml").read_text()
+    (receipt / "receipt.yaml").write_text(
+        text.replace("sources: [openrouter_rankings, openrouter_models]", "sources: [openrouter_rankings]")
+    )
+    with pytest.raises(ValueError, match="add openrouter_models"):
+        check_mart_coverage(folder_config.load(receipt))
+
+
+def test_receipt_sources_must_match_story_sources(synthetic_raw, monkeypatch, tmp_path):
+    from cachereg.render import render
+
+    build(date(2026, 8, 31))
+    receipt = _receipt_copy(tmp_path)
+    analysis = receipt / "analysis.py"
+    analysis.write_text(
+        analysis.read_text().replace(
+            'sources=["openrouter_rankings", "openrouter_models"]', 'sources=["openrouter_rankings"]'
+        )
+    )
+    with pytest.raises(ValueError, match="differ from the analysis"):
+        render(receipt)
+
+
+def test_reproduce_reports_fetch_failure_by_source(synthetic_raw, monkeypatch, tmp_path):
+    from cachereg.render import render
+    from cachereg.reproduce import reproduce
+
+    _fast_video(monkeypatch)
+    build(date(2026, 8, 31))
+    receipt = _receipt_copy(tmp_path)
+    render(receipt)
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setenv("CACHEREG_SECRETS_FILE", str(tmp_path / "none.env"))
+    result = reproduce(receipt)  # fetch needs a key that isn't set
+    assert result.status == "fetch-failed"
+    assert result.reasons[0].startswith("fetch failed for openrouter_rankings: MissingSecretError")

@@ -93,7 +93,6 @@ def build(con, as_of: date, cfg: dict) -> Story:
     spend_last = totals.filter(pl.col("week") == last)["spend_total"].item()
 
     return Story(
-        slug="openrouter-wallet-share",
         title=headline(a0, a1, len(weeks) - 1),
         subtitle=(
             f"Share of estimated weekly spend on OpenRouter's top-50 models, by developer. "

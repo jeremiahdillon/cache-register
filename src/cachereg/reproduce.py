@@ -12,12 +12,15 @@
 
 from __future__ import annotations
 
+import contextlib
+import os
+import re
 import tempfile
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime
 from pathlib import Path
 
-from cachereg.build import VintageGapError, build, cutoff
+from cachereg.build import VintageGapError, build, cutoff, load_marts
 from cachereg.core.registry import load_sources
 from cachereg.render import read_manifest, render
 from cachereg.story import config as folder_config
@@ -25,15 +28,40 @@ from cachereg.story import config as folder_config
 
 @dataclass
 class ReproduceResult:
-    status: str  # "identical" | "differs" | "cannot-reproduce" | "rendered-latest"
+    status: str  # "identical" | "differs" | "cannot-reproduce" | "fetch-failed" | "rendered-latest"
     as_of: date
     reasons: list[str] = field(default_factory=list)
     out_dir: Path | None = None
 
 
-def reproduce(
-    folder: Path, *, latest: bool = False, no_fetch: bool = False, keep: Path | None = None
-) -> ReproduceResult:
+def check_mart_coverage(cfg: folder_config.FolderConfig) -> None:
+    """Fail clearly if the receipt's code reads a mart table whose inputs its `sources` don't cover."""
+    code = "".join((cfg.path / n).read_text() for n in ("analysis.py", "charts.py") if (cfg.path / n).is_file())
+    for mart in load_marts():
+        used = [t for t in mart.tables if re.search(rf"\b{t}\b", code)]
+        if used and not mart.inputs <= set(cfg.sources):
+            missing = ", ".join(sorted(mart.inputs - set(cfg.sources)))
+            raise ValueError(
+                f"{cfg.path.name} reads {', '.join(used)} (mart {mart.name}); add {missing} to its receipt.yaml sources"
+            )
+
+
+@contextlib.contextmanager
+def _temporary_build_dir():
+    """Build staged data and the warehouse in a temp folder so the author's warehouse is untouched."""
+    old = os.environ.get("CACHEREG_BUILD_DIR")
+    with tempfile.TemporaryDirectory(prefix="cachereg-build-") as tmp:
+        os.environ["CACHEREG_BUILD_DIR"] = tmp
+        try:
+            yield
+        finally:
+            if old is None:
+                os.environ.pop("CACHEREG_BUILD_DIR", None)
+            else:
+                os.environ["CACHEREG_BUILD_DIR"] = old
+
+
+def reproduce(folder: Path, *, latest: bool = False, no_fetch: bool = False) -> ReproduceResult:
     cfg = folder_config.load(Path(folder))
     if cfg.kind != "receipt":
         raise ValueError("reproduce works on receipts (receipts/<topic>)")
@@ -41,11 +69,15 @@ def reproduce(
     if committed is None:
         raise FileNotFoundError(f"{cfg.path.name}: no committed output/manifest.json to compare with")
     as_of = datetime.now(UTC).date() if latest else cfg.as_of
+    check_mart_coverage(cfg)
 
     if not no_fetch:
         sources = load_sources()
         for sid in cfg.sources:
-            sources[sid].module("fetch").fetch().write()
+            try:
+                sources[sid].module("fetch").fetch().write()
+            except Exception as e:  # noqa: BLE001 (report which source failed and why, then stop)
+                return ReproduceResult("fetch-failed", as_of, [f"fetch failed for {sid}: {type(e).__name__}: {e}"])
 
     # Pre-flight, after fetching and before any build.
     reasons = []
@@ -61,9 +93,10 @@ def reproduce(
         if after:
             reasons.append(f"{sid}: no fetch on or before {as_of}; used the earliest one ({day}) instead")
 
-    build(as_of, list(cfg.sources))
-    out_dir = keep or Path(tempfile.mkdtemp(prefix=f"cachereg-{cfg.path.name}-"))
-    result = render(cfg.path, as_of, out_dir=out_dir)
+    out_dir = Path(tempfile.mkdtemp(prefix=f"cachereg-{cfg.path.name}-"))
+    with _temporary_build_dir():  # only raw data is shared; staged/warehouse are throwaway
+        build(as_of, list(cfg.sources))
+        result = render(cfg.path, as_of, out_dir=out_dir)
     new = result.manifest
 
     if latest:

@@ -34,6 +34,8 @@ def rules(path: str, text: str, extra: list[str] | None = None) -> set[str]:
         "a/.env.prod",
         ".envrc",
         ".direnv/x",
+        "explore/x/analysis.pyc",
+        "src/__pycache__/m.cpython-312.pyc",
     ],
 )
 def test_blocked_paths(path):

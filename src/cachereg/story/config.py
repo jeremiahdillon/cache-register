@@ -75,12 +75,15 @@ def load(path: Path) -> FolderConfig:
         raise ValueError(f"{path.name}: unknown source(s) {unknown}")
     visuals = []
     for v in raw.get("visuals") or ():
-        if not VISUAL_NAME_RE.match(v.get("name", "")):
-            raise ValueError(f"{path.name}: visual name {v.get('name')!r} must be lowercase-hyphenated")
-        bad = [t for t in v.get("targets", ()) if t not in TARGETS]
+        name, chart, targets = v.get("name", ""), v.get("chart"), tuple(v.get("targets") or ())
+        if not VISUAL_NAME_RE.match(name):
+            raise ValueError(f"{path.name}: visual name {name!r} must be lowercase-hyphenated")
+        if not chart or not targets:
+            raise ValueError(f"{path.name}: visual {name!r} needs a chart and at least one target")
+        bad = [t for t in targets if t not in TARGETS]
         if bad:
-            raise ValueError(f"{path.name}: visual {v['name']!r} has unknown targets {bad}")
-        visuals.append(Visual(v["name"], v["chart"], tuple(v["targets"])))
+            raise ValueError(f"{path.name}: visual {name!r} has unknown targets {bad}")
+        visuals.append(Visual(name, chart, targets))
     if len({v.name for v in visuals}) != len(visuals):
         raise ValueError(f"{path.name}: duplicate visual names")
     as_of = raw.get("as_of")

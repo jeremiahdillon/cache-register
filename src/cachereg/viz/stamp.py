@@ -27,7 +27,7 @@ def long_url(analysis_path: str) -> str:
 
 
 def receipt(source_ids: list[str], as_of, method: str, analysis_path: str, link: str | None = None) -> Receipt:
-    """``link`` is the analysis's short slug (story.yaml); without one, the long GitHub URL is used."""
+    """``link`` is the receipt's short link (its folder name); without one, the long GitHub URL is used."""
     from cachereg.site import short_url
 
     sources = load_sources()

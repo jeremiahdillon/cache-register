@@ -10,7 +10,6 @@ import polars as pl
 
 @dataclass
 class Story:
-    slug: str
     title: str  # the claim, not a description of the chart
     subtitle: str  # metric definition / scope
     frames: dict[str, pl.DataFrame]  # the only data any rendering may use (aggregated)

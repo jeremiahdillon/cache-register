@@ -32,6 +32,7 @@ BLOCKED_PATHS = [
     ("warehouse/data file", re.compile(r"\.(parquet|duckdb|duckdb\.wal|sqlite3?|db)$", re.I)),
     ("env file", re.compile(r"(^|/)\.env(\.(?!example$)[^/]+)?$|(^|/)\.envrc$|(^|/)\.direnv/")),
     ("private key file", re.compile(r"\.(pem|key|p12|pfx)$", re.I)),
+    ("compiled Python (embeds local paths)", re.compile(r"\.py[cod]$|(^|/)__pycache__/")),
 ]
 
 CONTENT_RULES = [

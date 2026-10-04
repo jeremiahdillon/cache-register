@@ -50,6 +50,7 @@ def data_hash(frames: dict[str, pl.DataFrame]) -> str:
 
 SHARED_RENDER_INPUTS = (
     "config/brand/brand.yaml",
+    "config/sources.yaml",  # licence rights and attributions change what is written and the footer
     "assets/fonts",
     "assets/templates",
     "src/cachereg/render.py",

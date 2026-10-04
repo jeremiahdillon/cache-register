@@ -3,7 +3,7 @@ name: Cache Register
 tagline: Receipts for the AI economy
 repo_url: https://github.com/jeremiahdillon/cache-register
 site_url: https://cacheregister.dev
-short_link_host: cacheregister.dev     # footer links: <host>/<story.yaml link>  (GitHub Pages)
+short_link_host: cacheregister.dev     # footer links: <host>/<receipt folder name>  (GitHub Pages)
 author_url: https://jeremiahdillon.com
 
 colors:
