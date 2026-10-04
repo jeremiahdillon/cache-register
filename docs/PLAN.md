@@ -519,7 +519,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | 0.5 Vertical slice | **Done** — OpenRouter rankings + model prices, marts, first receipt `receipts/openrouter-wallet-share`; motion renderer A chosen (§6.3) |
 | Layout | **Done** — explorations vs receipts, scoped build, `reproduce` (`docs/plans/2026-10-03-explore-and-receipts.md`) |
 | 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), `derived_charts` kept on the author's reading; the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
-| 2. Tier-1 adapters | **Next after 1** — LiteLLM price history first: replaces the price snapshot in `010_openrouter_usage`, makes the first receipt Exact-reproducible and lets it extend back to 2025-01 |
+| 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. Next: Epoch, then the other native-history sources |
 | 3–7 | Not started |
 
 **Open items carried between sessions**
@@ -533,6 +533,8 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   remains the automated route.
 - Backlog: embedded/subset fonts for `blog_html` (now Google Fonts with system fallback); vector
   `blog_svg` with chrome + footer (also enables a no-data blog version); `promote` command.
+- LiteLLM lists many models late (most Chinese-lab models only from 2026-09-05/18): ~26% of top-50 tokens (10% of est. spend) are priced with a model's first later listing, flagged per row and reported. Re-check when Phase 3 entities land; Gemini 2.5 Flash preview `:thinking` variants stay unpriced (own price, not in LiteLLM).
+- `scripts/suggest_model_aliases.py --write` is append-only; run it after new models enter the top 50 and review the proposals (fold into `cachereg entities suggest` in Phase 3).
 - Reviewer note for adversarial reviews: the default reviewer (DeepSeek) has timed out on long
   plan reviews; a retry usually works; `--model gemini` worked but cost ~20× more per round.
 

@@ -50,7 +50,8 @@ def line_chart(story: Story, width: int, height: int, font_scale: float = 1.0, i
     weeks = sorted(g["week"].unique().to_list())
     last = weeks[-1]
     y_max = min(1.0, round(g["share"].max() * 1.12 + 0.05, 1))
-    x_dom = [weeks[0].isoformat(), (last + timedelta(days=24)).isoformat()]  # room for end labels
+    pad = max(timedelta(days=24), (last - weeks[0]) * 0.14)  # room for end labels, scaled to the span
+    x_dom = [weeks[0].isoformat(), (last + pad).isoformat()]
     x_scale = alt.Scale(type="utc", domain=x_dom)
     ticks, label = x_ticks(weeks)
     x_axis = alt.Axis(
