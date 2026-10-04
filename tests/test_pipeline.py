@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import polars as pl
@@ -273,6 +273,18 @@ def test_exact_source_is_selected_by_source_time(synthetic_raw):
     assert cutoff("litellm_prices", date(2026, 7, 1)) == (date(2026, 8, 31), False)  # earliest covering
     assert cutoff("litellm_prices", date(2026, 9, 10)) == (date(2026, 9, 20), False)
     assert cutoff("litellm_prices", date(2026, 12, 1)) == (date(2026, 9, 20), False)  # none covers: latest
+
+
+def test_long_windows_tick_on_month_starts():
+    from cachereg.render import load_analysis
+
+    _, charts = load_analysis(WALLET)
+    weeks = [date(2025, 1, 6) + timedelta(weeks=i) for i in range(88)]
+    ticks, label = charts.x_ticks(weeks)
+    assert label == "%b '%y" and 1 < len(ticks) <= 8 and all(t.day == 1 for t in ticks)
+    assert ticks[0] == date(2025, 2, 1) and ticks[-1] <= weeks[-1]
+    short, label = charts.x_ticks(weeks[:13])
+    assert label == "%b %-d" and short == weeks[:13:2]
 
 
 def test_headline_verb_follows_the_data():

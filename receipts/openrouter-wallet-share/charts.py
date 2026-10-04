@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 
 import altair as alt
 import polars as pl
@@ -36,6 +36,15 @@ def _repel(values: list[float], min_gap: float, lo: float, hi: float) -> list[fl
     return out
 
 
+def x_ticks(weeks: list[date]) -> tuple[list[date], str]:
+    """Tick dates and their label format: data weeks for short windows, month starts (≤ 8) for long ones."""
+    if len(weeks) > 16:
+        span = range((weeks[-1] - weeks[0]).days + 1)
+        months = [d for d in (weeks[0] + timedelta(days=i) for i in span) if d.day == 1]
+        return months[:: max(1, -(-len(months) // 8))], "%b '%y"
+    return weeks[:: 2 if len(weeks) > 8 else 1], "%b %-d"
+
+
 def line_chart(story: Story, width: int, height: int, font_scale: float = 1.0, interactive: bool = False) -> alt.Chart:
     g = story.frames["groups"].with_columns(pl.col("week").cast(pl.Date))
     weeks = sorted(g["week"].unique().to_list())
@@ -43,11 +52,7 @@ def line_chart(story: Story, width: int, height: int, font_scale: float = 1.0, i
     y_max = min(1.0, round(g["share"].max() * 1.12 + 0.05, 1))
     x_dom = [weeks[0].isoformat(), (last + timedelta(days=24)).isoformat()]  # room for end labels
     x_scale = alt.Scale(type="utc", domain=x_dom)
-    if len(weeks) > 16:  # long windows: ticks on month starts, at most ~8 of them
-        months = [d for d in (weeks[0] + timedelta(days=i) for i in range((last - weeks[0]).days + 1)) if d.day == 1]
-        ticks, label = months[:: max(1, -(-len(months) // 8))], "%b '%y"
-    else:  # ticks on data weeks
-        ticks, label = weeks[:: 2 if len(weeks) > 8 else 1], "%b %-d"
+    ticks, label = x_ticks(weeks)
     x_axis = alt.Axis(
         # formatType="utc" makes this Vega-Lite build ignore `format`; format labels explicitly in UTC.
         labelExpr=f'utcFormat(datum.value, "{label}")',

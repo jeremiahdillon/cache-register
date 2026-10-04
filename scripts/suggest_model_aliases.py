@@ -170,19 +170,16 @@ def main() -> None:
         print(f"{share:7.3%}  {slug}  (first seen {first})")
 
     if args.write and proposals:
-        merged = dict(existing or {})
-        for mid, e in proposals.items():
-            if mid in merged:
-                for src, vals in e["aliases"].items():
-                    lst = merged[mid]["aliases"].setdefault(src, [])
-                    lst += [v for v in vals if v not in lst]
-            else:
-                merged[mid] = e
-        header = MODELS_YAML.read_text().split("models:", 1)[0] if MODELS_YAML.is_file() else ""
-        MODELS_YAML.write_text(
-            header + yaml.safe_dump({"models": dict(sorted(merged.items()))}, sort_keys=False, width=120)
-        )
-        print(f"\nwrote {len(proposals)} proposal(s) to {MODELS_YAML.relative_to(ROOT)}")
+        # Append-only, so the reviewed file (and its `# manual` comments) is never rewritten. Aliases
+        # proposed for a model that already has an entry are printed for a manual merge instead.
+        new = {mid: e for mid, e in proposals.items() if mid not in (existing or {})}
+        for mid in sorted(set(proposals) - set(new)):
+            print(f"merge by hand: {mid} += {proposals[mid]['aliases']}")
+        if new:
+            text = MODELS_YAML.read_text() if MODELS_YAML.is_file() else "models:\n"
+            block = yaml.safe_dump(dict(sorted(new.items())), sort_keys=False, width=120)
+            MODELS_YAML.write_text(text.rstrip("\n") + "\n" + "".join(f"  {line}\n" for line in block.splitlines()))
+        print(f"\nappended {len(new)} new model(s) to {MODELS_YAML.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

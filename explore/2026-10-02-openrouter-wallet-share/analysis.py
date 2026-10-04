@@ -123,8 +123,9 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "across developers.",
             "OpenRouter traffic only (third-party developer routing), not the whole market. Models outside the "
             "daily top 50 are excluded (no per-model price).",
-            "Prices come from a single current price snapshot; weeks where models without a list price "
-            "(retired or pre-release) exceed the threshold are shaded.",
+            "Each day is priced from LiteLLM's price file as it stood that day (models LiteLLM had not listed "
+            "yet: their first later listing); weeks where models without a list price exceed the threshold "
+            "are shaded.",
         ],
         extra={"weeks": [str(x) for x in weeks], "spend_last_week_usd": spend_last},
     )
