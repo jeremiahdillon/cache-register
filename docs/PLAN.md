@@ -511,6 +511,31 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 
 ## 10. Build phases
 
+### Status (2026-10-04)
+
+| Phase | State |
+|---|---|
+| 0. Scaffold & security | **Done** — guard + pinned gitleaks in the pre-push hook (the gate; straight-to-main workflow), CI backstop, push protection, Pages short links on cacheregister.dev |
+| 0.5 Vertical slice | **Done** — OpenRouter rankings + model prices, marts, first receipt `receipts/openrouter-wallet-share`; motion renderer A chosen (§6.3) |
+| Layout | **Done** — explorations vs receipts, scoped build, `reproduce` (`docs/plans/2026-10-03-explore-and-receipts.md`) |
+| 1. Source verification | **Next** — start with `openrouter_models` terms (`redistribution` and `derived_charts`): confirming them unlocks the receipt's `blog_html` and `data.json` |
+| 2. Tier-1 adapters | **Next after 1** — LiteLLM price history first: replaces the price snapshot in `010_openrouter_usage`, makes the first receipt Exact-reproducible and lets it extend back to 2025-01 |
+| 3–7 | Not started |
+
+**Open items carried between sessions**
+- Re-score the Phase 0.5 dependencies (altair, duckdb, polars, vl-convert-python, imageio-ffmpeg,
+  pillow, playwright) with Socket `depscore`/Endor once those services respond; they were
+  installed through Socket Firewall only.
+- **Ramp without a key:** the author has no Ramp Data key. On ramp.com/data/ai-index the "Get the
+  data" button copies the series to the clipboard, so the Ramp adapter starts with a manual import
+  (`cachereg fetch ramp --from-clipboard` / `--from-file`), monthly. Check the clipboard format when
+  building it. Automating the click is out of scope (no scraping); the Ramp Data Partner Program key
+  remains the automated route.
+- Backlog: embedded/subset fonts for `blog_html` (now Google Fonts with system fallback); vector
+  `blog_svg` with chrome + footer (also enables a no-data blog version); `promote` command.
+- Reviewer note for adversarial reviews: the default reviewer (DeepSeek) has timed out on long
+  plan reviews; a retry usually works; `--model gemini` worked but cost ~20× more per round.
+
 | Phase | Deliverable | Done when |
 |---|---|---|
 | **0. Scaffold & security** | git init, uv project, CLI skeleton, settings/secrets loader, gitignore, pre-commit + CI guards (gitleaks + custom), LICENSEs, SECURITY.md, CLAUDE.md, public GitHub repo with push protection + branch protection | CI green; a deliberate fake secret / data file / home path is blocked by **CI** (not just pre-commit) |
