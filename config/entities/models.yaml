@@ -1,0 +1,1741 @@
+# Canonical models (PLAN §4.3, subset used by 010_openrouter_usage). `model_id` is OpenRouter's
+# current model id where one exists. `aliases.openrouter` lists rankings permaslugs (exact model
+# versions); `aliases.litellm` lists LiteLLM price keys in preference order: OpenRouter's own
+# listing first (`openrouter/<id>`), then the vendor's first-party key (dated before undated).
+# Bootstrapped with scripts/suggest_model_aliases.py, then reviewed; hand-added entries are
+# marked `# manual` with the reason. A permaslug may appear under one model only.
+models:
+  amazon/nova-lite-v1:
+    aliases:
+      openrouter:
+      - amazon/nova-lite-v1
+      litellm:
+      - openrouter/amazon/nova-lite-v1
+  amazon/nova-micro-v1:
+    aliases:
+      openrouter:
+      - amazon/nova-micro-v1
+      litellm:
+      - openrouter/amazon/nova-micro-v1
+  amazon/nova-pro-v1:
+    aliases:
+      openrouter:
+      - amazon/nova-pro-v1
+      litellm:
+      - openrouter/amazon/nova-pro-v1
+  anthracite-org/magnum-v4-72b:
+    aliases:
+      openrouter:
+      - anthracite-org/magnum-v4-72b
+      litellm:
+      - openrouter/anthracite-org/magnum-v4-72b
+  anthropic/claude-3-5-haiku:
+    aliases:
+      openrouter:
+      - anthropic/claude-3-5-haiku
+      - anthropic/claude-3-5-haiku:beta
+      litellm:
+      - openrouter/anthropic/claude-3-5-haiku
+  anthropic/claude-3-5-haiku-20241022:
+    aliases:
+      openrouter:
+      - anthropic/claude-3-5-haiku-20241022
+      - anthropic/claude-3-5-haiku-20241022:beta
+      litellm:
+      - openrouter/anthropic/claude-3-5-haiku-20241022
+      - claude-3-5-haiku-20241022
+  anthropic/claude-3-7-sonnet-20250219:
+    aliases:
+      openrouter:
+      - anthropic/claude-3-7-sonnet-20250219
+      - anthropic/claude-3-7-sonnet-20250219:thinking
+      - anthropic/claude-3-7-sonnet-20250219:beta
+      litellm:
+      - claude-3-7-sonnet-20250219
+  anthropic/claude-3-haiku:
+    aliases:
+      openrouter:
+      - anthropic/claude-3-haiku
+      litellm:
+      - openrouter/anthropic/claude-3-haiku
+  anthropic/claude-3-opus:
+    aliases:
+      openrouter:
+      - anthropic/claude-3-opus
+      litellm:
+      - openrouter/anthropic/claude-3-opus
+  anthropic/claude-3-sonnet:
+    aliases:
+      openrouter:
+      - anthropic/claude-3-sonnet
+      - anthropic/claude-3-sonnet:beta
+      litellm:
+      - openrouter/anthropic/claude-3-sonnet
+  anthropic/claude-3.5-sonnet:
+    aliases:
+      openrouter:
+      - anthropic/claude-3.5-sonnet
+      - anthropic/claude-3.5-sonnet:beta
+      litellm:
+      - openrouter/anthropic/claude-3.5-sonnet
+  anthropic/claude-3.5-sonnet-20240620:
+    aliases:
+      openrouter:
+      - anthropic/claude-3.5-sonnet-20240620:beta
+      - anthropic/claude-3.5-sonnet-20240620
+      litellm:
+      - claude-3-5-sonnet-20240620
+  anthropic/claude-fable-5:
+    aliases:
+      openrouter:
+      - anthropic/claude-5-fable-20260609
+      litellm:
+      - openrouter/anthropic/claude-fable-5
+      - claude-fable-5
+  anthropic/claude-fable-5.1:
+    aliases:
+      openrouter:
+      - anthropic/claude-fable-5.1-20260831
+      litellm:
+      - openrouter/anthropic/claude-fable-5.1
+      - claude-fable-5-1
+  anthropic/claude-haiku-4.5:
+    aliases:
+      openrouter:
+      - anthropic/claude-4.5-haiku-20251001
+      litellm:
+      - openrouter/anthropic/claude-haiku-4.5
+      - claude-haiku-4-5-20251001
+      - claude-haiku-4-5
+  anthropic/claude-opus-4:  # manual: Anthropic's dated keys for the same release (OpenRouter's permaslug date differs)
+    aliases:
+      openrouter:
+      - anthropic/claude-4-opus-20250522
+      litellm:
+      - claude-opus-4-20250514
+      - claude-4-opus-20250514
+  anthropic/claude-opus-4.1:
+    aliases:
+      openrouter:
+      - anthropic/claude-4.1-opus-20250805
+      litellm:
+      - openrouter/anthropic/claude-opus-4.1
+      - claude-opus-4-1-20250805
+      - claude-opus-4-1
+  anthropic/claude-opus-4.5:
+    aliases:
+      openrouter:
+      - anthropic/claude-4.5-opus-20251124
+      litellm:
+      - openrouter/anthropic/claude-opus-4.5
+      - claude-opus-4-5
+  anthropic/claude-opus-4.6:
+    aliases:
+      openrouter:
+      - anthropic/claude-4.6-opus-20260205
+      litellm:
+      - openrouter/anthropic/claude-opus-4.6
+      - claude-opus-4-6-20260205
+      - claude-opus-4-6
+  anthropic/claude-opus-4.7:
+    aliases:
+      openrouter:
+      - anthropic/claude-4.7-opus-20260416
+      litellm:
+      - openrouter/anthropic/claude-opus-4.7
+      - claude-opus-4-7-20260416
+      - claude-opus-4-7
+  anthropic/claude-opus-4.8:
+    aliases:
+      openrouter:
+      - anthropic/claude-4.8-opus-20260528
+      litellm:
+      - openrouter/anthropic/claude-opus-4.8
+      - claude-opus-4-8
+  anthropic/claude-opus-5:
+    aliases:
+      openrouter:
+      - anthropic/claude-opus-5-20260723
+      litellm:
+      - openrouter/anthropic/claude-opus-5
+      - claude-opus-5
+  anthropic/claude-opus-5.5:
+    aliases:
+      openrouter:
+      - anthropic/claude-opus-5.5-20260921
+      litellm:
+      - openrouter/anthropic/claude-opus-5.5
+      - claude-opus-5-5
+  anthropic/claude-sonnet-4:
+    aliases:
+      openrouter:
+      - anthropic/claude-4-sonnet-20250522
+      litellm:
+      - openrouter/anthropic/claude-sonnet-4
+  anthropic/claude-sonnet-4.5:
+    aliases:
+      openrouter:
+      - anthropic/claude-4.5-sonnet-20250929
+      litellm:
+      - openrouter/anthropic/claude-sonnet-4.5
+      - claude-sonnet-4-5-20250929
+      - claude-sonnet-4-5
+  anthropic/claude-sonnet-4.6:
+    aliases:
+      openrouter:
+      - anthropic/claude-4.6-sonnet-20260217
+      litellm:
+      - openrouter/anthropic/claude-sonnet-4.6
+      - claude-sonnet-4-6
+  anthropic/claude-sonnet-5:
+    aliases:
+      openrouter:
+      - anthropic/claude-sonnet-5-20260630
+      litellm:
+      - openrouter/anthropic/claude-sonnet-5
+      - claude-sonnet-5
+  anthropic/claude-sonnet-5.5:
+    aliases:
+      openrouter:
+      - anthropic/claude-sonnet-5.5-20260928
+      litellm:
+      - openrouter/anthropic/claude-sonnet-5.5
+      - claude-sonnet-5-5
+  arcee-ai/trinity-large-thinking:
+    aliases:
+      openrouter:
+      - arcee-ai/trinity-large-thinking
+      litellm:
+      - openrouter/arcee-ai/trinity-large-thinking
+  bytedance-seed/seed-2.0-mini:
+    aliases:
+      openrouter:
+      - bytedance-seed/seed-2.0-mini-20260224
+      litellm:
+      - openrouter/bytedance-seed/seed-2.0-mini
+  cohere/command-r:
+    aliases:
+      openrouter:
+      - cohere/command-r
+      litellm:
+      - command-r
+  cohere/command-r-08-2024:
+    aliases:
+      openrouter:
+      - cohere/command-r-08-2024
+      litellm:
+      - openrouter/cohere/command-r-08-2024
+      - command-r-08-2024
+  cohere/command-r-plus-08-2024:
+    aliases:
+      openrouter:
+      - cohere/command-r-plus-08-2024
+      litellm:
+      - openrouter/cohere/command-r-plus-08-2024
+      - command-r-plus-08-2024
+  cohere/command-r7b-12-2024:
+    aliases:
+      openrouter:
+      - cohere/command-r7b-12-2024
+      litellm:
+      - openrouter/cohere/command-r7b-12-2024
+      - command-r7b-12-2024
+  deepseek/deepseek-chat:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-chat-v3
+      litellm:
+      - openrouter/deepseek/deepseek-chat
+      - deepseek/deepseek-chat
+  deepseek/deepseek-chat-v3-0324:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-chat-v3-0324
+      litellm:
+      - openrouter/deepseek/deepseek-chat-v3-0324
+  deepseek/deepseek-chat-v3.1:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-chat-v3.1
+      litellm:
+      - openrouter/deepseek/deepseek-chat-v3.1
+  deepseek/deepseek-r1:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-r1
+      litellm:
+      - openrouter/deepseek/deepseek-r1
+      - deepseek/deepseek-r1
+  deepseek/deepseek-r1-0528:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-r1-0528
+      litellm:
+      - openrouter/deepseek/deepseek-r1-0528
+  deepseek/deepseek-r1-distill-llama-70b:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-r1-distill-llama-70b
+      litellm:
+      - openrouter/deepseek/deepseek-r1-distill-llama-70b
+  deepseek/deepseek-v3.1-terminus:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-v3.1-terminus
+      litellm:
+      - openrouter/deepseek/deepseek-v3.1-terminus
+  deepseek/deepseek-v3.2:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-v3.2-20251201
+      litellm:
+      - openrouter/deepseek/deepseek-v3.2
+      - deepseek/deepseek-v3.2
+  deepseek/deepseek-v3.2-exp:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-v3.2-exp
+      litellm:
+      - openrouter/deepseek/deepseek-v3.2-exp
+  deepseek/deepseek-v4-flash:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-v4-flash-20260423
+      litellm:
+      - openrouter/deepseek/deepseek-v4-flash
+      - deepseek/deepseek-v4-flash
+  deepseek/deepseek-v4-flash-0731:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-v4-flash-20260731
+      litellm:
+      - openrouter/deepseek/deepseek-v4-flash-0731
+  deepseek/deepseek-v4-flash-vision-exp:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-v4-flash-vision-exp-20260821
+      litellm:
+      - openrouter/deepseek/deepseek-v4-flash-vision-exp
+      - deepseek/deepseek-v4-flash-vision-exp
+  deepseek/deepseek-v4-pro:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-v4-pro-20260423
+      litellm:
+      - openrouter/deepseek/deepseek-v4-pro
+      - deepseek/deepseek-v4-pro
+  deepseek/deepseek-v4-pro-0813:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-v4-pro-20260813
+      litellm:
+      - openrouter/deepseek/deepseek-v4-pro-0813
+  deepseek/deepseek-v4.1-flash:
+    aliases:
+      openrouter:
+      - deepseek/deepseek-v4.1-flash-20260910
+      litellm:
+      - openrouter/deepseek/deepseek-v4.1-flash
+  google/gemini-2.0-flash-001:
+    aliases:
+      openrouter:
+      - google/gemini-2.0-flash-001
+      litellm:
+      - openrouter/google/gemini-2.0-flash-001
+      - gemini/gemini-2.0-flash-001
+  google/gemini-2.0-flash-lite-001:
+    aliases:
+      openrouter:
+      - google/gemini-2.0-flash-lite-001
+      litellm:
+      - gemini/gemini-2.0-flash-lite-001
+  google/gemini-2.5-flash:
+    aliases:
+      openrouter:
+      - google/gemini-2.5-flash
+      litellm:
+      - openrouter/google/gemini-2.5-flash
+      - gemini/gemini-2.5-flash
+  google/gemini-2.5-flash-lite:
+    aliases:
+      openrouter:
+      - google/gemini-2.5-flash-lite
+      litellm:
+      - openrouter/google/gemini-2.5-flash-lite
+      - gemini/gemini-2.5-flash-lite
+  google/gemini-2.5-flash-lite-preview-06-17:
+    aliases:
+      openrouter:
+      - google/gemini-2.5-flash-lite-preview-06-17
+      litellm:
+      - gemini/gemini-2.5-flash-lite-preview-06-17
+  google/gemini-2.5-flash-lite-preview-09-2025:
+    aliases:
+      openrouter:
+      - google/gemini-2.5-flash-lite-preview-09-2025
+      litellm:
+      - gemini/gemini-2.5-flash-lite-preview-09-2025
+  google/gemini-2.5-flash-preview-04-17:
+    aliases:
+      openrouter:
+      - google/gemini-2.5-flash-preview-04-17
+      litellm:
+      - gemini/gemini-2.5-flash-preview-04-17
+  google/gemini-2.5-flash-preview-05-20:
+    aliases:
+      openrouter:
+      - google/gemini-2.5-flash-preview-05-20
+      litellm:
+      - gemini/gemini-2.5-flash-preview-05-20
+  google/gemini-2.5-flash-preview-09-2025:
+    aliases:
+      openrouter:
+      - google/gemini-2.5-flash-preview-09-2025
+      litellm:
+      - gemini/gemini-2.5-flash-preview-09-2025
+  google/gemini-2.5-pro:
+    aliases:
+      openrouter:
+      - google/gemini-2.5-pro
+      litellm:
+      - openrouter/google/gemini-2.5-pro
+      - gemini/gemini-2.5-pro
+  google/gemini-2.5-pro-exp-03-25:
+    aliases:
+      openrouter:
+      - google/gemini-2.5-pro-exp-03-25
+      litellm:
+      - gemini/gemini-2.5-pro-exp-03-25
+  google/gemini-2.5-pro-preview:
+    aliases:
+      openrouter:
+      - google/gemini-2.5-pro-preview-06-05
+      litellm:
+      - openrouter/google/gemini-2.5-pro-preview
+      - gemini/gemini-2.5-pro-preview-06-05
+  google/gemini-2.5-pro-preview-03-25:
+    aliases:
+      openrouter:
+      - google/gemini-2.5-pro-preview-03-25
+      litellm:
+      - gemini/gemini-2.5-pro-preview-03-25
+  google/gemini-3-flash-preview:
+    aliases:
+      openrouter:
+      - google/gemini-3-flash-preview-20251217
+      litellm:
+      - openrouter/google/gemini-3-flash-preview
+      - gemini/gemini-3-flash-preview
+  google/gemini-3-pro-preview:
+    aliases:
+      openrouter:
+      - google/gemini-3-pro-preview-20251117
+      litellm:
+      - openrouter/google/gemini-3-pro-preview
+      - gemini/gemini-3-pro-preview
+  google/gemini-3.1-flash-lite:
+    aliases:
+      openrouter:
+      - google/gemini-3.1-flash-lite-20260507
+      litellm:
+      - openrouter/google/gemini-3.1-flash-lite
+      - gemini/gemini-3.1-flash-lite
+  google/gemini-3.1-flash-lite-preview:
+    aliases:
+      openrouter:
+      - google/gemini-3.1-flash-lite-preview-20260303
+      litellm:
+      - openrouter/google/gemini-3.1-flash-lite-preview
+      - gemini/gemini-3.1-flash-lite-preview
+  google/gemini-3.1-pro-preview:
+    aliases:
+      openrouter:
+      - google/gemini-3.1-pro-preview-20260219
+      litellm:
+      - openrouter/google/gemini-3.1-pro-preview
+      - gemini/gemini-3.1-pro-preview
+  google/gemini-3.1-pro-preview-customtools:
+    aliases:
+      openrouter:
+      - google/gemini-3.1-pro-preview-customtools-20260219
+      litellm:
+      - openrouter/google/gemini-3.1-pro-preview-customtools
+      - gemini/gemini-3.1-pro-preview-customtools
+  google/gemini-3.5-flash:
+    aliases:
+      openrouter:
+      - google/gemini-3.5-flash-20260519
+      litellm:
+      - openrouter/google/gemini-3.5-flash
+      - gemini/gemini-3.5-flash
+  google/gemini-3.5-flash-lite:
+    aliases:
+      openrouter:
+      - google/gemini-3.5-flash-lite-20260721
+      litellm:
+      - openrouter/google/gemini-3.5-flash-lite
+      - gemini/gemini-3.5-flash-lite
+  google/gemini-3.6-flash:
+    aliases:
+      openrouter:
+      - google/gemini-3.6-flash-20260721
+      litellm:
+      - openrouter/google/gemini-3.6-flash
+      - gemini/gemini-3.6-flash
+  google/gemini-3.7-flash:
+    aliases:
+      openrouter:
+      - google/gemini-3.7-flash-20260813
+      litellm:
+      - openrouter/google/gemini-3.7-flash
+      - gemini/gemini-3.7-flash
+  google/gemini-3.8-flash:
+    aliases:
+      openrouter:
+      - google/gemini-3.8-flash-20260902
+      litellm:
+      - openrouter/google/gemini-3.8-flash
+      - gemini/gemini-3.8-flash
+  google/gemini-embedding-001:
+    aliases:
+      openrouter:
+      - google/gemini-embedding-001
+      litellm:
+      - gemini/gemini-embedding-001
+  google/gemini-flash-1.5:
+    aliases:
+      openrouter:
+      - google/gemini-flash-1.5
+      litellm:
+      - gemini/gemini-1.5-flash
+  google/gemini-flash-1.5-8b:  # manual: only paid listing; carries Google's list price ($0.0375/$0.15); gemini/ key is a $0 free tier
+    aliases:
+      openrouter:
+      - google/gemini-flash-1.5-8b
+      litellm:
+      - deepinfra/google/gemini-1.5-flash-8b
+  google/gemini-pro-1.5:
+    aliases:
+      openrouter:
+      - google/gemini-pro-1.5
+      litellm:
+      - openrouter/google/gemini-pro-1.5
+  google/gemma-2-27b-it:
+    aliases:
+      openrouter:
+      - google/gemma-2-27b-it
+      litellm:
+      - openrouter/google/gemma-2-27b-it
+  google/gemma-3-12b-it:
+    aliases:
+      openrouter:
+      - google/gemma-3-12b-it
+      litellm:
+      - openrouter/google/gemma-3-12b-it
+  google/gemma-3-27b-it:
+    aliases:
+      openrouter:
+      - google/gemma-3-27b-it
+      litellm:
+      - openrouter/google/gemma-3-27b-it
+  google/gemma-3-4b-it:
+    aliases:
+      openrouter:
+      - google/gemma-3-4b-it
+      litellm:
+      - openrouter/google/gemma-3-4b-it
+  google/gemma-4-26b-a4b-it:
+    aliases:
+      openrouter:
+      - google/gemma-4-26b-a4b-it-20260403
+      litellm:
+      - openrouter/google/gemma-4-26b-a4b-it
+  google/gemma-4-31b-it:
+    aliases:
+      openrouter:
+      - google/gemma-4-31b-it-20260402
+      litellm:
+      - openrouter/google/gemma-4-31b-it
+  gryphe/mythomax-l2-13b:
+    aliases:
+      openrouter:
+      - gryphe/mythomax-l2-13b
+      litellm:
+      - openrouter/gryphe/mythomax-l2-13b
+  meta-llama/llama-3-70b-instruct:
+    aliases:
+      openrouter:
+      - meta-llama/llama-3-70b-instruct
+      litellm:
+      - openrouter/meta-llama/llama-3-70b-instruct
+  meta-llama/llama-3.1-70b-instruct:
+    aliases:
+      openrouter:
+      - meta-llama/llama-3.1-70b-instruct
+      litellm:
+      - openrouter/meta-llama/llama-3.1-70b-instruct
+  meta-llama/llama-3.1-8b-instruct:
+    aliases:
+      openrouter:
+      - meta-llama/llama-3.1-8b-instruct
+      litellm:
+      - openrouter/meta-llama/llama-3.1-8b-instruct
+  meta-llama/llama-3.2-1b-instruct:
+    aliases:
+      openrouter:
+      - meta-llama/llama-3.2-1b-instruct
+      litellm:
+      - openrouter/meta-llama/llama-3.2-1b-instruct
+  meta-llama/llama-3.2-3b-instruct:
+    aliases:
+      openrouter:
+      - meta-llama/llama-3.2-3b-instruct
+      litellm:
+      - openrouter/meta-llama/llama-3.2-3b-instruct
+  meta-llama/llama-3.3-70b-instruct:
+    aliases:
+      openrouter:
+      - meta-llama/llama-3.3-70b-instruct
+      litellm:
+      - openrouter/meta-llama/llama-3.3-70b-instruct
+  meta-llama/llama-4-maverick:
+    aliases:
+      openrouter:
+      - meta-llama/llama-4-maverick-17b-128e-instruct
+      litellm:
+      - openrouter/meta-llama/llama-4-maverick
+  meta-llama/llama-4-scout:
+    aliases:
+      openrouter:
+      - meta-llama/llama-4-scout-17b-16e-instruct
+      litellm:
+      - openrouter/meta-llama/llama-4-scout
+  meta/muse-spark-1.1:
+    aliases:
+      openrouter:
+      - meta/muse-spark-1.1-20260709
+      litellm:
+      - openrouter/meta/muse-spark-1.1
+  meta/muse-spark-1.2:
+    aliases:
+      openrouter:
+      - meta/muse-spark-1.2-20260805
+      litellm:
+      - openrouter/meta/muse-spark-1.2
+  meta/muse-spark-1.2-contributor:
+    aliases:
+      openrouter:
+      - meta/muse-spark-1.2-contributor-20260805
+      litellm:
+      - openrouter/meta/muse-spark-1.2-contributor
+  meta/muse-spark-1.3:
+    aliases:
+      openrouter:
+      - meta/muse-spark-1.3-20260902
+      litellm:
+      - openrouter/meta/muse-spark-1.3
+  meta/muse-spark-1.3-contributor:
+    aliases:
+      openrouter:
+      - meta/muse-spark-1.3-contributor-20260902
+      litellm:
+      - openrouter/meta/muse-spark-1.3-contributor
+  microsoft/phi-4:
+    aliases:
+      openrouter:
+      - microsoft/phi-4
+      litellm:
+      - openrouter/microsoft/phi-4
+  microsoft/wizardlm-2-8x22b:
+    aliases:
+      openrouter:
+      - microsoft/wizardlm-2-8x22b
+      litellm:
+      - openrouter/microsoft/wizardlm-2-8x22b
+  minimax/minimax-01:
+    aliases:
+      openrouter:
+      - minimax/minimax-01
+      litellm:
+      - openrouter/minimax/minimax-01
+  minimax/minimax-m2:
+    aliases:
+      openrouter:
+      - minimax/minimax-m2
+      litellm:
+      - openrouter/minimax/minimax-m2
+  minimax/minimax-m2.1:
+    aliases:
+      openrouter:
+      - minimax/minimax-m2.1
+      litellm:
+      - openrouter/minimax/minimax-m2.1
+  minimax/minimax-m2.5:
+    aliases:
+      openrouter:
+      - minimax/minimax-m2.5-20260211
+      litellm:
+      - openrouter/minimax/minimax-m2.5
+  minimax/minimax-m2.7:
+    aliases:
+      openrouter:
+      - minimax/minimax-m2.7-20260318
+      litellm:
+      - openrouter/minimax/minimax-m2.7
+  minimax/minimax-m3:
+    aliases:
+      openrouter:
+      - minimax/minimax-m3-20260531
+      litellm:
+      - openrouter/minimax/minimax-m3
+  mistralai/codestral-2508:
+    aliases:
+      openrouter:
+      - mistralai/codestral-2508
+      litellm:
+      - openrouter/mistralai/codestral-2508
+      - mistral/codestral-2508
+  mistralai/devstral-small-2505:
+    aliases:
+      openrouter:
+      - mistralai/devstral-small-2505
+      litellm:
+      - mistral/devstral-small-2505
+  mistralai/devstral-small-2507:
+    aliases:
+      openrouter:
+      - mistralai/devstral-small-2507
+      litellm:
+      - mistral/devstral-small-2507
+  mistralai/ministral-14b-2512:
+    aliases:
+      openrouter:
+      - mistralai/ministral-14b-2512
+      litellm:
+      - openrouter/mistralai/ministral-14b-2512
+      - mistral/ministral-14b-2512
+  mistralai/ministral-8b-2512:
+    aliases:
+      openrouter:
+      - mistralai/ministral-8b-2512
+      litellm:
+      - openrouter/mistralai/ministral-8b-2512
+      - mistral/ministral-8b-2512
+  mistralai/mistral-7b-instruct:
+    aliases:
+      openrouter:
+      - mistralai/mistral-7b-instruct
+      litellm:
+      - openrouter/mistralai/mistral-7b-instruct
+  mistralai/mistral-large-2407:
+    aliases:
+      openrouter:
+      - mistralai/mistral-large-2407
+      litellm:
+      - openrouter/mistralai/mistral-large-2407
+      - mistral/mistral-large-2407
+  mistralai/mistral-large-2411:
+    aliases:
+      openrouter:
+      - mistralai/mistral-large-2411
+      litellm:
+      - mistral/mistral-large-2411
+  mistralai/mistral-large-2512:
+    aliases:
+      openrouter:
+      - mistralai/mistral-large-2512
+      litellm:
+      - openrouter/mistralai/mistral-large-2512
+      - mistral/mistral-large-2512
+  mistralai/mistral-medium-3-5:
+    aliases:
+      openrouter:
+      - mistralai/mistral-medium-3.5-20260430
+      litellm:
+      - openrouter/mistralai/mistral-medium-3-5
+      - mistral/mistral-medium-3-5
+  mistralai/mistral-nemo:
+    aliases:
+      openrouter:
+      - mistralai/mistral-nemo
+      litellm:
+      - openrouter/mistralai/mistral-nemo
+  mistralai/mistral-small:
+    aliases:
+      openrouter:
+      - mistralai/mistral-small
+      litellm:
+      - mistral/mistral-small
+  mistralai/mistral-small-24b-instruct-2501:
+    aliases:
+      openrouter:
+      - mistralai/mistral-small-24b-instruct-2501
+      litellm:
+      - openrouter/mistralai/mistral-small-24b-instruct-2501
+  mistralai/mistral-small-3.1-24b-instruct:
+    aliases:
+      openrouter:
+      - mistralai/mistral-small-3.1-24b-instruct-2503
+      litellm:
+      - openrouter/mistralai/mistral-small-3.1-24b-instruct
+  mistralai/mistral-small-3.2-24b-instruct:
+    aliases:
+      openrouter:
+      - mistralai/mistral-small-3.2-24b-instruct-2506
+      litellm:
+      - openrouter/mistralai/mistral-small-3.2-24b-instruct
+  mistralai/mistral-tiny:
+    aliases:
+      openrouter:
+      - mistralai/mistral-tiny
+      litellm:
+      - mistral/mistral-tiny
+  mistralai/mixtral-8x22b-instruct:
+    aliases:
+      openrouter:
+      - mistralai/mixtral-8x22b-instruct
+      litellm:
+      - openrouter/mistralai/mixtral-8x22b-instruct
+  moonshotai/kimi-k2:
+    aliases:
+      openrouter:
+      - moonshotai/kimi-k2
+      litellm:
+      - openrouter/moonshotai/kimi-k2
+  moonshotai/kimi-k2-0905:
+    aliases:
+      openrouter:
+      - moonshotai/kimi-k2-0905
+      litellm:
+      - openrouter/moonshotai/kimi-k2-0905
+  moonshotai/kimi-k2-thinking:
+    aliases:
+      openrouter:
+      - moonshotai/kimi-k2-thinking-20251106
+      litellm:
+      - openrouter/moonshotai/kimi-k2-thinking
+      - moonshot/kimi-k2-thinking
+  moonshotai/kimi-k2.5:
+    aliases:
+      openrouter:
+      - moonshotai/kimi-k2.5-0127
+      litellm:
+      - openrouter/moonshotai/kimi-k2.5
+      - moonshot/kimi-k2.5
+  moonshotai/kimi-k2.6:
+    aliases:
+      openrouter:
+      - moonshotai/kimi-k2.6-20260420
+      litellm:
+      - openrouter/moonshotai/kimi-k2.6
+      - moonshot/kimi-k2.6
+  moonshotai/kimi-k2.7-code:
+    aliases:
+      openrouter:
+      - moonshotai/kimi-k2.7-code-20260612
+      litellm:
+      - openrouter/moonshotai/kimi-k2.7-code
+      - moonshot/kimi-k2.7-code
+  moonshotai/kimi-k3:
+    aliases:
+      openrouter:
+      - moonshotai/kimi-k3-20260715
+      litellm:
+      - openrouter/moonshotai/kimi-k3
+      - moonshot/kimi-k3
+  nousresearch/hermes-3-llama-3.1-405b:
+    aliases:
+      openrouter:
+      - nousresearch/hermes-3-llama-3.1-405b
+      litellm:
+      - openrouter/nousresearch/hermes-3-llama-3.1-405b
+  nousresearch/hermes-3-llama-3.1-70b:
+    aliases:
+      openrouter:
+      - nousresearch/hermes-3-llama-3.1-70b
+      litellm:
+      - openrouter/nousresearch/hermes-3-llama-3.1-70b
+  nvidia/nemotron-3-nano-30b-a3b:
+    aliases:
+      openrouter:
+      - nvidia/nemotron-3-nano-30b-a3b
+      litellm:
+      - openrouter/nvidia/nemotron-3-nano-30b-a3b
+  nvidia/nemotron-3-ultra-550b-a55b:
+    aliases:
+      openrouter:
+      - nvidia/nemotron-3-ultra-550b-a55b-20260604
+      litellm:
+      - openrouter/nvidia/nemotron-3-ultra-550b-a55b
+  openai/chatgpt-4o-latest:
+    aliases:
+      openrouter:
+      - openai/chatgpt-4o-latest
+      litellm:
+      - chatgpt-4o-latest
+  openai/gpt-3.5-turbo:
+    aliases:
+      openrouter:
+      - openai/gpt-3.5-turbo
+      litellm:
+      - openrouter/openai/gpt-3.5-turbo
+      - gpt-3.5-turbo
+  openai/gpt-4.1:
+    aliases:
+      openrouter:
+      - openai/gpt-4.1-2025-04-14
+      litellm:
+      - openrouter/openai/gpt-4.1
+      - openrouter/openai/gpt-4.1-2025-04-14
+      - gpt-4.1-2025-04-14
+      - gpt-4.1
+  openai/gpt-4.1-mini:
+    aliases:
+      openrouter:
+      - openai/gpt-4.1-mini-2025-04-14
+      litellm:
+      - openrouter/openai/gpt-4.1-mini
+      - openrouter/openai/gpt-4.1-mini-2025-04-14
+      - gpt-4.1-mini-2025-04-14
+      - gpt-4.1-mini
+  openai/gpt-4.1-nano:
+    aliases:
+      openrouter:
+      - openai/gpt-4.1-nano-2025-04-14
+      litellm:
+      - openrouter/openai/gpt-4.1-nano
+      - openrouter/openai/gpt-4.1-nano-2025-04-14
+      - gpt-4.1-nano-2025-04-14
+      - gpt-4.1-nano
+  openai/gpt-4o:
+    aliases:
+      openrouter:
+      - openai/gpt-4o
+      litellm:
+      - openrouter/openai/gpt-4o
+      - gpt-4o
+  openai/gpt-4o-2024-08-06:
+    aliases:
+      openrouter:
+      - openai/gpt-4o-2024-08-06
+      litellm:
+      - openrouter/openai/gpt-4o-2024-08-06
+      - gpt-4o-2024-08-06
+  openai/gpt-4o-2024-11-20:
+    aliases:
+      openrouter:
+      - openai/gpt-4o-2024-11-20
+      litellm:
+      - openrouter/openai/gpt-4o-2024-11-20
+      - gpt-4o-2024-11-20
+  openai/gpt-4o-mini:
+    aliases:
+      openrouter:
+      - openai/gpt-4o-mini
+      litellm:
+      - openrouter/openai/gpt-4o-mini
+      - gpt-4o-mini
+  openai/gpt-4o-mini-2024-07-18:
+    aliases:
+      openrouter:
+      - openai/gpt-4o-mini-2024-07-18
+      litellm:
+      - openrouter/openai/gpt-4o-mini-2024-07-18
+      - gpt-4o-mini-2024-07-18
+  openai/gpt-5:
+    aliases:
+      openrouter:
+      - openai/gpt-5-2025-08-07
+      litellm:
+      - openrouter/openai/gpt-5
+      - gpt-5-2025-08-07
+      - gpt-5
+  openai/gpt-5-chat:
+    aliases:
+      openrouter:
+      - openai/gpt-5-chat-2025-08-07
+      litellm:
+      - openrouter/openai/gpt-5-chat
+      - gpt-5-chat
+  openai/gpt-5-codex:
+    aliases:
+      openrouter:
+      - openai/gpt-5-codex
+      litellm:
+      - openrouter/openai/gpt-5-codex
+      - gpt-5-codex
+  openai/gpt-5-mini:
+    aliases:
+      openrouter:
+      - openai/gpt-5-mini-2025-08-07
+      litellm:
+      - openrouter/openai/gpt-5-mini
+      - gpt-5-mini-2025-08-07
+      - gpt-5-mini
+  openai/gpt-5-nano:
+    aliases:
+      openrouter:
+      - openai/gpt-5-nano-2025-08-07
+      litellm:
+      - openrouter/openai/gpt-5-nano
+      - gpt-5-nano-2025-08-07
+      - gpt-5-nano
+  openai/gpt-5.1:
+    aliases:
+      openrouter:
+      - openai/gpt-5.1-20251113
+      litellm:
+      - openrouter/openai/gpt-5.1
+      - gpt-5.1
+  openai/gpt-5.1-codex:
+    aliases:
+      openrouter:
+      - openai/gpt-5.1-codex-20251113
+      litellm:
+      - openrouter/openai/gpt-5.1-codex
+      - gpt-5.1-codex
+  openai/gpt-5.2:
+    aliases:
+      openrouter:
+      - openai/gpt-5.2-20251211
+      litellm:
+      - openrouter/openai/gpt-5.2
+      - gpt-5.2
+  openai/gpt-5.2-codex:
+    aliases:
+      openrouter:
+      - openai/gpt-5.2-codex-20260114
+      litellm:
+      - openrouter/openai/gpt-5.2-codex
+      - gpt-5.2-codex
+  openai/gpt-5.3-codex:
+    aliases:
+      openrouter:
+      - openai/gpt-5.3-codex-20260224
+      litellm:
+      - openrouter/openai/gpt-5.3-codex
+      - gpt-5.3-codex
+  openai/gpt-5.4:
+    aliases:
+      openrouter:
+      - openai/gpt-5.4-20260305
+      litellm:
+      - openrouter/openai/gpt-5.4
+      - gpt-5.4
+  openai/gpt-5.4-mini:
+    aliases:
+      openrouter:
+      - openai/gpt-5.4-mini-20260317
+      litellm:
+      - openrouter/openai/gpt-5.4-mini
+      - gpt-5.4-mini
+  openai/gpt-5.4-nano:
+    aliases:
+      openrouter:
+      - openai/gpt-5.4-nano-20260317
+      litellm:
+      - openrouter/openai/gpt-5.4-nano
+      - gpt-5.4-nano
+  openai/gpt-5.5:
+    aliases:
+      openrouter:
+      - openai/gpt-5.5-20260423
+      litellm:
+      - openrouter/openai/gpt-5.5
+      - gpt-5.5
+  openai/gpt-5.6-luna:
+    aliases:
+      openrouter:
+      - openai/gpt-5.6-luna-20260709
+      litellm:
+      - openrouter/openai/gpt-5.6-luna
+      - gpt-5.6-luna
+  openai/gpt-5.6-luna-pro:
+    aliases:
+      openrouter:
+      - openai/gpt-5.6-luna-pro-20260709
+      litellm:
+      - openrouter/openai/gpt-5.6-luna-pro
+  openai/gpt-5.6-sol:
+    aliases:
+      openrouter:
+      - openai/gpt-5.6-sol-20260709
+      litellm:
+      - openrouter/openai/gpt-5.6-sol
+      - gpt-5.6-sol
+  openai/gpt-5.6-sol-pro:
+    aliases:
+      openrouter:
+      - openai/gpt-5.6-sol-pro-20260709
+      litellm:
+      - openrouter/openai/gpt-5.6-sol-pro
+  openai/gpt-5.6-terra:
+    aliases:
+      openrouter:
+      - openai/gpt-5.6-terra-20260709
+      litellm:
+      - openrouter/openai/gpt-5.6-terra
+      - gpt-5.6-terra
+  openai/gpt-6-astra:
+    aliases:
+      openrouter:
+      - openai/gpt-6-astra-20260903
+      litellm:
+      - openrouter/openai/gpt-6-astra
+      - gpt-6-astra
+  openai/gpt-6-luna:
+    aliases:
+      openrouter:
+      - openai/gpt-6-luna-20260922
+      litellm:
+      - openrouter/openai/gpt-6-luna
+      - gpt-6-luna
+  openai/gpt-6-luna-pro:
+    aliases:
+      openrouter:
+      - openai/gpt-6-luna-pro-20260922
+      litellm:
+      - openrouter/openai/gpt-6-luna-pro
+  openai/gpt-6-sol:
+    aliases:
+      openrouter:
+      - openai/gpt-6-sol-20260922
+      litellm:
+      - openrouter/openai/gpt-6-sol
+      - gpt-6-sol
+  openai/gpt-6.1-sol:
+    aliases:
+      openrouter:
+      - openai/gpt-6.1-sol-20260929
+      litellm:
+      - openrouter/openai/gpt-6.1-sol
+      - gpt-6.1-sol
+  openai/gpt-oss-120b:
+    aliases:
+      openrouter:
+      - openai/gpt-oss-120b
+      litellm:
+      - openrouter/openai/gpt-oss-120b
+  openai/gpt-oss-20b:
+    aliases:
+      openrouter:
+      - openai/gpt-oss-20b
+      litellm:
+      - openrouter/openai/gpt-oss-20b
+  openai/gpt-oss-safeguard-20b:
+    aliases:
+      openrouter:
+      - openai/gpt-oss-safeguard-20b
+      litellm:
+      - openrouter/openai/gpt-oss-safeguard-20b
+  openai/o1:
+    aliases:
+      openrouter:
+      - openai/o1-2024-12-17
+      litellm:
+      - openrouter/openai/o1
+      - o1-2024-12-17
+      - o1
+  openai/o1-mini:
+    aliases:
+      openrouter:
+      - openai/o1-mini
+      litellm:
+      - openrouter/openai/o1-mini
+      - o1-mini
+  openai/o1-preview:
+    aliases:
+      openrouter:
+      - openai/o1-preview
+      litellm:
+      - openrouter/openai/o1-preview
+      - o1-preview
+  openai/o3:
+    aliases:
+      openrouter:
+      - openai/o3-2025-04-16
+      litellm:
+      - openrouter/openai/o3
+      - o3-2025-04-16
+      - o3
+  openai/o3-mini:
+    aliases:
+      openrouter:
+      - openai/o3-mini-2025-01-31
+      litellm:
+      - openrouter/openai/o3-mini
+      - o3-mini-2025-01-31
+      - o3-mini
+  openai/o3-mini-high:
+    aliases:
+      openrouter:
+      - openai/o3-mini-high-2025-01-31
+      litellm:
+      - openrouter/openai/o3-mini-high
+  openai/o4-mini:
+    aliases:
+      openrouter:
+      - openai/o4-mini-2025-04-16
+      litellm:
+      - openrouter/openai/o4-mini
+      - o4-mini-2025-04-16
+      - o4-mini
+  openai/o4-mini-high:
+    aliases:
+      openrouter:
+      - openai/o4-mini-high-2025-04-16
+      litellm:
+      - openrouter/openai/o4-mini-high
+  openai/text-embedding-3-large:
+    aliases:
+      openrouter:
+      - openai/text-embedding-3-large
+      litellm:
+      - text-embedding-3-large
+  openai/text-embedding-3-small:
+    aliases:
+      openrouter:
+      - openai/text-embedding-3-small
+      litellm:
+      - text-embedding-3-small
+  perplexity/pplx-embed-v1-0.6B:
+    aliases:
+      openrouter:
+      - perplexity/pplx-embed-v1-0.6B
+      litellm:
+      - perplexity/pplx-embed-v1-0.6b
+  poolside/laguna-s-2.1:
+    aliases:
+      openrouter:
+      - poolside/laguna-s-2.1-20260720
+      litellm:
+      - openrouter/poolside/laguna-s-2.1
+  qwen/qwen-2.5-72b-instruct:
+    aliases:
+      openrouter:
+      - qwen/qwen-2.5-72b-instruct
+      litellm:
+      - openrouter/qwen/qwen-2.5-72b-instruct
+  qwen/qwen-2.5-7b-instruct:
+    aliases:
+      openrouter:
+      - qwen/qwen-2.5-7b-instruct
+      litellm:
+      - openrouter/qwen/qwen-2.5-7b-instruct
+  qwen/qwen-2.5-coder-32b-instruct:
+    aliases:
+      openrouter:
+      - qwen/qwen-2.5-coder-32b-instruct
+      litellm:
+      - openrouter/qwen/qwen-2.5-coder-32b-instruct
+  qwen/qwen-plus:
+    aliases:
+      openrouter:
+      - qwen/qwen-plus-2025-01-25
+      litellm:
+      - openrouter/qwen/qwen-plus
+      - dashscope/qwen-plus-2025-01-25
+      - dashscope/qwen-plus
+  qwen/qwen-turbo-2024-11-01:
+    aliases:
+      openrouter:
+      - qwen/qwen-turbo-2024-11-01
+      litellm:
+      - dashscope/qwen-turbo-2024-11-01
+  qwen/qwen2.5-vl-72b-instruct:
+    aliases:
+      openrouter:
+      - qwen/qwen2.5-vl-72b-instruct
+      litellm:
+      - openrouter/qwen/qwen2.5-vl-72b-instruct
+  qwen/qwen3-14b:
+    aliases:
+      openrouter:
+      - qwen/qwen3-14b-04-28
+      litellm:
+      - openrouter/qwen/qwen3-14b
+  qwen/qwen3-235b-a22b:
+    aliases:
+      openrouter:
+      - qwen/qwen3-235b-a22b-04-28
+      litellm:
+      - openrouter/qwen/qwen3-235b-a22b
+  qwen/qwen3-235b-a22b-2507:
+    aliases:
+      openrouter:
+      - qwen/qwen3-235b-a22b-07-25
+      litellm:
+      - openrouter/qwen/qwen3-235b-a22b-2507
+  qwen/qwen3-235b-a22b-thinking-2507:
+    aliases:
+      openrouter:
+      - qwen/qwen3-235b-a22b-thinking-2507
+      litellm:
+      - openrouter/qwen/qwen3-235b-a22b-thinking-2507
+  qwen/qwen3-30b-a3b:
+    aliases:
+      openrouter:
+      - qwen/qwen3-30b-a3b-04-28
+      litellm:
+      - openrouter/qwen/qwen3-30b-a3b
+      - dashscope/qwen3-30b-a3b
+  qwen/qwen3-30b-a3b-instruct-2507:
+    aliases:
+      openrouter:
+      - qwen/qwen3-30b-a3b-instruct-2507
+      litellm:
+      - openrouter/qwen/qwen3-30b-a3b-instruct-2507
+  qwen/qwen3-32b:
+    aliases:
+      openrouter:
+      - qwen/qwen3-32b-04-28
+      litellm:
+      - openrouter/qwen/qwen3-32b
+  qwen/qwen3-8b:
+    aliases:
+      openrouter:
+      - qwen/qwen3-8b-04-28
+      litellm:
+      - openrouter/qwen/qwen3-8b
+  qwen/qwen3-coder:
+    aliases:
+      openrouter:
+      - qwen/qwen3-coder-480b-a35b-07-25
+      litellm:
+      - openrouter/qwen/qwen3-coder
+  qwen/qwen3-coder-30b-a3b-instruct:
+    aliases:
+      openrouter:
+      - qwen/qwen3-coder-30b-a3b-instruct
+      litellm:
+      - openrouter/qwen/qwen3-coder-30b-a3b-instruct
+  qwen/qwen3-coder-next:
+    aliases:
+      openrouter:
+      - qwen/qwen3-coder-next-2025-02-03
+      litellm:
+      - openrouter/qwen/qwen3-coder-next
+  qwen/qwen3-coder-plus:
+    aliases:
+      openrouter:
+      - qwen/qwen3-coder-plus
+      litellm:
+      - openrouter/qwen/qwen3-coder-plus
+      - dashscope/qwen3-coder-plus
+  qwen/qwen3-next-80b-a3b-instruct:
+    aliases:
+      openrouter:
+      - qwen/qwen3-next-80b-a3b-instruct-2509
+      litellm:
+      - openrouter/qwen/qwen3-next-80b-a3b-instruct
+      - dashscope/qwen3-next-80b-a3b-instruct
+  qwen/qwen3-next-80b-a3b-thinking:
+    aliases:
+      openrouter:
+      - qwen/qwen3-next-80b-a3b-thinking-2509
+      litellm:
+      - openrouter/qwen/qwen3-next-80b-a3b-thinking
+      - dashscope/qwen3-next-80b-a3b-thinking
+  qwen/qwen3-vl-235b-a22b-instruct:
+    aliases:
+      openrouter:
+      - qwen/qwen3-vl-235b-a22b-instruct
+      litellm:
+      - openrouter/qwen/qwen3-vl-235b-a22b-instruct
+      - dashscope/qwen3-vl-235b-a22b-instruct
+  qwen/qwen3-vl-235b-a22b-thinking:
+    aliases:
+      openrouter:
+      - qwen/qwen3-vl-235b-a22b-thinking
+      litellm:
+      - openrouter/qwen/qwen3-vl-235b-a22b-thinking
+      - dashscope/qwen3-vl-235b-a22b-thinking
+  qwen/qwen3-vl-32b-instruct:
+    aliases:
+      openrouter:
+      - qwen/qwen3-vl-32b-instruct
+      litellm:
+      - openrouter/qwen/qwen3-vl-32b-instruct
+      - dashscope/qwen3-vl-32b-instruct
+  qwen/qwen3-vl-8b-instruct:
+    aliases:
+      openrouter:
+      - qwen/qwen3-vl-8b-instruct
+      litellm:
+      - openrouter/qwen/qwen3-vl-8b-instruct
+  qwen/qwen3.5-35b-a3b:
+    aliases:
+      openrouter:
+      - qwen/qwen3.5-35b-a3b-20260224
+      litellm:
+      - openrouter/qwen/qwen3.5-35b-a3b
+  qwen/qwen3.5-397b-a17b:
+    aliases:
+      openrouter:
+      - qwen/qwen3.5-397b-a17b-20260216
+      litellm:
+      - openrouter/qwen/qwen3.5-397b-a17b
+  qwen/qwen3.5-9b:
+    aliases:
+      openrouter:
+      - qwen/qwen3.5-9b-20260310
+      litellm:
+      - openrouter/qwen/qwen3.5-9b
+  qwen/qwen3.5-flash-02-23:
+    aliases:
+      openrouter:
+      - qwen/qwen3.5-flash-20260224
+      litellm:
+      - openrouter/qwen/qwen3.5-flash-02-23
+  qwen/qwen3.5-plus-02-15:
+    aliases:
+      openrouter:
+      - qwen/qwen3.5-plus-20260216
+      litellm:
+      - openrouter/qwen/qwen3.5-plus-02-15
+  qwen/qwen3.6-35b-a3b:
+    aliases:
+      openrouter:
+      - qwen/qwen3.6-35b-a3b-20260415
+      litellm:
+      - openrouter/qwen/qwen3.6-35b-a3b
+  qwen/qwen3.6-flash:
+    aliases:
+      openrouter:
+      - qwen/qwen3.6-flash
+      litellm:
+      - openrouter/qwen/qwen3.6-flash
+  qwen/qwen3.6-plus:
+    aliases:
+      openrouter:
+      - qwen/qwen3.6-plus-04-02
+      litellm:
+      - openrouter/qwen/qwen3.6-plus
+  qwen/qwen3.7-flash:
+    aliases:
+      openrouter:
+      - qwen/qwen3.7-flash-20260727
+      litellm:
+      - openrouter/qwen/qwen3.7-flash
+  qwen/qwen3.7-max:
+    aliases:
+      openrouter:
+      - qwen/qwen3.7-max-20260520
+      litellm:
+      - openrouter/qwen/qwen3.7-max
+      - dashscope/qwen3.7-max
+  qwen/qwen3.7-plus:
+    aliases:
+      openrouter:
+      - qwen/qwen3.7-plus-20260602
+      litellm:
+      - openrouter/qwen/qwen3.7-plus
+      - dashscope/qwen3.7-plus
+  qwen/qwen3.8-27b:
+    aliases:
+      openrouter:
+      - qwen/qwen3.8-27b-20260814
+      litellm:
+      - openrouter/qwen/qwen3.8-27b
+  qwen/qwen3.8-flash:
+    aliases:
+      openrouter:
+      - qwen/qwen3.8-flash-20260826
+      litellm:
+      - openrouter/qwen/qwen3.8-flash
+      - dashscope/qwen3.8-flash
+  qwen/qwen3.8-max:
+    aliases:
+      openrouter:
+      - qwen/qwen3.8-max-20260803
+      litellm:
+      - openrouter/qwen/qwen3.8-max
+      - dashscope/qwen3.8-max
+  qwen/qwen3.8-max-0902:
+    aliases:
+      openrouter:
+      - qwen/qwen3.8-max-20260902
+      litellm:
+      - openrouter/qwen/qwen3.8-max-0902
+  sao10k/l3.1-euryale-70b:
+    aliases:
+      openrouter:
+      - sao10k/l3.1-euryale-70b
+      litellm:
+      - openrouter/sao10k/l3.1-euryale-70b
+  sao10k/l3.3-euryale-70b:
+    aliases:
+      openrouter:
+      - sao10k/l3.3-euryale-70b-v2.3
+      litellm:
+      - openrouter/sao10k/l3.3-euryale-70b
+  stealth/space-bunny-alpha:
+    aliases:
+      openrouter:
+      - stealth/space-bunny-alpha
+      litellm:
+      - openrouter/stealth/space-bunny-alpha
+  stealth/union-alpha:
+    aliases:
+      openrouter:
+      - stealth/union-alpha
+      litellm:
+      - openrouter/stealth/union-alpha
+  stepfun/step-3.5-flash:
+    aliases:
+      openrouter:
+      - stepfun/step-3.5-flash
+      litellm:
+      - openrouter/stepfun/step-3.5-flash
+  stepfun/step-3.7-flash:
+    aliases:
+      openrouter:
+      - stepfun/step-3.7-flash-20260528
+      litellm:
+      - openrouter/stepfun/step-3.7-flash
+  tencent/hy3:
+    aliases:
+      openrouter:
+      - tencent/hy3-20260706
+      litellm:
+      - openrouter/tencent/hy3
+  tencent/hy3-preview:
+    aliases:
+      openrouter:
+      - tencent/hy3-preview-20260421
+      litellm:
+      - openrouter/tencent/hy3-preview
+  tencent/hy4-preview:
+    aliases:
+      openrouter:
+      - tencent/hy4-preview-20260827
+      litellm:
+      - openrouter/tencent/hy4-preview
+  thedrummer/unslopnemo-12b:
+    aliases:
+      openrouter:
+      - thedrummer/unslopnemo-12b
+      litellm:
+      - openrouter/thedrummer/unslopnemo-12b
+  typesafe/jev-1.13:
+    aliases:
+      openrouter:
+      - typesafe/jev-1.13-20260917
+      litellm:
+      - openrouter/typesafe/jev-1.13
+  upstage/solar-pro4:
+    aliases:
+      openrouter:
+      - upstage/solar-pro4-20260810
+      litellm:
+      - openrouter/upstage/solar-pro4
+  x-ai/grok-2-1212:
+    aliases:
+      openrouter:
+      - x-ai/grok-2-1212
+      litellm:
+      - xai/grok-2-1212
+  x-ai/grok-3-beta:
+    aliases:
+      openrouter:
+      - x-ai/grok-3-beta
+      litellm:
+      - xai/grok-3-beta
+  x-ai/grok-3-mini:
+    aliases:
+      openrouter:
+      - x-ai/grok-3-mini
+      litellm:
+      - xai/grok-3-mini
+  x-ai/grok-3-mini-beta:
+    aliases:
+      openrouter:
+      - x-ai/grok-3-mini-beta
+      litellm:
+      - xai/grok-3-mini-beta
+  x-ai/grok-4:
+    aliases:
+      openrouter:
+      - x-ai/grok-4-07-09
+      litellm:
+      - xai/grok-4-0709
+  x-ai/grok-4-fast:
+    aliases:
+      openrouter:
+      - x-ai/grok-4-fast
+      litellm:
+      - xai/grok-4-fast-reasoning
+      - xai/grok-4-fast-non-reasoning
+  x-ai/grok-4.1-fast:
+    aliases:
+      openrouter:
+      - x-ai/grok-4.1-fast
+      litellm:
+      - xai/grok-4-1-fast
+  x-ai/grok-4.20:
+    aliases:
+      openrouter:
+      - x-ai/grok-4.20-20260309
+      litellm:
+      - openrouter/x-ai/grok-4.20
+      - xai/grok-4.20
+  x-ai/grok-4.3:
+    aliases:
+      openrouter:
+      - x-ai/grok-4.3-20260430
+      litellm:
+      - openrouter/x-ai/grok-4.3
+      - xai/grok-4.3
+  x-ai/grok-4.5:
+    aliases:
+      openrouter:
+      - x-ai/grok-4.5-20260708
+      litellm:
+      - openrouter/x-ai/grok-4.5
+      - xai/grok-4.5
+  x-ai/grok-4.6:
+    aliases:
+      openrouter:
+      - x-ai/grok-4.6-20260810
+      litellm:
+      - openrouter/x-ai/grok-4.6
+      - xai/grok-4.6
+  x-ai/grok-4.7:
+    aliases:
+      openrouter:
+      - x-ai/grok-4.7-20260916
+      litellm:
+      - openrouter/x-ai/grok-4.7
+      - xai/grok-4.7
+  x-ai/grok-code-fast-1:
+    aliases:
+      openrouter:
+      - x-ai/grok-code-fast-1
+      litellm:
+      - xai/grok-code-fast-1
+  xiaomi/mimo-v2-flash:
+    aliases:
+      openrouter:
+      - xiaomi/mimo-v2-flash-20251210
+      litellm:
+      - openrouter/xiaomi/mimo-v2-flash
+  xiaomi/mimo-v2.5:
+    aliases:
+      openrouter:
+      - xiaomi/mimo-v2.5-20260422
+      litellm:
+      - openrouter/xiaomi/mimo-v2.5
+  xiaomi/mimo-v2.5-pro:
+    aliases:
+      openrouter:
+      - xiaomi/mimo-v2.5-pro-20260422
+      litellm:
+      - openrouter/xiaomi/mimo-v2.5-pro
+  xiaomi/mimo-v2.6-flash:
+    aliases:
+      openrouter:
+      - xiaomi/mimo-v2.6-flash-20260921
+      litellm:
+      - openrouter/xiaomi/mimo-v2.6-flash
+      - xiaomi_mimo/mimo-v2.6-flash
+  xiaomi/mimo-v2.6-pro:
+    aliases:
+      openrouter:
+      - xiaomi/mimo-v2.6-pro-20260921
+      litellm:
+      - openrouter/xiaomi/mimo-v2.6-pro
+      - xiaomi_mimo/mimo-v2.6-pro
+  z-ai/glm-4.5:
+    aliases:
+      openrouter:
+      - z-ai/glm-4.5
+      litellm:
+      - openrouter/z-ai/glm-4.5
+      - zai/glm-4.5
+  z-ai/glm-4.5-air:
+    aliases:
+      openrouter:
+      - z-ai/glm-4.5-air
+      litellm:
+      - openrouter/z-ai/glm-4.5-air
+      - zai/glm-4.5-air
+  z-ai/glm-4.5v:
+    aliases:
+      openrouter:
+      - z-ai/glm-4.5v
+      litellm:
+      - openrouter/z-ai/glm-4.5v
+      - zai/glm-4.5v
+  z-ai/glm-4.6:
+    aliases:
+      openrouter:
+      - z-ai/glm-4.6
+      litellm:
+      - openrouter/z-ai/glm-4.6
+      - zai/glm-4.6
+  z-ai/glm-4.7:
+    aliases:
+      openrouter:
+      - z-ai/glm-4.7-20251222
+      litellm:
+      - openrouter/z-ai/glm-4.7
+      - zai/glm-4.7
+  z-ai/glm-4.7-flash:
+    aliases:
+      openrouter:
+      - z-ai/glm-4.7-flash-20260119
+      litellm:
+      - openrouter/z-ai/glm-4.7-flash
+  z-ai/glm-5:
+    aliases:
+      openrouter:
+      - z-ai/glm-5-20260211
+      litellm:
+      - openrouter/z-ai/glm-5
+      - zai/glm-5
+  z-ai/glm-5-turbo:
+    aliases:
+      openrouter:
+      - z-ai/glm-5-turbo-20260315
+      litellm:
+      - openrouter/z-ai/glm-5-turbo
+  z-ai/glm-5.1:
+    aliases:
+      openrouter:
+      - z-ai/glm-5.1-20260406
+      litellm:
+      - openrouter/z-ai/glm-5.1
+      - zai/glm-5.1
+  z-ai/glm-5.2:
+    aliases:
+      openrouter:
+      - z-ai/glm-5.2-20260616
+      litellm:
+      - openrouter/z-ai/glm-5.2
+      - zai/glm-5.2
+  z-ai/glm-5.3:
+    aliases:
+      openrouter:
+      - z-ai/glm-5.3-20260816
+      litellm:
+      - openrouter/z-ai/glm-5.3
+      - zai/glm-5.3
+  z-ai/glm-5.3-flash:
+    aliases:
+      openrouter:
+      - z-ai/glm-5.3-flash-20260826
+      litellm:
+      - openrouter/z-ai/glm-5.3-flash
+      - zai/glm-5.3-flash
+  z-ai/glm-5.3-flashx:
+    aliases:
+      openrouter:
+      - z-ai/glm-5.3-flashx-20260918
+      litellm:
+      - openrouter/z-ai/glm-5.3-flashx
+  z-ai/glm-5v-turbo:
+    aliases:
+      openrouter:
+      - z-ai/glm-5v-turbo-20260401
+      litellm:
+      - openrouter/z-ai/glm-5v-turbo
