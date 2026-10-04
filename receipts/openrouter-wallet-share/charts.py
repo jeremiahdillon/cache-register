@@ -50,7 +50,12 @@ def line_chart(story: Story, width: int, height: int, font_scale: float = 1.0, i
     weeks = sorted(g["week"].unique().to_list())
     last = weeks[-1]
     y_max = min(1.0, round(g["share"].max() * 1.12 + 0.05, 1))
-    pad = max(timedelta(days=24), (last - weeks[0]) * 0.14)  # room for end labels, scaled to the span
+    # Room for the end labels ("Everyone else  2%"), in pixels, converted to days on this chart's x scale.
+    chars = max(len(f"{grp}  00%") for grp in g["group"].unique().to_list())
+    label_px = (14 + chars * 0.56 * 16 + 10) * font_scale
+    px = width if isinstance(width, int | float) else 900  # responsive HTML ("container"): a typical width
+    plot_px = max(px - 70 * font_scale - label_px, 1.0)
+    pad = max(timedelta(days=7), (last - weeks[0]) * (label_px / plot_px))
     x_dom = [weeks[0].isoformat(), (last + pad).isoformat()]
     x_scale = alt.Scale(type="utc", domain=x_dom)
     ticks, label = x_ticks(weeks)
