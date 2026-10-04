@@ -1,26 +1,29 @@
 {
   "as_of": "2026-10-02",
   "cache_register_version": "0.0.1",
-  "data_hash": "676502c386f17749baf0747dd9076e65f592a829fdbf5b0bd0955c6593f33ef9",
+  "data_hash": "63f6b88fb1ff184ed167f2080c6054801889779a2d8ad16f3c45841d35a64ded",
   "folder": "receipts/openrouter-wallet-share",
   "git_dirty": true,
-  "git_sha": "f852fb0fe981d8050b21bd5a3b99fc14e4ead353",
-  "inputs_hash": "92dff9b77d2fac491e415d0aebe4670d78d018386a027d0e0985cc373ad136ab",
+  "git_sha": "2b979616676c09f713230904ea35f8c655f0624a",
+  "inputs_hash": "fe044e7b34f16d27ffc68c8d145c288113399dc2b4fc61b73cd6120aa6a9a44e",
   "kind": "receipt",
   "outputs": {
-    "share-lines.linkedin_png.png": "b66b920c76dcf904f3108e0f1c8f3d5712a7bd8c29ce1a7c2a4a7c83cb2d6a75",
-    "share-lines.x_png.png": "7bc1b5b9f2406231bb6ef854666cdf4b355eb944aab49477176135de3c0faeb3",
-    "share-race.linkedin_video.mp4": "57a0a8260f3e54019f354a415fbb19e96b518c36d2dccaccb078c0de99fbca6c",
-    "share-race.x_video.mp4": "37971e1ec23749a8b83f1cffc1742e5b1654e863eb18dd430ee35c1cf7aa8528"
+    "data.json": "9c58ba433c5b197e2477aaf7f73aaf11c23c746cc99b059f1f2301f309d72f51",
+    "share-lines.blog_html.html": "0354ee2417493a86f4052d9098bf33a74c7e692c6bdaffb524aea1116979f43a",
+    "share-lines.linkedin_png.png": "0d447e6a96e525ab655d1d6b045e1b346ed166cdd9a48dc74c88fba56e063a77",
+    "share-lines.x_png.png": "8214dd7f6765f7d25278afa5784a42262bac370fc1495613a13919678d57b49a",
+    "share-race.linkedin_video.mp4": "875b91c87c4af7cfe0280e43dd45c7f2d7481f23ea17013521bdefa5e5a2587f",
+    "share-race.x_video.mp4": "cfa05d7deb3891e4623ebc2dc203a76f6dbf5c213b7b69f7577468535eade267"
   },
   "sources": {
-    "openrouter_models": {
-      "class": "Author-only",
-      "content_sha256": "377f563c8e15ea843573a917ababcb79ba44415a34eabca5b1d42c766f3a9767",
-      "fetch_date": "2026-10-02",
+    "litellm_prices": {
+      "class": "Exact",
+      "content_sha256": "5cb808cd324d061a35873d64fdf69c6102c05871d603926c4f33749265ce7f8b",
+      "revision_date": "2026-10-02",
       "vintage": {
-        "kind": "snapshot",
-        "value": "2026-10-02"
+        "date": "2026-10-02",
+        "kind": "git_commit",
+        "value": "22bd49e2311ec0314da6ed4ed25e685baf1f1358"
       },
       "vintage_after_as_of": false
     },
@@ -40,8 +43,5 @@
     }
   },
   "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
-  "withheld": {
-    "data.json": "redistribution not allowed for: openrouter_models",
-    "share-lines.blog_html.html": "redistribution not allowed for: openrouter_models"
-  }
+  "withheld": {}
 }
