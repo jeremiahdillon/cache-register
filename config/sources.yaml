@@ -26,7 +26,9 @@ sources:
   - id: openrouter_models
     history: snapshot
     revisions: none
-    redistribution: unknown
+    # Verified 2026-10-04 (SOURCE.md): no licence is granted for /models; derived charts publish
+    # only aggregated estimates, never the price list.
+    redistribution: forbidden
     derived_charts: allowed-with-attribution
     attribution: "OpenRouter model pricing (openrouter.ai/models)"
     cadence: daily

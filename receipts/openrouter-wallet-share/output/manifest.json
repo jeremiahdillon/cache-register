@@ -4,8 +4,8 @@
   "data_hash": "676502c386f17749baf0747dd9076e65f592a829fdbf5b0bd0955c6593f33ef9",
   "folder": "receipts/openrouter-wallet-share",
   "git_dirty": true,
-  "git_sha": "2cbb53bf9b104f4397d2c70b1462be6e86f79d0a",
-  "inputs_hash": "eefff381c4d19c3f37f77a28eea874050ee805ce7a2b0b941a864633cbf5ae15",
+  "git_sha": "f852fb0fe981d8050b21bd5a3b99fc14e4ead353",
+  "inputs_hash": "92dff9b77d2fac491e415d0aebe4670d78d018386a027d0e0985cc373ad136ab",
   "kind": "receipt",
   "outputs": {
     "share-lines.linkedin_png.png": "b66b920c76dcf904f3108e0f1c8f3d5712a7bd8c29ce1a7c2a4a7c83cb2d6a75",
@@ -41,7 +41,7 @@
   },
   "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
   "withheld": {
-    "data.json": "redistribution not confirmed for: openrouter_models",
-    "share-lines.blog_html.html": "redistribution not confirmed for: openrouter_models"
+    "data.json": "redistribution not allowed for: openrouter_models",
+    "share-lines.blog_html.html": "redistribution not allowed for: openrouter_models"
   }
 }

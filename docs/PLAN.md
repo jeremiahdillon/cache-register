@@ -47,7 +47,7 @@ Every source gets classified on the fields below, recorded in its `SOURCE.md` an
 | # | Source | Content | Access | history | Redistribution (to verify) |
 |---|---|---|---|---|---|
 | 1 | **LiteLLM `model_prices_and_context_window.json`** | Per-model input/output/cache prices, context windows, ~2023→today | Public GitHub file; replay its **git history** for a native price time series | native | allowed (MIT) |
-| 2 | **OpenRouter models API** (`/api/v1/models`) | Catalog, pricing (prompt/completion), context, modality, created date | Public; key optional | snapshot | unknown (verify) |
+| 2 | **OpenRouter models API** (`/api/v1/models`) | Catalog, pricing (prompt/completion), context, modality, created date | Public; key optional | snapshot | **forbidden** (verified 2026-10-04: no licence for `/models`; derived charts only) |
 | 3 | **OpenRouter datasets API** (verified 2026-10-02) — `GET /api/v1/datasets/rankings-daily` (top-50 models by tokens per day/week/month + one `other` row; `total_tokens` only, no input/output split, no $), `GET /api/v1/datasets/app-rankings` (top public apps by tokens, incl. `trending`), `GET /api/v1/datasets/session-cost` (weekly median **USD per session** by harness × model) | Market token share by model/vendor/app; real per-session spend for coding harnesses | Any OpenRouter API key; 30 req/min per key, 500 req/day per account; history from **2025-01-01** | native | **CC BY 4.0** — reuse and republish with attribution to OpenRouter |
 | 4 | **Artificial Analysis API** | Intelligence index, per-eval scores, price, output speed, latency | Free API key; attribution required | snapshot (verify whether historical endpoints exist) | attribution required; raw redistribution likely forbidden |
 | 5 | **LMArena leaderboard** | Arena scores over time | Public (HF datasets / published leaderboard files) — VERIFY historical availability | native? | verify |
@@ -518,7 +518,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | 0. Scaffold & security | **Done** — guard + pinned gitleaks in the pre-push hook (the gate; straight-to-main workflow), CI backstop, push protection, Pages short links on cacheregister.dev |
 | 0.5 Vertical slice | **Done** — OpenRouter rankings + model prices, marts, first receipt `receipts/openrouter-wallet-share`; motion renderer A chosen (§6.3) |
 | Layout | **Done** — explorations vs receipts, scoped build, `reproduce` (`docs/plans/2026-10-03-explore-and-receipts.md`) |
-| 1. Source verification | **Next** — start with `openrouter_models` terms (`redistribution` and `derived_charts`): confirming them unlocks the receipt's `blog_html` and `data.json` |
+| 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), `derived_charts` kept on the author's reading; the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
 | 2. Tier-1 adapters | **Next after 1** — LiteLLM price history first: replaces the price snapshot in `010_openrouter_usage`, makes the first receipt Exact-reproducible and lets it extend back to 2025-01 |
 | 3–7 | Not started |
 

@@ -88,7 +88,7 @@ def licence_gate(source_ids) -> tuple[str | None, str | None]:
     charts_blocked = [s for s in source_ids if sources[s].derived_charts not in ALLOWED]
     data_blocked = [s for s in source_ids if sources[s].redistribution not in ALLOWED]
     charts_reason = f"derived_charts not allowed for: {', '.join(charts_blocked)}" if charts_blocked else None
-    data_reason = f"redistribution not confirmed for: {', '.join(data_blocked)}" if data_blocked else None
+    data_reason = f"redistribution not allowed for: {', '.join(data_blocked)}" if data_blocked else None
     return charts_reason, data_reason or charts_reason
 
 

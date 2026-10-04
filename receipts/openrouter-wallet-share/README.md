@@ -25,8 +25,9 @@ In [`output/`](output/) — `output/manifest.json` records the data versions and
 - `share-race` — bar-race video: `linkedin_video` (1080×1350), `x_video` (1920×1080).
 
 Not committed: the interactive `blog_html` and `data.json`, because they include the data and
-the redistribution terms of OpenRouter's model price list aren't confirmed yet (the manifest's
-`withheld` section records this). Render locally to see them.
+OpenRouter's terms don't permit redistributing its model price list (verified 2026-10-04; see
+`src/cachereg/sources/openrouter_models/SOURCE.md`). The manifest's `withheld` section records
+this. Render locally to see them.
 
 ## Data
 - `openrouter_rankings` — daily tokens for the top-50 models (CC BY 4.0, OpenRouter).
