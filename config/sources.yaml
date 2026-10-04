@@ -34,3 +34,13 @@ sources:
     cadence: daily
     requires: []
     enabled: true
+
+  - id: litellm_prices
+    history: native
+    revisions: none
+    redistribution: allowed-with-attribution
+    derived_charts: allowed-with-attribution
+    attribution: "LiteLLM model prices (github.com/BerriAI/litellm, MIT)"
+    cadence: daily
+    requires: []
+    enabled: true
