@@ -1,7 +1,6 @@
 # The open middle
 
-*Receipt · [cacheregister.dev/open-middle](https://cacheregister.dev/open-middle) · data as of 2026-10-04 ·
-promoted from [`explore/2026-10-05-beam-class-share`](../../explore/2026-10-05-beam-class-share/)*
+*Receipt · [cacheregister.dev/open-middle](https://cacheregister.dev/open-middle) · data as of 2026-10-04*
 
 ## Question
 Reflection AI announced Beam on 2026-10-05: an open-weight model with 501B total / 23B active parameters.
@@ -20,16 +19,33 @@ growing?
   (9.6T), Tencent HY4-preview (6.5T) and DeepSeek V4 Flash (6.0T).
 - Beam (501B) would sit in the middle of this band.
 
-## Visuals
-In [`output/`](output/). `output/manifest.json` records the data versions and hashes.
-- `push`: video, `x_video` (1920×1080) and `linkedin_video` (1080×1350), 12 s.
-  1. Closed-model bands sweep left to right (2.5 s), with the y-axis capped at the closed peak.
-  2. A 1.5 s beat.
-  3. Open-weight bands rise from the x-axis (5 s): small open on the axis, then mid-size (the accent), then
-     flagship. They lift the closed bands while the axis expands to fit.
-  4. A 3 s hold.
-- `stack`: the final frame, `x_png` (1600×900) and `linkedin_png` (1080×1350).
-- `data.json`: weekly tokens per band (raw and smoothed).
+## Who drove the growth
+Each model family's share of the rise in weekly tokens, comparing the 4 weeks from Mar 30 with the 4 weeks to
+Oct 4 (total rise: 99T a week).
+
+| Model family | Band | Share of growth |
+|---|---|---|
+| DeepSeek V4 / V4.1 Flash | mid-size open | 29% |
+| Tencent HY3 / HY4-preview | mid-size open | 15% |
+| GPT Luna / Terra | closed (OpenAI) | 13% |
+| GLM-5.3 Flash | mid-size open | 13% |
+| MiMo-V2.5 / V2.6-Flash | mid-size open | 8% |
+| Nemotron 3 Ultra | mid-size open | 5% |
+| GLM-5.x | mid-size open | 3% |
+| GPT Sol / Astra, Gemini, DeepSeek V4 Pro | closed / flagship open | 1–2% each |
+| Opus, Fable, Sonnet, Kimi | closed / flagship open | under 1% each |
+| MiniMax, MiMo Pro, StepFun | open | declined |
+
+- **Growth is concentrated.** Five mid-size open families supplied about 70% of the growth, and all of them
+  launched or relaunched in the window.
+- **Flagships didn't drive growth.** Flagship open models (1T+ parameters: Kimi, DeepSeek V4 Pro, MiMo Pro)
+  added about 2% between them. The closed labs' flagship models, Opus, Fable, Sol and Astra, added about 5%.
+- **One closed exception.** OpenAI's smaller models (GPT-5.6 Luna and Terra, GPT-6 Luna) took 13% of the
+  growth, as much as GLM-5.3 Flash. Mid-size open is the large majority, but not the only growth story.
+- **The band turns over fast.** MiniMax M3 grew, but the M2 versions declined by more. StepFun's Flash models
+  faded as newer mid-size models arrived.
+
+The visuals (stacked-area video and stills for X and LinkedIn) and `data.json` are in [`output/`](output/).
 
 ## Data
 - `openrouter_rankings`: daily tokens for the top 50 models plus an `other` row (CC BY 4.0, OpenRouter).
