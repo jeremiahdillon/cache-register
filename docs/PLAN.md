@@ -37,7 +37,9 @@ Every source gets classified on the fields below, recorded in its `SOURCE.md` an
 - `redistribution` (raw/bulk data, incl. data inlined in interactive HTML): `allowed` |
   `allowed-with-attribution` | `forbidden` | `unknown` (unknown is treated as forbidden)
 - `derived_charts` (publishing images/videos derived from the data): `allowed` |
-  `allowed-with-attribution` | `forbidden` | `unknown` (unknown is treated as forbidden)
+  `allowed-with-attribution` | `forbidden` | `unknown`. **Author policy (2026-10-05):** derived
+  works may be published from every source, credited; only an explicit `forbidden` blocks them.
+  Raw data is still gated by `redistribution`.
 - `attribution`: exact required credit string (and link), used verbatim by the footer stamp
 - `revisions`: `none` | `append-only` | `revised` (values for past periods can change later),
   which drives the reproducibility class in §4.4
@@ -431,9 +433,9 @@ wordmark. Attribution text comes from
 - The licence gate (applied by `cachereg render` to everything written into
   `receipts/<topic>/output/`) evaluates two rights independently, for every source in the
   receipt's `sources`:
-  - **Images/video** (PNG, SVG, WebP, MP4, WebM): every source must have
-    `derived_charts ∈ {allowed, allowed-with-attribution}`; required attributions must appear in
-    the stamp (checked against the rendered footer text).
+  - **Images/video** (PNG, SVG, WebP, MP4, WebM): allowed unless a source has
+    `derived_charts: forbidden` (author policy: derived works are publishable from every source);
+    required attributions must appear in the stamp (checked against the rendered footer text).
   - **Inlined data** (blog_html embeds the Story frames as JSON): every source must have
     `redistribution ∈ {allowed, allowed-with-attribution}`; the same applies to `data.json`.
     Otherwise neither is written and the manifest's `withheld` section names the blocking
@@ -518,7 +520,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | 0. Scaffold & security | **Done** — guard + pinned gitleaks in the pre-push hook (the gate; straight-to-main workflow), CI backstop, push protection, Pages short links on cacheregister.dev |
 | 0.5 Vertical slice | **Done** — OpenRouter rankings + model prices, marts, first receipt `receipts/openrouter-wallet-share`; motion renderer A chosen (§6.3) |
 | Layout | **Done** — explorations vs receipts, scoped build, `reproduce` (`docs/plans/2026-10-03-explore-and-receipts.md`) |
-| 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), `derived_charts` kept on the author's reading; the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
+| 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), derived charts publishable (author policy); the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
 | 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. Next: Epoch, then the other native-history sources |
 | 3–7 | Not started |
 
@@ -581,7 +583,8 @@ Phase 1 only where marked):
 3. **Entity resolution drift** as vendors rename/alias models — ongoing maintenance cost.
 4. **Ramp Data access** requires a provisioned key from the Ramp Data Partner Program; replicators
    must apply. API is marked "subject to change". Analyses using Ramp state this in their README.
-5. **Licensing of derived charts** from restrictive sources — verify per source in Phase 1.
+5. **Licensing of derived charts** — settled by author policy (2026-10-05): derived works are
+   published from every source, credited; raw data only where `redistribution` allows.
 6. **vl-convert motion performance** (hundreds of frames) — mitigated by caching + parallel
    render; matplotlib fallback.
 7. **Spend estimates** are model-derived; risk of overclaiming — require bounds + method note

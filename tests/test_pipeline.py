@@ -455,3 +455,20 @@ def test_flagged_days_use_the_nearest_listing_before_preference_order(data_env, 
         "openrouter/moonshotai/kimi-9",
         "current",
     )
+
+
+def test_licence_gate_charts_need_explicit_forbidden_data_needs_explicit_allowed(tmp_path, monkeypatch):
+    from cachereg import render as render_mod
+    from cachereg.core.registry import load_sources
+
+    reg = tmp_path / "sources.yaml"
+    base = "history: snapshot\n    revisions: none\n    attribution: x\n    cadence: daily\n    requires: []\n"
+    reg.write_text(
+        "sources:\n"
+        f"  - id: a\n    redistribution: unknown\n    derived_charts: unknown\n    {base}"
+        f"  - id: b\n    redistribution: allowed\n    derived_charts: forbidden\n    {base}"
+    )
+    monkeypatch.setattr(render_mod, "load_sources", lambda: load_sources(reg))
+    assert render_mod.licence_gate(["a"]) == (None, "redistribution not allowed for: a")
+    charts, data = render_mod.licence_gate(["b"])
+    assert charts == "derived_charts forbidden for: b" and data == charts  # no data where no charts

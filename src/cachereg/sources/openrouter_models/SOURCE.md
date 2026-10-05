@@ -31,10 +31,8 @@ cache read/write where offered) in USD per token.
   automated means and transferring "any Materials". Reading the documented public API is the
   authorized way to use it; republishing the catalog or price list is not granted. Hence
   `redistribution: forbidden`.
-- Derived charts: list prices are facts and the published visuals show only aggregated spend
-  estimates (tokens × price summed per developer per week), from which the price list cannot be
-  recovered. This is the author's reading, not an explicit grant; if OpenRouter objects, set
-  `derived_charts: forbidden` and the licence gate withholds the visuals.
+- Derived charts: published under the author's policy (2026-10-05) that derived works are
+  publishable from every source, credited; the raw catalog and price list are not republished.
 - Prefer LiteLLM (`litellm_prices`, MIT) for any published price-based figure.
 
 ## Caveats

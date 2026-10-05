@@ -85,9 +85,10 @@ def build_story(cfg: folder_config.FolderConfig, as_of: date):
 def licence_gate(source_ids) -> tuple[str | None, str | None]:
     """(reason images/video are blocked, reason data/HTML is blocked) — None means allowed."""
     sources = load_sources()
-    charts_blocked = [s for s in source_ids if sources[s].derived_charts not in ALLOWED]
+    # Author policy: derived works may be published from every source unless explicitly forbidden.
+    charts_blocked = [s for s in source_ids if sources[s].derived_charts == "forbidden"]
     data_blocked = [s for s in source_ids if sources[s].redistribution not in ALLOWED]
-    charts_reason = f"derived_charts not allowed for: {', '.join(charts_blocked)}" if charts_blocked else None
+    charts_reason = f"derived_charts forbidden for: {', '.join(charts_blocked)}" if charts_blocked else None
     data_reason = f"redistribution not allowed for: {', '.join(data_blocked)}" if data_blocked else None
     return charts_reason, data_reason or charts_reason
 

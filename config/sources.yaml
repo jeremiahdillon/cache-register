@@ -10,7 +10,9 @@
 #   cadence:        daily | weekly | monthly
 #   requires:       secret names from .env.example, if any
 #   enabled:        true | false
-# `unknown` is treated as forbidden.
+# Author policy (2026-10-05): derived works (charts, video, derived figures) may be published from
+# every source, credited; only raw data is gated. So for redistribution `unknown` is treated as
+# forbidden, while derived_charts blocks only when set to `forbidden` explicitly.
 
 sources:
   - id: openrouter_rankings
