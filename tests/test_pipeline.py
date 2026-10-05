@@ -191,7 +191,7 @@ def test_reproduce_reports_missing_snapshot(synthetic_raw, monkeypatch, tmp_path
 
 def test_build_sources_scope(synthetic_raw):
     report = build(date(2026, 8, 31), [])
-    assert report.marts_built == [] and report.marts_skipped == ["010_openrouter_usage"]
+    assert report.marts_built == [] and report.marts_skipped == ["005_openrouter_tokens", "010_openrouter_usage"]
     con = connect()
     try:
         tables = set(query(con, "SELECT table_name FROM information_schema.tables")["table_name"])
@@ -200,8 +200,18 @@ def test_build_sources_scope(synthetic_raw):
     assert "or_vendor_weekly" not in tables  # skipped mart's tables are dropped, never stale
     with pytest.raises(RuntimeError, match="missing: openrouter_rankings"):
         build(date(2026, 8, 31), ["litellm_prices"])
-    assert build(date(2026, 8, 31), ["openrouter_models"]).marts_skipped == ["010_openrouter_usage"]
-    assert build(date(2026, 8, 31), ["openrouter_rankings", "litellm_prices"]).marts_built == ["010_openrouter_usage"]
+    assert build(date(2026, 8, 31), ["openrouter_models"]).marts_skipped == [
+        "005_openrouter_tokens",
+        "010_openrouter_usage",
+    ]
+    tokens_only = build(date(2026, 8, 31), ["openrouter_rankings"])  # token mart runs; pricing mart skipped
+    assert tokens_only.marts_built == ["005_openrouter_tokens"] and tokens_only.marts_skipped == [
+        "010_openrouter_usage"
+    ]
+    assert build(date(2026, 8, 31), ["openrouter_rankings", "litellm_prices"]).marts_built == [
+        "005_openrouter_tokens",
+        "010_openrouter_usage",
+    ]
 
 
 def test_snapshot_source_never_backfills_but_revised_source_does(synthetic_raw):

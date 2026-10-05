@@ -214,15 +214,24 @@ def build(as_of: date, sources: list[str] | None = None) -> BuildReport:
             for table in reversed(mart.tables):
                 con.execute(f"DROP TABLE IF EXISTS {table}")
         chosen = set(selected)
+        # A mart runs when all its inputs were chosen (marts run in file order, so a later mart can
+        # read an earlier one's tables). A full build refuses a partly covered mart (a source's data is
+        # missing). A scoped build skips it, unless that leaves a chosen source that some mart reads
+        # but no built mart uses: then the scope itself is missing a source.
+        partial = []
         for mart in marts:
             if mart.inputs <= chosen:
                 con.execute(mart.sql)
                 report.marts_built.append(mart.name)
-            elif mart.inputs & chosen:
-                missing = ", ".join(sorted(mart.inputs - chosen))
-                raise RuntimeError(f"mart {mart.name} needs {', '.join(sorted(mart.inputs))}; missing: {missing}")
             else:
                 report.marts_skipped.append(mart.name)
+                if mart.inputs & chosen:
+                    partial.append(mart)
+        used = set().union(*(m.inputs for m in marts if m.name in report.marts_built))
+        for mart in partial:
+            if sources is None or (mart.inputs & chosen) - used:
+                missing = ", ".join(sorted(mart.inputs - chosen))
+                raise RuntimeError(f"mart {mart.name} needs {', '.join(sorted(mart.inputs))}; missing: {missing}")
     finally:
         con.close()
     return report

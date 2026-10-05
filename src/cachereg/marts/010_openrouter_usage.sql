@@ -13,16 +13,7 @@
 --     that ended after as_of is treated as still listed.
 --   * `:free` variants priced at 0 and reported separately.
 
--- Latest vintage per (date, model) among fetches made on/before the cutoff.
-CREATE OR REPLACE TABLE or_rankings_daily AS
-SELECT date, model_permaslug, total_tokens, fetch_id
-FROM (
-    SELECT *, row_number() OVER (PARTITION BY date, model_permaslug ORDER BY fetched_at DESC) AS rn
-    FROM stg_openrouter_rankings_daily
-    WHERE date <= getvariable('as_of')
-      AND CAST(fetched_at AS DATE) <= getvariable('openrouter_rankings_cutoff')
-)
-WHERE rn = 1;
+-- Reads or_rankings_daily from 005_openrouter_tokens (runs first; its only input is a subset of ours).
 
 -- LiteLLM price intervals as known on as_of (only entries with both an input and output price).
 CREATE OR REPLACE TABLE lp_price_intervals AS
