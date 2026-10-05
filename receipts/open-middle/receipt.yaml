@@ -1,0 +1,12 @@
+# Receipt: cacheregister.dev/open-middle (the folder name is the short link — never rename
+# without adding an alias in config/link-aliases.yaml).
+title: The open middle
+sources: [openrouter_rankings]
+as_of: 2026-10-05
+promoted_from: explore/2026-10-05-beam-class-share
+config:
+  growth_weeks: 26          # headline: share of token growth over this many weeks to the last full week
+  show_unattributed: false  # true: add OpenRouter's "other" row as a top band (else footnoted)
+visuals:
+  - {name: push, chart: push, targets: [x_video, linkedin_video]}
+  - {name: stack, chart: stack, targets: [x_png, linkedin_png]}

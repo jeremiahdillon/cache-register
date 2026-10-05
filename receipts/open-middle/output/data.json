@@ -1,0 +1,5391 @@
+{
+ "bands": [
+  {
+   "week": "2025-01-06",
+   "band": "Anthropic",
+   "tokens": "239828316064"
+  },
+  {
+   "week": "2025-01-06",
+   "band": "Google",
+   "tokens": "89067561878"
+  },
+  {
+   "week": "2025-01-06",
+   "band": "Mid-size open",
+   "tokens": "30858187926"
+  },
+  {
+   "week": "2025-01-06",
+   "band": "OpenAI",
+   "tokens": "20678420198"
+  },
+  {
+   "week": "2025-01-06",
+   "band": "Other closed",
+   "tokens": "7450877251"
+  },
+  {
+   "week": "2025-01-06",
+   "band": "Small open",
+   "tokens": "92910774237"
+  },
+  {
+   "week": "2025-01-06",
+   "band": "Unattributed",
+   "tokens": "17793143784"
+  },
+  {
+   "week": "2025-01-13",
+   "band": "Anthropic",
+   "tokens": "249892502403"
+  },
+  {
+   "week": "2025-01-13",
+   "band": "Google",
+   "tokens": "100140764594"
+  },
+  {
+   "week": "2025-01-13",
+   "band": "Mid-size open",
+   "tokens": "30127039215"
+  },
+  {
+   "week": "2025-01-13",
+   "band": "OpenAI",
+   "tokens": "23152534057"
+  },
+  {
+   "week": "2025-01-13",
+   "band": "Other closed",
+   "tokens": "5823287438"
+  },
+  {
+   "week": "2025-01-13",
+   "band": "Small open",
+   "tokens": "90280208224"
+  },
+  {
+   "week": "2025-01-13",
+   "band": "Unattributed",
+   "tokens": "18927906115"
+  },
+  {
+   "week": "2025-01-20",
+   "band": "Anthropic",
+   "tokens": "253264538689"
+  },
+  {
+   "week": "2025-01-20",
+   "band": "Google",
+   "tokens": "98025986423"
+  },
+  {
+   "week": "2025-01-20",
+   "band": "Mid-size open",
+   "tokens": "37375370872"
+  },
+  {
+   "week": "2025-01-20",
+   "band": "OpenAI",
+   "tokens": "26759931924"
+  },
+  {
+   "week": "2025-01-20",
+   "band": "Other closed",
+   "tokens": "3237801477"
+  },
+  {
+   "week": "2025-01-20",
+   "band": "Small open",
+   "tokens": "88573236996"
+  },
+  {
+   "week": "2025-01-20",
+   "band": "Unattributed",
+   "tokens": "19861732668"
+  },
+  {
+   "week": "2025-01-27",
+   "band": "Anthropic",
+   "tokens": "314480375873"
+  },
+  {
+   "week": "2025-01-27",
+   "band": "Google",
+   "tokens": "49185926980"
+  },
+  {
+   "week": "2025-01-27",
+   "band": "Mid-size open",
+   "tokens": "43909969907"
+  },
+  {
+   "week": "2025-01-27",
+   "band": "OpenAI",
+   "tokens": "31002010645"
+  },
+  {
+   "week": "2025-01-27",
+   "band": "Other closed",
+   "tokens": "11655290555"
+  },
+  {
+   "week": "2025-01-27",
+   "band": "Small open",
+   "tokens": "95716602683"
+  },
+  {
+   "week": "2025-01-27",
+   "band": "Unattributed",
+   "tokens": "25758203147"
+  },
+  {
+   "week": "2025-02-03",
+   "band": "Anthropic",
+   "tokens": "361465650650"
+  },
+  {
+   "week": "2025-02-03",
+   "band": "Google",
+   "tokens": "129516426518"
+  },
+  {
+   "week": "2025-02-03",
+   "band": "Mid-size open",
+   "tokens": "52054313323"
+  },
+  {
+   "week": "2025-02-03",
+   "band": "OpenAI",
+   "tokens": "34775007012"
+  },
+  {
+   "week": "2025-02-03",
+   "band": "Other closed",
+   "tokens": "4323472008"
+  },
+  {
+   "week": "2025-02-03",
+   "band": "Small open",
+   "tokens": "125417462125"
+  },
+  {
+   "week": "2025-02-03",
+   "band": "Unattributed",
+   "tokens": "35281684768"
+  },
+  {
+   "week": "2025-02-10",
+   "band": "Anthropic",
+   "tokens": "347264518125"
+  },
+  {
+   "week": "2025-02-10",
+   "band": "Google",
+   "tokens": "217680179624"
+  },
+  {
+   "week": "2025-02-10",
+   "band": "Mid-size open",
+   "tokens": "67301022992"
+  },
+  {
+   "week": "2025-02-10",
+   "band": "OpenAI",
+   "tokens": "37221830968"
+  },
+  {
+   "week": "2025-02-10",
+   "band": "Other closed",
+   "tokens": "3792840348"
+  },
+  {
+   "week": "2025-02-10",
+   "band": "Small open",
+   "tokens": "127170473403"
+  },
+  {
+   "week": "2025-02-10",
+   "band": "Unattributed",
+   "tokens": "39916818087"
+  },
+  {
+   "week": "2025-02-17",
+   "band": "Anthropic",
+   "tokens": "299453396398"
+  },
+  {
+   "week": "2025-02-17",
+   "band": "Google",
+   "tokens": "379262589500"
+  },
+  {
+   "week": "2025-02-17",
+   "band": "Mid-size open",
+   "tokens": "87463744604"
+  },
+  {
+   "week": "2025-02-17",
+   "band": "OpenAI",
+   "tokens": "47658198684"
+  },
+  {
+   "week": "2025-02-17",
+   "band": "Other closed",
+   "tokens": "1853557061"
+  },
+  {
+   "week": "2025-02-17",
+   "band": "Small open",
+   "tokens": "96919748529"
+  },
+  {
+   "week": "2025-02-17",
+   "band": "Unattributed",
+   "tokens": "38794607627"
+  },
+  {
+   "week": "2025-02-24",
+   "band": "Anthropic",
+   "tokens": "396185941433"
+  },
+  {
+   "week": "2025-02-24",
+   "band": "Google",
+   "tokens": "410180983052"
+  },
+  {
+   "week": "2025-02-24",
+   "band": "Mid-size open",
+   "tokens": "106835653668"
+  },
+  {
+   "week": "2025-02-24",
+   "band": "OpenAI",
+   "tokens": "42150382169"
+  },
+  {
+   "week": "2025-02-24",
+   "band": "Other closed",
+   "tokens": "1277978451"
+  },
+  {
+   "week": "2025-02-24",
+   "band": "Small open",
+   "tokens": "104097834521"
+  },
+  {
+   "week": "2025-02-24",
+   "band": "Unattributed",
+   "tokens": "38166730048"
+  },
+  {
+   "week": "2025-03-03",
+   "band": "Anthropic",
+   "tokens": "442418368587"
+  },
+  {
+   "week": "2025-03-03",
+   "band": "Google",
+   "tokens": "481621438248"
+  },
+  {
+   "week": "2025-03-03",
+   "band": "Mid-size open",
+   "tokens": "122667680473"
+  },
+  {
+   "week": "2025-03-03",
+   "band": "OpenAI",
+   "tokens": "47701121521"
+  },
+  {
+   "week": "2025-03-03",
+   "band": "Other closed",
+   "tokens": "3412007952"
+  },
+  {
+   "week": "2025-03-03",
+   "band": "Small open",
+   "tokens": "138815117164"
+  },
+  {
+   "week": "2025-03-03",
+   "band": "Unattributed",
+   "tokens": "45402151464"
+  },
+  {
+   "week": "2025-03-10",
+   "band": "Anthropic",
+   "tokens": "548838526459"
+  },
+  {
+   "week": "2025-03-10",
+   "band": "Google",
+   "tokens": "458455556914"
+  },
+  {
+   "week": "2025-03-10",
+   "band": "Mid-size open",
+   "tokens": "146480150842"
+  },
+  {
+   "week": "2025-03-10",
+   "band": "OpenAI",
+   "tokens": "60742295369"
+  },
+  {
+   "week": "2025-03-10",
+   "band": "Other closed",
+   "tokens": "1080776384"
+  },
+  {
+   "week": "2025-03-10",
+   "band": "Small open",
+   "tokens": "155662781969"
+  },
+  {
+   "week": "2025-03-10",
+   "band": "Unattributed",
+   "tokens": "47708633178"
+  },
+  {
+   "week": "2025-03-17",
+   "band": "Anthropic",
+   "tokens": "577090590846"
+  },
+  {
+   "week": "2025-03-17",
+   "band": "Google",
+   "tokens": "413603619528"
+  },
+  {
+   "week": "2025-03-17",
+   "band": "Mid-size open",
+   "tokens": "159292840666"
+  },
+  {
+   "week": "2025-03-17",
+   "band": "OpenAI",
+   "tokens": "60237730802"
+  },
+  {
+   "week": "2025-03-17",
+   "band": "Small open",
+   "tokens": "206038678106"
+  },
+  {
+   "week": "2025-03-17",
+   "band": "Unattributed",
+   "tokens": "53404598471"
+  },
+  {
+   "week": "2025-03-24",
+   "band": "Anthropic",
+   "tokens": "506541280953"
+  },
+  {
+   "week": "2025-03-24",
+   "band": "Google",
+   "tokens": "483969996876"
+  },
+  {
+   "week": "2025-03-24",
+   "band": "Mid-size open",
+   "tokens": "247214365188"
+  },
+  {
+   "week": "2025-03-24",
+   "band": "OpenAI",
+   "tokens": "78485481498"
+  },
+  {
+   "week": "2025-03-24",
+   "band": "Other closed",
+   "tokens": "2099327305"
+  },
+  {
+   "week": "2025-03-24",
+   "band": "Small open",
+   "tokens": "243973693068"
+  },
+  {
+   "week": "2025-03-24",
+   "band": "Unattributed",
+   "tokens": "57466383648"
+  },
+  {
+   "week": "2025-03-31",
+   "band": "Anthropic",
+   "tokens": "488660134590"
+  },
+  {
+   "week": "2025-03-31",
+   "band": "Google",
+   "tokens": "596241437348"
+  },
+  {
+   "week": "2025-03-31",
+   "band": "Mid-size open",
+   "tokens": "290926828224"
+  },
+  {
+   "week": "2025-03-31",
+   "band": "OpenAI",
+   "tokens": "261721903860"
+  },
+  {
+   "week": "2025-03-31",
+   "band": "Small open",
+   "tokens": "252499316251"
+  },
+  {
+   "week": "2025-03-31",
+   "band": "Unattributed",
+   "tokens": "56187013911"
+  },
+  {
+   "week": "2025-04-07",
+   "band": "Anthropic",
+   "tokens": "502709740069"
+  },
+  {
+   "week": "2025-04-07",
+   "band": "Google",
+   "tokens": "591156725065"
+  },
+  {
+   "week": "2025-04-07",
+   "band": "Mid-size open",
+   "tokens": "268489901643"
+  },
+  {
+   "week": "2025-04-07",
+   "band": "OpenAI",
+   "tokens": "231194388188"
+  },
+  {
+   "week": "2025-04-07",
+   "band": "Other closed",
+   "tokens": "6022182642"
+  },
+  {
+   "week": "2025-04-07",
+   "band": "Small open",
+   "tokens": "189006405304"
+  },
+  {
+   "week": "2025-04-07",
+   "band": "Unattributed",
+   "tokens": "67157298971"
+  },
+  {
+   "week": "2025-04-14",
+   "band": "Anthropic",
+   "tokens": "517681001516"
+  },
+  {
+   "week": "2025-04-14",
+   "band": "Google",
+   "tokens": "626729330648"
+  },
+  {
+   "week": "2025-04-14",
+   "band": "Mid-size open",
+   "tokens": "251037493825"
+  },
+  {
+   "week": "2025-04-14",
+   "band": "OpenAI",
+   "tokens": "130499711354"
+  },
+  {
+   "week": "2025-04-14",
+   "band": "Other closed",
+   "tokens": "10909275621"
+  },
+  {
+   "week": "2025-04-14",
+   "band": "Small open",
+   "tokens": "130522028416"
+  },
+  {
+   "week": "2025-04-14",
+   "band": "Unattributed",
+   "tokens": "83407055589"
+  },
+  {
+   "week": "2025-04-21",
+   "band": "Anthropic",
+   "tokens": "455819586766"
+  },
+  {
+   "week": "2025-04-21",
+   "band": "Google",
+   "tokens": "685524731371"
+  },
+  {
+   "week": "2025-04-21",
+   "band": "Mid-size open",
+   "tokens": "258127850594"
+  },
+  {
+   "week": "2025-04-21",
+   "band": "OpenAI",
+   "tokens": "106770516847"
+  },
+  {
+   "week": "2025-04-21",
+   "band": "Other closed",
+   "tokens": "11139865996"
+  },
+  {
+   "week": "2025-04-21",
+   "band": "Small open",
+   "tokens": "155618792731"
+  },
+  {
+   "week": "2025-04-21",
+   "band": "Unattributed",
+   "tokens": "90462579937"
+  },
+  {
+   "week": "2025-04-28",
+   "band": "Anthropic",
+   "tokens": "421608765070"
+  },
+  {
+   "week": "2025-04-28",
+   "band": "Google",
+   "tokens": "639212158801"
+  },
+  {
+   "week": "2025-04-28",
+   "band": "Mid-size open",
+   "tokens": "271980678501"
+  },
+  {
+   "week": "2025-04-28",
+   "band": "OpenAI",
+   "tokens": "175343482975"
+  },
+  {
+   "week": "2025-04-28",
+   "band": "Other closed",
+   "tokens": "14923494994"
+  },
+  {
+   "week": "2025-04-28",
+   "band": "Small open",
+   "tokens": "170742843329"
+  },
+  {
+   "week": "2025-04-28",
+   "band": "Unattributed",
+   "tokens": "109138588490"
+  },
+  {
+   "week": "2025-05-05",
+   "band": "Anthropic",
+   "tokens": "409321955614"
+  },
+  {
+   "week": "2025-05-05",
+   "band": "Google",
+   "tokens": "734555718438"
+  },
+  {
+   "week": "2025-05-05",
+   "band": "Mid-size open",
+   "tokens": "277526629009"
+  },
+  {
+   "week": "2025-05-05",
+   "band": "OpenAI",
+   "tokens": "399570955807"
+  },
+  {
+   "week": "2025-05-05",
+   "band": "Other closed",
+   "tokens": "14787227064"
+  },
+  {
+   "week": "2025-05-05",
+   "band": "Small open",
+   "tokens": "175408971981"
+  },
+  {
+   "week": "2025-05-05",
+   "band": "Unattributed",
+   "tokens": "118841639675"
+  },
+  {
+   "week": "2025-05-12",
+   "band": "Anthropic",
+   "tokens": "422180180093"
+  },
+  {
+   "week": "2025-05-12",
+   "band": "Google",
+   "tokens": "676370456693"
+  },
+  {
+   "week": "2025-05-12",
+   "band": "Mid-size open",
+   "tokens": "273785739558"
+  },
+  {
+   "week": "2025-05-12",
+   "band": "OpenAI",
+   "tokens": "531571686780"
+  },
+  {
+   "week": "2025-05-12",
+   "band": "Other closed",
+   "tokens": "18826149153"
+  },
+  {
+   "week": "2025-05-12",
+   "band": "Small open",
+   "tokens": "116488947835"
+  },
+  {
+   "week": "2025-05-12",
+   "band": "Unattributed",
+   "tokens": "116039106592"
+  },
+  {
+   "week": "2025-05-19",
+   "band": "Anthropic",
+   "tokens": "524110319760"
+  },
+  {
+   "week": "2025-05-19",
+   "band": "Google",
+   "tokens": "722649624752"
+  },
+  {
+   "week": "2025-05-19",
+   "band": "Mid-size open",
+   "tokens": "291231699121"
+  },
+  {
+   "week": "2025-05-19",
+   "band": "OpenAI",
+   "tokens": "576962290897"
+  },
+  {
+   "week": "2025-05-19",
+   "band": "Other closed",
+   "tokens": "17978584978"
+  },
+  {
+   "week": "2025-05-19",
+   "band": "Small open",
+   "tokens": "121594059161"
+  },
+  {
+   "week": "2025-05-19",
+   "band": "Unattributed",
+   "tokens": "113445547853"
+  },
+  {
+   "week": "2025-05-26",
+   "band": "Anthropic",
+   "tokens": "541018607623"
+  },
+  {
+   "week": "2025-05-26",
+   "band": "Google",
+   "tokens": "783916656940"
+  },
+  {
+   "week": "2025-05-26",
+   "band": "Mid-size open",
+   "tokens": "327534315566"
+  },
+  {
+   "week": "2025-05-26",
+   "band": "OpenAI",
+   "tokens": "578561407091"
+  },
+  {
+   "week": "2025-05-26",
+   "band": "Other closed",
+   "tokens": "10061115915"
+  },
+  {
+   "week": "2025-05-26",
+   "band": "Small open",
+   "tokens": "140101316826"
+  },
+  {
+   "week": "2025-05-26",
+   "band": "Unattributed",
+   "tokens": "116916102533"
+  },
+  {
+   "week": "2025-06-02",
+   "band": "Anthropic",
+   "tokens": "485916572861"
+  },
+  {
+   "week": "2025-06-02",
+   "band": "Google",
+   "tokens": "836527249618"
+  },
+  {
+   "week": "2025-06-02",
+   "band": "Mid-size open",
+   "tokens": "374646182999"
+  },
+  {
+   "week": "2025-06-02",
+   "band": "OpenAI",
+   "tokens": "409475640009"
+  },
+  {
+   "week": "2025-06-02",
+   "band": "Other closed",
+   "tokens": "9550206649"
+  },
+  {
+   "week": "2025-06-02",
+   "band": "Small open",
+   "tokens": "127833493955"
+  },
+  {
+   "week": "2025-06-02",
+   "band": "Unattributed",
+   "tokens": "121420472693"
+  },
+  {
+   "week": "2025-06-16",
+   "band": "Anthropic",
+   "tokens": "545677331829"
+  },
+  {
+   "week": "2025-06-16",
+   "band": "Google",
+   "tokens": "909740041757"
+  },
+  {
+   "week": "2025-06-16",
+   "band": "Mid-size open",
+   "tokens": "397133341869"
+  },
+  {
+   "week": "2025-06-16",
+   "band": "OpenAI",
+   "tokens": "139812807085"
+  },
+  {
+   "week": "2025-06-16",
+   "band": "Other closed",
+   "tokens": "30163062266"
+  },
+  {
+   "week": "2025-06-16",
+   "band": "Small open",
+   "tokens": "107446116398"
+  },
+  {
+   "week": "2025-06-16",
+   "band": "Unattributed",
+   "tokens": "124918847403"
+  },
+  {
+   "week": "2025-06-23",
+   "band": "Anthropic",
+   "tokens": "492535935587"
+  },
+  {
+   "week": "2025-06-23",
+   "band": "Google",
+   "tokens": "1007827612489"
+  },
+  {
+   "week": "2025-06-23",
+   "band": "Mid-size open",
+   "tokens": "400697023007"
+  },
+  {
+   "week": "2025-06-23",
+   "band": "OpenAI",
+   "tokens": "158017434801"
+  },
+  {
+   "week": "2025-06-23",
+   "band": "Other closed",
+   "tokens": "36111474401"
+  },
+  {
+   "week": "2025-06-23",
+   "band": "Small open",
+   "tokens": "137984370177"
+  },
+  {
+   "week": "2025-06-23",
+   "band": "Unattributed",
+   "tokens": "125502526971"
+  },
+  {
+   "week": "2025-06-30",
+   "band": "Anthropic",
+   "tokens": "450371356994"
+  },
+  {
+   "week": "2025-06-30",
+   "band": "Google",
+   "tokens": "813235317526"
+  },
+  {
+   "week": "2025-06-30",
+   "band": "Mid-size open",
+   "tokens": "411628810664"
+  },
+  {
+   "week": "2025-06-30",
+   "band": "OpenAI",
+   "tokens": "132881731009"
+  },
+  {
+   "week": "2025-06-30",
+   "band": "Other closed",
+   "tokens": "32435647994"
+  },
+  {
+   "week": "2025-06-30",
+   "band": "Small open",
+   "tokens": "140956835327"
+  },
+  {
+   "week": "2025-06-30",
+   "band": "Unattributed",
+   "tokens": "123023948239"
+  },
+  {
+   "week": "2025-07-07",
+   "band": "Anthropic",
+   "tokens": "481827422944"
+  },
+  {
+   "week": "2025-07-07",
+   "band": "Flagship open",
+   "tokens": "5871705712"
+  },
+  {
+   "week": "2025-07-07",
+   "band": "Google",
+   "tokens": "966432165026"
+  },
+  {
+   "week": "2025-07-07",
+   "band": "Mid-size open",
+   "tokens": "502013919428"
+  },
+  {
+   "week": "2025-07-07",
+   "band": "OpenAI",
+   "tokens": "128389195398"
+  },
+  {
+   "week": "2025-07-07",
+   "band": "Other closed",
+   "tokens": "24061214817"
+  },
+  {
+   "week": "2025-07-07",
+   "band": "Small open",
+   "tokens": "128471293952"
+  },
+  {
+   "week": "2025-07-07",
+   "band": "Unattributed",
+   "tokens": "130238704623"
+  },
+  {
+   "week": "2025-07-21",
+   "band": "Anthropic",
+   "tokens": "757213991455"
+  },
+  {
+   "week": "2025-07-21",
+   "band": "Flagship open",
+   "tokens": "59968898715"
+  },
+  {
+   "week": "2025-07-21",
+   "band": "Google",
+   "tokens": "904212337712"
+  },
+  {
+   "week": "2025-07-21",
+   "band": "Mid-size open",
+   "tokens": "746103974872"
+  },
+  {
+   "week": "2025-07-21",
+   "band": "OpenAI",
+   "tokens": "166261131691"
+  },
+  {
+   "week": "2025-07-21",
+   "band": "Other closed",
+   "tokens": "53909163787"
+  },
+  {
+   "week": "2025-07-21",
+   "band": "Small open",
+   "tokens": "164675037894"
+  },
+  {
+   "week": "2025-07-21",
+   "band": "Unattributed",
+   "tokens": "144139962380"
+  },
+  {
+   "week": "2025-07-28",
+   "band": "Anthropic",
+   "tokens": "804823717446"
+  },
+  {
+   "week": "2025-07-28",
+   "band": "Flagship open",
+   "tokens": "40478619362"
+  },
+  {
+   "week": "2025-07-28",
+   "band": "Google",
+   "tokens": "919902410118"
+  },
+  {
+   "week": "2025-07-28",
+   "band": "Mid-size open",
+   "tokens": "946923369446"
+  },
+  {
+   "week": "2025-07-28",
+   "band": "OpenAI",
+   "tokens": "164810736189"
+  },
+  {
+   "week": "2025-07-28",
+   "band": "Other closed",
+   "tokens": "32336101203"
+  },
+  {
+   "week": "2025-07-28",
+   "band": "Small open",
+   "tokens": "173800112164"
+  },
+  {
+   "week": "2025-07-28",
+   "band": "Unattributed",
+   "tokens": "181657923764"
+  },
+  {
+   "week": "2025-08-04",
+   "band": "Anthropic",
+   "tokens": "724386049781"
+  },
+  {
+   "week": "2025-08-04",
+   "band": "Flagship open",
+   "tokens": "103016181802"
+  },
+  {
+   "week": "2025-08-04",
+   "band": "Google",
+   "tokens": "783348481234"
+  },
+  {
+   "week": "2025-08-04",
+   "band": "Mid-size open",
+   "tokens": "920700383950"
+  },
+  {
+   "week": "2025-08-04",
+   "band": "OpenAI",
+   "tokens": "215689057080"
+  },
+  {
+   "week": "2025-08-04",
+   "band": "Other closed",
+   "tokens": "45084148317"
+  },
+  {
+   "week": "2025-08-04",
+   "band": "Small open",
+   "tokens": "257328692010"
+  },
+  {
+   "week": "2025-08-04",
+   "band": "Unattributed",
+   "tokens": "192132756449"
+  },
+  {
+   "week": "2025-08-11",
+   "band": "Anthropic",
+   "tokens": "731018816156"
+  },
+  {
+   "week": "2025-08-11",
+   "band": "Flagship open",
+   "tokens": "107277690898"
+  },
+  {
+   "week": "2025-08-11",
+   "band": "Google",
+   "tokens": "782055217151"
+  },
+  {
+   "week": "2025-08-11",
+   "band": "Mid-size open",
+   "tokens": "953213600813"
+  },
+  {
+   "week": "2025-08-11",
+   "band": "OpenAI",
+   "tokens": "240958652441"
+  },
+  {
+   "week": "2025-08-11",
+   "band": "Other closed",
+   "tokens": "34988710614"
+  },
+  {
+   "week": "2025-08-11",
+   "band": "Small open",
+   "tokens": "157638316304"
+  },
+  {
+   "week": "2025-08-11",
+   "band": "Unattributed",
+   "tokens": "196504135326"
+  },
+  {
+   "week": "2025-08-18",
+   "band": "Anthropic",
+   "tokens": "707598826533"
+  },
+  {
+   "week": "2025-08-18",
+   "band": "Flagship open",
+   "tokens": "80510324653"
+  },
+  {
+   "week": "2025-08-18",
+   "band": "Google",
+   "tokens": "741559850039"
+  },
+  {
+   "week": "2025-08-18",
+   "band": "Mid-size open",
+   "tokens": "943665207968"
+  },
+  {
+   "week": "2025-08-18",
+   "band": "OpenAI",
+   "tokens": "259083709745"
+  },
+  {
+   "week": "2025-08-18",
+   "band": "Other closed",
+   "tokens": "91455869023"
+  },
+  {
+   "week": "2025-08-18",
+   "band": "Small open",
+   "tokens": "180055619813"
+  },
+  {
+   "week": "2025-08-18",
+   "band": "Unattributed",
+   "tokens": "203486195409"
+  },
+  {
+   "week": "2025-08-25",
+   "band": "Anthropic",
+   "tokens": "705415275274"
+  },
+  {
+   "week": "2025-08-25",
+   "band": "Flagship open",
+   "tokens": "26365143049"
+  },
+  {
+   "week": "2025-08-25",
+   "band": "Google",
+   "tokens": "857030237934"
+  },
+  {
+   "week": "2025-08-25",
+   "band": "Mid-size open",
+   "tokens": "884692788766"
+  },
+  {
+   "week": "2025-08-25",
+   "band": "OpenAI",
+   "tokens": "283727381742"
+  },
+  {
+   "week": "2025-08-25",
+   "band": "Other closed",
+   "tokens": "483998851887"
+  },
+  {
+   "week": "2025-08-25",
+   "band": "Small open",
+   "tokens": "259518971248"
+  },
+  {
+   "week": "2025-08-25",
+   "band": "Unattributed",
+   "tokens": "224497082001"
+  },
+  {
+   "week": "2025-09-01",
+   "band": "Anthropic",
+   "tokens": "674803221567"
+  },
+  {
+   "week": "2025-09-01",
+   "band": "Flagship open",
+   "tokens": "30303944526"
+  },
+  {
+   "week": "2025-09-01",
+   "band": "Google",
+   "tokens": "893899684599"
+  },
+  {
+   "week": "2025-09-01",
+   "band": "Mid-size open",
+   "tokens": "800600182709"
+  },
+  {
+   "week": "2025-09-01",
+   "band": "OpenAI",
+   "tokens": "412806393733"
+  },
+  {
+   "week": "2025-09-01",
+   "band": "Other closed",
+   "tokens": "1158270050962"
+  },
+  {
+   "week": "2025-09-01",
+   "band": "Small open",
+   "tokens": "304964322624"
+  },
+  {
+   "week": "2025-09-01",
+   "band": "Unattributed",
+   "tokens": "247815015562"
+  },
+  {
+   "week": "2025-09-08",
+   "band": "Anthropic",
+   "tokens": "692601312801"
+  },
+  {
+   "week": "2025-09-08",
+   "band": "Flagship open",
+   "tokens": "32365152137"
+  },
+  {
+   "week": "2025-09-08",
+   "band": "Google",
+   "tokens": "789481652714"
+  },
+  {
+   "week": "2025-09-08",
+   "band": "Mid-size open",
+   "tokens": "933892407493"
+  },
+  {
+   "week": "2025-09-08",
+   "band": "OpenAI",
+   "tokens": "426439599622"
+  },
+  {
+   "week": "2025-09-08",
+   "band": "Other closed",
+   "tokens": "1209894969596"
+  },
+  {
+   "week": "2025-09-08",
+   "band": "Small open",
+   "tokens": "294441998121"
+  },
+  {
+   "week": "2025-09-08",
+   "band": "Unattributed",
+   "tokens": "275905286354"
+  },
+  {
+   "week": "2025-09-15",
+   "band": "Anthropic",
+   "tokens": "706271845057"
+  },
+  {
+   "week": "2025-09-15",
+   "band": "Flagship open",
+   "tokens": "29427859021"
+  },
+  {
+   "week": "2025-09-15",
+   "band": "Google",
+   "tokens": "802862808630"
+  },
+  {
+   "week": "2025-09-15",
+   "band": "Mid-size open",
+   "tokens": "788025620830"
+  },
+  {
+   "week": "2025-09-15",
+   "band": "OpenAI",
+   "tokens": "460345152806"
+  },
+  {
+   "week": "2025-09-15",
+   "band": "Other closed",
+   "tokens": "1345677550984"
+  },
+  {
+   "week": "2025-09-15",
+   "band": "Small open",
+   "tokens": "229119672044"
+  },
+  {
+   "week": "2025-09-15",
+   "band": "Unattributed",
+   "tokens": "275767998923"
+  },
+  {
+   "week": "2025-09-22",
+   "band": "Anthropic",
+   "tokens": "684916024653"
+  },
+  {
+   "week": "2025-09-22",
+   "band": "Flagship open",
+   "tokens": "24450990330"
+  },
+  {
+   "week": "2025-09-22",
+   "band": "Google",
+   "tokens": "785987192537"
+  },
+  {
+   "week": "2025-09-22",
+   "band": "Mid-size open",
+   "tokens": "707774394434"
+  },
+  {
+   "week": "2025-09-22",
+   "band": "OpenAI",
+   "tokens": "450120453018"
+  },
+  {
+   "week": "2025-09-22",
+   "band": "Other closed",
+   "tokens": "2037442381780"
+  },
+  {
+   "week": "2025-09-22",
+   "band": "Small open",
+   "tokens": "281117109650"
+  },
+  {
+   "week": "2025-09-22",
+   "band": "Unattributed",
+   "tokens": "286171524410"
+  },
+  {
+   "week": "2025-09-29",
+   "band": "Anthropic",
+   "tokens": "704235288103"
+  },
+  {
+   "week": "2025-09-29",
+   "band": "Flagship open",
+   "tokens": "22229259550"
+  },
+  {
+   "week": "2025-09-29",
+   "band": "Google",
+   "tokens": "878579907600"
+  },
+  {
+   "week": "2025-09-29",
+   "band": "Mid-size open",
+   "tokens": "818830356453"
+  },
+  {
+   "week": "2025-09-29",
+   "band": "OpenAI",
+   "tokens": "457029461639"
+  },
+  {
+   "week": "2025-09-29",
+   "band": "Other closed",
+   "tokens": "1818326207367"
+  },
+  {
+   "week": "2025-09-29",
+   "band": "Small open",
+   "tokens": "354962699132"
+  },
+  {
+   "week": "2025-09-29",
+   "band": "Unattributed",
+   "tokens": "326130479446"
+  },
+  {
+   "week": "2025-10-06",
+   "band": "Anthropic",
+   "tokens": "817681711149"
+  },
+  {
+   "week": "2025-10-06",
+   "band": "Flagship open",
+   "tokens": "9996694257"
+  },
+  {
+   "week": "2025-10-06",
+   "band": "Google",
+   "tokens": "824855415274"
+  },
+  {
+   "week": "2025-10-06",
+   "band": "Mid-size open",
+   "tokens": "790327550582"
+  },
+  {
+   "week": "2025-10-06",
+   "band": "OpenAI",
+   "tokens": "394566134149"
+  },
+  {
+   "week": "2025-10-06",
+   "band": "Other closed",
+   "tokens": "1414670436892"
+  },
+  {
+   "week": "2025-10-06",
+   "band": "Small open",
+   "tokens": "461070566094"
+  },
+  {
+   "week": "2025-10-06",
+   "band": "Unattributed",
+   "tokens": "306542763847"
+  },
+  {
+   "week": "2025-10-13",
+   "band": "Anthropic",
+   "tokens": "777875265519"
+  },
+  {
+   "week": "2025-10-13",
+   "band": "Flagship open",
+   "tokens": "22395576259"
+  },
+  {
+   "week": "2025-10-13",
+   "band": "Google",
+   "tokens": "827833501574"
+  },
+  {
+   "week": "2025-10-13",
+   "band": "Mid-size open",
+   "tokens": "736763282330"
+  },
+  {
+   "week": "2025-10-13",
+   "band": "OpenAI",
+   "tokens": "331391197913"
+  },
+  {
+   "week": "2025-10-13",
+   "band": "Other closed",
+   "tokens": "1402227920437"
+  },
+  {
+   "week": "2025-10-13",
+   "band": "Small open",
+   "tokens": "222971164845"
+  },
+  {
+   "week": "2025-10-13",
+   "band": "Unattributed",
+   "tokens": "323039489309"
+  },
+  {
+   "week": "2025-10-20",
+   "band": "Anthropic",
+   "tokens": "837226223310"
+  },
+  {
+   "week": "2025-10-20",
+   "band": "Flagship open",
+   "tokens": "15306500429"
+  },
+  {
+   "week": "2025-10-20",
+   "band": "Google",
+   "tokens": "850816266418"
+  },
+  {
+   "week": "2025-10-20",
+   "band": "Mid-size open",
+   "tokens": "814576526273"
+  },
+  {
+   "week": "2025-10-20",
+   "band": "OpenAI",
+   "tokens": "354349702868"
+  },
+  {
+   "week": "2025-10-20",
+   "band": "Other closed",
+   "tokens": "1450307446301"
+  },
+  {
+   "week": "2025-10-20",
+   "band": "Small open",
+   "tokens": "217019908902"
+  },
+  {
+   "week": "2025-10-20",
+   "band": "Unattributed",
+   "tokens": "331527807542"
+  },
+  {
+   "week": "2025-10-27",
+   "band": "Anthropic",
+   "tokens": "905953176701"
+  },
+  {
+   "week": "2025-10-27",
+   "band": "Flagship open",
+   "tokens": "2191592364"
+  },
+  {
+   "week": "2025-10-27",
+   "band": "Google",
+   "tokens": "964467647723"
+  },
+  {
+   "week": "2025-10-27",
+   "band": "Mid-size open",
+   "tokens": "1037032921276"
+  },
+  {
+   "week": "2025-10-27",
+   "band": "OpenAI",
+   "tokens": "340361424019"
+  },
+  {
+   "week": "2025-10-27",
+   "band": "Other closed",
+   "tokens": "1648204433338"
+  },
+  {
+   "week": "2025-10-27",
+   "band": "Small open",
+   "tokens": "266274103216"
+  },
+  {
+   "week": "2025-10-27",
+   "band": "Unattributed",
+   "tokens": "346673707551"
+  },
+  {
+   "week": "2025-11-03",
+   "band": "Anthropic",
+   "tokens": "916333163588"
+  },
+  {
+   "week": "2025-11-03",
+   "band": "Flagship open",
+   "tokens": "30956874580"
+  },
+  {
+   "week": "2025-11-03",
+   "band": "Google",
+   "tokens": "1003569890055"
+  },
+  {
+   "week": "2025-11-03",
+   "band": "Mid-size open",
+   "tokens": "1233889938150"
+  },
+  {
+   "week": "2025-11-03",
+   "band": "OpenAI",
+   "tokens": "344830440455"
+  },
+  {
+   "week": "2025-11-03",
+   "band": "Other closed",
+   "tokens": "1598528001244"
+  },
+  {
+   "week": "2025-11-03",
+   "band": "Small open",
+   "tokens": "246586341549"
+  },
+  {
+   "week": "2025-11-03",
+   "band": "Unattributed",
+   "tokens": "373996684371"
+  },
+  {
+   "week": "2025-11-10",
+   "band": "Anthropic",
+   "tokens": "844964974070"
+  },
+  {
+   "week": "2025-11-10",
+   "band": "Flagship open",
+   "tokens": "43265857869"
+  },
+  {
+   "week": "2025-11-10",
+   "band": "Google",
+   "tokens": "1023816537527"
+  },
+  {
+   "week": "2025-11-10",
+   "band": "Mid-size open",
+   "tokens": "1049556596193"
+  },
+  {
+   "week": "2025-11-10",
+   "band": "OpenAI",
+   "tokens": "381425197138"
+  },
+  {
+   "week": "2025-11-10",
+   "band": "Other closed",
+   "tokens": "1720865540642"
+  },
+  {
+   "week": "2025-11-10",
+   "band": "Small open",
+   "tokens": "206382860818"
+  },
+  {
+   "week": "2025-11-10",
+   "band": "Unattributed",
+   "tokens": "411890531464"
+  },
+  {
+   "week": "2025-11-17",
+   "band": "Anthropic",
+   "tokens": "709650182304"
+  },
+  {
+   "week": "2025-11-17",
+   "band": "Flagship open",
+   "tokens": "29982022948"
+  },
+  {
+   "week": "2025-11-17",
+   "band": "Google",
+   "tokens": "1198256323168"
+  },
+  {
+   "week": "2025-11-17",
+   "band": "Mid-size open",
+   "tokens": "938775910856"
+  },
+  {
+   "week": "2025-11-17",
+   "band": "OpenAI",
+   "tokens": "453686040048"
+  },
+  {
+   "week": "2025-11-17",
+   "band": "Other closed",
+   "tokens": "1979767562547"
+  },
+  {
+   "week": "2025-11-17",
+   "band": "Small open",
+   "tokens": "273483796566"
+  },
+  {
+   "week": "2025-11-17",
+   "band": "Unattributed",
+   "tokens": "444780378833"
+  },
+  {
+   "week": "2025-11-24",
+   "band": "Anthropic",
+   "tokens": "730081779000"
+  },
+  {
+   "week": "2025-11-24",
+   "band": "Flagship open",
+   "tokens": "19600838035"
+  },
+  {
+   "week": "2025-11-24",
+   "band": "Google",
+   "tokens": "1241703439269"
+  },
+  {
+   "week": "2025-11-24",
+   "band": "Mid-size open",
+   "tokens": "898551672499"
+  },
+  {
+   "week": "2025-11-24",
+   "band": "OpenAI",
+   "tokens": "483845850782"
+  },
+  {
+   "week": "2025-11-24",
+   "band": "Other closed",
+   "tokens": "2971160041298"
+  },
+  {
+   "week": "2025-11-24",
+   "band": "Small open",
+   "tokens": "257948850084"
+  },
+  {
+   "week": "2025-11-24",
+   "band": "Unattributed",
+   "tokens": "463615975384"
+  },
+  {
+   "week": "2025-12-01",
+   "band": "Anthropic",
+   "tokens": "848343914369"
+  },
+  {
+   "week": "2025-12-01",
+   "band": "Flagship open",
+   "tokens": "5346704747"
+  },
+  {
+   "week": "2025-12-01",
+   "band": "Google",
+   "tokens": "1246242164350"
+  },
+  {
+   "week": "2025-12-01",
+   "band": "Mid-size open",
+   "tokens": "997909856742"
+  },
+  {
+   "week": "2025-12-01",
+   "band": "OpenAI",
+   "tokens": "434293187482"
+  },
+  {
+   "week": "2025-12-01",
+   "band": "Other closed",
+   "tokens": "1768691300864"
+  },
+  {
+   "week": "2025-12-01",
+   "band": "Small open",
+   "tokens": "301927872071"
+  },
+  {
+   "week": "2025-12-01",
+   "band": "Unattributed",
+   "tokens": "526820200570"
+  },
+  {
+   "week": "2025-12-08",
+   "band": "Anthropic",
+   "tokens": "864637754303"
+  },
+  {
+   "week": "2025-12-08",
+   "band": "Flagship open",
+   "tokens": "24385827220"
+  },
+  {
+   "week": "2025-12-08",
+   "band": "Google",
+   "tokens": "1285027494998"
+  },
+  {
+   "week": "2025-12-08",
+   "band": "Mid-size open",
+   "tokens": "1254110703524"
+  },
+  {
+   "week": "2025-12-08",
+   "band": "OpenAI",
+   "tokens": "443800105529"
+  },
+  {
+   "week": "2025-12-08",
+   "band": "Other closed",
+   "tokens": "1021314241612"
+  },
+  {
+   "week": "2025-12-08",
+   "band": "Small open",
+   "tokens": "299562520285"
+  },
+  {
+   "week": "2025-12-08",
+   "band": "Unattributed",
+   "tokens": "521795647998"
+  },
+  {
+   "week": "2025-12-15",
+   "band": "Anthropic",
+   "tokens": "821938366497"
+  },
+  {
+   "week": "2025-12-15",
+   "band": "Flagship open",
+   "tokens": "35954615572"
+  },
+  {
+   "week": "2025-12-15",
+   "band": "Google",
+   "tokens": "1301960255551"
+  },
+  {
+   "week": "2025-12-15",
+   "band": "Mid-size open",
+   "tokens": "1417469721506"
+  },
+  {
+   "week": "2025-12-15",
+   "band": "OpenAI",
+   "tokens": "508462415327"
+  },
+  {
+   "week": "2025-12-15",
+   "band": "Other closed",
+   "tokens": "935332781578"
+  },
+  {
+   "week": "2025-12-15",
+   "band": "Small open",
+   "tokens": "249054654566"
+  },
+  {
+   "week": "2025-12-15",
+   "band": "Unattributed",
+   "tokens": "559865466266"
+  },
+  {
+   "week": "2025-12-22",
+   "band": "Anthropic",
+   "tokens": "712032004023"
+  },
+  {
+   "week": "2025-12-22",
+   "band": "Flagship open",
+   "tokens": "29467999565"
+  },
+  {
+   "week": "2025-12-22",
+   "band": "Google",
+   "tokens": "1220600706541"
+  },
+  {
+   "week": "2025-12-22",
+   "band": "Mid-size open",
+   "tokens": "1719556074911"
+  },
+  {
+   "week": "2025-12-22",
+   "band": "OpenAI",
+   "tokens": "350148589899"
+  },
+  {
+   "week": "2025-12-22",
+   "band": "Other closed",
+   "tokens": "904666787277"
+  },
+  {
+   "week": "2025-12-22",
+   "band": "Small open",
+   "tokens": "217629396895"
+  },
+  {
+   "week": "2025-12-22",
+   "band": "Unattributed",
+   "tokens": "496549594131"
+  },
+  {
+   "week": "2025-12-29",
+   "band": "Anthropic",
+   "tokens": "684096334530"
+  },
+  {
+   "week": "2025-12-29",
+   "band": "Flagship open",
+   "tokens": "34969319159"
+  },
+  {
+   "week": "2025-12-29",
+   "band": "Google",
+   "tokens": "1253595933280"
+  },
+  {
+   "week": "2025-12-29",
+   "band": "Mid-size open",
+   "tokens": "1722533004295"
+  },
+  {
+   "week": "2025-12-29",
+   "band": "OpenAI",
+   "tokens": "301689589224"
+  },
+  {
+   "week": "2025-12-29",
+   "band": "Other closed",
+   "tokens": "829731788219"
+  },
+  {
+   "week": "2025-12-29",
+   "band": "Small open",
+   "tokens": "238784927102"
+  },
+  {
+   "week": "2025-12-29",
+   "band": "Unattributed",
+   "tokens": "498070342386"
+  },
+  {
+   "week": "2026-01-05",
+   "band": "Anthropic",
+   "tokens": "1069144766613"
+  },
+  {
+   "week": "2026-01-05",
+   "band": "Flagship open",
+   "tokens": "42212350611"
+  },
+  {
+   "week": "2026-01-05",
+   "band": "Google",
+   "tokens": "1504937047310"
+  },
+  {
+   "week": "2026-01-05",
+   "band": "Mid-size open",
+   "tokens": "1754696961618"
+  },
+  {
+   "week": "2026-01-05",
+   "band": "OpenAI",
+   "tokens": "416283484335"
+  },
+  {
+   "week": "2026-01-05",
+   "band": "Other closed",
+   "tokens": "819249949942"
+  },
+  {
+   "week": "2026-01-05",
+   "band": "Small open",
+   "tokens": "225622191403"
+  },
+  {
+   "week": "2026-01-05",
+   "band": "Unattributed",
+   "tokens": "560089709460"
+  },
+  {
+   "week": "2026-01-12",
+   "band": "Anthropic",
+   "tokens": "1441323120478"
+  },
+  {
+   "week": "2026-01-12",
+   "band": "Flagship open",
+   "tokens": "38300534042"
+  },
+  {
+   "week": "2026-01-12",
+   "band": "Google",
+   "tokens": "1949702699433"
+  },
+  {
+   "week": "2026-01-12",
+   "band": "Mid-size open",
+   "tokens": "2017862245060"
+  },
+  {
+   "week": "2026-01-12",
+   "band": "OpenAI",
+   "tokens": "557924869073"
+  },
+  {
+   "week": "2026-01-12",
+   "band": "Other closed",
+   "tokens": "886070229185"
+  },
+  {
+   "week": "2026-01-12",
+   "band": "Small open",
+   "tokens": "200517159219"
+  },
+  {
+   "week": "2026-01-12",
+   "band": "Unattributed",
+   "tokens": "534507001114"
+  },
+  {
+   "week": "2026-01-19",
+   "band": "Anthropic",
+   "tokens": "1238902188452"
+  },
+  {
+   "week": "2026-01-19",
+   "band": "Flagship open",
+   "tokens": "39127723265"
+  },
+  {
+   "week": "2026-01-19",
+   "band": "Google",
+   "tokens": "1700760634995"
+  },
+  {
+   "week": "2026-01-19",
+   "band": "Mid-size open",
+   "tokens": "2147923824654"
+  },
+  {
+   "week": "2026-01-19",
+   "band": "OpenAI",
+   "tokens": "536834878601"
+  },
+  {
+   "week": "2026-01-19",
+   "band": "Other closed",
+   "tokens": "976566598195"
+  },
+  {
+   "week": "2026-01-19",
+   "band": "Small open",
+   "tokens": "206624515994"
+  },
+  {
+   "week": "2026-01-19",
+   "band": "Unattributed",
+   "tokens": "596388441157"
+  },
+  {
+   "week": "2026-01-26",
+   "band": "Anthropic",
+   "tokens": "1348771849277"
+  },
+  {
+   "week": "2026-01-26",
+   "band": "Flagship open",
+   "tokens": "419730834908"
+  },
+  {
+   "week": "2026-01-26",
+   "band": "Google",
+   "tokens": "1907705579585"
+  },
+  {
+   "week": "2026-01-26",
+   "band": "Mid-size open",
+   "tokens": "2051733212318"
+  },
+  {
+   "week": "2026-01-26",
+   "band": "OpenAI",
+   "tokens": "709650049455"
+  },
+  {
+   "week": "2026-01-26",
+   "band": "Other closed",
+   "tokens": "903136414012"
+  },
+  {
+   "week": "2026-01-26",
+   "band": "Small open",
+   "tokens": "215342213463"
+  },
+  {
+   "week": "2026-01-26",
+   "band": "Unattributed",
+   "tokens": "666773342140"
+  },
+  {
+   "week": "2026-02-02",
+   "band": "Anthropic",
+   "tokens": "1438560213817"
+  },
+  {
+   "week": "2026-02-02",
+   "band": "Flagship open",
+   "tokens": "1203443605060"
+  },
+  {
+   "week": "2026-02-02",
+   "band": "Google",
+   "tokens": "2052010418012"
+  },
+  {
+   "week": "2026-02-02",
+   "band": "Mid-size open",
+   "tokens": "2524808799290"
+  },
+  {
+   "week": "2026-02-02",
+   "band": "OpenAI",
+   "tokens": "789362545413"
+  },
+  {
+   "week": "2026-02-02",
+   "band": "Other closed",
+   "tokens": "784481290890"
+  },
+  {
+   "week": "2026-02-02",
+   "band": "Small open",
+   "tokens": "254233571679"
+  },
+  {
+   "week": "2026-02-02",
+   "band": "Unattributed",
+   "tokens": "704492228195"
+  },
+  {
+   "week": "2026-02-09",
+   "band": "Anthropic",
+   "tokens": "1591290844679"
+  },
+  {
+   "week": "2026-02-09",
+   "band": "Flagship open",
+   "tokens": "1317446945073"
+  },
+  {
+   "week": "2026-02-09",
+   "band": "Google",
+   "tokens": "2168337974458"
+  },
+  {
+   "week": "2026-02-09",
+   "band": "Mid-size open",
+   "tokens": "4827549773683"
+  },
+  {
+   "week": "2026-02-09",
+   "band": "OpenAI",
+   "tokens": "898760322257"
+  },
+  {
+   "week": "2026-02-09",
+   "band": "Other closed",
+   "tokens": "894115878195"
+  },
+  {
+   "week": "2026-02-09",
+   "band": "Small open",
+   "tokens": "343855550231"
+  },
+  {
+   "week": "2026-02-09",
+   "band": "Unattributed",
+   "tokens": "761796623884"
+  },
+  {
+   "week": "2026-02-16",
+   "band": "Anthropic",
+   "tokens": "1836804785737"
+  },
+  {
+   "week": "2026-02-16",
+   "band": "Flagship open",
+   "tokens": "1044315863198"
+  },
+  {
+   "week": "2026-02-16",
+   "band": "Google",
+   "tokens": "2246196156705"
+  },
+  {
+   "week": "2026-02-16",
+   "band": "Mid-size open",
+   "tokens": "5844720416691"
+  },
+  {
+   "week": "2026-02-16",
+   "band": "OpenAI",
+   "tokens": "902486314335"
+  },
+  {
+   "week": "2026-02-16",
+   "band": "Other closed",
+   "tokens": "796377641454"
+  },
+  {
+   "week": "2026-02-16",
+   "band": "Small open",
+   "tokens": "373326901805"
+  },
+  {
+   "week": "2026-02-16",
+   "band": "Unattributed",
+   "tokens": "824040863258"
+  },
+  {
+   "week": "2026-02-23",
+   "band": "Anthropic",
+   "tokens": "2149680828005"
+  },
+  {
+   "week": "2026-02-23",
+   "band": "Flagship open",
+   "tokens": "691882843163"
+  },
+  {
+   "week": "2026-02-23",
+   "band": "Google",
+   "tokens": "2565785327344"
+  },
+  {
+   "week": "2026-02-23",
+   "band": "Mid-size open",
+   "tokens": "5158336798535"
+  },
+  {
+   "week": "2026-02-23",
+   "band": "OpenAI",
+   "tokens": "856528446258"
+  },
+  {
+   "week": "2026-02-23",
+   "band": "Other closed",
+   "tokens": "775187860313"
+  },
+  {
+   "week": "2026-02-23",
+   "band": "Small open",
+   "tokens": "412428956106"
+  },
+  {
+   "week": "2026-02-23",
+   "band": "Unattributed",
+   "tokens": "957077302930"
+  },
+  {
+   "week": "2026-03-02",
+   "band": "Anthropic",
+   "tokens": "2302964537488"
+  },
+  {
+   "week": "2026-03-02",
+   "band": "Flagship open",
+   "tokens": "743063515801"
+  },
+  {
+   "week": "2026-03-02",
+   "band": "Google",
+   "tokens": "2730493531884"
+  },
+  {
+   "week": "2026-03-02",
+   "band": "Mid-size open",
+   "tokens": "5383387937260"
+  },
+  {
+   "week": "2026-03-02",
+   "band": "OpenAI",
+   "tokens": "1196963101029"
+  },
+  {
+   "week": "2026-03-02",
+   "band": "Other closed",
+   "tokens": "756941657607"
+  },
+  {
+   "week": "2026-03-02",
+   "band": "Small open",
+   "tokens": "519645604554"
+  },
+  {
+   "week": "2026-03-02",
+   "band": "Unattributed",
+   "tokens": "1113316928529"
+  },
+  {
+   "week": "2026-03-09",
+   "band": "Anthropic",
+   "tokens": "2536491198061"
+  },
+  {
+   "week": "2026-03-09",
+   "band": "Flagship open",
+   "tokens": "559481288982"
+  },
+  {
+   "week": "2026-03-09",
+   "band": "Google",
+   "tokens": "2828604226207"
+  },
+  {
+   "week": "2026-03-09",
+   "band": "Mid-size open",
+   "tokens": "6328734468920"
+  },
+  {
+   "week": "2026-03-09",
+   "band": "OpenAI",
+   "tokens": "1365143917931"
+  },
+  {
+   "week": "2026-03-09",
+   "band": "Other closed",
+   "tokens": "675409606749"
+  },
+  {
+   "week": "2026-03-09",
+   "band": "Small open",
+   "tokens": "417531903771"
+  },
+  {
+   "week": "2026-03-09",
+   "band": "Unattributed",
+   "tokens": "1272336064720"
+  },
+  {
+   "week": "2026-03-16",
+   "band": "Anthropic",
+   "tokens": "2781775725433"
+  },
+  {
+   "week": "2026-03-16",
+   "band": "Flagship open",
+   "tokens": "559849939333"
+  },
+  {
+   "week": "2026-03-16",
+   "band": "Google",
+   "tokens": "2923290089817"
+  },
+  {
+   "week": "2026-03-16",
+   "band": "Mid-size open",
+   "tokens": "6492708595161"
+  },
+  {
+   "week": "2026-03-16",
+   "band": "OpenAI",
+   "tokens": "1169816938900"
+  },
+  {
+   "week": "2026-03-16",
+   "band": "Other closed",
+   "tokens": "3317225201152"
+  },
+  {
+   "week": "2026-03-16",
+   "band": "Small open",
+   "tokens": "364930760682"
+  },
+  {
+   "week": "2026-03-16",
+   "band": "Unattributed",
+   "tokens": "1446283958581"
+  },
+  {
+   "week": "2026-03-23",
+   "band": "Anthropic",
+   "tokens": "2795652276034"
+  },
+  {
+   "week": "2026-03-23",
+   "band": "Flagship open",
+   "tokens": "513504083392"
+  },
+  {
+   "week": "2026-03-23",
+   "band": "Google",
+   "tokens": "2819600272615"
+  },
+  {
+   "week": "2026-03-23",
+   "band": "Mid-size open",
+   "tokens": "7082575223397"
+  },
+  {
+   "week": "2026-03-23",
+   "band": "OpenAI",
+   "tokens": "1324579815543"
+  },
+  {
+   "week": "2026-03-23",
+   "band": "Other closed",
+   "tokens": "6190619212439"
+  },
+  {
+   "week": "2026-03-23",
+   "band": "Small open",
+   "tokens": "348579110873"
+  },
+  {
+   "week": "2026-03-23",
+   "band": "Unattributed",
+   "tokens": "1521500621544"
+  },
+  {
+   "week": "2026-03-30",
+   "band": "Anthropic",
+   "tokens": "2676655462359"
+  },
+  {
+   "week": "2026-03-30",
+   "band": "Flagship open",
+   "tokens": "600765685053"
+  },
+  {
+   "week": "2026-03-30",
+   "band": "Google",
+   "tokens": "2744606337167"
+  },
+  {
+   "week": "2026-03-30",
+   "band": "Mid-size open",
+   "tokens": "6566593706668"
+  },
+  {
+   "week": "2026-03-30",
+   "band": "OpenAI",
+   "tokens": "1222573890394"
+  },
+  {
+   "week": "2026-03-30",
+   "band": "Other closed",
+   "tokens": "11304164540034"
+  },
+  {
+   "week": "2026-03-30",
+   "band": "Small open",
+   "tokens": "326949636665"
+  },
+  {
+   "week": "2026-03-30",
+   "band": "Unattributed",
+   "tokens": "1542494576007"
+  },
+  {
+   "week": "2026-04-06",
+   "band": "Anthropic",
+   "tokens": "2907234849995"
+  },
+  {
+   "week": "2026-04-06",
+   "band": "Flagship open",
+   "tokens": "530929007155"
+  },
+  {
+   "week": "2026-04-06",
+   "band": "Google",
+   "tokens": "3172440855930"
+  },
+  {
+   "week": "2026-04-06",
+   "band": "Mid-size open",
+   "tokens": "6837220469176"
+  },
+  {
+   "week": "2026-04-06",
+   "band": "OpenAI",
+   "tokens": "1739716576384"
+  },
+  {
+   "week": "2026-04-06",
+   "band": "Other closed",
+   "tokens": "3506116311212"
+  },
+  {
+   "week": "2026-04-06",
+   "band": "Small open",
+   "tokens": "393934856998"
+  },
+  {
+   "week": "2026-04-06",
+   "band": "Unattributed",
+   "tokens": "1882428923065"
+  },
+  {
+   "week": "2026-04-13",
+   "band": "Anthropic",
+   "tokens": "3480663042282"
+  },
+  {
+   "week": "2026-04-13",
+   "band": "Flagship open",
+   "tokens": "390667367767"
+  },
+  {
+   "week": "2026-04-13",
+   "band": "Google",
+   "tokens": "3227468108041"
+  },
+  {
+   "week": "2026-04-13",
+   "band": "Mid-size open",
+   "tokens": "6239973745818"
+  },
+  {
+   "week": "2026-04-13",
+   "band": "OpenAI",
+   "tokens": "1570519203958"
+  },
+  {
+   "week": "2026-04-13",
+   "band": "Other closed",
+   "tokens": "2463796651946"
+  },
+  {
+   "week": "2026-04-13",
+   "band": "Small open",
+   "tokens": "506462454040"
+  },
+  {
+   "week": "2026-04-13",
+   "band": "Unattributed",
+   "tokens": "1979486794485"
+  },
+  {
+   "week": "2026-04-20",
+   "band": "Anthropic",
+   "tokens": "3694650785881"
+  },
+  {
+   "week": "2026-04-20",
+   "band": "Flagship open",
+   "tokens": "2244738190613"
+  },
+  {
+   "week": "2026-04-20",
+   "band": "Google",
+   "tokens": "3092562014263"
+  },
+  {
+   "week": "2026-04-20",
+   "band": "Mid-size open",
+   "tokens": "6514830795855"
+  },
+  {
+   "week": "2026-04-20",
+   "band": "OpenAI",
+   "tokens": "1466285103913"
+  },
+  {
+   "week": "2026-04-20",
+   "band": "Other closed",
+   "tokens": "1805130202531"
+  },
+  {
+   "week": "2026-04-20",
+   "band": "Small open",
+   "tokens": "535798390154"
+  },
+  {
+   "week": "2026-04-20",
+   "band": "Unattributed",
+   "tokens": "2318288822524"
+  },
+  {
+   "week": "2026-04-27",
+   "band": "Anthropic",
+   "tokens": "3227436247228"
+  },
+  {
+   "week": "2026-04-27",
+   "band": "Flagship open",
+   "tokens": "3121579363046"
+  },
+  {
+   "week": "2026-04-27",
+   "band": "Google",
+   "tokens": "2897638888627"
+  },
+  {
+   "week": "2026-04-27",
+   "band": "Mid-size open",
+   "tokens": "8631435613743"
+  },
+  {
+   "week": "2026-04-27",
+   "band": "OpenAI",
+   "tokens": "1446808349158"
+  },
+  {
+   "week": "2026-04-27",
+   "band": "Other closed",
+   "tokens": "1162673479122"
+  },
+  {
+   "week": "2026-04-27",
+   "band": "Small open",
+   "tokens": "631668003995"
+  },
+  {
+   "week": "2026-04-27",
+   "band": "Unattributed",
+   "tokens": "2550135833047"
+  },
+  {
+   "week": "2026-05-04",
+   "band": "Anthropic",
+   "tokens": "3602777746076"
+  },
+  {
+   "week": "2026-05-04",
+   "band": "Flagship open",
+   "tokens": "3196594584113"
+  },
+  {
+   "week": "2026-05-04",
+   "band": "Google",
+   "tokens": "3010453854034"
+  },
+  {
+   "week": "2026-05-04",
+   "band": "Mid-size open",
+   "tokens": "9478424415724"
+  },
+  {
+   "week": "2026-05-04",
+   "band": "OpenAI",
+   "tokens": "1431754274730"
+  },
+  {
+   "week": "2026-05-04",
+   "band": "Other closed",
+   "tokens": "1050105283312"
+  },
+  {
+   "week": "2026-05-04",
+   "band": "Small open",
+   "tokens": "755229038033"
+  },
+  {
+   "week": "2026-05-04",
+   "band": "Unattributed",
+   "tokens": "2753140889924"
+  },
+  {
+   "week": "2026-05-11",
+   "band": "Anthropic",
+   "tokens": "4038318139478"
+  },
+  {
+   "week": "2026-05-11",
+   "band": "Flagship open",
+   "tokens": "2813458300203"
+  },
+  {
+   "week": "2026-05-11",
+   "band": "Google",
+   "tokens": "3278762153325"
+  },
+  {
+   "week": "2026-05-11",
+   "band": "Mid-size open",
+   "tokens": "10117982365483"
+  },
+  {
+   "week": "2026-05-11",
+   "band": "OpenAI",
+   "tokens": "1440086044629"
+  },
+  {
+   "week": "2026-05-11",
+   "band": "Other closed",
+   "tokens": "723939183070"
+  },
+  {
+   "week": "2026-05-11",
+   "band": "Small open",
+   "tokens": "774062566127"
+  },
+  {
+   "week": "2026-05-11",
+   "band": "Unattributed",
+   "tokens": "2769516347928"
+  },
+  {
+   "week": "2026-05-18",
+   "band": "Anthropic",
+   "tokens": "4665726135136"
+  },
+  {
+   "week": "2026-05-18",
+   "band": "Flagship open",
+   "tokens": "2258165548784"
+  },
+  {
+   "week": "2026-05-18",
+   "band": "Google",
+   "tokens": "3615580584139"
+  },
+  {
+   "week": "2026-05-18",
+   "band": "Mid-size open",
+   "tokens": "11447132616491"
+  },
+  {
+   "week": "2026-05-18",
+   "band": "OpenAI",
+   "tokens": "1879292972253"
+  },
+  {
+   "week": "2026-05-18",
+   "band": "Other closed",
+   "tokens": "302159791978"
+  },
+  {
+   "week": "2026-05-18",
+   "band": "Small open",
+   "tokens": "754738800796"
+  },
+  {
+   "week": "2026-05-18",
+   "band": "Unattributed",
+   "tokens": "2825042852546"
+  },
+  {
+   "week": "2026-05-25",
+   "band": "Anthropic",
+   "tokens": "5436646705209"
+  },
+  {
+   "week": "2026-05-25",
+   "band": "Flagship open",
+   "tokens": "3201783545901"
+  },
+  {
+   "week": "2026-05-25",
+   "band": "Google",
+   "tokens": "3411164274314"
+  },
+  {
+   "week": "2026-05-25",
+   "band": "Mid-size open",
+   "tokens": "12312532540397"
+  },
+  {
+   "week": "2026-05-25",
+   "band": "OpenAI",
+   "tokens": "1776496592541"
+  },
+  {
+   "week": "2026-05-25",
+   "band": "Other closed",
+   "tokens": "392082102953"
+  },
+  {
+   "week": "2026-05-25",
+   "band": "Small open",
+   "tokens": "878251196873"
+  },
+  {
+   "week": "2026-05-25",
+   "band": "Unattributed",
+   "tokens": "2654792503352"
+  },
+  {
+   "week": "2026-06-01",
+   "band": "Anthropic",
+   "tokens": "5141750646081"
+  },
+  {
+   "week": "2026-06-01",
+   "band": "Flagship open",
+   "tokens": "2826393297600"
+  },
+  {
+   "week": "2026-06-01",
+   "band": "Google",
+   "tokens": "3570091844829"
+  },
+  {
+   "week": "2026-06-01",
+   "band": "Mid-size open",
+   "tokens": "16878662050477"
+  },
+  {
+   "week": "2026-06-01",
+   "band": "OpenAI",
+   "tokens": "1654165500457"
+  },
+  {
+   "week": "2026-06-01",
+   "band": "Other closed",
+   "tokens": "273086303040"
+  },
+  {
+   "week": "2026-06-01",
+   "band": "Small open",
+   "tokens": "857365948427"
+  },
+  {
+   "week": "2026-06-01",
+   "band": "Unattributed",
+   "tokens": "2727346289470"
+  },
+  {
+   "week": "2026-06-08",
+   "band": "Anthropic",
+   "tokens": "6690635177306"
+  },
+  {
+   "week": "2026-06-08",
+   "band": "Flagship open",
+   "tokens": "3111820175560"
+  },
+  {
+   "week": "2026-06-08",
+   "band": "Google",
+   "tokens": "3658709014099"
+  },
+  {
+   "week": "2026-06-08",
+   "band": "Mid-size open",
+   "tokens": "22642240470438"
+  },
+  {
+   "week": "2026-06-08",
+   "band": "OpenAI",
+   "tokens": "1838078120184"
+  },
+  {
+   "week": "2026-06-08",
+   "band": "Other closed",
+   "tokens": "287432941658"
+  },
+  {
+   "week": "2026-06-08",
+   "band": "Small open",
+   "tokens": "743697819684"
+  },
+  {
+   "week": "2026-06-08",
+   "band": "Unattributed",
+   "tokens": "2970204091748"
+  },
+  {
+   "week": "2026-06-15",
+   "band": "Anthropic",
+   "tokens": "6432052308901"
+  },
+  {
+   "week": "2026-06-15",
+   "band": "Flagship open",
+   "tokens": "4020768308080"
+  },
+  {
+   "week": "2026-06-15",
+   "band": "Google",
+   "tokens": "3466470408182"
+  },
+  {
+   "week": "2026-06-15",
+   "band": "Mid-size open",
+   "tokens": "23568281817719"
+  },
+  {
+   "week": "2026-06-15",
+   "band": "OpenAI",
+   "tokens": "2563572951428"
+  },
+  {
+   "week": "2026-06-15",
+   "band": "Other closed",
+   "tokens": "291307530137"
+  },
+  {
+   "week": "2026-06-15",
+   "band": "Small open",
+   "tokens": "839946724138"
+  },
+  {
+   "week": "2026-06-15",
+   "band": "Unattributed",
+   "tokens": "2787114101449"
+  },
+  {
+   "week": "2026-06-22",
+   "band": "Anthropic",
+   "tokens": "6342578999181"
+  },
+  {
+   "week": "2026-06-22",
+   "band": "Flagship open",
+   "tokens": "3264119456868"
+  },
+  {
+   "week": "2026-06-22",
+   "band": "Google",
+   "tokens": "3340081518396"
+  },
+  {
+   "week": "2026-06-22",
+   "band": "Mid-size open",
+   "tokens": "23527320195005"
+  },
+  {
+   "week": "2026-06-22",
+   "band": "OpenAI",
+   "tokens": "2458969847400"
+  },
+  {
+   "week": "2026-06-22",
+   "band": "Other closed",
+   "tokens": "486679945146"
+  },
+  {
+   "week": "2026-06-22",
+   "band": "Small open",
+   "tokens": "1013988119294"
+  },
+  {
+   "week": "2026-06-22",
+   "band": "Unattributed",
+   "tokens": "2712053721629"
+  },
+  {
+   "week": "2026-06-29",
+   "band": "Anthropic",
+   "tokens": "6970064284314"
+  },
+  {
+   "week": "2026-06-29",
+   "band": "Flagship open",
+   "tokens": "3528881545772"
+  },
+  {
+   "week": "2026-06-29",
+   "band": "Google",
+   "tokens": "3422520339898"
+  },
+  {
+   "week": "2026-06-29",
+   "band": "Mid-size open",
+   "tokens": "24729290350957"
+  },
+  {
+   "week": "2026-06-29",
+   "band": "OpenAI",
+   "tokens": "2445143792870"
+  },
+  {
+   "week": "2026-06-29",
+   "band": "Other closed",
+   "tokens": "468708467883"
+  },
+  {
+   "week": "2026-06-29",
+   "band": "Small open",
+   "tokens": "1194502664851"
+  },
+  {
+   "week": "2026-06-29",
+   "band": "Unattributed",
+   "tokens": "2909022851268"
+  },
+  {
+   "week": "2026-07-06",
+   "band": "Anthropic",
+   "tokens": "7023832862462"
+  },
+  {
+   "week": "2026-07-06",
+   "band": "Flagship open",
+   "tokens": "4125854610360"
+  },
+  {
+   "week": "2026-07-06",
+   "band": "Google",
+   "tokens": "3242248000823"
+  },
+  {
+   "week": "2026-07-06",
+   "band": "Mid-size open",
+   "tokens": "30832920546018"
+  },
+  {
+   "week": "2026-07-06",
+   "band": "OpenAI",
+   "tokens": "2162282638620"
+  },
+  {
+   "week": "2026-07-06",
+   "band": "Other closed",
+   "tokens": "549486805858"
+  },
+  {
+   "week": "2026-07-06",
+   "band": "Small open",
+   "tokens": "1234599793042"
+  },
+  {
+   "week": "2026-07-06",
+   "band": "Unattributed",
+   "tokens": "3185388449101"
+  },
+  {
+   "week": "2026-07-13",
+   "band": "Anthropic",
+   "tokens": "7161987375661"
+  },
+  {
+   "week": "2026-07-13",
+   "band": "Flagship open",
+   "tokens": "4225993623649"
+  },
+  {
+   "week": "2026-07-13",
+   "band": "Google",
+   "tokens": "3352907328209"
+  },
+  {
+   "week": "2026-07-13",
+   "band": "Mid-size open",
+   "tokens": "39679018883767"
+  },
+  {
+   "week": "2026-07-13",
+   "band": "OpenAI",
+   "tokens": "2857388897670"
+  },
+  {
+   "week": "2026-07-13",
+   "band": "Other closed",
+   "tokens": "628916250770"
+  },
+  {
+   "week": "2026-07-13",
+   "band": "Small open",
+   "tokens": "1216186970009"
+  },
+  {
+   "week": "2026-07-13",
+   "band": "Unattributed",
+   "tokens": "3438187875362"
+  },
+  {
+   "week": "2026-07-20",
+   "band": "Anthropic",
+   "tokens": "5052889881121"
+  },
+  {
+   "week": "2026-07-20",
+   "band": "Flagship open",
+   "tokens": "5573881457009"
+  },
+  {
+   "week": "2026-07-20",
+   "band": "Google",
+   "tokens": "3827332754760"
+  },
+  {
+   "week": "2026-07-20",
+   "band": "Mid-size open",
+   "tokens": "34462078552983"
+  },
+  {
+   "week": "2026-07-20",
+   "band": "OpenAI",
+   "tokens": "2638397593145"
+  },
+  {
+   "week": "2026-07-20",
+   "band": "Other closed",
+   "tokens": "780603949534"
+  },
+  {
+   "week": "2026-07-20",
+   "band": "Small open",
+   "tokens": "1252065044977"
+  },
+  {
+   "week": "2026-07-20",
+   "band": "Unattributed",
+   "tokens": "4107091608875"
+  },
+  {
+   "week": "2026-07-27",
+   "band": "Anthropic",
+   "tokens": "4358609968603"
+  },
+  {
+   "week": "2026-07-27",
+   "band": "Flagship open",
+   "tokens": "5497511354199"
+  },
+  {
+   "week": "2026-07-27",
+   "band": "Google",
+   "tokens": "3699844545547"
+  },
+  {
+   "week": "2026-07-27",
+   "band": "Mid-size open",
+   "tokens": "32587348123387"
+  },
+  {
+   "week": "2026-07-27",
+   "band": "OpenAI",
+   "tokens": "4050137204173"
+  },
+  {
+   "week": "2026-07-27",
+   "band": "Other closed",
+   "tokens": "478744305752"
+  },
+  {
+   "week": "2026-07-27",
+   "band": "Small open",
+   "tokens": "1403131740291"
+  },
+  {
+   "week": "2026-07-27",
+   "band": "Unattributed",
+   "tokens": "4204276964711"
+  },
+  {
+   "week": "2026-08-03",
+   "band": "Anthropic",
+   "tokens": "4651581493010"
+  },
+  {
+   "week": "2026-08-03",
+   "band": "Flagship open",
+   "tokens": "4924433615209"
+  },
+  {
+   "week": "2026-08-03",
+   "band": "Google",
+   "tokens": "5297738926290"
+  },
+  {
+   "week": "2026-08-03",
+   "band": "Mid-size open",
+   "tokens": "41093790243021"
+  },
+  {
+   "week": "2026-08-03",
+   "band": "OpenAI",
+   "tokens": "7084313846877"
+  },
+  {
+   "week": "2026-08-03",
+   "band": "Other closed",
+   "tokens": "423774180031"
+  },
+  {
+   "week": "2026-08-03",
+   "band": "Small open",
+   "tokens": "1335138324367"
+  },
+  {
+   "week": "2026-08-03",
+   "band": "Unattributed",
+   "tokens": "4235767219127"
+  },
+  {
+   "week": "2026-08-10",
+   "band": "Anthropic",
+   "tokens": "6212083654947"
+  },
+  {
+   "week": "2026-08-10",
+   "band": "Flagship open",
+   "tokens": "5556398702922"
+  },
+  {
+   "week": "2026-08-10",
+   "band": "Google",
+   "tokens": "5482485346968"
+  },
+  {
+   "week": "2026-08-10",
+   "band": "Mid-size open",
+   "tokens": "41900533217527"
+  },
+  {
+   "week": "2026-08-10",
+   "band": "OpenAI",
+   "tokens": "8290016675654"
+  },
+  {
+   "week": "2026-08-10",
+   "band": "Other closed",
+   "tokens": "916489824215"
+  },
+  {
+   "week": "2026-08-10",
+   "band": "Small open",
+   "tokens": "2105553177574"
+  },
+  {
+   "week": "2026-08-10",
+   "band": "Unattributed",
+   "tokens": "4855812060505"
+  },
+  {
+   "week": "2026-08-17",
+   "band": "Anthropic",
+   "tokens": "4576197705572"
+  },
+  {
+   "week": "2026-08-17",
+   "band": "Flagship open",
+   "tokens": "5180568605401"
+  },
+  {
+   "week": "2026-08-17",
+   "band": "Google",
+   "tokens": "5587663115930"
+  },
+  {
+   "week": "2026-08-17",
+   "band": "Mid-size open",
+   "tokens": "49298435935013"
+  },
+  {
+   "week": "2026-08-17",
+   "band": "OpenAI",
+   "tokens": "8304079034348"
+  },
+  {
+   "week": "2026-08-17",
+   "band": "Other closed",
+   "tokens": "1312967978595"
+  },
+  {
+   "week": "2026-08-17",
+   "band": "Small open",
+   "tokens": "2209814632244"
+  },
+  {
+   "week": "2026-08-17",
+   "band": "Unattributed",
+   "tokens": "5326602519560"
+  },
+  {
+   "week": "2026-08-24",
+   "band": "Anthropic",
+   "tokens": "4423132281294"
+  },
+  {
+   "week": "2026-08-24",
+   "band": "Flagship open",
+   "tokens": "5206506922986"
+  },
+  {
+   "week": "2026-08-24",
+   "band": "Google",
+   "tokens": "7125123313675"
+  },
+  {
+   "week": "2026-08-24",
+   "band": "Mid-size open",
+   "tokens": "60020747919940"
+  },
+  {
+   "week": "2026-08-24",
+   "band": "OpenAI",
+   "tokens": "10832723557366"
+  },
+  {
+   "week": "2026-08-24",
+   "band": "Other closed",
+   "tokens": "1706510870801"
+  },
+  {
+   "week": "2026-08-24",
+   "band": "Small open",
+   "tokens": "2179555657940"
+  },
+  {
+   "week": "2026-08-24",
+   "band": "Unattributed",
+   "tokens": "5793414475020"
+  },
+  {
+   "week": "2026-08-31",
+   "band": "Anthropic",
+   "tokens": "5229507776031"
+  },
+  {
+   "week": "2026-08-31",
+   "band": "Flagship open",
+   "tokens": "4716527567390"
+  },
+  {
+   "week": "2026-08-31",
+   "band": "Google",
+   "tokens": "5851465618361"
+  },
+  {
+   "week": "2026-08-31",
+   "band": "Mid-size open",
+   "tokens": "70817601117103"
+  },
+  {
+   "week": "2026-08-31",
+   "band": "OpenAI",
+   "tokens": "16010232488880"
+  },
+  {
+   "week": "2026-08-31",
+   "band": "Other closed",
+   "tokens": "3512589360455"
+  },
+  {
+   "week": "2026-08-31",
+   "band": "Small open",
+   "tokens": "2438804925806"
+  },
+  {
+   "week": "2026-08-31",
+   "band": "Unattributed",
+   "tokens": "6886574852130"
+  },
+  {
+   "week": "2026-09-07",
+   "band": "Anthropic",
+   "tokens": "4277178711445"
+  },
+  {
+   "week": "2026-09-07",
+   "band": "Flagship open",
+   "tokens": "3875297204399"
+  },
+  {
+   "week": "2026-09-07",
+   "band": "Google",
+   "tokens": "5948667282724"
+  },
+  {
+   "week": "2026-09-07",
+   "band": "Mid-size open",
+   "tokens": "75637580601205"
+  },
+  {
+   "week": "2026-09-07",
+   "band": "OpenAI",
+   "tokens": "21428358409473"
+  },
+  {
+   "week": "2026-09-07",
+   "band": "Other closed",
+   "tokens": "6189384447105"
+  },
+  {
+   "week": "2026-09-07",
+   "band": "Small open",
+   "tokens": "1677826639445"
+  },
+  {
+   "week": "2026-09-07",
+   "band": "Unattributed",
+   "tokens": "7728728748387"
+  },
+  {
+   "week": "2026-09-14",
+   "band": "Anthropic",
+   "tokens": "3953408781674"
+  },
+  {
+   "week": "2026-09-14",
+   "band": "Flagship open",
+   "tokens": "3724757726098"
+  },
+  {
+   "week": "2026-09-14",
+   "band": "Google",
+   "tokens": "5361602665040"
+  },
+  {
+   "week": "2026-09-14",
+   "band": "Mid-size open",
+   "tokens": "84334176847216"
+  },
+  {
+   "week": "2026-09-14",
+   "band": "OpenAI",
+   "tokens": "14386803177860"
+  },
+  {
+   "week": "2026-09-14",
+   "band": "Other closed",
+   "tokens": "6728943419776"
+  },
+  {
+   "week": "2026-09-14",
+   "band": "Small open",
+   "tokens": "1549727163520"
+  },
+  {
+   "week": "2026-09-14",
+   "band": "Unattributed",
+   "tokens": "7878405868060"
+  },
+  {
+   "week": "2026-09-21",
+   "band": "Anthropic",
+   "tokens": "4370784197116"
+  },
+  {
+   "week": "2026-09-21",
+   "band": "Flagship open",
+   "tokens": "4213953150730"
+  },
+  {
+   "week": "2026-09-21",
+   "band": "Google",
+   "tokens": "5154844777380"
+  },
+  {
+   "week": "2026-09-21",
+   "band": "Mid-size open",
+   "tokens": "82729708509454"
+  },
+  {
+   "week": "2026-09-21",
+   "band": "OpenAI",
+   "tokens": "15502653171439"
+  },
+  {
+   "week": "2026-09-21",
+   "band": "Other closed",
+   "tokens": "8577594163920"
+  },
+  {
+   "week": "2026-09-21",
+   "band": "Small open",
+   "tokens": "1523124003977"
+  },
+  {
+   "week": "2026-09-21",
+   "band": "Unattributed",
+   "tokens": "9913945846597"
+  },
+  {
+   "week": "2026-09-28",
+   "band": "Anthropic",
+   "tokens": "5469604043774"
+  },
+  {
+   "week": "2026-09-28",
+   "band": "Flagship open",
+   "tokens": "4332205037572"
+  },
+  {
+   "week": "2026-09-28",
+   "band": "Google",
+   "tokens": "5061014922875"
+  },
+  {
+   "week": "2026-09-28",
+   "band": "Mid-size open",
+   "tokens": "78090428640836"
+  },
+  {
+   "week": "2026-09-28",
+   "band": "OpenAI",
+   "tokens": "15986338916182"
+  },
+  {
+   "week": "2026-09-28",
+   "band": "Other closed",
+   "tokens": "6546898377576"
+  },
+  {
+   "week": "2026-09-28",
+   "band": "Small open",
+   "tokens": "1661958688482"
+  },
+  {
+   "week": "2026-09-28",
+   "band": "Unattributed",
+   "tokens": "10046389678195"
+  }
+ ],
+ "display": [
+  {
+   "week": "2025-01-06",
+   "Small open": "92033918899.33333",
+   "Mid-size open": "30614471689.0",
+   "Flagship open": "0.0",
+   "Google": "92758629450.0",
+   "OpenAI": "21503124817.666664",
+   "Anthropic": "243183044843.66666",
+   "Other closed": "6908347313.333333",
+   "Unattributed": "18171397894.333332"
+  },
+  {
+   "week": "2025-01-13",
+   "Small open": "90511106920.25",
+   "Mid-size open": "32121909307.0",
+   "Flagship open": "0.0",
+   "Google": "96843769372.25",
+   "OpenAI": "23435855059.0",
+   "Anthropic": "248219464889.75",
+   "Other closed": "5583813401.0",
+   "Unattributed": "18877672170.5"
+  },
+  {
+   "week": "2025-01-20",
+   "Small open": "90785821224.75",
+   "Mid-size open": "37196937716.5",
+   "Flagship open": "0.0",
+   "Google": "86344666105.0",
+   "OpenAI": "26918602137.5",
+   "Anthropic": "267725488913.5",
+   "Other closed": "5988545236.75",
+   "Unattributed": "21102393649.5"
+  },
+  {
+   "week": "2025-01-27",
+   "Small open": "101355976121.75",
+   "Mid-size open": "44312406002.25",
+   "Flagship open": "0.0",
+   "Google": "81478566725.25",
+   "OpenAI": "30884740056.5",
+   "Anthropic": "310922735271.25",
+   "Other closed": "7717963648.75",
+   "Unattributed": "26664955932.5"
+  },
+  {
+   "week": "2025-02-03",
+   "Small open": "118430500084.0",
+   "Mid-size open": "53829904886.25",
+   "Flagship open": "0.0",
+   "Google": "131474739910.0",
+   "OpenAI": "34443463909.25",
+   "Anthropic": "346169048824.5",
+   "Other closed": "6023768729.75",
+   "Unattributed": "34059597692.5"
+  },
+  {
+   "week": "2025-02-10",
+   "Small open": "119169539365.0",
+   "Mid-size open": "68530025977.75",
+   "Flagship open": "0.0",
+   "Google": "236034843816.5",
+   "OpenAI": "39219216908.0",
+   "Anthropic": "338862020824.5",
+   "Other closed": "3440677441.25",
+   "Unattributed": "38477482142.25"
+  },
+  {
+   "week": "2025-02-17",
+   "Small open": "106276951245.5",
+   "Mid-size open": "87266041467.0",
+   "Flagship open": "0.0",
+   "Google": "346596585419.0",
+   "OpenAI": "43672152626.25",
+   "Anthropic": "335589313088.5",
+   "Other closed": "2194483230.25",
+   "Unattributed": "38918190847.25"
+  },
+  {
+   "week": "2025-02-24",
+   "Small open": "110982633683.75",
+   "Mid-size open": "105950683103.25",
+   "Flagship open": "0.0",
+   "Google": "420311498463.0",
+   "OpenAI": "44915021135.75",
+   "Anthropic": "383560911962.75",
+   "Other closed": "1955380478.75",
+   "Unattributed": "40132554796.75"
+  },
+  {
+   "week": "2025-03-03",
+   "Small open": "134347712704.5",
+   "Mid-size open": "124662791364.0",
+   "Flagship open": "0.0",
+   "Google": "457969854115.5",
+   "OpenAI": "49573730145.0",
+   "Anthropic": "457465301266.5",
+   "Other closed": "2295692684.75",
+   "Unattributed": "44169916538.5"
+  },
+  {
+   "week": "2025-03-10",
+   "Small open": "164044839802.0",
+   "Mid-size open": "143730205705.75",
+   "Flagship open": "0.0",
+   "Google": "453034042901.0",
+   "OpenAI": "57355860765.25",
+   "Anthropic": "529296503087.75",
+   "Other closed": "1393390180.0",
+   "Unattributed": "48556004072.75"
+  },
+  {
+   "week": "2025-03-17",
+   "Small open": "202928457812.25",
+   "Mid-size open": "178070049340.5",
+   "Flagship open": "0.0",
+   "Google": "442408198211.5",
+   "OpenAI": "64925809617.75",
+   "Anthropic": "552390247276.0",
+   "Other closed": "795025922.25",
+   "Unattributed": "52996053442.0"
+  },
+  {
+   "week": "2025-03-24",
+   "Small open": "236621345123.25",
+   "Mid-size open": "236162099816.5",
+   "Flagship open": "0.0",
+   "Google": "494446262657.0",
+   "OpenAI": "119732649414.5",
+   "Anthropic": "519708321835.5",
+   "Other closed": "1049663652.5",
+   "Unattributed": "56131094919.5"
+  },
+  {
+   "week": "2025-03-31",
+   "Small open": "234494682718.5",
+   "Mid-size open": "274389480819.75",
+   "Flagship open": "0.0",
+   "Google": "566902399159.25",
+   "OpenAI": "208280919351.5",
+   "Anthropic": "496642822550.5",
+   "Other closed": "2030377486.75",
+   "Unattributed": "59249427610.25"
+  },
+  {
+   "week": "2025-04-07",
+   "Small open": "190258538818.75",
+   "Mid-size open": "269736031333.75",
+   "Flagship open": "0.0",
+   "Google": "601321054531.5",
+   "OpenAI": "213652597897.5",
+   "Anthropic": "502940154061.0",
+   "Other closed": "5738410226.25",
+   "Unattributed": "68477166860.5"
+  },
+  {
+   "week": "2025-04-14",
+   "Small open": "151417313716.75",
+   "Mid-size open": "257173184971.75",
+   "Flagship open": "0.0",
+   "Google": "632535029433.0",
+   "OpenAI": "149741081935.75",
+   "Anthropic": "498472832466.75",
+   "Other closed": "9745149970.0",
+   "Unattributed": "81108497521.5"
+  },
+  {
+   "week": "2025-04-21",
+   "Small open": "153125614301.75",
+   "Mid-size open": "259818468378.5",
+   "Flagship open": "0.0",
+   "Google": "659247738047.75",
+   "OpenAI": "129846057005.75",
+   "Anthropic": "462732235029.5",
+   "Other closed": "12028125651.75",
+   "Unattributed": "93367700988.25"
+  },
+  {
+   "week": "2025-04-28",
+   "Small open": "168128362842.5",
+   "Mid-size open": "269903959151.25",
+   "Flagship open": "0.0",
+   "Google": "674626191852.75",
+   "OpenAI": "214257109651.0",
+   "Anthropic": "427089768130.0",
+   "Other closed": "13943520762.0",
+   "Unattributed": "106895349148.0"
+  },
+  {
+   "week": "2025-05-05",
+   "Small open": "159512433781.5",
+   "Mid-size open": "275204919019.25",
+   "Flagship open": "0.0",
+   "Google": "696173513092.5",
+   "OpenAI": "376514270342.25",
+   "Anthropic": "415608214097.75",
+   "Other closed": "15831024568.75",
+   "Unattributed": "115715243608.0"
+  },
+  {
+   "week": "2025-05-12",
+   "Small open": "132495231703.0",
+   "Mid-size open": "279082451811.5",
+   "Flagship open": "0.0",
+   "Google": "702486564144.0",
+   "OpenAI": "509919155066.0",
+   "Anthropic": "444448158890.0",
+   "Other closed": "17604527587.0",
+   "Unattributed": "116091350178.0"
+  },
+  {
+   "week": "2025-05-19",
+   "Small open": "124944595745.75",
+   "Mid-size open": "295945863341.5",
+   "Flagship open": "0.0",
+   "Google": "726396590784.25",
+   "OpenAI": "566014418916.25",
+   "Anthropic": "502854856809.0",
+   "Other closed": "16211108756.0",
+   "Unattributed": "114961576207.75"
+  },
+  {
+   "week": "2025-05-26",
+   "Small open": "132407546692.0",
+   "Mid-size open": "330236628313.0",
+   "Flagship open": "0.0",
+   "Google": "781752547062.5",
+   "OpenAI": "535890186272.0",
+   "Anthropic": "523016026966.75",
+   "Other closed": "11912755864.25",
+   "Unattributed": "117174556403.0"
+  },
+  {
+   "week": "2025-06-02",
+   "Small open": "125803605283.5",
+   "Mid-size open": "368490005858.25",
+   "Flagship open": "0.0",
+   "Google": "841677799483.25",
+   "OpenAI": "384331373548.5",
+   "Anthropic": "514632271293.5",
+   "Other closed": "14831147869.75",
+   "Unattributed": "121168973830.5"
+  },
+  {
+   "week": "2025-06-16",
+   "Small open": "120177524232.0",
+   "Mid-size open": "392402472436.0",
+   "Flagship open": "0.0",
+   "Google": "915958736405.25",
+   "OpenAI": "211779672245.0",
+   "Anthropic": "517451793026.5",
+   "Other closed": "26496951395.5",
+   "Unattributed": "124190173617.5"
+  },
+  {
+   "week": "2025-06-23",
+   "Small open": "131092923019.75",
+   "Mid-size open": "402539049636.75",
+   "Flagship open": "0.0",
+   "Google": "934657646065.25",
+   "OpenAI": "147182351924.0",
+   "Anthropic": "495280139999.25",
+   "Other closed": "33705414765.5",
+   "Unattributed": "124736962396.0"
+  },
+  {
+   "week": "2025-06-30",
+   "Small open": "137092333695.75",
+   "Mid-size open": "431492140940.75",
+   "Flagship open": "1467926428.0",
+   "Google": "900182603141.75",
+   "OpenAI": "138042523054.25",
+   "Anthropic": "468776518129.75",
+   "Other closed": "31260996301.5",
+   "Unattributed": "125447282018.0"
+  },
+  {
+   "week": "2025-07-07",
+   "Small open": "140643615281.25",
+   "Mid-size open": "540440156098.0",
+   "Flagship open": "17928077534.75",
+   "Google": "912577996322.5",
+   "OpenAI": "138980313374.0",
+   "Anthropic": "542810048584.25",
+   "Other closed": "33616810353.75",
+   "Unattributed": "131910329966.25"
+  },
+  {
+   "week": "2025-07-21",
+   "Small open": "157905370476.0",
+   "Mid-size open": "735286309654.5",
+   "Flagship open": "41572030626.0",
+   "Google": "923689812642.0",
+   "OpenAI": "156430548742.25",
+   "Anthropic": "700269780825.0",
+   "Other closed": "41053910898.5",
+   "Unattributed": "150044138286.75"
+  },
+  {
+   "week": "2025-07-28",
+   "Small open": "192400988558.0",
+   "Mid-size open": "890162774428.5",
+   "Flagship open": "60985579810.25",
+   "Google": "881841409795.5",
+   "OpenAI": "177892915287.25",
+   "Anthropic": "772811869032.0",
+   "Other closed": "40916378627.5",
+   "Unattributed": "174897141589.25"
+  },
+  {
+   "week": "2025-08-04",
+   "Small open": "211523953122.0",
+   "Mid-size open": "935384434539.75",
+   "Flagship open": "88447168466.0",
+   "Google": "817163647434.25",
+   "OpenAI": "209286875697.5",
+   "Anthropic": "746153658291.0",
+   "Other closed": "39373277112.75",
+   "Unattributed": "190606892997.0"
+  },
+  {
+   "week": "2025-08-11",
+   "Small open": "188165236107.75",
+   "Mid-size open": "942698198386.0",
+   "Flagship open": "99520472062.75",
+   "Google": "772254691393.75",
+   "OpenAI": "239172517926.75",
+   "Anthropic": "723505627156.5",
+   "Other closed": "51629359642.0",
+   "Unattributed": "197156805627.5"
+  },
+  {
+   "week": "2025-08-18",
+   "Small open": "194317131794.5",
+   "Mid-size open": "931309201378.75",
+   "Flagship open": "73665870813.25",
+   "Google": "780551288790.75",
+   "OpenAI": "260713363418.25",
+   "Anthropic": "712907936124.0",
+   "Other closed": "175474825136.75",
+   "Unattributed": "206993402036.25"
+  },
+  {
+   "week": "2025-08-25",
+   "Small open": "251014471233.25",
+   "Mid-size open": "878412742052.25",
+   "Flagship open": "40886138819.25",
+   "Google": "837380002626.5",
+   "OpenAI": "309836216740.5",
+   "Anthropic": "698308149662.0",
+   "Other closed": "554430905939.75",
+   "Unattributed": "225073843743.25"
+  },
+  {
+   "week": "2025-09-01",
+   "Small open": "290972403654.25",
+   "Mid-size open": "854946390419.25",
+   "Flagship open": "29834546059.5",
+   "Google": "858577814961.5",
+   "OpenAI": "383944942207.5",
+   "Anthropic": "686905757802.25",
+   "Other closed": "1002608480851.75",
+   "Unattributed": "249008099869.75"
+  },
+  {
+   "week": "2025-09-08",
+   "Small open": "280741997727.5",
+   "Mid-size open": "864102654631.25",
+   "Flagship open": "31115526955.25",
+   "Google": "818931449664.25",
+   "OpenAI": "431507686445.75",
+   "Anthropic": "691569423056.5",
+   "Other closed": "1230934385284.5",
+   "Unattributed": "268848396798.25"
+  },
+  {
+   "week": "2025-09-15",
+   "Small open": "258449612964.75",
+   "Mid-size open": "804429510896.75",
+   "Flagship open": "28917965127.25",
+   "Google": "795298615627.75",
+   "OpenAI": "449312589563.0",
+   "Anthropic": "697515256892.0",
+   "Other closed": "1484673113336.0",
+   "Unattributed": "278403202152.5"
+  },
+  {
+   "week": "2025-09-22",
+   "Small open": "286579147619.0",
+   "Mid-size open": "755601191537.75",
+   "Flagship open": "25139774807.75",
+   "Google": "813354275326.0",
+   "OpenAI": "454403880120.25",
+   "Anthropic": "695084795616.5",
+   "Other closed": "1809722130477.75",
+   "Unattributed": "293560381797.25"
+  },
+  {
+   "week": "2025-09-29",
+   "Small open": "363028268502.0",
+   "Mid-size open": "783940664480.5",
+   "Flagship open": "19726550921.75",
+   "Google": "842000605752.75",
+   "OpenAI": "439686377611.25",
+   "Anthropic": "727767078002.0",
+   "Other closed": "1772191308351.5",
+   "Unattributed": "311243811787.25"
+  },
+  {
+   "week": "2025-10-06",
+   "Small open": "375018749041.25",
+   "Mid-size open": "784062184986.75",
+   "Flagship open": "16154556080.75",
+   "Google": "839031059930.5",
+   "OpenAI": "394388231962.5",
+   "Anthropic": "779368493980.0",
+   "Other closed": "1512473750397.0",
+   "Unattributed": "315563874112.25"
+  },
+  {
+   "week": "2025-10-13",
+   "Small open": "281008201171.5",
+   "Mid-size open": "769607660378.75",
+   "Flagship open": "17523586801.0",
+   "Google": "832834671210.0",
+   "OpenAI": "352924558210.75",
+   "Anthropic": "802664616374.25",
+   "Other closed": "1417358431016.75",
+   "Unattributed": "321037387501.75"
+  },
+  {
+   "week": "2025-10-20",
+   "Small open": "230821271466.25",
+   "Mid-size open": "850737314038.0",
+   "Flagship open": "13800042370.25",
+   "Google": "873483420533.25",
+   "OpenAI": "345113006917.0",
+   "Anthropic": "839570222210.0",
+   "Other closed": "1487761811594.25",
+   "Unattributed": "333192202986.0"
+  },
+  {
+   "week": "2025-10-27",
+   "Small open": "249038614220.75",
+   "Mid-size open": "1030633076743.75",
+   "Flagship open": "12661639934.25",
+   "Google": "945830362979.75",
+   "OpenAI": "344975747840.25",
+   "Anthropic": "891366435075.0",
+   "Other closed": "1586311078555.25",
+   "Unattributed": "349717976753.75"
+  },
+  {
+   "week": "2025-11-03",
+   "Small open": "241457411783.0",
+   "Mid-size open": "1138592348442.25",
+   "Flagship open": "26842799848.25",
+   "Google": "998855991340.0",
+   "OpenAI": "352861875516.75",
+   "Anthropic": "895896119486.75",
+   "Other closed": "1641531494117.0",
+   "Unattributed": "376639401939.25"
+  },
+  {
+   "week": "2025-11-10",
+   "Small open": "233208964937.75",
+   "Mid-size open": "1067944760348.0",
+   "Flagship open": "36867653316.5",
+   "Google": "1062364822069.25",
+   "OpenAI": "390341718694.75",
+   "Anthropic": "828978323508.0",
+   "Other closed": "1755006661268.75",
+   "Unattributed": "410639531533.0"
+  },
+  {
+   "week": "2025-11-17",
+   "Small open": "252824826008.5",
+   "Mid-size open": "956415022601.0",
+   "Flagship open": "30707685450.0",
+   "Google": "1165508155783.0",
+   "OpenAI": "443160782004.0",
+   "Anthropic": "748586779419.5",
+   "Other closed": "2162890176758.5",
+   "Unattributed": "441266816128.5"
+  },
+  {
+   "week": "2025-11-24",
+   "Small open": "272827342201.25",
+   "Mid-size open": "933447278149.0",
+   "Flagship open": "18632600941.25",
+   "Google": "1231976341514.0",
+   "OpenAI": "463917732273.5",
+   "Anthropic": "754539413668.25",
+   "Other closed": "2422694736501.75",
+   "Unattributed": "474708132542.75"
+  },
+  {
+   "week": "2025-12-01",
+   "Small open": "290341778627.75",
+   "Mid-size open": "1037120522376.75",
+   "Flagship open": "13670018687.25",
+   "Google": "1254803815741.75",
+   "OpenAI": "449058082818.75",
+   "Anthropic": "822851840510.25",
+   "Other closed": "1882464221159.5",
+   "Unattributed": "509763006130.5"
+  },
+  {
+   "week": "2025-12-08",
+   "Small open": "287526891801.75",
+   "Mid-size open": "1230900246324.0",
+   "Flagship open": "22518243689.75",
+   "Google": "1279564352474.25",
+   "OpenAI": "457588953466.75",
+   "Anthropic": "849889447368.0",
+   "Other closed": "1186663141416.5",
+   "Unattributed": "532569240708.0"
+  },
+  {
+   "week": "2025-12-15",
+   "Small open": "253825306578.0",
+   "Mid-size open": "1452151555361.75",
+   "Flagship open": "31440764482.25",
+   "Google": "1277387178160.25",
+   "OpenAI": "452718381520.5",
+   "Anthropic": "805136622830.0",
+   "Other closed": "949161648011.25",
+   "Unattributed": "534519043665.25"
+  },
+  {
+   "week": "2025-12-22",
+   "Small open": "230774593864.5",
+   "Mid-size open": "1644778718905.75",
+   "Flagship open": "32464983465.25",
+   "Google": "1249189400478.25",
+   "OpenAI": "377612296087.25",
+   "Anthropic": "732524677268.25",
+   "Other closed": "893599536087.75",
+   "Unattributed": "512758749228.5"
+  },
+  {
+   "week": "2025-12-29",
+   "Small open": "230205360625.5",
+   "Mid-size open": "1729829761279.75",
+   "Flagship open": "35404747123.5",
+   "Google": "1308182405102.75",
+   "OpenAI": "342452813170.5",
+   "Anthropic": "787342359924.0",
+   "Other closed": "845845078414.25",
+   "Unattributed": "513194997090.75"
+  },
+  {
+   "week": "2026-01-05",
+   "Small open": "222636617281.75",
+   "Mid-size open": "1812447293147.75",
+   "Flagship open": "39423638605.75",
+   "Google": "1553293181833.25",
+   "OpenAI": "423045356741.75",
+   "Anthropic": "1065927247058.5",
+   "Other closed": "838575479322.0",
+   "Unattributed": "538189190605.0"
+  },
+  {
+   "week": "2026-01-12",
+   "Small open": "208320256458.75",
+   "Mid-size open": "1984586319098.0",
+   "Flagship open": "39485285490.0",
+   "Google": "1776275770292.75",
+   "OpenAI": "517242025270.5",
+   "Anthropic": "1297673299005.25",
+   "Other closed": "891989251626.75",
+   "Unattributed": "556373038211.25"
+  },
+  {
+   "week": "2026-01-19",
+   "Small open": "207277101167.5",
+   "Mid-size open": "2091360776671.5",
+   "Flagship open": "134071703870.0",
+   "Google": "1814732387252.0",
+   "OpenAI": "585311168932.5",
+   "Anthropic": "1316974836664.75",
+   "Other closed": "935584959896.75",
+   "Unattributed": "598514306392.0"
+  },
+  {
+   "week": "2026-01-26",
+   "Small open": "222885628649.75",
+   "Mid-size open": "2194049762145.0",
+   "Flagship open": "520508249535.25",
+   "Google": "1892045553044.25",
+   "OpenAI": "686374380731.0",
+   "Anthropic": "1343751525205.75",
+   "Other closed": "891830179277.25",
+   "Unattributed": "658606838408.0"
+  },
+  {
+   "week": "2026-02-02",
+   "Small open": "266916226763.0",
+   "Mid-size open": "2982225146145.25",
+   "Flagship open": "1036016247525.25",
+   "Google": "2045016097516.75",
+   "OpenAI": "796783865634.5",
+   "Anthropic": "1454295780397.5",
+   "Other closed": "841553718496.75",
+   "Unattributed": "709388605603.5"
+  },
+  {
+   "week": "2026-02-09",
+   "Small open": "328817893486.5",
+   "Mid-size open": "4506157190836.75",
+   "Flagship open": "1220663339601.0",
+   "Google": "2158720630908.25",
+   "OpenAI": "872342376065.5",
+   "Anthropic": "1614486672228.0",
+   "Other closed": "842272672183.5",
+   "Unattributed": "763031584805.25"
+  },
+  {
+   "week": "2026-02-16",
+   "Small open": "375734577486.75",
+   "Mid-size open": "5418831851400.0",
+   "Flagship open": "1024490378658.0",
+   "Google": "2306628903803.0",
+   "OpenAI": "890065349296.25",
+   "Anthropic": "1853645311039.5",
+   "Other closed": "815514755354.0",
+   "Unattributed": "841738913332.5"
+  },
+  {
+   "week": "2026-02-23",
+   "Small open": "429457604642.75",
+   "Mid-size open": "5386195487755.25",
+   "Flagship open": "792786266331.25",
+   "Google": "2527065085819.25",
+   "OpenAI": "953126576970.0",
+   "Anthropic": "2109782744808.75",
+   "Other closed": "775923754921.75",
+   "Unattributed": "962878099411.75"
+  },
+  {
+   "week": "2026-03-02",
+   "Small open": "467313017246.25",
+   "Mid-size open": "5563461785493.75",
+   "Flagship open": "684372790936.75",
+   "Google": "2713844154329.75",
+   "OpenAI": "1153899641561.75",
+   "Anthropic": "2323025275260.5",
+   "Other closed": "741120195569.0",
+   "Unattributed": "1114011806177.0"
+  },
+  {
+   "week": "2026-03-09",
+   "Small open": "429910043194.5",
+   "Mid-size open": "6133391367565.25",
+   "Flagship open": "605469008274.5",
+   "Google": "2827748018528.75",
+   "OpenAI": "1274266968947.75",
+   "Anthropic": "2539430664760.75",
+   "Other closed": "1356246518064.25",
+   "Unattributed": "1276068254137.5"
+  },
+  {
+   "week": "2026-03-16",
+   "Small open": "373993134002.0",
+   "Mid-size open": "6599181720659.75",
+   "Flagship open": "548171312760.0",
+   "Google": "2873696169614.0",
+   "OpenAI": "1257339402818.5",
+   "Anthropic": "2723923731240.25",
+   "Other closed": "3375119805373.0",
+   "Unattributed": "1421601150856.5"
+  },
+  {
+   "week": "2026-03-23",
+   "Small open": "347259654773.25",
+   "Mid-size open": "6806113187155.75",
+   "Flagship open": "546905947792.5",
+   "Google": "2826774243053.5",
+   "OpenAI": "1260387615095.0",
+   "Anthropic": "2762433934965.0",
+   "Other closed": "6750657041516.0",
+   "Unattributed": "1507944944419.0"
+  },
+  {
+   "week": "2026-03-30",
+   "Small open": "349103310300.25",
+   "Mid-size open": "6763245776477.25",
+   "Flagship open": "561491115163.25",
+   "Google": "2870313450719.75",
+   "OpenAI": "1377361043178.75",
+   "Anthropic": "2764049512686.75",
+   "Other closed": "8076266150929.75",
+   "Unattributed": "1622229674155.75"
+  },
+  {
+   "week": "2026-04-06",
+   "Small open": "405320451175.25",
+   "Mid-size open": "6620252097709.5",
+   "Flagship open": "513322766782.5",
+   "Google": "3079239039267.0",
+   "OpenAI": "1568131561780.0",
+   "Anthropic": "2992947051157.75",
+   "Other closed": "5195048453601.0",
+   "Unattributed": "1821709804155.5"
+  },
+  {
+   "week": "2026-04-13",
+   "Small open": "485664538808.0",
+   "Mid-size open": "6457999689166.75",
+   "Flagship open": "889250483325.5",
+   "Google": "3179984771568.75",
+   "OpenAI": "1586760022053.25",
+   "Anthropic": "3390802930110.0",
+   "Other closed": "2559709954408.75",
+   "Unattributed": "2039922833639.75"
+  },
+  {
+   "week": "2026-04-20",
+   "Small open": "552431809585.75",
+   "Mid-size open": "6975267737817.75",
+   "Flagship open": "2000430778009.75",
+   "Google": "3077557756298.5",
+   "OpenAI": "1487474440235.5",
+   "Anthropic": "3524350215318.0",
+   "Other closed": "1809182634032.5",
+   "Unattributed": "2291550068145.0"
+  },
+  {
+   "week": "2026-04-27",
+   "Small open": "638590859044.25",
+   "Mid-size open": "8314031609766.25",
+   "Flagship open": "2921122875204.5",
+   "Google": "2974573411387.75",
+   "OpenAI": "1447914019239.75",
+   "Anthropic": "3438075256603.25",
+   "Other closed": "1295145611021.75",
+   "Unattributed": "2542925344635.5"
+  },
+  {
+   "week": "2026-05-04",
+   "Small open": "729047161547.0",
+   "Mid-size open": "9426566702668.5",
+   "Flagship open": "3082056707868.75",
+   "Google": "3049327187505.0",
+   "OpenAI": "1437600735811.75",
+   "Anthropic": "3617827469714.5",
+   "Other closed": "996705807204.0",
+   "Unattributed": "2706483490205.75"
+  },
+  {
+   "week": "2026-05-11",
+   "Small open": "764523242770.75",
+   "Mid-size open": "10290380440795.25",
+   "Flagship open": "2770419183325.75",
+   "Google": "3295889686205.75",
+   "OpenAI": "1547804834060.25",
+   "Anthropic": "4086285040042.0",
+   "Other closed": "700035860357.5",
+   "Unattributed": "2779304109581.5"
+  },
+  {
+   "week": "2026-05-18",
+   "Small open": "790447841148.0",
+   "Mid-size open": "11331195034715.5",
+   "Flagship open": "2632893235918.0",
+   "Google": "3480271898979.25",
+   "OpenAI": "1743792145419.0",
+   "Anthropic": "4701604278739.75",
+   "Other closed": "430085217494.75",
+   "Unattributed": "2768598639093.0"
+  },
+  {
+   "week": "2026-05-25",
+   "Small open": "842151785742.25",
+   "Mid-size open": "13237714936940.5",
+   "Flagship open": "2872031484546.5",
+   "Google": "3502000244399.0",
+   "OpenAI": "1771612914448.0",
+   "Anthropic": "5170192547908.75",
+   "Other closed": "339852575231.0",
+   "Unattributed": "2715493537180.0"
+  },
+  {
+   "week": "2026-06-01",
+   "Small open": "834170228352.75",
+   "Mid-size open": "17178024277947.25",
+   "Flagship open": "2991597579165.25",
+   "Google": "3552514244517.75",
+   "OpenAI": "1730726428409.75",
+   "Anthropic": "5602695793669.25",
+   "Other closed": "306421912672.75",
+   "Unattributed": "2769922293510.0"
+  },
+  {
+   "week": "2026-06-08",
+   "Small open": "796177077983.25",
+   "Mid-size open": "21432856202268.0",
+   "Flagship open": "3267700489200.0",
+   "Google": "3588495070302.25",
+   "OpenAI": "1973473673063.25",
+   "Anthropic": "6238768327398.5",
+   "Other closed": "284814929123.25",
+   "Unattributed": "2863717143603.75"
+  },
+  {
+   "week": "2026-06-15",
+   "Small open": "859394846813.5",
+   "Mid-size open": "23326531075220.25",
+   "Flagship open": "3604369062147.0",
+   "Google": "3482932837214.75",
+   "OpenAI": "2356048467610.0",
+   "Anthropic": "6474329698572.25",
+   "Other closed": "339181986769.5",
+   "Unattributed": "2814121504068.75"
+  },
+  {
+   "week": "2026-06-22",
+   "Small open": "1015606406894.25",
+   "Mid-size open": "23838053139671.5",
+   "Flagship open": "3519472191897.0",
+   "Google": "3392288446218.0",
+   "OpenAI": "2481664109774.5",
+   "Anthropic": "6521818647894.25",
+   "Other closed": "433343972078.0",
+   "Unattributed": "2780061098993.75"
+  },
+  {
+   "week": "2026-06-29",
+   "Small open": "1159398310509.5",
+   "Mid-size open": "25954705360734.25",
+   "Flagship open": "3611934289693.0",
+   "Google": "3356842549753.75",
+   "OpenAI": "2377885017940.0",
+   "Anthropic": "6826635107567.75",
+   "Other closed": "493395921692.5",
+   "Unattributed": "2928871968316.5"
+  },
+  {
+   "week": "2026-07-06",
+   "Small open": "1219972305236.0",
+   "Mid-size open": "31518537581690.0",
+   "Flagship open": "4001646097535.25",
+   "Google": "3314980917438.25",
+   "OpenAI": "2406774491945.0",
+   "Anthropic": "7044929346224.75",
+   "Other closed": "549149582592.25",
+   "Unattributed": "3179496906208.0"
+  },
+  {
+   "week": "2026-07-13",
+   "Small open": "1229759694509.25",
+   "Mid-size open": "36163259216633.75",
+   "Flagship open": "4537930828666.75",
+   "Google": "3443848853000.25",
+   "OpenAI": "2628864506776.25",
+   "Anthropic": "6600174373726.25",
+   "Other closed": "646980814233.0",
+   "Unattributed": "3542213952175.0"
+  },
+  {
+   "week": "2026-07-20",
+   "Small open": "1280862200063.5",
+   "Mid-size open": "35297631028280.0",
+   "Flagship open": "5217816972966.5",
+   "Google": "3676854345819.0",
+   "OpenAI": "3046080322033.25",
+   "Anthropic": "5406594276626.5",
+   "Other closed": "667217113897.5",
+   "Unattributed": "3964162014455.75"
+  },
+  {
+   "week": "2026-07-27",
+   "Small open": "1348366712481.5",
+   "Mid-size open": "35182641260694.5",
+   "Flagship open": "5373334445154.0",
+   "Google": "4131190193036.0",
+   "OpenAI": "4455746462092.0",
+   "Anthropic": "4605422827834.25",
+   "Other closed": "540466685267.25",
+   "Unattributed": "4187853189356.0"
+  },
+  {
+   "week": "2026-08-03",
+   "Small open": "1544740391649.75",
+   "Mid-size open": "39168865456739.0",
+   "Flagship open": "5225694321884.75",
+   "Google": "4944451936273.75",
+   "OpenAI": "6627195393395.25",
+   "Anthropic": "4968464152392.5",
+   "Other closed": "560695622507.25",
+   "Unattributed": "4382905865867.5"
+  },
+  {
+   "week": "2026-08-10",
+   "Small open": "1939014827939.75",
+   "Mid-size open": "43548323153272.0",
+   "Flagship open": "5304449906613.5",
+   "Google": "5462593184039.0",
+   "OpenAI": "7992106558133.25",
+   "Anthropic": "5412986627119.0",
+   "Other closed": "892430451764.0",
+   "Unattributed": "4818498464924.25"
+  },
+  {
+   "week": "2026-08-17",
+   "Small open": "2176184525000.5",
+   "Mid-size open": "50129538251873.25",
+   "Flagship open": "5281010709177.5",
+   "Google": "5945733723125.75",
+   "OpenAI": "8932724575429.0",
+   "Anthropic": "4946902836846.25",
+   "Other closed": "1312234163051.5",
+   "Unattributed": "5325607893661.25"
+  },
+  {
+   "week": "2026-08-24",
+   "Small open": "2251932718482.5",
+   "Mid-size open": "60039383222999.0",
+   "Flagship open": "5077527504690.75",
+   "Google": "6422343840410.25",
+   "OpenAI": "11494939659490.0",
+   "Anthropic": "4662992511047.75",
+   "Other closed": "2059644770163.0",
+   "Unattributed": "5950001580432.5"
+  },
+  {
+   "week": "2026-08-31",
+   "Small open": "2183748037249.25",
+   "Mid-size open": "69323382688837.75",
+   "Flagship open": "4628714815541.25",
+   "Google": "6194180458280.25",
+   "OpenAI": "16070386736149.75",
+   "Anthropic": "4789831636200.25",
+   "Other closed": "3730268509704.0",
+   "Unattributed": "6823823231916.75"
+  },
+  {
+   "week": "2026-09-07",
+   "Small open": "1836046342054.0",
+   "Mid-size open": "76606734791682.25",
+   "Flagship open": "4047969925571.5",
+   "Google": "5777600712212.25",
+   "OpenAI": "18313438121421.5",
+   "Anthropic": "4434318495148.75",
+   "Other closed": "5655075418610.25",
+   "Unattributed": "7555609554241.0"
+  },
+  {
+   "week": "2026-09-14",
+   "Small open": "1575101242615.5",
+   "Mid-size open": "81758910701272.75",
+   "Flagship open": "3884691451831.25",
+   "Google": "5456679347546.0",
+   "OpenAI": "16426154484158.0",
+   "Anthropic": "4138695117977.25",
+   "Other closed": "7056216362644.25",
+   "Unattributed": "8349871582776.0"
+  },
+  {
+   "week": "2026-09-21",
+   "Small open": "1564483464989.0",
+   "Mid-size open": "81971005626740.0",
+   "Flagship open": "4121217266282.5",
+   "Google": "5183076785668.75",
+   "OpenAI": "15344612109230.0",
+   "Anthropic": "4541145304920.0",
+   "Other closed": "7607757531298.0",
+   "Unattributed": "9438171809862.25"
+  },
+  {
+   "week": "2026-09-28",
+   "Small open": "1615680460313.6665",
+   "Mid-size open": "79636855263708.66",
+   "Flagship open": "4292787741958.0",
+   "Google": "5092291541043.333",
+   "OpenAI": "15825110334601.0",
+   "Anthropic": "5103330761554.666",
+   "Other closed": "7223796973024.0",
+   "Unattributed": "10002241734329.0"
+  }
+ ],
+ "wide": [
+  {
+   "week": "2025-01-06",
+   "Small open": "92910774237",
+   "Mid-size open": "30858187926",
+   "Flagship open": "0",
+   "Google": "89067561878",
+   "OpenAI": "20678420198",
+   "Anthropic": "239828316064",
+   "Other closed": "7450877251",
+   "Unattributed": "17793143784"
+  },
+  {
+   "week": "2025-01-13",
+   "Small open": "90280208224",
+   "Mid-size open": "30127039215",
+   "Flagship open": "0",
+   "Google": "100140764594",
+   "OpenAI": "23152534057",
+   "Anthropic": "249892502403",
+   "Other closed": "5823287438",
+   "Unattributed": "18927906115"
+  },
+  {
+   "week": "2025-01-20",
+   "Small open": "88573236996",
+   "Mid-size open": "37375370872",
+   "Flagship open": "0",
+   "Google": "98025986423",
+   "OpenAI": "26759931924",
+   "Anthropic": "253264538689",
+   "Other closed": "3237801477",
+   "Unattributed": "19861732668"
+  },
+  {
+   "week": "2025-01-27",
+   "Small open": "95716602683",
+   "Mid-size open": "43909969907",
+   "Flagship open": "0",
+   "Google": "49185926980",
+   "OpenAI": "31002010645",
+   "Anthropic": "314480375873",
+   "Other closed": "11655290555",
+   "Unattributed": "25758203147"
+  },
+  {
+   "week": "2025-02-03",
+   "Small open": "125417462125",
+   "Mid-size open": "52054313323",
+   "Flagship open": "0",
+   "Google": "129516426518",
+   "OpenAI": "34775007012",
+   "Anthropic": "361465650650",
+   "Other closed": "4323472008",
+   "Unattributed": "35281684768"
+  },
+  {
+   "week": "2025-02-10",
+   "Small open": "127170473403",
+   "Mid-size open": "67301022992",
+   "Flagship open": "0",
+   "Google": "217680179624",
+   "OpenAI": "37221830968",
+   "Anthropic": "347264518125",
+   "Other closed": "3792840348",
+   "Unattributed": "39916818087"
+  },
+  {
+   "week": "2025-02-17",
+   "Small open": "96919748529",
+   "Mid-size open": "87463744604",
+   "Flagship open": "0",
+   "Google": "379262589500",
+   "OpenAI": "47658198684",
+   "Anthropic": "299453396398",
+   "Other closed": "1853557061",
+   "Unattributed": "38794607627"
+  },
+  {
+   "week": "2025-02-24",
+   "Small open": "104097834521",
+   "Mid-size open": "106835653668",
+   "Flagship open": "0",
+   "Google": "410180983052",
+   "OpenAI": "42150382169",
+   "Anthropic": "396185941433",
+   "Other closed": "1277978451",
+   "Unattributed": "38166730048"
+  },
+  {
+   "week": "2025-03-03",
+   "Small open": "138815117164",
+   "Mid-size open": "122667680473",
+   "Flagship open": "0",
+   "Google": "481621438248",
+   "OpenAI": "47701121521",
+   "Anthropic": "442418368587",
+   "Other closed": "3412007952",
+   "Unattributed": "45402151464"
+  },
+  {
+   "week": "2025-03-10",
+   "Small open": "155662781969",
+   "Mid-size open": "146480150842",
+   "Flagship open": "0",
+   "Google": "458455556914",
+   "OpenAI": "60742295369",
+   "Anthropic": "548838526459",
+   "Other closed": "1080776384",
+   "Unattributed": "47708633178"
+  },
+  {
+   "week": "2025-03-17",
+   "Small open": "206038678106",
+   "Mid-size open": "159292840666",
+   "Flagship open": "0",
+   "Google": "413603619528",
+   "OpenAI": "60237730802",
+   "Anthropic": "577090590846",
+   "Other closed": "0",
+   "Unattributed": "53404598471"
+  },
+  {
+   "week": "2025-03-24",
+   "Small open": "243973693068",
+   "Mid-size open": "247214365188",
+   "Flagship open": "0",
+   "Google": "483969996876",
+   "OpenAI": "78485481498",
+   "Anthropic": "506541280953",
+   "Other closed": "2099327305",
+   "Unattributed": "57466383648"
+  },
+  {
+   "week": "2025-03-31",
+   "Small open": "252499316251",
+   "Mid-size open": "290926828224",
+   "Flagship open": "0",
+   "Google": "596241437348",
+   "OpenAI": "261721903860",
+   "Anthropic": "488660134590",
+   "Other closed": "0",
+   "Unattributed": "56187013911"
+  },
+  {
+   "week": "2025-04-07",
+   "Small open": "189006405304",
+   "Mid-size open": "268489901643",
+   "Flagship open": "0",
+   "Google": "591156725065",
+   "OpenAI": "231194388188",
+   "Anthropic": "502709740069",
+   "Other closed": "6022182642",
+   "Unattributed": "67157298971"
+  },
+  {
+   "week": "2025-04-14",
+   "Small open": "130522028416",
+   "Mid-size open": "251037493825",
+   "Flagship open": "0",
+   "Google": "626729330648",
+   "OpenAI": "130499711354",
+   "Anthropic": "517681001516",
+   "Other closed": "10909275621",
+   "Unattributed": "83407055589"
+  },
+  {
+   "week": "2025-04-21",
+   "Small open": "155618792731",
+   "Mid-size open": "258127850594",
+   "Flagship open": "0",
+   "Google": "685524731371",
+   "OpenAI": "106770516847",
+   "Anthropic": "455819586766",
+   "Other closed": "11139865996",
+   "Unattributed": "90462579937"
+  },
+  {
+   "week": "2025-04-28",
+   "Small open": "170742843329",
+   "Mid-size open": "271980678501",
+   "Flagship open": "0",
+   "Google": "639212158801",
+   "OpenAI": "175343482975",
+   "Anthropic": "421608765070",
+   "Other closed": "14923494994",
+   "Unattributed": "109138588490"
+  },
+  {
+   "week": "2025-05-05",
+   "Small open": "175408971981",
+   "Mid-size open": "277526629009",
+   "Flagship open": "0",
+   "Google": "734555718438",
+   "OpenAI": "399570955807",
+   "Anthropic": "409321955614",
+   "Other closed": "14787227064",
+   "Unattributed": "118841639675"
+  },
+  {
+   "week": "2025-05-12",
+   "Small open": "116488947835",
+   "Mid-size open": "273785739558",
+   "Flagship open": "0",
+   "Google": "676370456693",
+   "OpenAI": "531571686780",
+   "Anthropic": "422180180093",
+   "Other closed": "18826149153",
+   "Unattributed": "116039106592"
+  },
+  {
+   "week": "2025-05-19",
+   "Small open": "121594059161",
+   "Mid-size open": "291231699121",
+   "Flagship open": "0",
+   "Google": "722649624752",
+   "OpenAI": "576962290897",
+   "Anthropic": "524110319760",
+   "Other closed": "17978584978",
+   "Unattributed": "113445547853"
+  },
+  {
+   "week": "2025-05-26",
+   "Small open": "140101316826",
+   "Mid-size open": "327534315566",
+   "Flagship open": "0",
+   "Google": "783916656940",
+   "OpenAI": "578561407091",
+   "Anthropic": "541018607623",
+   "Other closed": "10061115915",
+   "Unattributed": "116916102533"
+  },
+  {
+   "week": "2025-06-02",
+   "Small open": "127833493955",
+   "Mid-size open": "374646182999",
+   "Flagship open": "0",
+   "Google": "836527249618",
+   "OpenAI": "409475640009",
+   "Anthropic": "485916572861",
+   "Other closed": "9550206649",
+   "Unattributed": "121420472693"
+  },
+  {
+   "week": "2025-06-16",
+   "Small open": "107446116398",
+   "Mid-size open": "397133341869",
+   "Flagship open": "0",
+   "Google": "909740041757",
+   "OpenAI": "139812807085",
+   "Anthropic": "545677331829",
+   "Other closed": "30163062266",
+   "Unattributed": "124918847403"
+  },
+  {
+   "week": "2025-06-23",
+   "Small open": "137984370177",
+   "Mid-size open": "400697023007",
+   "Flagship open": "0",
+   "Google": "1007827612489",
+   "OpenAI": "158017434801",
+   "Anthropic": "492535935587",
+   "Other closed": "36111474401",
+   "Unattributed": "125502526971"
+  },
+  {
+   "week": "2025-06-30",
+   "Small open": "140956835327",
+   "Mid-size open": "411628810664",
+   "Flagship open": "0",
+   "Google": "813235317526",
+   "OpenAI": "132881731009",
+   "Anthropic": "450371356994",
+   "Other closed": "32435647994",
+   "Unattributed": "123023948239"
+  },
+  {
+   "week": "2025-07-07",
+   "Small open": "128471293952",
+   "Mid-size open": "502013919428",
+   "Flagship open": "5871705712",
+   "Google": "966432165026",
+   "OpenAI": "128389195398",
+   "Anthropic": "481827422944",
+   "Other closed": "24061214817",
+   "Unattributed": "130238704623"
+  },
+  {
+   "week": "2025-07-21",
+   "Small open": "164675037894",
+   "Mid-size open": "746103974872",
+   "Flagship open": "59968898715",
+   "Google": "904212337712",
+   "OpenAI": "166261131691",
+   "Anthropic": "757213991455",
+   "Other closed": "53909163787",
+   "Unattributed": "144139962380"
+  },
+  {
+   "week": "2025-07-28",
+   "Small open": "173800112164",
+   "Mid-size open": "946923369446",
+   "Flagship open": "40478619362",
+   "Google": "919902410118",
+   "OpenAI": "164810736189",
+   "Anthropic": "804823717446",
+   "Other closed": "32336101203",
+   "Unattributed": "181657923764"
+  },
+  {
+   "week": "2025-08-04",
+   "Small open": "257328692010",
+   "Mid-size open": "920700383950",
+   "Flagship open": "103016181802",
+   "Google": "783348481234",
+   "OpenAI": "215689057080",
+   "Anthropic": "724386049781",
+   "Other closed": "45084148317",
+   "Unattributed": "192132756449"
+  },
+  {
+   "week": "2025-08-11",
+   "Small open": "157638316304",
+   "Mid-size open": "953213600813",
+   "Flagship open": "107277690898",
+   "Google": "782055217151",
+   "OpenAI": "240958652441",
+   "Anthropic": "731018816156",
+   "Other closed": "34988710614",
+   "Unattributed": "196504135326"
+  },
+  {
+   "week": "2025-08-18",
+   "Small open": "180055619813",
+   "Mid-size open": "943665207968",
+   "Flagship open": "80510324653",
+   "Google": "741559850039",
+   "OpenAI": "259083709745",
+   "Anthropic": "707598826533",
+   "Other closed": "91455869023",
+   "Unattributed": "203486195409"
+  },
+  {
+   "week": "2025-08-25",
+   "Small open": "259518971248",
+   "Mid-size open": "884692788766",
+   "Flagship open": "26365143049",
+   "Google": "857030237934",
+   "OpenAI": "283727381742",
+   "Anthropic": "705415275274",
+   "Other closed": "483998851887",
+   "Unattributed": "224497082001"
+  },
+  {
+   "week": "2025-09-01",
+   "Small open": "304964322624",
+   "Mid-size open": "800600182709",
+   "Flagship open": "30303944526",
+   "Google": "893899684599",
+   "OpenAI": "412806393733",
+   "Anthropic": "674803221567",
+   "Other closed": "1158270050962",
+   "Unattributed": "247815015562"
+  },
+  {
+   "week": "2025-09-08",
+   "Small open": "294441998121",
+   "Mid-size open": "933892407493",
+   "Flagship open": "32365152137",
+   "Google": "789481652714",
+   "OpenAI": "426439599622",
+   "Anthropic": "692601312801",
+   "Other closed": "1209894969596",
+   "Unattributed": "275905286354"
+  },
+  {
+   "week": "2025-09-15",
+   "Small open": "229119672044",
+   "Mid-size open": "788025620830",
+   "Flagship open": "29427859021",
+   "Google": "802862808630",
+   "OpenAI": "460345152806",
+   "Anthropic": "706271845057",
+   "Other closed": "1345677550984",
+   "Unattributed": "275767998923"
+  },
+  {
+   "week": "2025-09-22",
+   "Small open": "281117109650",
+   "Mid-size open": "707774394434",
+   "Flagship open": "24450990330",
+   "Google": "785987192537",
+   "OpenAI": "450120453018",
+   "Anthropic": "684916024653",
+   "Other closed": "2037442381780",
+   "Unattributed": "286171524410"
+  },
+  {
+   "week": "2025-09-29",
+   "Small open": "354962699132",
+   "Mid-size open": "818830356453",
+   "Flagship open": "22229259550",
+   "Google": "878579907600",
+   "OpenAI": "457029461639",
+   "Anthropic": "704235288103",
+   "Other closed": "1818326207367",
+   "Unattributed": "326130479446"
+  },
+  {
+   "week": "2025-10-06",
+   "Small open": "461070566094",
+   "Mid-size open": "790327550582",
+   "Flagship open": "9996694257",
+   "Google": "824855415274",
+   "OpenAI": "394566134149",
+   "Anthropic": "817681711149",
+   "Other closed": "1414670436892",
+   "Unattributed": "306542763847"
+  },
+  {
+   "week": "2025-10-13",
+   "Small open": "222971164845",
+   "Mid-size open": "736763282330",
+   "Flagship open": "22395576259",
+   "Google": "827833501574",
+   "OpenAI": "331391197913",
+   "Anthropic": "777875265519",
+   "Other closed": "1402227920437",
+   "Unattributed": "323039489309"
+  },
+  {
+   "week": "2025-10-20",
+   "Small open": "217019908902",
+   "Mid-size open": "814576526273",
+   "Flagship open": "15306500429",
+   "Google": "850816266418",
+   "OpenAI": "354349702868",
+   "Anthropic": "837226223310",
+   "Other closed": "1450307446301",
+   "Unattributed": "331527807542"
+  },
+  {
+   "week": "2025-10-27",
+   "Small open": "266274103216",
+   "Mid-size open": "1037032921276",
+   "Flagship open": "2191592364",
+   "Google": "964467647723",
+   "OpenAI": "340361424019",
+   "Anthropic": "905953176701",
+   "Other closed": "1648204433338",
+   "Unattributed": "346673707551"
+  },
+  {
+   "week": "2025-11-03",
+   "Small open": "246586341549",
+   "Mid-size open": "1233889938150",
+   "Flagship open": "30956874580",
+   "Google": "1003569890055",
+   "OpenAI": "344830440455",
+   "Anthropic": "916333163588",
+   "Other closed": "1598528001244",
+   "Unattributed": "373996684371"
+  },
+  {
+   "week": "2025-11-10",
+   "Small open": "206382860818",
+   "Mid-size open": "1049556596193",
+   "Flagship open": "43265857869",
+   "Google": "1023816537527",
+   "OpenAI": "381425197138",
+   "Anthropic": "844964974070",
+   "Other closed": "1720865540642",
+   "Unattributed": "411890531464"
+  },
+  {
+   "week": "2025-11-17",
+   "Small open": "273483796566",
+   "Mid-size open": "938775910856",
+   "Flagship open": "29982022948",
+   "Google": "1198256323168",
+   "OpenAI": "453686040048",
+   "Anthropic": "709650182304",
+   "Other closed": "1979767562547",
+   "Unattributed": "444780378833"
+  },
+  {
+   "week": "2025-11-24",
+   "Small open": "257948850084",
+   "Mid-size open": "898551672499",
+   "Flagship open": "19600838035",
+   "Google": "1241703439269",
+   "OpenAI": "483845850782",
+   "Anthropic": "730081779000",
+   "Other closed": "2971160041298",
+   "Unattributed": "463615975384"
+  },
+  {
+   "week": "2025-12-01",
+   "Small open": "301927872071",
+   "Mid-size open": "997909856742",
+   "Flagship open": "5346704747",
+   "Google": "1246242164350",
+   "OpenAI": "434293187482",
+   "Anthropic": "848343914369",
+   "Other closed": "1768691300864",
+   "Unattributed": "526820200570"
+  },
+  {
+   "week": "2025-12-08",
+   "Small open": "299562520285",
+   "Mid-size open": "1254110703524",
+   "Flagship open": "24385827220",
+   "Google": "1285027494998",
+   "OpenAI": "443800105529",
+   "Anthropic": "864637754303",
+   "Other closed": "1021314241612",
+   "Unattributed": "521795647998"
+  },
+  {
+   "week": "2025-12-15",
+   "Small open": "249054654566",
+   "Mid-size open": "1417469721506",
+   "Flagship open": "35954615572",
+   "Google": "1301960255551",
+   "OpenAI": "508462415327",
+   "Anthropic": "821938366497",
+   "Other closed": "935332781578",
+   "Unattributed": "559865466266"
+  },
+  {
+   "week": "2025-12-22",
+   "Small open": "217629396895",
+   "Mid-size open": "1719556074911",
+   "Flagship open": "29467999565",
+   "Google": "1220600706541",
+   "OpenAI": "350148589899",
+   "Anthropic": "712032004023",
+   "Other closed": "904666787277",
+   "Unattributed": "496549594131"
+  },
+  {
+   "week": "2025-12-29",
+   "Small open": "238784927102",
+   "Mid-size open": "1722533004295",
+   "Flagship open": "34969319159",
+   "Google": "1253595933280",
+   "OpenAI": "301689589224",
+   "Anthropic": "684096334530",
+   "Other closed": "829731788219",
+   "Unattributed": "498070342386"
+  },
+  {
+   "week": "2026-01-05",
+   "Small open": "225622191403",
+   "Mid-size open": "1754696961618",
+   "Flagship open": "42212350611",
+   "Google": "1504937047310",
+   "OpenAI": "416283484335",
+   "Anthropic": "1069144766613",
+   "Other closed": "819249949942",
+   "Unattributed": "560089709460"
+  },
+  {
+   "week": "2026-01-12",
+   "Small open": "200517159219",
+   "Mid-size open": "2017862245060",
+   "Flagship open": "38300534042",
+   "Google": "1949702699433",
+   "OpenAI": "557924869073",
+   "Anthropic": "1441323120478",
+   "Other closed": "886070229185",
+   "Unattributed": "534507001114"
+  },
+  {
+   "week": "2026-01-19",
+   "Small open": "206624515994",
+   "Mid-size open": "2147923824654",
+   "Flagship open": "39127723265",
+   "Google": "1700760634995",
+   "OpenAI": "536834878601",
+   "Anthropic": "1238902188452",
+   "Other closed": "976566598195",
+   "Unattributed": "596388441157"
+  },
+  {
+   "week": "2026-01-26",
+   "Small open": "215342213463",
+   "Mid-size open": "2051733212318",
+   "Flagship open": "419730834908",
+   "Google": "1907705579585",
+   "OpenAI": "709650049455",
+   "Anthropic": "1348771849277",
+   "Other closed": "903136414012",
+   "Unattributed": "666773342140"
+  },
+  {
+   "week": "2026-02-02",
+   "Small open": "254233571679",
+   "Mid-size open": "2524808799290",
+   "Flagship open": "1203443605060",
+   "Google": "2052010418012",
+   "OpenAI": "789362545413",
+   "Anthropic": "1438560213817",
+   "Other closed": "784481290890",
+   "Unattributed": "704492228195"
+  },
+  {
+   "week": "2026-02-09",
+   "Small open": "343855550231",
+   "Mid-size open": "4827549773683",
+   "Flagship open": "1317446945073",
+   "Google": "2168337974458",
+   "OpenAI": "898760322257",
+   "Anthropic": "1591290844679",
+   "Other closed": "894115878195",
+   "Unattributed": "761796623884"
+  },
+  {
+   "week": "2026-02-16",
+   "Small open": "373326901805",
+   "Mid-size open": "5844720416691",
+   "Flagship open": "1044315863198",
+   "Google": "2246196156705",
+   "OpenAI": "902486314335",
+   "Anthropic": "1836804785737",
+   "Other closed": "796377641454",
+   "Unattributed": "824040863258"
+  },
+  {
+   "week": "2026-02-23",
+   "Small open": "412428956106",
+   "Mid-size open": "5158336798535",
+   "Flagship open": "691882843163",
+   "Google": "2565785327344",
+   "OpenAI": "856528446258",
+   "Anthropic": "2149680828005",
+   "Other closed": "775187860313",
+   "Unattributed": "957077302930"
+  },
+  {
+   "week": "2026-03-02",
+   "Small open": "519645604554",
+   "Mid-size open": "5383387937260",
+   "Flagship open": "743063515801",
+   "Google": "2730493531884",
+   "OpenAI": "1196963101029",
+   "Anthropic": "2302964537488",
+   "Other closed": "756941657607",
+   "Unattributed": "1113316928529"
+  },
+  {
+   "week": "2026-03-09",
+   "Small open": "417531903771",
+   "Mid-size open": "6328734468920",
+   "Flagship open": "559481288982",
+   "Google": "2828604226207",
+   "OpenAI": "1365143917931",
+   "Anthropic": "2536491198061",
+   "Other closed": "675409606749",
+   "Unattributed": "1272336064720"
+  },
+  {
+   "week": "2026-03-16",
+   "Small open": "364930760682",
+   "Mid-size open": "6492708595161",
+   "Flagship open": "559849939333",
+   "Google": "2923290089817",
+   "OpenAI": "1169816938900",
+   "Anthropic": "2781775725433",
+   "Other closed": "3317225201152",
+   "Unattributed": "1446283958581"
+  },
+  {
+   "week": "2026-03-23",
+   "Small open": "348579110873",
+   "Mid-size open": "7082575223397",
+   "Flagship open": "513504083392",
+   "Google": "2819600272615",
+   "OpenAI": "1324579815543",
+   "Anthropic": "2795652276034",
+   "Other closed": "6190619212439",
+   "Unattributed": "1521500621544"
+  },
+  {
+   "week": "2026-03-30",
+   "Small open": "326949636665",
+   "Mid-size open": "6566593706668",
+   "Flagship open": "600765685053",
+   "Google": "2744606337167",
+   "OpenAI": "1222573890394",
+   "Anthropic": "2676655462359",
+   "Other closed": "11304164540034",
+   "Unattributed": "1542494576007"
+  },
+  {
+   "week": "2026-04-06",
+   "Small open": "393934856998",
+   "Mid-size open": "6837220469176",
+   "Flagship open": "530929007155",
+   "Google": "3172440855930",
+   "OpenAI": "1739716576384",
+   "Anthropic": "2907234849995",
+   "Other closed": "3506116311212",
+   "Unattributed": "1882428923065"
+  },
+  {
+   "week": "2026-04-13",
+   "Small open": "506462454040",
+   "Mid-size open": "6239973745818",
+   "Flagship open": "390667367767",
+   "Google": "3227468108041",
+   "OpenAI": "1570519203958",
+   "Anthropic": "3480663042282",
+   "Other closed": "2463796651946",
+   "Unattributed": "1979486794485"
+  },
+  {
+   "week": "2026-04-20",
+   "Small open": "535798390154",
+   "Mid-size open": "6514830795855",
+   "Flagship open": "2244738190613",
+   "Google": "3092562014263",
+   "OpenAI": "1466285103913",
+   "Anthropic": "3694650785881",
+   "Other closed": "1805130202531",
+   "Unattributed": "2318288822524"
+  },
+  {
+   "week": "2026-04-27",
+   "Small open": "631668003995",
+   "Mid-size open": "8631435613743",
+   "Flagship open": "3121579363046",
+   "Google": "2897638888627",
+   "OpenAI": "1446808349158",
+   "Anthropic": "3227436247228",
+   "Other closed": "1162673479122",
+   "Unattributed": "2550135833047"
+  },
+  {
+   "week": "2026-05-04",
+   "Small open": "755229038033",
+   "Mid-size open": "9478424415724",
+   "Flagship open": "3196594584113",
+   "Google": "3010453854034",
+   "OpenAI": "1431754274730",
+   "Anthropic": "3602777746076",
+   "Other closed": "1050105283312",
+   "Unattributed": "2753140889924"
+  },
+  {
+   "week": "2026-05-11",
+   "Small open": "774062566127",
+   "Mid-size open": "10117982365483",
+   "Flagship open": "2813458300203",
+   "Google": "3278762153325",
+   "OpenAI": "1440086044629",
+   "Anthropic": "4038318139478",
+   "Other closed": "723939183070",
+   "Unattributed": "2769516347928"
+  },
+  {
+   "week": "2026-05-18",
+   "Small open": "754738800796",
+   "Mid-size open": "11447132616491",
+   "Flagship open": "2258165548784",
+   "Google": "3615580584139",
+   "OpenAI": "1879292972253",
+   "Anthropic": "4665726135136",
+   "Other closed": "302159791978",
+   "Unattributed": "2825042852546"
+  },
+  {
+   "week": "2026-05-25",
+   "Small open": "878251196873",
+   "Mid-size open": "12312532540397",
+   "Flagship open": "3201783545901",
+   "Google": "3411164274314",
+   "OpenAI": "1776496592541",
+   "Anthropic": "5436646705209",
+   "Other closed": "392082102953",
+   "Unattributed": "2654792503352"
+  },
+  {
+   "week": "2026-06-01",
+   "Small open": "857365948427",
+   "Mid-size open": "16878662050477",
+   "Flagship open": "2826393297600",
+   "Google": "3570091844829",
+   "OpenAI": "1654165500457",
+   "Anthropic": "5141750646081",
+   "Other closed": "273086303040",
+   "Unattributed": "2727346289470"
+  },
+  {
+   "week": "2026-06-08",
+   "Small open": "743697819684",
+   "Mid-size open": "22642240470438",
+   "Flagship open": "3111820175560",
+   "Google": "3658709014099",
+   "OpenAI": "1838078120184",
+   "Anthropic": "6690635177306",
+   "Other closed": "287432941658",
+   "Unattributed": "2970204091748"
+  },
+  {
+   "week": "2026-06-15",
+   "Small open": "839946724138",
+   "Mid-size open": "23568281817719",
+   "Flagship open": "4020768308080",
+   "Google": "3466470408182",
+   "OpenAI": "2563572951428",
+   "Anthropic": "6432052308901",
+   "Other closed": "291307530137",
+   "Unattributed": "2787114101449"
+  },
+  {
+   "week": "2026-06-22",
+   "Small open": "1013988119294",
+   "Mid-size open": "23527320195005",
+   "Flagship open": "3264119456868",
+   "Google": "3340081518396",
+   "OpenAI": "2458969847400",
+   "Anthropic": "6342578999181",
+   "Other closed": "486679945146",
+   "Unattributed": "2712053721629"
+  },
+  {
+   "week": "2026-06-29",
+   "Small open": "1194502664851",
+   "Mid-size open": "24729290350957",
+   "Flagship open": "3528881545772",
+   "Google": "3422520339898",
+   "OpenAI": "2445143792870",
+   "Anthropic": "6970064284314",
+   "Other closed": "468708467883",
+   "Unattributed": "2909022851268"
+  },
+  {
+   "week": "2026-07-06",
+   "Small open": "1234599793042",
+   "Mid-size open": "30832920546018",
+   "Flagship open": "4125854610360",
+   "Google": "3242248000823",
+   "OpenAI": "2162282638620",
+   "Anthropic": "7023832862462",
+   "Other closed": "549486805858",
+   "Unattributed": "3185388449101"
+  },
+  {
+   "week": "2026-07-13",
+   "Small open": "1216186970009",
+   "Mid-size open": "39679018883767",
+   "Flagship open": "4225993623649",
+   "Google": "3352907328209",
+   "OpenAI": "2857388897670",
+   "Anthropic": "7161987375661",
+   "Other closed": "628916250770",
+   "Unattributed": "3438187875362"
+  },
+  {
+   "week": "2026-07-20",
+   "Small open": "1252065044977",
+   "Mid-size open": "34462078552983",
+   "Flagship open": "5573881457009",
+   "Google": "3827332754760",
+   "OpenAI": "2638397593145",
+   "Anthropic": "5052889881121",
+   "Other closed": "780603949534",
+   "Unattributed": "4107091608875"
+  },
+  {
+   "week": "2026-07-27",
+   "Small open": "1403131740291",
+   "Mid-size open": "32587348123387",
+   "Flagship open": "5497511354199",
+   "Google": "3699844545547",
+   "OpenAI": "4050137204173",
+   "Anthropic": "4358609968603",
+   "Other closed": "478744305752",
+   "Unattributed": "4204276964711"
+  },
+  {
+   "week": "2026-08-03",
+   "Small open": "1335138324367",
+   "Mid-size open": "41093790243021",
+   "Flagship open": "4924433615209",
+   "Google": "5297738926290",
+   "OpenAI": "7084313846877",
+   "Anthropic": "4651581493010",
+   "Other closed": "423774180031",
+   "Unattributed": "4235767219127"
+  },
+  {
+   "week": "2026-08-10",
+   "Small open": "2105553177574",
+   "Mid-size open": "41900533217527",
+   "Flagship open": "5556398702922",
+   "Google": "5482485346968",
+   "OpenAI": "8290016675654",
+   "Anthropic": "6212083654947",
+   "Other closed": "916489824215",
+   "Unattributed": "4855812060505"
+  },
+  {
+   "week": "2026-08-17",
+   "Small open": "2209814632244",
+   "Mid-size open": "49298435935013",
+   "Flagship open": "5180568605401",
+   "Google": "5587663115930",
+   "OpenAI": "8304079034348",
+   "Anthropic": "4576197705572",
+   "Other closed": "1312967978595",
+   "Unattributed": "5326602519560"
+  },
+  {
+   "week": "2026-08-24",
+   "Small open": "2179555657940",
+   "Mid-size open": "60020747919940",
+   "Flagship open": "5206506922986",
+   "Google": "7125123313675",
+   "OpenAI": "10832723557366",
+   "Anthropic": "4423132281294",
+   "Other closed": "1706510870801",
+   "Unattributed": "5793414475020"
+  },
+  {
+   "week": "2026-08-31",
+   "Small open": "2438804925806",
+   "Mid-size open": "70817601117103",
+   "Flagship open": "4716527567390",
+   "Google": "5851465618361",
+   "OpenAI": "16010232488880",
+   "Anthropic": "5229507776031",
+   "Other closed": "3512589360455",
+   "Unattributed": "6886574852130"
+  },
+  {
+   "week": "2026-09-07",
+   "Small open": "1677826639445",
+   "Mid-size open": "75637580601205",
+   "Flagship open": "3875297204399",
+   "Google": "5948667282724",
+   "OpenAI": "21428358409473",
+   "Anthropic": "4277178711445",
+   "Other closed": "6189384447105",
+   "Unattributed": "7728728748387"
+  },
+  {
+   "week": "2026-09-14",
+   "Small open": "1549727163520",
+   "Mid-size open": "84334176847216",
+   "Flagship open": "3724757726098",
+   "Google": "5361602665040",
+   "OpenAI": "14386803177860",
+   "Anthropic": "3953408781674",
+   "Other closed": "6728943419776",
+   "Unattributed": "7878405868060"
+  },
+  {
+   "week": "2026-09-21",
+   "Small open": "1523124003977",
+   "Mid-size open": "82729708509454",
+   "Flagship open": "4213953150730",
+   "Google": "5154844777380",
+   "OpenAI": "15502653171439",
+   "Anthropic": "4370784197116",
+   "Other closed": "8577594163920",
+   "Unattributed": "9913945846597"
+  },
+  {
+   "week": "2026-09-28",
+   "Small open": "1661958688482",
+   "Mid-size open": "78090428640836",
+   "Flagship open": "4332205037572",
+   "Google": "5061014922875",
+   "OpenAI": "15986338916182",
+   "Anthropic": "5469604043774",
+   "Other closed": "6546898377576",
+   "Unattributed": "10046389678195"
+  }
+ ]
+}

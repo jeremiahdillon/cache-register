@@ -1,0 +1,319 @@
+# Model groups for the mid-size open-weight analysis (hand-curated 2026-10-05; edit, then re-render).
+#
+# Keys are OpenRouter rankings permaslugs with `:free` stripped (free variants are merged).
+# Open-weight models (weights published, or the lab has announced it will publish them) carry
+# their size; analysis.py bands them by total parameters (see `bands`). Closed models carry a
+# `group` (kept for reference) and are banded by developer: the slug's prefix, or `vendor:` for
+# revealed stealth models. Params in billions.
+#
+# Long-tail models not listed here are banded by analysis.py's fallback rule (their lab if closed,
+# else small open); the entries below cover every model with real volume plus the exceptions.
+# `released` (reference only) is the model's release date, else its first day in the rankings.
+
+bands:
+  small_below_b: 100     # open, total params < this → small
+  flagship_from_b: 1000  # open, total params >= this → flagship; in between → mid-size
+
+# Reflection Beam (not on OpenRouter yet): 501B total / 23B active, Apache 2.0 weights announced for
+# October 2026 — a mid-size open-weight model by this definition.
+
+closed_groups: [frontier_large, frontier_small, other_closed, stealth_unknown]
+
+models:
+  # ---------------- Open weights ----------------
+  # DeepSeek (MIT)
+  deepseek/deepseek-chat-v3:                  {weights: open, total_b: 671, active_b: 37, released: 2024-12-26}
+  deepseek/deepseek-r1:                       {weights: open, total_b: 671, active_b: 37, released: 2025-01-20}
+  deepseek/deepseek-chat-v3-0324:             {weights: open, total_b: 671, active_b: 37, released: 2025-03-25}
+  deepseek/deepseek-r1-0528:                  {weights: open, total_b: 671, active_b: 37, released: 2025-05-28}
+  deepseek/deepseek-chat-v3.1:                {weights: open, total_b: 671, active_b: 37, released: 2025-08-21}
+  deepseek/deepseek-v3.2-exp:                 {weights: open, total_b: 671, active_b: 37, released: 2025-09-29}
+  deepseek/deepseek-v3.2-20251201:            {weights: open, total_b: 671, active_b: 37, released: 2025-12-01}
+  deepseek/deepseek-v4-flash-20260423:        {weights: open, total_b: 284, active_b: 13, released: 2026-04-24}
+  deepseek/deepseek-v4-flash-20260731:        {weights: open, total_b: 284, active_b: 13, released: 2026-07-31}
+  deepseek/deepseek-v4-flash-vision-exp-20260821: {weights: open, total_b: 284, active_b: 13, released: 2026-08-21, note: "HF weights published; AA lists it as closed"}
+  deepseek/deepseek-v4.1-flash-20260910:      {weights: open, total_b: 552, active_b: 16, released: 2026-09-10, note: "8B prefill / 16B decode active, plus 196B Engram memory"}
+  deepseek/deepseek-v4-pro-20260423:          {weights: open, total_b: 1600, active_b: 49, released: 2026-04-24}
+  deepseek/deepseek-v4-pro-20260813:          {weights: open, total_b: 1600, active_b: 49, released: 2026-08-13}
+  tngtech/deepseek-r1t2-chimera:              {weights: open, total_b: 671, active_b: 37, released: 2025-07-09}
+  # Z.ai (MIT unless noted)
+  z-ai/glm-4.5:                               {weights: open, total_b: 355, active_b: 32, released: 2025-07-28}
+  z-ai/glm-4.5-air:                           {weights: open, total_b: 106, active_b: 12, released: 2025-07-28}
+  z-ai/glm-4.6:                               {weights: open, total_b: 355, active_b: 32, released: 2025-09-30}
+  z-ai/glm-4.7-20251222:                      {weights: open, total_b: 355, active_b: 32, released: 2025-12-22}
+  z-ai/glm-5-20260211:                        {weights: open, total_b: 744, active_b: 40, released: 2026-02-11}
+  z-ai/glm-5.1-20260406:                      {weights: open, total_b: 744, active_b: 40, released: 2026-04-07}
+  z-ai/glm-5.2-20260616:                      {weights: open, total_b: 744, active_b: 40, released: 2026-06-16, note: "Reflection's named comparison for Beam"}
+  z-ai/glm-5.3-20260816:                      {weights: open, total_b: 744, active_b: 40, released: 2026-08-18, note: "custom MIT-like licence"}
+  z-ai/glm-5.3-flash-20260826:                {weights: open, total_b: 320, active_b: 18, released: 2026-08-26}
+  z-ai/glm-5.3-flashx-20260918:               {weights: open, total_b: 320, active_b: 18, released: 2026-09-18, note: "fast serving of GLM-5.3-Flash weights (inferred)"}
+  stealth/ox-alpha:                           {weights: open, total_b: 320, active_b: 18, released: 2026-08-21, note: "revealed as GLM-5.3-Flash (Zhipu confirmed 2026-08-26)"}
+  # Moonshot (modified MIT / Kimi licence)
+  moonshotai/kimi-k2:                         {weights: open, total_b: 1000, active_b: 32, released: 2025-07-11}
+  moonshotai/kimi-k2.5-0127:                  {weights: open, total_b: 1000, active_b: 32, released: 2026-01-27}
+  moonshotai/kimi-k2.6-20260420:              {weights: open, total_b: 1000, active_b: 32, released: 2026-04-20}
+  moonshotai/kimi-k2.7-code-20260612:         {weights: open, total_b: 1000, active_b: 32, released: 2026-06-12}
+  moonshotai/kimi-k3-20260715:                {weights: open, total_b: 2800, active_b: 104, released: 2026-07-16}
+  # MiniMax (M2.7: non-commercial licence; M3: community licence)
+  minimax/minimax-m2:                         {weights: open, total_b: 230, active_b: 10, released: 2025-10-26}
+  minimax/minimax-m2.1:                       {weights: open, total_b: 230, active_b: 10, released: 2025-12-23}
+  minimax/minimax-m2.5-20260211:              {weights: open, total_b: 230, active_b: 10, released: 2026-02-12}
+  minimax/minimax-m2.7-20260318:              {weights: open, total_b: 230, active_b: 10, released: 2026-03-18}
+  minimax/minimax-m3-20260531:                {weights: open, total_b: 428, active_b: 23, released: 2026-06-01}
+  # Qwen (Apache 2.0 unless noted)
+  qwen/qwen3-30b-a3b-04-28:                   {weights: open, total_b: 30.5, active_b: 3.3, released: 2025-04-28}
+  qwen/qwen3-235b-a22b-07-25:                 {weights: open, total_b: 235, active_b: 22, released: 2025-07-25}
+  qwen/qwen3-coder-480b-a35b-07-25:           {weights: open, total_b: 480, active_b: 35, released: 2025-07-22}
+  qwen/qwen3.5-397b-a17b-20260216:            {weights: open, total_b: 397, active_b: 17, released: 2026-02-16}
+  qwen/qwen3.5-flash-20260224:                {weights: open, total_b: 35, active_b: 3, released: 2026-02-24, note: "hosted Qwen3.5-35B-A3B"}
+  qwen/qwen3.6-35b-a3b-20260415:              {weights: open, total_b: 35, active_b: 3, released: 2026-04-16}
+  qwen/qwen3.8-27b-20260814:                  {weights: open, total_b: 27, active_b: 27, released: 2026-08-14, note: "dense"}
+  qwen/qwen3.8-flash-20260826:                {weights: open, total_b: 125, active_b: 6, released: 2026-08-26, note: "hosted Qwen3.8-Flash-Next (parity inferred); Qwen community licence"}
+  qwen/qwen3.8-max-20260803:                  {weights: open, total_b: 2400, active_b: 95, released: 2026-08-12, note: "weights = Qwen3.8-2.4T-A95B; custom licence"}
+  # Xiaomi (MIT)
+  xiaomi/mimo-v2-flash-20251210:              {weights: open, total_b: 309, active_b: 15, released: 2025-12-16}
+  xiaomi/mimo-v2.5-20260422:                  {weights: open, total_b: 310, active_b: 15, released: 2026-04-22}
+  xiaomi/mimo-v2.5-pro-20260422:              {weights: open, total_b: 1020, active_b: 42, released: 2026-04-22}
+  xiaomi/mimo-v2.6-flash-20260921:            {weights: open, total_b: 309, active_b: 15, released: 2026-09-21}
+  xiaomi/mimo-v2.6-pro-20260921:              {weights: open, total_b: 1020, active_b: 42, released: 2026-09-21}
+  # Tencent
+  tencent/hy3-preview-20260421:               {weights: open, total_b: 295, active_b: 21, released: 2026-04-23, note: "Tencent community licence"}
+  tencent/hy3-20260706:                       {weights: open, total_b: 295, active_b: 21, released: 2026-07-06}
+  tencent/hy4-preview-20260827:               {weights: open, total_b: 770, active_b: 49, released: 2026-08-28, note: "Tencent's blind eval puts it level with GLM-5.3 / Kimi K3"}
+  # StepFun, inclusionAI, Meituan
+  stepfun/step-3.5-flash:                     {weights: open, total_b: 196, active_b: 11, released: 2026-02-02}
+  stepfun/step-3.7-flash-20260528:            {weights: open, total_b: 198, active_b: 11, released: 2026-05-29}
+  inclusionai/ling-2.6-flash-20260421:        {weights: open, total_b: 104, active_b: 7.4, released: 2026-04-21}
+  openrouter/elephant-alpha:                  {weights: open, total_b: 104, active_b: 7.4, released: 2026-04-13, note: "revealed as Ling-2.6-flash"}
+  inclusionai/ling-2.6-1t-20260423:           {weights: open, total_b: 1000, active_b: 63, released: 2026-04-23}
+  inclusionai/ring-2.6-1t-20260508:           {weights: open, total_b: 1000, active_b: 63, released: 2026-05-08}
+  inclusionai/ling-3.0-flash-20260723:        {weights: open, total_b: 124, active_b: 5.1, released: 2026-08-04}
+  inclusionai/ling-3.1-flash-20261002:        {weights: open, total_b: 124, active_b: 5.1, released: 2026-10-03, note: "entered top 50 on 2026-10-03; size and open status inferred from Ling-3.0-Flash, unverified"}
+  inclusionai/ling-3.0-flash-vl-20260910:     {weights: open, total_b: 124, active_b: 5.5, released: 2026-09-10}
+  openrouter/owl-alpha:                       {weights: open, total_b: 1600, active_b: 48, released: 2026-05-01, note: "very likely Meituan LongCat-2.0 (unconfirmed by Meituan)"}
+  # NVIDIA, Poolside, Arcee, Nex, dots, Thinking Machines, Cohere
+  nvidia/nemotron-3-super-120b-a12b-20230311: {weights: open, total_b: 120, active_b: 12, released: 2026-03-11}
+  nvidia/nemotron-3-ultra-550b-a55b-20260604: {weights: open, total_b: 550, active_b: 55, released: 2026-06-04}
+  nvidia/nemotron-3.5-lightning-20260807:     {weights: open, total_b: 31.6, active_b: 3.6, released: 2026-08-11}
+  poolside/laguna-m.1-20260312:               {weights: open, total_b: 225, active_b: 23, released: 2026-05-01}
+  poolside/laguna-s-2.1-20260720:             {weights: open, total_b: 118, active_b: 8, released: 2026-07-21}
+  poolside/laguna-xs-2.1-20260625:            {weights: open, total_b: 33, active_b: 3, released: 2026-07-03}
+  arcee-ai/trinity-large-preview:             {weights: open, total_b: 398, active_b: 13, released: 2026-01-28}
+  nex-agi/nex-n2-pro:                         {weights: open, total_b: 397, active_b: 17, released: 2026-06-02}
+  nex-agi/nex-n2.5-pro-20260907:              {weights: open, total_b: 397, active_b: 17, released: 2026-09-09, note: "N2 Pro's used"}
+  dots-studio/dots-3-note-preview-20260813:   {weights: open, total_b: 280, active_b: 16, released: 2026-08-27}
+  thinkingmachines/inkling-20260715:          {weights: open, total_b: 975, active_b: 41, released: 2026-07-15}
+  cohere/north-mini-code-20260617:            {weights: open, total_b: 30, active_b: 3, released: 2026-06-09}
+  # OpenAI, Google, Meta, Mistral open models
+  openai/gpt-oss-120b:                        {weights: open, total_b: 117, active_b: 5.1, released: 2025-08-05}
+  openai/gpt-oss-20b:                         {weights: open, total_b: 21, active_b: 3.6, released: 2025-08-05}
+  google/gemma-3-12b-it:                      {weights: open, total_b: 12, active_b: 12, released: 2025-03-12}
+  google/gemma-3-27b-it:                      {weights: open, total_b: 27, active_b: 27, released: 2025-03-12}
+  google/gemma-4-26b-a4b-it-20260403:         {weights: open, total_b: 26, active_b: 3.8, released: 2026-04-02}
+  google/gemma-4-31b-it-20260402:             {weights: open, total_b: 30.7, active_b: 30.7, released: 2026-04-02}
+  meta-llama/llama-3.1-8b-instruct:           {weights: open, total_b: 8, active_b: 8, released: 2024-07-23}
+  meta-llama/llama-3.3-70b-instruct:          {weights: open, total_b: 70, active_b: 70, released: 2024-12-06}
+  meta-llama/llama-4-maverick-17b-128e-instruct: {weights: open, total_b: 400, active_b: 17, released: 2025-04-05}
+  mistralai/mistral-nemo:                     {weights: open, total_b: 12, active_b: 12, released: 2024-07-18, note: "12B dense from 2024"}
+  mistralai/devstral-2512:                    {weights: open, total_b: 123, active_b: 123, released: 2025-12-09, note: "dense; licence bars firms >$20M monthly revenue"}
+
+  # Long tail from 2025 (added after the first run; mostly pre-2025 releases)
+  meta-llama/llama-3.1-70b-instruct:          {weights: open, total_b: 70, active_b: 70, released: 2024-07-23}
+  meta-llama/llama-3.1-405b-instruct:         {weights: open, total_b: 405, active_b: 405, released: 2024-07-23}
+  nousresearch/hermes-3-llama-3.1-405b:       {weights: open, total_b: 405, active_b: 405, released: 2024-08-15}
+  meta-llama/llama-3.2-1b-instruct:           {weights: open, total_b: 1, active_b: 1, released: 2024-09-25}
+  meta-llama/llama-3.2-3b-instruct:           {weights: open, total_b: 3, active_b: 3, released: 2024-09-25}
+  meta-llama/llama-4-scout-17b-16e-instruct:  {weights: open, total_b: 109, active_b: 17, released: 2025-04-05}
+  deepseek/deepseek-r1-distill-llama-70b:     {weights: open, total_b: 70, active_b: 70, released: 2025-01-20}
+  deepseek/deepseek-v3.1-terminus:            {weights: open, total_b: 671, active_b: 37, released: 2025-09-22}
+  tngtech/deepseek-r1t-chimera:               {weights: open, total_b: 671, active_b: 37, released: 2025-04-28}
+  nex-agi/deepseek-v3.1-nex-n1:               {weights: open, total_b: 671, active_b: 37, released: 2025-12-13}
+  moonshotai/kimi-k2-0905:                    {weights: open, total_b: 1000, active_b: 32, released: 2025-09-05}
+  moonshotai/kimi-k2-thinking-20251106:       {weights: open, total_b: 1000, active_b: 32, released: 2025-11-06}
+  minimax/minimax-01:                         {weights: open, total_b: 456, active_b: 46, released: 2025-01-15}
+  qwen/qwen-2.5-72b-instruct:                 {weights: open, total_b: 72, active_b: 72, released: 2024-09-19}
+  qwen/qwen-2.5-7b-instruct:                  {weights: open, total_b: 7, active_b: 7, released: 2024-09-19, note: "7B"}
+  qwen/qwen-2.5-coder-32b-instruct:           {weights: open, total_b: 32, active_b: 32, released: 2024-11-12, note: "32B coder"}
+  qwen/qwq-32b:                               {weights: open, total_b: 32, active_b: 32, released: 2025-03-05}
+  qwen/qwen3-32b-04-28:                       {weights: open, total_b: 32, active_b: 32, released: 2025-04-28, note: "32B dense"}
+  qwen/qwen3-235b-a22b-04-28:                 {weights: open, total_b: 235, active_b: 22, released: 2025-04-28}
+  qwen/qwen3-coder-30b-a3b-instruct:          {weights: open, total_b: 30.5, active_b: 3.3, released: 2025-07-31, note: "30B-A3B"}
+  qwen/qwen3-next-80b-a3b-instruct-2509:      {weights: open, total_b: 80, active_b: 3, released: 2025-09-11}
+  qwen/qwen3-vl-235b-a22b-instruct:           {weights: open, total_b: 235, active_b: 22, released: 2025-09-22}
+  qwen/qwen3-coder-next-2025-02-03:           {weights: open, total_b: 80, active_b: 3, released: 2026-02-03}
+  mistralai/mistral-7b-instruct:              {weights: open, total_b: 7, active_b: 7, released: 2023-09-27, note: "7B"}
+  mistralai/mistral-tiny:                     {weights: open, total_b: 7, active_b: 7, released: 2023-12-11, note: "API alias of Mistral 7B"}
+  mistralai/mistral-small-24b-instruct-2501:  {weights: open, total_b: 24, active_b: 24, released: 2025-01-30}
+  mistralai/mistral-small-3.2-24b-instruct-2506: {weights: open, total_b: 24, active_b: 24, released: 2025-06-20}
+  microsoft/wizardlm-2-8x22b:                 {weights: open, total_b: 141, active_b: 39, released: 2024-04-15, note: "2024 Mixtral fine-tune"}
+  microsoft/phi-4:                            {weights: open, total_b: 14, active_b: 14, released: 2024-12-12, note: "14B"}
+  gryphe/mythomax-l2-13b:                     {weights: open, total_b: 13, active_b: 13, released: 2023-08-01, note: "13B roleplay tune"}
+  cohere/command-r-08-2024:                   {weights: open, total_b: 32, active_b: 32, released: 2024-08-30, note: "CC-BY-NC weights"}
+
+  # Long-tail exceptions to the fallback rule in analysis.py (unlisted models default to their lab, or small open)
+  deepseek/deepseek-v3-base:                  {weights: open, total_b: 671, active_b: 37, released: 2024-12-26}
+  deepseek/deepseek-r1-zero:                  {weights: open, total_b: 671, active_b: 37, released: 2025-01-20}
+  deepseek/deepseek-v3.2-speciale-20251201:   {weights: open, total_b: 671, active_b: 37, released: 2025-12-01}
+  z-ai/glm-4.5v:                              {weights: open, total_b: 106, active_b: 12, released: 2025-08-11, note: "built on GLM-4.5-Air"}
+  arcee-ai/trinity-large-thinking:            {weights: open, total_b: 398, active_b: 13, released: 2026-04-01}
+  qwen/qwen3-235b-a22b-thinking-2507:         {weights: open, total_b: 235, active_b: 22, released: 2025-07-25}
+  mistralai/mistral-large-2407:               {weights: open, total_b: 123, active_b: 123, released: 2024-07-24, note: "Mistral Research Licence weights"}
+  mistralai/mistral-large-2411:               {weights: open, total_b: 123, active_b: 123, released: 2024-11-18, note: "Mistral Research Licence weights"}
+  mistralai/mistral-large-2512:               {weights: open, total_b: 675, active_b: 41, released: 2025-12-02, note: "Mistral Large 3; size from memory, unverified"}
+
+  # ---------------- Closed weights ----------------
+  # Frontier large: flagship models from Anthropic / OpenAI / Google
+  anthropic/claude-3.5-sonnet:                {group: frontier_large, note: "flagship at the time (no 3.5 Opus)"}
+  anthropic/claude-3.5-sonnet:beta:           {group: frontier_large}
+  anthropic/claude-3-7-sonnet-20250219:       {group: frontier_large, note: "flagship at the time"}
+  anthropic/claude-3-7-sonnet-20250219:thinking: {group: frontier_large}
+  anthropic/claude-4.5-opus-20251124:         {group: frontier_large}
+  anthropic/claude-4.6-opus-20260205:         {group: frontier_large}
+  anthropic/claude-4.7-opus-20260416:         {group: frontier_large}
+  anthropic/claude-4.8-opus-20260528:         {group: frontier_large}
+  anthropic/claude-opus-5-20260723:           {group: frontier_large}
+  anthropic/claude-opus-5.5-20260921:         {group: frontier_large}
+  anthropic/claude-5-fable-20260609:          {group: frontier_large}
+  anthropic/claude-fable-5.1-20260831:        {group: frontier_large}
+  openai/gpt-4.1-2025-04-14:                  {group: frontier_large}
+  openai/gpt-5-2025-08-07:                    {group: frontier_large}
+  openai/gpt-5-chat-2025-08-07:               {group: frontier_large}
+  openai/gpt-5.1-20251113:                    {group: frontier_large}
+  openai/gpt-5.2-20251211:                    {group: frontier_large}
+  openai/gpt-5.3-codex-20260224:              {group: frontier_large}
+  openai/gpt-5.4-20260305:                    {group: frontier_large}
+  openai/gpt-5.5-20260423:                    {group: frontier_large}
+  openai/gpt-5.6-sol-20260709:                {group: frontier_large}
+  openai/gpt-5.6-sol-pro-20260709:            {group: frontier_large}
+  openai/gpt-6-sol-20260922:                  {group: frontier_large}
+  openai/gpt-6.1-sol-20260929:                {group: frontier_large}
+  openai/gpt-6-astra-20260903:                {group: frontier_large}
+  google/gemini-2.5-pro:                      {group: frontier_large}
+  google/gemini-2.5-pro-preview-03-25:        {group: frontier_large}
+  google/gemini-2.5-pro-exp-03-25:            {group: frontier_large}
+  google/gemini-3-pro-preview-20251117:       {group: frontier_large}
+  google/gemini-3.1-pro-preview-20260219:     {group: frontier_large}
+  # Frontier small: the same labs' mid/small tiers (Sonnet, Haiku, Luna, Terra, mini, nano, Flash, Flash-Lite)
+  anthropic/claude-4-sonnet-20250522:         {group: frontier_small}
+  anthropic/claude-4.5-sonnet-20250929:       {group: frontier_small}
+  anthropic/claude-4.6-sonnet-20260217:       {group: frontier_small}
+  anthropic/claude-sonnet-5-20260630:         {group: frontier_small}
+  anthropic/claude-sonnet-5.5-20260928:       {group: frontier_small}
+  anthropic/claude-4.5-haiku-20251001:        {group: frontier_small}
+  openai/gpt-4o-mini:                         {group: frontier_small}
+  openai/gpt-4.1-mini-2025-04-14:             {group: frontier_small}
+  openai/gpt-5-mini-2025-08-07:               {group: frontier_small}
+  openai/gpt-5-nano-2025-08-07:               {group: frontier_small}
+  openai/gpt-5.4-mini-20260317:               {group: frontier_small}
+  openai/gpt-5.4-nano-20260317:               {group: frontier_small}
+  openai/gpt-5.6-luna-20260709:               {group: frontier_small}
+  openai/gpt-5.6-luna-pro-20260709:           {group: frontier_small}
+  openai/gpt-5.6-terra-20260709:              {group: frontier_small}
+  openai/gpt-6-luna-20260922:                 {group: frontier_small}
+  openai/gpt-6-luna-pro-20260922:             {group: frontier_small}
+  google/gemini-flash-1.5:                    {group: frontier_small}
+  google/gemini-flash-1.5-8b:                 {group: frontier_small}
+  google/gemini-2.0-flash-001:                {group: frontier_small}
+  google/gemini-2.0-flash-lite-001:           {group: frontier_small}
+  google/gemini-2.5-flash:                    {group: frontier_small}
+  google/gemini-2.5-flash-preview-04-17:      {group: frontier_small}
+  google/gemini-2.5-flash-preview-05-20:      {group: frontier_small}
+  google/gemini-2.5-flash-preview-09-2025:    {group: frontier_small}
+  google/gemini-2.5-flash-lite:               {group: frontier_small}
+  google/gemini-2.5-flash-lite-preview-06-17: {group: frontier_small}
+  google/gemini-2.5-flash-lite-preview-09-2025: {group: frontier_small}
+  google/gemini-3-flash-preview-20251217:     {group: frontier_small}
+  google/gemini-3.1-flash-lite-preview-20260303: {group: frontier_small}
+  google/gemini-3.1-flash-lite-20260507:      {group: frontier_small}
+  google/gemini-3.5-flash-20260519:           {group: frontier_small}
+  google/gemini-3.5-flash-lite-20260721:      {group: frontier_small}
+  google/gemini-3.6-flash-20260721:           {group: frontier_small}
+  google/gemini-3.7-flash-20260813:           {group: frontier_small}
+  google/gemini-3.8-flash-20260902:           {group: frontier_small}
+  # Other closed: xAI, closed Qwen/GLM/MiMo/Ling variants, Upstage, Kuaishou, Meta Muse, others
+  x-ai/grok-code-fast-1:                      {group: other_closed}
+  x-ai/grok-4-fast:                           {group: other_closed}
+  x-ai/grok-4.1-fast:                         {group: other_closed}
+  x-ai/grok-4.3-20260430:                     {group: other_closed}
+  x-ai/grok-4.5-20260708:                     {group: other_closed}
+  x-ai/grok-4.6-20260810:                     {group: other_closed}
+  x-ai/grok-4.7-20260916:                     {group: other_closed}
+  qwen/qwen3.6-plus-preview:                  {group: other_closed}
+  qwen/qwen3.6-plus-04-02:                    {group: other_closed}
+  qwen/qwen3.7-max-20260520:                  {group: other_closed}
+  qwen/qwen3.7-plus-20260602:                 {group: other_closed}
+  qwen/qwen3.7-flash-20260727:                {group: other_closed}
+  qwen/qwen3.8-max-20260902:                  {group: other_closed, note: "API-only checkpoint; the 0803 weights are open"}
+  z-ai/glm-5-turbo-20260315:                  {group: other_closed}
+  xiaomi/mimo-v2-pro-20260318:                {group: other_closed}
+  openrouter/hunter-alpha:                    {group: other_closed, note: "revealed as MiMo-V2-Pro test build"}
+  xiaomi/mimo-v2-omni-20260318:               {group: other_closed}
+  inclusionai/ling-3.0-flash-fin-20260827:    {group: other_closed, note: "API-only finance tune of an open base"}
+  inclusionai/ling-3.0-flash-sante-20260904:  {group: other_closed, note: "API-only medical tune of an open base"}
+  upstage/solar-mini4-20260922:               {group: other_closed, note: "AA lists it as proprietary"}
+  upstage/solar-pro4-20260810:                {group: other_closed}
+  kwaipilot/kat-coder-pro-v1:                 {group: other_closed}
+  typesafe/jev-1.13-20260917:                 {group: other_closed}
+  meta/muse-spark-1.3-20260902:               {group: other_closed, note: "Meta says an open-weight Muse Spark is coming 'soon' but not which version"}
+  meta/muse-spark-1.3-contributor-20260902:   {group: other_closed, note: "same model, cheap tier that trains on traffic"}
+  # Long tail from 2025 (added after the first run). Revealed stealth models go to their lab's group.
+  anthropic/claude-3-7-sonnet-20250219:beta:  {group: frontier_large}
+  anthropic/claude-3.5-sonnet-20240620:       {group: frontier_large}
+  anthropic/claude-3.5-sonnet-20240620:beta:  {group: frontier_large}
+  anthropic/claude-4-opus-20250522:           {group: frontier_large}
+  anthropic/claude-4.1-opus-20250805:         {group: frontier_large}
+  openai/gpt-4o:                              {group: frontier_large}
+  openai/gpt-4o-2024-11-20:                   {group: frontier_large}
+  openai/gpt-5-codex:                         {group: frontier_large}
+  openai/gpt-5.2-codex-20260114:              {group: frontier_large}
+  openrouter/quasar-alpha:                    {group: frontier_large, vendor: openai, note: "revealed as GPT-4.1"}
+  openrouter/optimus-alpha:                   {group: frontier_large, vendor: openai, note: "revealed as GPT-4.1"}
+  openrouter/horizon-alpha:                   {group: frontier_large, vendor: openai, note: "revealed as GPT-5 (test build)"}
+  openrouter/horizon-beta:                    {group: frontier_large, vendor: openai, note: "revealed as GPT-5 (test build)"}
+  openrouter/polaris-alpha:                   {group: frontier_large, vendor: openai, note: "revealed as GPT-5.1"}
+  google/gemini-pro-1.5:                      {group: frontier_large}
+  google/gemini-2.0-pro-exp-02-05:            {group: frontier_large}
+  google/gemini-2.5-pro-preview-06-05:        {group: frontier_large}
+  anthropic/claude-3-5-haiku:                 {group: frontier_small}
+  anthropic/claude-3-haiku:                   {group: frontier_small}
+  openai/gpt-4o-mini-2024-07-18:              {group: frontier_small}
+  openai/gpt-4.1-nano-2025-04-14:             {group: frontier_small}
+  openai/o3-mini-2025-01-31:                  {group: frontier_small}
+  openai/o4-mini-2025-04-16:                  {group: frontier_small}
+  google/gemini-2.0-flash-exp:                {group: frontier_small}
+  google/gemini-2.0-flash-thinking-exp-01-21: {group: frontier_small}
+  google/gemini-2.0-flash-lite-preview-02-05: {group: frontier_small}
+  google/gemini-2.5-flash-preview-04-17:thinking: {group: frontier_small}
+  google/gemini-2.5-flash-preview-05-20:thinking: {group: frontier_small}
+  x-ai/grok-3-beta:                           {group: other_closed}
+  x-ai/grok-3-mini-beta:                      {group: other_closed}
+  x-ai/grok-3-mini:                           {group: other_closed}
+  x-ai/grok-4-07-09:                          {group: other_closed}
+  openrouter/sonoma-sky-alpha:                {group: other_closed, vendor: xai, note: "revealed as Grok 4 Fast"}
+  openrouter/sonoma-dusk-alpha:               {group: other_closed, vendor: xai, note: "revealed as Grok 4 Fast"}
+  openrouter/sherlock-think-alpha:            {group: other_closed, vendor: xai, note: "revealed as Grok 4.1 Fast"}
+  openrouter/healer-alpha:                    {group: other_closed, note: "revealed as MiMo-V2-Omni"}
+  # Long-tail closed models that the fallback rule would otherwise call small open
+  meta/muse-spark-1.1-20260709:               {group: other_closed}
+  meta/muse-spark-1.2-20260805:               {group: other_closed}
+  meta/muse-spark-1.2-contributor-20260805:   {group: other_closed}
+  qwen/qwen-max-2025-01-25:                   {group: other_closed}
+  qwen/qwen-plus-2025-01-25:                  {group: other_closed}
+  qwen/qwen-turbo-2024-11-01:                 {group: other_closed}
+  qwen/qwen3.5-plus-20260216:                 {group: other_closed}
+  qwen/qwen3-coder-plus:                      {group: other_closed}
+  qwen/qwen3.6-flash:                         {group: other_closed, note: "no weights found (as Qwen3.7-Flash)"}
+  z-ai/glm-5v-turbo-20260401:                 {group: other_closed}
+  mistralai/codestral-2501:                   {group: other_closed}
+  mistralai/codestral-2508:                   {group: other_closed}
+  # Stealth, not revealed
+  stealth/space-bunny-alpha:                  {group: stealth_unknown, note: "tokenizer tests point to MiniMax (M3.1-Flash-Preview?); unconfirmed"}
+  stealth/union-alpha:                        {group: stealth_unknown, note: "a router over several models; maker unknown"}
+
+# Not LLM chat models: excluded from all totals.
+exclude:
+  - qwen/qwen3-embedding-8b
+  - openai/text-embedding-3-small
+  - openai/text-embedding-3-large
+  - perplexity/pplx-embed-v1-0.6B
+  - baai/bge-m3-20251117
