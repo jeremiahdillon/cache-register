@@ -134,8 +134,10 @@ models:
   interval ended before the date), `before_listing` (the key's first interval starts after the
   date but on/before `as_of`), `beyond_history` (the date is after the last staged LiteLLM day,
   e.g. rankings fetched later than LiteLLM; the last staged price is used). Choose per (date,
-  permaslug): basis order current → beyond_history → after_removal → before_listing, then alias
-  rank, then the nearest interval. Every basis except `current` sets `price_date_stale`, so a
+  permaslug): basis order current → beyond_history → after_removal → before_listing; then, for
+  `current`, alias rank; for the flagged bases, the interval nearest the date across all of the
+  model's keys, then rank (amended 2026-10-05: rank-first picked a later, unrelated price, e.g.
+  DeepSeek V4 Pro at 3× its launch price). Every basis except `current` sets `price_date_stale`, so a
   shorter LiteLLM history is flagged, never silently forward-filled. Exactly one row
   per (date, permaslug), asserted by a test (no fan-out).
 - `or_model_daily` keeps its columns (`price_matched`, `est_spend_usd`, `blended_usd_per_token`,

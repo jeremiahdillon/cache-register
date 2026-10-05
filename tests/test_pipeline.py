@@ -392,3 +392,66 @@ def test_reproduce_reports_fetch_failure_by_source(synthetic_raw, monkeypatch, t
     result = reproduce(receipt)  # fetch needs a key that isn't set
     assert result.status == "fetch-failed"
     assert result.reasons[0].startswith("fetch failed for openrouter_rankings: MissingSecretError")
+
+
+def test_flagged_days_use_the_nearest_listing_before_preference_order(data_env, synthetic_entities):
+    """Before any key is listed, the earliest listing of *any* of the model's keys prices it (a later
+    rank-1 listing may carry a different, later price); once listed, preference order decides."""
+    from datetime import UTC, datetime
+
+    import yaml
+
+    from cachereg.core.store import RawFetch
+    from tests.conftest import synthetic_rankings
+
+    models = yaml.safe_load((synthetic_entities / "models.yaml").read_text())
+    models["models"]["moonshotai/kimi-9"]["aliases"]["litellm"] = ["openrouter/moonshotai/kimi-9", "moonshot/kimi-9"]
+    (synthetic_entities / "models.yaml").write_text(yaml.safe_dump(models))
+
+    fetched = datetime(2026, 8, 31, 12, tzinfo=UTC)
+    r = RawFetch("openrouter_rankings", "1", fetched_at=fetched)
+    r.add("rankings.json", json.dumps(synthetic_rankings(date(2026, 6, 1), 91)).encode(), "https://example.test", 200)
+    r.write()
+
+    def entry(i, o):
+        return {"input_cost_per_token": i, "output_cost_per_token": o}
+
+    states = {  # sha -> (commit day, file)
+        "c1": (date(2024, 12, 31), {"other": entry(1e-6, 1e-6)}),
+        "c2": (date(2026, 7, 1), {"moonshot/kimi-9": entry(0.5e-6, 2e-6)}),  # vendor key first
+        "c3": (
+            date(2026, 8, 1),
+            {"moonshot/kimi-9": entry(0.5e-6, 2e-6), "openrouter/moonshotai/kimi-9": entry(2e-6, 8e-6)},
+        ),
+    }
+    lp = RawFetch("litellm_prices", "1", fetched_at=fetched)
+    ts = {
+        s: int(datetime.combine(d, datetime.min.time(), tzinfo=UTC).timestamp()) + 3600 for s, (d, _) in states.items()
+    }
+    lp.add("first_parent.tsv", "".join(f"{s}\t{ts[s]}\n" for s in ("c3", "c2", "c1")).encode(), "https://x.test", 200)
+    for s, (_, body) in states.items():
+        lp.add(f"prices_{s}.json", json.dumps(body).encode(), "https://x.test", 200)
+    lp.vintage = {"kind": "git_commit", "value": "c3", "window": ["2025-01-01", "2026-08-30"]}
+    lp.write()
+
+    build(date(2026, 8, 31), ["openrouter_rankings", "litellm_prices"])
+    con = connect()
+    try:
+        k = query(
+            con, "SELECT date, price_key, price_basis FROM or_model_daily WHERE model_permaslug = 'moonshotai/kimi-9'"
+        )
+    finally:
+        con.close()
+
+    def at(day):
+        return k.filter(pl.col("date") == day).row(0, named=True)
+
+    assert (at(date(2026, 6, 15))["price_key"], at(date(2026, 6, 15))["price_basis"]) == (
+        "moonshot/kimi-9",
+        "before_listing",
+    )
+    assert (at(date(2026, 7, 15))["price_key"], at(date(2026, 7, 15))["price_basis"]) == ("moonshot/kimi-9", "current")
+    assert (at(date(2026, 8, 15))["price_key"], at(date(2026, 8, 15))["price_basis"]) == (
+        "openrouter/moonshotai/kimi-9",
+        "current",
+    )

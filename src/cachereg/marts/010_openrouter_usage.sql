@@ -6,8 +6,8 @@
 --   * a permaslug is priced only through config/entities/models.yaml (dim_model_alias): its
 --     model's `litellm` keys, in preference order. Unmapped permaslugs stay unpriced (measured).
 --   * the price of day D is the key's LiteLLM entry at the end of D (stg_litellm_prices_days).
---     When no mapped key is listed that day, the nearest entry is used and the row is flagged
---     price_date_stale: first the last entry before D (after_removal), then the first entry after
+--     When no mapped key is listed that day, the entry nearest the date (any of the model's keys)
+--     is used and the row is flagged price_date_stale: first the last entry before D (after_removal), then the first entry after
 --     D (before_listing). Days after the staged LiteLLM history use its last day (beyond_history).
 --   * only LiteLLM data known on as_of is read: entries starting later are ignored and an entry
 --     that ended after as_of is treated as still listed.
@@ -75,9 +75,11 @@ QUALIFY row_number() OVER (
     PARTITION BY date, model_permaslug
     ORDER BY
         CASE basis WHEN 'current' THEN 0 WHEN 'beyond_history' THEN 1 WHEN 'after_removal' THEN 2 ELSE 3 END,
-        rank,
-        -- nearest entry: the latest one before the date, or the earliest one after it
+        -- listed that day: preference order decides. Otherwise the entry nearest the date decides
+        -- (the latest one before it, or the earliest one after it), then preference order.
+        CASE WHEN basis = 'current' THEN rank ELSE 0 END,
         CASE WHEN basis = 'before_listing' THEN epoch(valid_from) ELSE -epoch(valid_from) END,
+        rank,
         price_key
 ) = 1;
 
