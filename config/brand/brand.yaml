@@ -13,6 +13,7 @@ colors:
   text_secondary: "#B4BAC8"
   muted: "#5B6070"             # axes, grid, "everyone else"
   signal: "#C8FF2E"            # electric lime: headline number / glyph only — never a series
+  accent: "#FF6A3D"            # signal orange: the one highlighted series in an otherwise grey chart
   # Categorical slots, fixed order. Validated 2026-10-02 with the dataviz validator on the
   # canvas (dark mode): lightness band PASS, chroma PASS, worst adjacent CVD ΔE 18.4,
   # normal-vision ΔE 24.2, contrast ≥ 3:1. Re-run the validator if any value changes.
@@ -31,6 +32,10 @@ colors:
     google: "#B98C10"
     meta: "#945FF9"
     xai: "#36B102"
+
+wordmark:                      # brand name at the top of every image / video / page
+  color: "#4A4F5C"             # recessive: a step above the canvas, below the muted grey
+  glyph: false                 # the lime square before the name (off for now)
 
 fonts:                         # SIL OFL, vendored in assets/fonts for reproducible renders
   display: Space Grotesk

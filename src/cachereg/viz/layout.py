@@ -7,6 +7,7 @@ around it is drawn here so every static image and every video frame shares one l
 from __future__ import annotations
 
 import io
+import re
 from dataclasses import dataclass
 
 from PIL import Image, ImageDraw, ImageFont
@@ -36,7 +37,8 @@ def _split_long(draw: ImageDraw.ImageDraw, word: str, font, width: int) -> list[
 
 def _wrap(draw: ImageDraw.ImageDraw, text: str, font, width: int) -> list[str]:
     lines, cur = [], ""
-    words = [p for w in text.split() for p in _split_long(draw, w, font, width)]
+    # Split on ordinary whitespace only, so a non-breaking space (U+00A0) keeps a phrase on one line.
+    words = [p for w in re.split(r"[ \t\n]+", text.strip()) for p in _split_long(draw, w, font, width)]
     for word in words:
         trial = f"{cur} {word}".strip()
         if draw.textlength(trial, font=font) <= width or not cur:
@@ -45,6 +47,22 @@ def _wrap(draw: ImageDraw.ImageDraw, text: str, font, width: int) -> list[str]:
             lines.append(cur)
             cur = word
     return lines + ([cur] if cur else [])
+
+
+def _wrap_balanced(draw: ImageDraw.ImageDraw, text: str, font, width: int) -> list[str]:
+    """Wrap into the fewest lines, then narrow the measure as far as it goes without adding a line, so
+    the lines come out roughly even (no long first line over a short orphan)."""
+    lines = _wrap(draw, text, font, width)
+    if len(lines) < 2:
+        return lines
+    lo, hi = width // len(lines), width
+    while hi - lo > 4:
+        mid = (lo + hi) // 2
+        if len(_wrap(draw, text, font, mid)) <= len(lines):
+            hi = mid
+        else:
+            lo = mid
+    return _wrap(draw, text, font, hi)
 
 
 @dataclass
@@ -71,19 +89,24 @@ def page(story: Story, target: Target, receipt: Receipt) -> Frame:
     inner = W - 2 * pad
     y = pad
 
-    # Wordmark: lime glyph + name
+    # Wordmark: optional lime glyph + name, in the brand's (recessive) wordmark colour
+    mark = brand().get("wordmark", {})
     mark_px = max(14, target.footer_px)
-    d.rectangle([pad, y + 2, pad + mark_px - 2, y + mark_px], fill=color("signal"))
-    d.text((pad + mark_px + 10, y), brand()["name"].upper(), font=_font("mono_bold", mark_px), fill=color("text"))
+    x = pad
+    if mark.get("glyph", True):
+        d.rectangle([pad, y + 2, pad + mark_px - 2, y + mark_px], fill=color("signal"))
+        x += mark_px + 10
+    mark_fill = mark.get("color", color("text"))
+    d.text((x, y), brand()["name"].upper(), font=_font("mono_bold", mark_px), fill=mark_fill)
     y += mark_px + int(target.title_px * 0.6)
 
     title_font = _font("display", target.title_px)
-    for line in _wrap(d, story.title, title_font, inner):
+    for line in _wrap_balanced(d, story.title, title_font, inner):
         d.text((pad, y), line, font=title_font, fill=color("text"))
         y += int(target.title_px * 1.12)
     y += int(target.subtitle_px * 0.35)
     sub_font = _font("body", target.subtitle_px)
-    for line in _wrap(d, story.subtitle, sub_font, inner):
+    for line in _wrap_balanced(d, story.subtitle, sub_font, inner):
         d.text((pad, y), line, font=sub_font, fill=color("text_secondary"))
         y += int(target.subtitle_px * 1.35)
     plot_top = y + int(target.subtitle_px * 0.9)
@@ -94,10 +117,10 @@ def page(story: Story, target: Target, receipt: Receipt) -> Frame:
     label_w = int(d.textlength("RECEIPTS  ", font=label_font))
     rows = []
     for label, text in receipt.lines():
-        wrapped = _wrap(d, text, foot_font, inner - label_w)
+        wrapped = _wrap_balanced(d, text, foot_font, inner - label_w)
         rows.append((label, wrapped))
     for note in story.notes_for(target.kind):
-        rows.insert(0, ("NOTE", _wrap(d, note, foot_font, inner - label_w)))
+        rows.insert(0, ("NOTE", _wrap_balanced(d, note, foot_font, inner - label_w)))
     line_h = int(target.footer_px * 1.5)
     footer_h = sum(len(w) for _, w in rows) * line_h
     fy = H - pad - footer_h

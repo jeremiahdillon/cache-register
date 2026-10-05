@@ -158,6 +158,8 @@ def render_html(story, analysis, chart, target: Target, rec: Receipt, out: Path)
         ink2=color("text_secondary"),
         muted=color("muted"),
         signal=color("signal"),
+        mark_color=brand().get("wordmark", {}).get("color", color("text")),
+        mark_glyph="<i></i>" if brand().get("wordmark", {}).get("glyph", True) else "",
         receipt_html=rec_html,
         table=_table_html(analysis, story),
         caveats="".join(f"<li>{html.escape(c)}</li>" for c in story.caveats),
