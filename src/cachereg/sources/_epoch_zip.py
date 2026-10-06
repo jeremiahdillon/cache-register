@@ -10,6 +10,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import io
+import math
 import re
 import zipfile
 from collections.abc import Iterable
@@ -114,10 +115,13 @@ class Counter:
         if not s:
             return None
         try:
-            return float(s.replace(",", ""))
+            value = float(s.replace(",", ""))
         except ValueError:
+            value = math.nan
+        if not math.isfinite(value):  # "n/a", but also "NaN" and "inf", which float() accepts
             self.n += 1
             return None
+        return value
 
     def day(self, v: str | None) -> tuple[date | None, str | None]:
         """ISO date, or a year-month / year (first day of the period), with its precision."""

@@ -52,7 +52,12 @@ def stage() -> dict[str, pl.DataFrame]:
         missing = [c for c in needed if c not in header]
         if missing:
             raise ValueError(f"{SOURCE}: all_ai_models.csv has no column(s) {', '.join(map(repr, missing))}")
-        members = {flag: {text(r.get("Model")) for r in read_csv(zf, f)[1]} for flag, f in SUBSETS.items()}
+        members = {}
+        for flag, member in SUBSETS.items():
+            sub_header, sub_rows = read_csv(zf, member)
+            if "Model" not in sub_header:
+                raise ValueError(f"{SOURCE}: {member} has no column 'Model'")
+            members[flag] = {text(r.get("Model")) for r in sub_rows} - {None}
         for r in models:
             name = text(r.get("Model"))
             if name is None:

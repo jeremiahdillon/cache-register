@@ -402,3 +402,52 @@ def test_models_mart_day_precision_and_alias(epoch_raw):
     assert "Model Late" not in {r["model"] for r in _rows("SELECT model FROM epoch_ai_models")}
     nine = _rows("SELECT * FROM epoch_ai_models WHERE model = 'Model Nine'")[0]
     assert nine["model_id"] == "openai/gpt-9"
+
+
+# ---- regressions from the code review ----------------------------------------------------------
+
+
+def _members(body: bytes) -> dict[str, str]:
+    zf = zipfile.ZipFile(io.BytesIO(body))
+    return {n: zf.read(n).decode() for n in zf.namelist()}
+
+
+def test_stage_rejects_duplicate_versions_nan_and_blank_eci_groups(data_env):
+    m = _members(bench_zip())
+    m["model_metadata.csv"] += "vendor-eight,Model Eight,2025-06-02,,Vendor,US,API access,\n"  # listed twice
+    m["epoch_capabilities_index/eci_scores.csv"] += ",,99,98,100,2025-01-01,Vendor,US,API access,Closed weights,\n"
+    m["bench_p.csv"] += "vendor-ten,NaN\nvendor-ten,inf\n"
+    _write("epoch_benchmarks", bf.FILE, _zip(m), datetime(2026, 9, 1, 6, tzinfo=UTC))
+    out = bs.stage()
+    models = out["models"]
+    assert models.filter(models["model_version"] == "vendor-eight")["release_date"].to_list() == [date(2025, 6, 1)]
+    assert None not in out["eci"]["model_group"].to_list()
+    assert out["scores"].filter(out["scores"]["benchmark"] == "Bench P").height == 1  # NaN, inf dropped
+    # orphan row, "n/a", duplicate version, blank ECI group, NaN, inf
+    assert out["_rejected_rows"]["rejected"][0] == 6
+
+
+def test_eci_mart_partial_and_missing_release_dates(data_env, synthetic_entities):
+    m = _members(bench_zip())
+    m["model_metadata.csv"] = m["model_metadata.csv"].replace(
+        "vendor-eight,Model Eight,2025-06-01", "vendor-eight,Model Eight,"
+    )
+    m["epoch_capabilities_index/eci_scores.csv"] = m["epoch_capabilities_index/eci_scores.csv"].replace(
+        "2026-01-01", "2026-01"
+    )
+    _write("epoch_benchmarks", bf.FILE, _zip(m), datetime(2026, 9, 1, 6, tzinfo=UTC))
+    build(date(2026, 1, 15), ["epoch_benchmarks"])
+    assert "Model Nine" not in {r["model_group"] for r in _rows("SELECT * FROM epoch_eci")}  # visible from Jan 31
+    build(date(2026, 1, 31), ["epoch_benchmarks"])
+    assert "Model Nine" in {r["model_group"] for r in _rows("SELECT * FROM epoch_eci")}
+    undated = {r["measure"]: r["rows_without_date"] for r in _rows("SELECT * FROM epoch_undated")}
+    assert undated == {"eci": 0, "scores": 1}  # vendor-eight's Bench P score has no release date
+    assert "vendor-eight" not in {r["model_version"] for r in _rows("SELECT * FROM epoch_scores")}
+
+
+def test_stage_models_requires_the_subset_model_column(data_env):
+    m = _members(models_zip())
+    m["frontier_ai_models.csv"] = _csv(["Name"], [["Model Nine"]])
+    _write("epoch_models", mf.FILE, _zip(m), datetime(2026, 9, 1, 6, tzinfo=UTC))
+    with pytest.raises(ValueError, match="frontier_ai_models.csv has no column 'Model'"):
+        ms.stage()

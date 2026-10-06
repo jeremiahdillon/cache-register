@@ -30,8 +30,9 @@ distinct content once, and mart `021_epoch_models` reads the latest fetch on or 
 A fixed column subset of `all_ai_models.csv` plus membership flags `in_notable`, `in_frontier`,
 `in_large_scale`. `publication_date` keeps its precision (`day`, `month`, `year`; partial dates
 are stored as the first day of the period), and the mart counts a partial date from the **end** of
-its period, so a model is never visible before it could have existed. `_rejected_rows` counts
-unparseable cells (not rows).
+its period, so a model is never visible before it could have existed; models without a date (12 on
+2026-10-06) are left out and counted in `epoch_models_undated`. `_rejected_rows` counts unparseable
+cells (not rows). A subset file without a `Model` column fails staging.
 
 ## Known quirks and caveats
 - A few subset rows are not in `all_ai_models.csv` (3 of 532 large-scale models on 2026-10-06);

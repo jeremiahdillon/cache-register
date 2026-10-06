@@ -3,7 +3,8 @@
 -- Variables set by cachereg.build: as_of, epoch_models_cutoff.
 -- Assumptions: the vintage is the latest fetch made on or before the cutoff date; only models
 -- published on or before as_of are kept, a partial date counting from the END of its period
--- (year → Dec 31, month → last day), so a model is never visible before it could exist;
+-- (year → Dec 31, month → last day), so a model is never visible before it could exist, and a
+-- model with no publication date is excluded (epoch_models_undated counts them);
 -- model_id via config/entities/models.yaml `aliases.epoch`.
 
 CREATE OR REPLACE TABLE epoch_models_vintage AS
@@ -23,3 +24,9 @@ WHERE CASE m.publication_date_precision
           WHEN 'month' THEN last_day(m.publication_date)
           ELSE m.publication_date
       END <= getvariable('as_of');
+
+CREATE OR REPLACE TABLE epoch_models_undated AS
+SELECT count(*) AS models_without_date
+FROM stg_epoch_models_models m
+JOIN epoch_models_vintage v ON v.vintage_id = m.vintage_id
+WHERE m.publication_date IS NULL;

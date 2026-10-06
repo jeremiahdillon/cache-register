@@ -33,6 +33,11 @@ def load_models() -> dict:
     return ((yaml.safe_load(f.read_text()) or {}).get("models") or {}) if f.is_file() else {}
 
 
+def aliases(entry: dict | None, source: str) -> list[str]:
+    """A model entry's aliases for one source; empty `aliases:` or source keys count as none."""
+    return list(((entry or {}).get("aliases") or {}).get(source) or [])
+
+
 # ---- models.yaml writer (append new models; insert aliases into existing ones) ------------------
 
 
@@ -96,14 +101,18 @@ def write_models(new: dict[str, dict], additions: dict[str, dict[str, list[str]]
     result = "\n".join(lines) + "\n"
 
     expected = {
-        mid: {"aliases": {s: list(a) for s, a in (m or {}).get("aliases", {}).items()}} for mid, m in old.items()
+        mid: {"aliases": {s: list(a or []) for s, a in ((m or {}).get("aliases") or {}).items()}}
+        for mid, m in old.items()
     }
     for mid, sources in additions.items():
         for src, aliases in sources.items():
             expected[mid]["aliases"].setdefault(src, []).extend(aliases)
     expected.update(new)
     got = (yaml.safe_load(result) or {}).get("models") or {}
-    got_cmp = {mid: {"aliases": (m or {}).get("aliases", {})} for mid, m in got.items()}
+    got_cmp = {
+        mid: {"aliases": {s: list(a or []) for s, a in ((m or {}).get("aliases") or {}).items()}}
+        for mid, m in got.items()
+    }
     if got_cmp != expected or set(got) != set(expected):
         raise ValueError("models.yaml edit did not re-parse to the expected mapping; nothing written")
     f.write_text(result)
@@ -133,9 +142,10 @@ NEVER = re.compile(r"^google/gemini-2\.5-flash-preview-.*:thinking$")
 DATE_SUFFIX = re.compile(r"-(\d{8}|\d{4}-\d{2}-\d{2})$")
 
 
-def _litellm_keys() -> tuple[pl.DataFrame, set[str], set[str]]:
+def _litellm_keys(prices: pl.DataFrame | None = None) -> tuple[pl.DataFrame, set[str], set[str]]:
     """LiteLLM staged prices, every key ever listed, and keys only ever listed at $0 (free tiers)."""
-    prices = pl.read_parquet(staged_dir("litellm_prices") / "prices.parquet")
+    if prices is None:
+        prices = pl.read_parquet(staged_dir("litellm_prices") / "prices.parquet")
     keys = set(prices["key"].to_list())
     priced = prices.filter(pl.col("input_usd_per_token").is_not_null())
     paid = priced.filter((pl.col("input_usd_per_token") > 0) | (pl.col("output_usd_per_token") > 0))
@@ -196,9 +206,9 @@ def suggest_openrouter(min_share: float = 0.0001, write: bool = False, echo=prin
     and as a price cross-check; nothing from it is written except model ids.
     """
     ranks, prices, ids, snap_price, snap_day = _load_openrouter()
-    _, keys, free = _litellm_keys()
+    _, keys, free = _litellm_keys(prices)
     existing = load_models()
-    mapped = {s for m in existing.values() for s in (m or {}).get("aliases", {}).get("openrouter", [])}
+    mapped = {s for m in existing.values() for s in aliases(m, "openrouter")}
 
     tok = (
         ranks.filter((pl.col("model_permaslug") != "other") & ~pl.col("model_permaslug").str.ends_with(":free"))
@@ -280,11 +290,6 @@ def epoch_base(version: str) -> str:
     return EFFORT.sub("", version.strip()).rsplit("/", 1)[-1].lower()
 
 
-def _key_matches(key: str, base: str) -> bool:
-    k = key.lower()
-    return k == base or k.endswith("/" + base)
-
-
 DATED = re.compile(r"-(\d{8}|\d{4}-\d{2}-\d{2}|\d{2}-\d{4}|\d{4})$")
 
 
@@ -326,8 +331,9 @@ class EpochSuggestion:
 def suggest_epoch(write: bool = False, echo=print) -> EpochSuggestion:
     """For each ECI model group not yet mapped, in ECI order (groups without ECI are left alone: many
     are raw version names or moving aliases, and the coverage measure is defined on ECI):
-    E1  a version's base equals, or is the last path part of, a LiteLLM key already listed under
-        exactly one canonical model → add the group to that model's `epoch` aliases;
+    E1  a version's base equals the last path segment of a LiteLLM key already listed under exactly
+        one canonical model (or one created earlier in this run) → add the group to that model's
+        `epoch` aliases;
     E2  no canonical model owns a matching key, but an `openrouter/<author>/<name>` key matches →
         a new model `<author>/<name>`; its `litellm` list is that key plus the vendor's own matching
         keys (bare or the vendor's LiteLLM prefix), never resellers' or free-tier keys;
@@ -349,15 +355,19 @@ def suggest_epoch(write: bool = False, echo=print) -> EpochSuggestion:
 
     by_undated: dict[str, set[str]] = {}
     for mid, m in existing.items():
-        names = [mid, *(m or {}).get("aliases", {}).get("openrouter", [])]
+        names = [mid, *aliases(m, "openrouter")]
         for n in names:
             by_undated.setdefault(_undated(n.split(":", 1)[0].rsplit("/", 1)[-1]), set()).add(mid)
 
+    by_last: dict[str, list[str]] = {}  # a key matches a base when its last path segment equals it
+    for k in keys:
+        by_last.setdefault(k.lower().rsplit("/", 1)[-1], []).append(k)
+
     owner: dict[str, str] = {}
     for mid, m in existing.items():
-        for k in (m or {}).get("aliases", {}).get("litellm", []):
+        for k in aliases(m, "litellm"):
             owner[k] = mid
-    mapped = {g: mid for mid, m in existing.items() for g in (m or {}).get("aliases", {}).get("epoch", [])}
+    mapped = {g: mid for mid, m in existing.items() for g in aliases(m, "epoch")}
     claimed = {mid for mid in mapped.values()}
 
     versions: dict[str, list[str]] = {}
@@ -374,7 +384,7 @@ def suggest_epoch(write: bool = False, echo=print) -> EpochSuggestion:
         if group in mapped:
             continue
         bases = sorted({epoch_base(v) for v in versions.get(group, [])})
-        matched = sorted({k for k in keys for b in bases if _key_matches(k, b)})
+        matched = sorted({k for b in bases for k in by_last.get(b, [])})
         owners = sorted({owner[k] for k in matched if k in owner})
         label = f"#{rank[group]:<3} {group}" + (f" (ECI {score:.1f})" if score is not None else "")
 
@@ -419,6 +429,7 @@ def suggest_epoch(write: bool = False, echo=print) -> EpochSuggestion:
                 claimed.add(mid)
                 own = _litellm_order(_own_keys(mid.split("/", 1)[0], paid, bases))
                 out.new_models[mid] = {"aliases": {"litellm": own, "epoch": [group]}}
+                owner.update(dict.fromkeys(own, mid))  # a later group matching these keys conflicts
                 echo(f"  E2 new    {label}  ->  {mid}  litellm: {', '.join(own)}")
             elif ids:
                 unresolved("new model id ambiguous or taken", ids)

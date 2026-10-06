@@ -20,7 +20,8 @@ MODELS_SCHEMA = {
     "vintage_id": pl.String,
     "model_version": pl.String,
     "model_group": pl.String,
-    "release_date": pl.Date,
+    "release_date": pl.Date,  # partial dates: first day of the period, see release_date_precision
+    "release_date_precision": pl.String,  # day | month | year
     "display_name": pl.String,
     "organization": pl.String,
     "country": pl.String,
@@ -35,6 +36,7 @@ ECI_SCHEMA = {
     "eci_ci_low": pl.Float64,
     "eci_ci_high": pl.Float64,
     "release_date": pl.Date,
+    "release_date_precision": pl.String,
     "organization": pl.String,
     "country": pl.String,
     "accessibility": pl.String,
@@ -67,18 +69,23 @@ SCORES_SCHEMA = {
 
 
 def _models(vid, zf, bad: Counter) -> list[dict]:
-    out = []
+    """One row per model version. A version listed twice keeps its first row; the repeat is counted
+    as rejected (a duplicate would multiply every score row joined to it)."""
+    out, seen = [], set()
     for r in read_csv(zf, "model_metadata.csv")[1]:
         version = text(r.get("model_version"))
-        if version is None:  # other cells set but no version: cannot be keyed
+        if version is None or r.get("model_version") in seen:  # no version: cannot be keyed
             bad.n += 1
             continue
+        seen.add(r.get("model_version"))
+        day, precision = bad.day(r.get("date"))
         out.append(
             {
                 "vintage_id": vid,
                 "model_version": r.get("model_version"),  # verbatim (upstream keys can carry spaces)
                 "model_group": text(r.get("model_group")),
-                "release_date": bad.day(r.get("date"))[0],
+                "release_date": day,
+                "release_date_precision": precision,
                 "display_name": text(r.get("display_name")),
                 "organization": text(r.get("organization")),
                 "country": text(r.get("country")),
@@ -90,22 +97,30 @@ def _models(vid, zf, bad: Counter) -> list[dict]:
 
 
 def _eci(vid, zf, bad: Counter) -> list[dict]:
-    return [
-        {
-            "vintage_id": vid,
-            "model_group": text(r.get("Model")),
-            "display_name": text(r.get("Display name")),
-            "eci": bad.num(r.get("eci")),
-            "eci_ci_low": bad.num(r.get("eci_ci_low")),
-            "eci_ci_high": bad.num(r.get("eci_ci_high")),
-            "release_date": bad.day(r.get("date"))[0],
-            "organization": text(r.get("Organization")),
-            "country": text(r.get("Country (of organization)")),
-            "accessibility": text(r.get("Model accessibility")),
-            "accessibility_group": text(r.get("Accessibility group")),
-        }
-        for r in read_csv(zf, ECI_FILE)[1]
-    ]
+    out = []
+    for r in read_csv(zf, ECI_FILE)[1]:
+        group = text(r.get("Model"))
+        if group is None:  # an index value for no model: rejected
+            bad.n += 1
+            continue
+        day, precision = bad.day(r.get("date"))
+        out.append(
+            {
+                "vintage_id": vid,
+                "model_group": group,
+                "display_name": text(r.get("Display name")),
+                "eci": bad.num(r.get("eci")),
+                "eci_ci_low": bad.num(r.get("eci_ci_low")),
+                "eci_ci_high": bad.num(r.get("eci_ci_high")),
+                "release_date": day,
+                "release_date_precision": precision,
+                "organization": text(r.get("Organization")),
+                "country": text(r.get("Country (of organization)")),
+                "accessibility": text(r.get("Model accessibility")),
+                "accessibility_group": text(r.get("Accessibility group")),
+            }
+        )
+    return out
 
 
 def _benchmarks(vid, zf, bad: Counter) -> list[dict]:

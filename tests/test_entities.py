@@ -51,6 +51,8 @@ models:
       epoch:
       - Old Model
   x/flow: {aliases: {litellm: [flow-1]}}
+  x/empty:
+    aliases:
   anthropic/claude-sonnet-9:
     aliases:
       openrouter:
@@ -147,6 +149,8 @@ def epoch_entities(data_env, tmp_path, monkeypatch):
         "chutes/Hosted": (100.0, ["chutes/gpt-9-mini-20260101"]),  # a host's run: unresolved
         "GPT 9 Mini": (90.0, ["gpt-9-mini-20260101_high"]),  # vendor key only, no openrouter/ key
         "Sonnet 9": (80.0, ["claude-sonnet-9-20260215"]),  # E3: same as anthropic/claude-sonnet-9 undated
+        "Shared A": (70.0, ["share-a"]),  # E2: new model shareco/share-a, which now owns its key
+        "Shared B": (60.0, ["share-a_high", "share-b"]),  # matches that key: conflict, not a second owner
     }
     _write("epoch_benchmarks", "benchmark_data.zip", _epoch_zip(groups), datetime(2026, 9, 1, 6, tzinfo=UTC))
     build(date(2026, 9, 1), ["epoch_benchmarks"])
@@ -164,6 +168,8 @@ def epoch_entities(data_env, tmp_path, monkeypatch):
         "phi4:14b-q8",
         "gpt-9-mini-20260101",
         "claude-sonnet-9-20260215",
+        "openrouter/shareco/share-a",
+        "openrouter/shareco/share-b",
     }
     monkeypatch.setattr(entities, "_litellm_keys", lambda: (None, keys, {"free/new-1"}))
     return d
@@ -189,7 +195,10 @@ def test_suggest_epoch_rules(epoch_entities):
     lines: list[str] = []
     out = entities.suggest_epoch(echo=lines.append)
     assert out.proposals == {"GPT 9": "openai/gpt-9"}
-    assert out.new_models == {"newco/new-1": {"aliases": {"litellm": ["openrouter/newco/new-1"], "epoch": ["New One"]}}}
+    assert out.new_models == {
+        "newco/new-1": {"aliases": {"litellm": ["openrouter/newco/new-1"], "epoch": ["New One"]}},
+        "shareco/share-a": {"aliases": {"litellm": ["openrouter/shareco/share-a"], "epoch": ["Shared A"]}},
+    }
     reasons = {u["model_group"]: u["reason"] for u in out.unresolved}
     assert reasons == {
         "GPT 9 Again": "model already has an epoch group",
@@ -198,11 +207,12 @@ def test_suggest_epoch_rules(epoch_entities):
         "chutes/Hosted": "host-run group",
         "GPT 9 Mini": "no openrouter/ key for a new id",
         "Sonnet 9": "review: same model if the date is ignored",
+        "Shared B": "model already has an epoch group",
     }
     assert "Old Model" not in reasons  # mapped already: skipped
     with (data_dir() / "entities" / "unresolved_epoch.csv").open() as fh:
         assert {r["model_group"] for r in csv.DictReader(fh)} == set(reasons)
-    assert any("ECI models mapped: 1/9 (11%) now, 3/9 (33%) with proposals" in line for line in lines)
+    assert any("ECI models mapped: 1/11 (9%) now, 4/11 (36%) with proposals" in line for line in lines)
     assert any("E3 review" in line and "anthropic/claude-sonnet-9" in line for line in lines)
     assert (epoch_entities / "models.yaml").read_text() == MODELS_YAML  # nothing written without --write
 

@@ -40,8 +40,11 @@ fetch, flagged).
 ## Staged tables
 `vintages`, `models` (model_metadata), `eci`, `benchmarks` (metadata) and `scores` (long: one row
 per published score row, `score` as published, `score_norm = score × scale`, `row`/`row_id` keep
-repeated runs apart). `_rejected_rows` counts non-numeric score/number cells and metadata rows
-that have content but no model version.
+repeated runs apart). Dates keep their precision (`release_date_precision`); the mart counts a
+partial date from the end of its period. `_rejected_rows` counts non-numeric cells (including
+`NaN`/`inf`), metadata rows with content but no model version, repeated model versions (the first
+row is kept; on 2026-10-06 `deepseek-r1-0528-qwen3-8b` was listed twice with different dates) and
+ECI rows without a model.
 
 ## Known quirks and caveats
 - **ECI is re-fitted on every update.** A model's ECI at a past as-of is the value in the vintage
@@ -50,6 +53,8 @@ that have content but no model version.
 - **Repeated rows**: ~1,000 score rows repeat a (benchmark, model version) pair (different agents,
   scaffolds or runs). All are staged; picking one per model is the analysis's decision.
 - Some score rows have no `Model version`; they are staged with a null version and do not join.
+- About 15 model versions have no release date; their scores cannot be placed before an as-of, so
+  mart 020 leaves them out and counts them in `epoch_undated`.
 - 27 benchmarks in `benchmark_metadata.csv` name no score file or column; their CSVs (in the zip)
   are not read, because the column is never guessed.
 - Model versions are verbatim (a few upstream keys carry trailing spaces).
