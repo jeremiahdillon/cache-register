@@ -211,7 +211,9 @@ entry (+ entity aliases). Core is never edited for a new source. In v1 a new sou
 
 - `models.yaml`: canonical `model_id` (e.g. `anthropic/claude-sonnet-4.5`), vendor, family,
   release date, open_weights, plus `aliases: {openrouter: [...], artificial_analysis: [...],
-  lmarena: [...], litellm: [...], epoch: [...], hf: [...]}`.
+  lmarena: [...], litellm: [...], epoch: [...], hf: [...]}`. `epoch` lists Epoch **model groups**
+  (the ECI `Model` name; versions reach their group through Epoch's own metadata), one group per
+  canonical model.
 - Resolver: exact alias match → normalized-string match (lowercasing, punctuation, provider
   prefixes; date/version suffixes are **preserved**, never normalized away) → **unresolved queue**. No fuzzy auto-accept; fuzzy candidates
   are *suggested* by `cachereg entities check` for human/Claude confirmation.
@@ -504,8 +506,9 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | 0.5 Vertical slice | **Done** — OpenRouter rankings + model prices, marts, first receipt `receipts/openrouter-wallet-share`; motion renderer A chosen (§6.3) |
 | Layout | **Done** — explorations vs receipts, scoped build, `reproduce` (`docs/plans/2026-10-03-explore-and-receipts.md`) |
 | 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), derived charts publishable (author policy); the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
-| 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. Next: **Epoch** (see the open item below), then OpenRouter `session-cost` / `app-rankings`, EDGAR, Ramp (manual import) |
-| 3–7 | Not started |
+| 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. `epoch_benchmarks` + `epoch_models` done 2026-10-06 (`docs/plans/2026-10-06-epoch.md`; CC BY 4.0, Latest-only, weekly): marts `020_epoch_capabilities` (ECI, scores, alias coverage) and `021_epoch_models`. Next: OpenRouter `session-cost` / `app-rankings`, EDGAR, Ramp (manual import) |
+| 3. Entities & marts | **Started** 2026-10-06 — `cachereg entities suggest --source openrouter\|epoch` (replaces the bootstrap script); `aliases.epoch` maps 154 of 274 ECI models, 47 of the top 50 (94%; target 95%) |
+| 4–7 | Not started |
 
 **Open items carried between sessions**
 - **Ramp without a key:** on ramp.com/data/ai-index the "Get the
@@ -516,19 +519,15 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 - Backlog: embedded/subset fonts for `blog_html` (now Google Fonts with system fallback); vector
   `blog_svg` with chrome + footer (also enables a no-data blog version); `promote` command.
 - LiteLLM lists many models late (most Chinese-lab models only from 2026-09-05/18): ~26% of top-50 tokens (10% of est. spend) are priced with a model's first later listing, flagged per row and reported. Re-check when Phase 3 entities land; Gemini 2.5 Flash preview `:thinking` variants stay unpriced (own price, not in LiteLLM).
-- **Epoch adapter — research done 2026-10-06, not yet planned.** Two CC BY 4.0 zips, updated in
-  place several times a week (no version history; `etag` differs per update → Latest-only):
-  `https://epoch.ai/data/benchmark_data.zip` (Capabilities & benchmarking: `model_metadata.csv`,
-  `benchmark_metadata.csv`, `epoch_capabilities_index/eci_scores.csv`, ~80 per-benchmark CSVs keyed
-  by `Model version` with `mean_score`/`Best score (across scorers)`, `Release date`,
-  `Organization`; README gives the citation "Epoch AI, ‘Capabilities & benchmarking’ … epoch.ai/benchmarks")
-  and `https://epoch.ai/data/ai_models.zip` (`notable_ai_models.csv`, `frontier_ai_models.csv`,
-  `large_scale_ai_models.csv`, `all_ai_models.csv`; citation "Epoch AI, ‘Data on AI models’ …
-  epoch.ai/data/ai-models"). Both permit redistribution with attribution. Epoch model names need
-  `epoch` aliases in `config/entities/models.yaml` to join prices (LiteLLM) for analysis (a)
-  "cost of intelligence"; a good point to start `cachereg entities suggest` (Phase 3) by folding in
-  `scripts/suggest_model_aliases.py`. Per-benchmark score columns are listed in
-  `benchmark_metadata.csv`.
+- **Analysis (a) "cost of intelligence" is unblocked:** `epoch_eci.model_id` joins
+  `dim_model_alias` (`litellm`) and LiteLLM price history (tested). ECI is re-fitted by Epoch on
+  every update, so a chart over time uses one ECI vintage with model release dates, and prices by
+  date (Exact); the analysis README must say so. Unmapped top-50 models: GPT-5.4 Pro, GPT-5.2 Pro
+  (vendor key only, no OpenRouter listing) and Muse Spark (no LiteLLM key).
+- **Epoch aliases left out on purpose** (`entities suggest --source epoch` still proposes them; drop
+  them if `--write` is used again): `Qwen2.5-72B` → `qwen/qwen2.5-vl-72b-instruct` (Epoch's group
+  includes the VL model), and new model `openai/gpt-3.5-turbo-0613` (its keys mix the 16k variant).
+  E3 candidates (same model if the date is ignored) are never written; confirm them by hand.
 - **Scheduling (Phase 6):** a launchd agent on the author's Mac runs `cachereg fetch --due` daily
   (template in `ops/launchd/`; `fetch --due` is not built yet). Until then, fetch LiteLLM and
   OpenRouter rankings by hand before rendering; daily history makes later receipts less stale.
@@ -537,8 +536,10 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   would change its visuals. Rendered floats are rounded to 9 significant digits (after
   `data_hash`), so re-renders of unchanged data no longer churn `data.json`.
 - Dependency supply-chain re-check of the Phase 0.5 dependencies is still pending (the scoring
-  service was unavailable on 2026-10-06).
-- `scripts/suggest_model_aliases.py --write` is append-only; run it after new models enter the top 50 and review the proposals (fold into `cachereg entities suggest` in Phase 3).
+  service was unavailable on 2026-10-06, also on a retry). The Epoch work added no dependencies.
+- After new models enter the OpenRouter top 50 or Epoch's index, run `cachereg entities suggest
+  --source openrouter` / `--source epoch` and review the proposals before `--write` (new models are
+  appended; aliases are inserted without rewriting reviewed lines).
 
 | Phase | Deliverable | Done when |
 |---|---|---|
