@@ -70,6 +70,10 @@ def synthetic_models() -> dict:
     return {"data": data}
 
 
+# The sources the synthetic fixture fetches. A full build would also expect Epoch (040 reads LiteLLM
+# and Epoch), so tests that build "everything" name these instead.
+SLICE = ["openrouter_rankings", "openrouter_models", "litellm_prices"]
+
 LITELLM_MID = date(2026, 7, 15)  # synthetic LiteLLM commit that changes the price file mid-window
 
 # model_id -> (openrouter permaslugs, litellm keys in preference order)

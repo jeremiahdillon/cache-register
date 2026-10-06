@@ -259,9 +259,9 @@ def test_suggest_openrouter_matches_the_bootstrap_rules(synthetic_raw, synthetic
 
     from cachereg import entities
     from cachereg.build import build
-    from tests.conftest import SYNTHETIC_MODELS
+    from tests.conftest import SLICE, SYNTHETIC_MODELS
 
-    build(date(2026, 8, 31))
+    build(date(2026, 8, 31), SLICE)
     (synthetic_entities / "models.yaml").write_text("models: {}\n")
     props = entities.suggest_openrouter(min_share=0, echo=lambda *_: None)
     assert props == {m: {"aliases": {"openrouter": o, "litellm": lk}} for m, (o, lk) in SYNTHETIC_MODELS.items()}

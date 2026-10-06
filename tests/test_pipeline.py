@@ -13,6 +13,7 @@ import pytest
 from cachereg.build import build
 from cachereg.core.warehouse import connect, query
 from cachereg.sources.openrouter_rankings.fetch import month_windows
+from tests.conftest import SLICE
 
 ROOT = Path(__file__).resolve().parents[1]
 WALLET = ROOT / "receipts" / "openrouter-wallet-share"
@@ -28,7 +29,7 @@ def test_month_windows_cover_range_without_gaps():
 
 
 def test_build_marts(synthetic_raw):
-    report = build(date(2026, 8, 31))
+    report = build(date(2026, 8, 31), SLICE)
     assert report.staged["openrouter_rankings.daily"] == 91 * 7
     assert report.rejected.get("openrouter_rankings", 0) == 0
     con = connect()
@@ -91,7 +92,7 @@ def test_render_receipt_on_synthetic_data(synthetic_raw, monkeypatch, tmp_path):
     from cachereg.render import render
 
     _fast_video(monkeypatch)
-    build(date(2026, 8, 31))
+    build(date(2026, 8, 31), SLICE)
     receipt = _receipt_copy(tmp_path)
     result = render(receipt)
     out = receipt / "output"
@@ -120,7 +121,7 @@ def test_exploration_renders_html_with_data_and_citation(synthetic_raw, tmp_path
     from cachereg.render import render
 
     monkeypatch.setenv("CACHEREG_OUTPUTS_DIR", str(tmp_path / "outputs"))
-    build(date(2026, 8, 31))
+    build(date(2026, 8, 31), SLICE)
     ex = tmp_path / "explore" / "2026-08-01-test"
     ex.mkdir(parents=True)
     for name in ("analysis.py", "charts.py"):
@@ -157,7 +158,7 @@ def test_reproduce_identical_then_differs(synthetic_raw, monkeypatch, tmp_path):
     from tests.conftest import synthetic_rankings
 
     _fast_video(monkeypatch)
-    build(date(2026, 8, 31))
+    build(date(2026, 8, 31), SLICE)
     receipt = _receipt_copy(tmp_path)
     render(receipt)
     assert reproduce(receipt, no_fetch=True).status == "identical"
@@ -178,7 +179,7 @@ def test_reproduce_reports_missing_snapshot(synthetic_raw, monkeypatch, tmp_path
     from cachereg.reproduce import reproduce
 
     _fast_video(monkeypatch)
-    build(date(2026, 8, 31))
+    build(date(2026, 8, 31), SLICE)
     receipt = _receipt_copy(tmp_path)
     _add_source(receipt, "openrouter_models")  # a receipt that also uses a snapshot source
     render(receipt)
@@ -250,7 +251,7 @@ def test_dates_after_the_litellm_history_are_flagged(data_env, synthetic_entitie
     r.add("rankings.json", json.dumps(synthetic_rankings(date(2026, 6, 1), 91)).encode(), "https://example.test", 200)
     r.write()
     write_synthetic_litellm(datetime(2026, 8, 16, 6, tzinfo=UTC), date(2026, 8, 15))  # history ends Aug 15
-    build(date(2026, 8, 31))
+    build(date(2026, 8, 31), ["openrouter_rankings", "litellm_prices"])
     con = connect()
     try:
         a = query(
@@ -310,10 +311,10 @@ def test_build_refuses_half_the_inputs_and_drops_stale_marts(synthetic_raw):
 
     from cachereg.core.paths import raw_dir
 
-    build(date(2026, 8, 31))  # marts exist
+    build(date(2026, 8, 31), SLICE)  # marts exist
     shutil.rmtree(raw_dir("litellm_prices"))
     with pytest.raises(RuntimeError, match="litellm_prices"):
-        build(date(2026, 8, 31))
+        build(date(2026, 8, 31))  # full build: 010 now lacks LiteLLM
     con = connect()
     try:
         tables = set(query(con, "SELECT table_name FROM information_schema.tables")["table_name"])
@@ -342,7 +343,7 @@ def test_reproduce_leaves_the_authors_warehouse_alone(synthetic_raw, monkeypatch
     from cachereg.reproduce import reproduce
 
     _fast_video(monkeypatch)
-    build(date(2026, 8, 31))
+    build(date(2026, 8, 31), SLICE)
     receipt = _receipt_copy(tmp_path)
     render(receipt)
     import duckdb
@@ -376,7 +377,7 @@ def test_reproduce_rejects_sources_that_dont_cover_the_marts(synthetic_raw, tmp_
 def test_receipt_sources_must_match_story_sources(synthetic_raw, monkeypatch, tmp_path):
     from cachereg.render import render
 
-    build(date(2026, 8, 31))
+    build(date(2026, 8, 31), SLICE)
     receipt = _receipt_copy(tmp_path)
     analysis = receipt / "analysis.py"
     analysis.write_text(
@@ -393,7 +394,7 @@ def test_reproduce_reports_fetch_failure_by_source(synthetic_raw, monkeypatch, t
     from cachereg.reproduce import reproduce
 
     _fast_video(monkeypatch)
-    build(date(2026, 8, 31))
+    build(date(2026, 8, 31), SLICE)
     receipt = _receipt_copy(tmp_path)
     render(receipt)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
@@ -489,7 +490,7 @@ def test_published_floats_are_rounded_but_the_data_hash_is_not(synthetic_raw, tm
     from cachereg.story.hashing import data_hash
 
     _fast_video(monkeypatch)
-    build(date(2026, 8, 31))
+    build(date(2026, 8, 31), SLICE)
     receipt = _receipt_copy(tmp_path)
     story, _, _ = build_story(folder_config.load(receipt), date(2026, 8, 31))
     result = render(receipt)
