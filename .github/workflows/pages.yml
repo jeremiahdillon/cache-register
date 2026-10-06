@@ -5,6 +5,7 @@ on:
   push:
     branches: [main]
     paths: ["receipts/*/receipt.yaml", "receipts/*/README.md", "config/**", "src/cachereg/site.py",
+            "src/cachereg/viz/brand.py", "assets/templates/**", "assets/fonts/**",
             ".github/workflows/pages.yml"]
   workflow_dispatch:
 

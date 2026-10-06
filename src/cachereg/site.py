@@ -3,6 +3,7 @@
 Only receipts get short links: the folder name *is* the link, so `receipts/<topic>/` is
 `cacheregister.dev/<topic>`, which redirects to that folder on GitHub. Explorations never get one.
 Retired or renamed links live on in config/link-aliases.yaml so URLs on posted images never break.
+The root is a splash page (assets/templates/site.html, also the 404) open to search and AI crawlers.
 """
 
 from __future__ import annotations
@@ -13,15 +14,18 @@ import re
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
+from string import Template
 
 import yaml
 
 from cachereg.core.paths import REPO_ROOT
-from cachereg.viz.brand import brand, color
+from cachereg.viz.brand import FONT_FILES, brand, color, font_path, register_fonts
 
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 MAX_SLUG = 32
 RESERVED = {"index", "404", "assets", "about", "api", "static"}
+TEMPLATES = REPO_ROOT / "assets" / "templates"
+SPLASH_FONTS = ("display", "body", "mono")  # the faces site.html declares
 
 
 @dataclass(frozen=True)
@@ -87,14 +91,91 @@ font:16px/1.5 system-ui,sans-serif}}a{{color:{color("signal")}}}</style>
 """
 
 
+def _template(name: str, raw: dict[str, str] | None = None, **values: str) -> str:
+    """Fill assets/templates/<name> with brand colours plus `values` (HTML-escaped) and `raw` (markup built here)."""
+    b = brand()
+    fields = {**b["colors"], "name": b["name"], "tagline": b["tagline"], **values}
+    escaped = {k: html.escape(str(v), quote=True) for k, v in fields.items() if isinstance(v, str)}
+    return Template((TEMPLATES / name).read_text(encoding="utf-8")).substitute(escaped, **(raw or {}))
+
+
+def _bare(url: str) -> str:
+    return re.sub(r"^https?://", "", url).rstrip("/")
+
+
+def _splash_page(kicker: str, heading: str, lede: str, page_title: str, indexable: bool = True) -> str:
+    b = brand()
+    home = html.escape(b["site_url"].rstrip("/") + "/", quote=True)
+    index_meta = f'<link rel="canonical" href="{home}">' if indexable else '<meta name="robots" content="noindex">'
+    return _template(
+        "site.html",
+        raw={"index_meta": index_meta},
+        kicker=kicker,
+        heading=heading,
+        lede=lede,
+        page_title=page_title,
+        description=" ".join(b["description"].split()),
+        site_url=b["site_url"].rstrip("/"),
+        repo_url=b["repo_url"],
+        repo_label=_bare(b["repo_url"]).removeprefix("github.com/"),
+        author_url=b["author_url"],
+        author_label=_bare(b["author_url"]),
+        **{f"font_{role}": FONT_FILES[role] for role in SPLASH_FONTS},
+    )
+
+
+def _write_assets(out: Path) -> None:
+    """Favicon, Open Graph card and the self-hosted fonts, under /assets (a reserved slug)."""
+    import vl_convert as vlc
+
+    assets = out / "assets"
+    (assets / "fonts").mkdir(parents=True)
+    for role in SPLASH_FONTS:
+        shutil.copyfile(font_path(role), assets / "fonts" / FONT_FILES[role])
+    favicon = _template("favicon.svg")
+    (assets / "favicon.svg").write_text(favicon, encoding="utf-8")
+    register_fonts()
+    (assets / "apple-touch-icon.png").write_bytes(vlc.svg_to_png(favicon, scale=180 / 64))
+    card = _template("og-card.svg", name_upper=brand()["name"].upper(), host_upper=brand()["short_link_host"].upper())
+    (assets / "og.png").write_bytes(vlc.svg_to_png(card, scale=1))
+
+
+def _crawler_files(out: Path) -> None:
+    """Open to every crawler, search and AI alike; the sitemap lists the one real page (short links redirect)."""
+    site = brand()["site_url"].rstrip("/")
+    (out / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {site}/sitemap.xml\n")
+    (out / "sitemap.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f"  <url><loc>{html.escape(site)}/</loc></url>\n"
+        "</urlset>\n"
+    )
+
+
 def build_site(out: Path, root: Path = REPO_ROOT) -> list[Link]:
-    repo = brand()["repo_url"].rstrip("/")
+    b = brand()
+    repo = b["repo_url"].rstrip("/")
     links = collect_links(root)
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
-    (out / "index.html").write_text(_redirect_page(repo, brand()["name"]))
-    (out / "404.html").write_text(_redirect_page(repo, "Not found"))
+    host = b["short_link_host"]
+    (out / "index.html").write_text(
+        _splash_page(kicker=host, heading=b["name"], lede=f"{b['tagline']}.", page_title=b["name"]),
+        encoding="utf-8",
+    )
+    (out / "404.html").write_text(
+        _splash_page(
+            kicker="Error 404",
+            heading="No sale",
+            lede="That link isn’t on the register.",
+            page_title=f"Not found · {b['name']}",
+            indexable=False,
+        ),
+        encoding="utf-8",
+    )
+    _write_assets(out)
+    _crawler_files(out)
     for link in links:
         page = out / link.slug / "index.html"
         page.parent.mkdir(parents=True)

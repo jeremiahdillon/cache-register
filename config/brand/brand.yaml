@@ -1,6 +1,9 @@
 # Swappable brand settings. Every renderer reads from here (docs/PLAN.md §9).
 name: Cache Register
 tagline: Receipts for the AI economy
+description: >-              # site meta / Open Graph description
+  Reproducible analysis of public AI-market data. Every published visual links back to the
+  exact code that made it.
 repo_url: https://github.com/jeremiahdillon/cache-register
 site_url: https://cacheregister.dev
 short_link_host: cacheregister.dev     # footer links: <host>/<receipt folder name>  (GitHub Pages)

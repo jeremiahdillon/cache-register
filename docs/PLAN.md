@@ -312,8 +312,9 @@ renders into a temp folder and compares a canonical data hash with the committed
 (identical / differs with reason / cannot reproduce exactly).
 
 **Short links:** `cachereg site` builds a static redirect site from `receipts/*/` that a Pages
-workflow publishes; renamed/retired topics stay alive via `config/link-aliases.yaml`. Later the
-same URL can become a landing page without changing any posted link.
+workflow publishes; renamed/retired topics stay alive via `config/link-aliases.yaml`. The root
+(and 404) is a branded splash page from `assets/templates/site.html`, open to search and AI crawlers
+(`robots.txt` allows all, `sitemap.xml` lists the root).
 
 **Learning across analyses**: `docs/playbook.md` captures reusable lessons (chart forms that
 worked, engagement notes, data pitfalls). Reusable code graduates into `cachereg.viz` / `cachereg.marts`
@@ -488,7 +489,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   line (sources, data date, repo link); ranking tables can use an itemized-receipt style.
   Series names: *Rung Up* (weekly moves), *Z-Report* (monthly summary), *Price Check*,
   *No Sale* (flops).
-- **Footer URL**: `cacheregister.dev` (redirects to the repo / analysis) once registered;
+- **Footer URL**: `cacheregister.dev` (splash page; `/<topic>` redirects to the analysis) once registered;
   `github.com/jeremiahdillon/cache-register` until then. Handle/URL in footer: `jeremiahdillon.com` + repo link.
 
 ---
