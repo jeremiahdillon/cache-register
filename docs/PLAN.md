@@ -518,6 +518,10 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   remains the automated route.
 - Backlog: embedded/subset fonts for `blog_html` (now Google Fonts with system fallback); vector
   `blog_svg` with chrome + footer (also enables a no-data blog version); `promote` command.
+- Small backlog (`sec_edgar`): `companies.VENDORS_FILE` (vendor-id check for `tickers.yaml`) reads
+  the shipped `vendors.yaml` even in tests, while `build.ENTITIES_DIR` is redirected to a synthetic
+  copy. Harmless today (the fixture copies the same file); fix by passing the entities dir in, not by
+  importing `build` from a source. Add a test that every `vendor` in `tickers.yaml` resolves.
 - LiteLLM lists many models late (most Chinese-lab models only from 2026-09-05/18): ~26% of top-50 tokens (10% of est. spend) are priced with a model's first later listing, flagged per row and reported. Re-check when Phase 3 entities land; Gemini 2.5 Flash preview `:thinking` variants stay unpriced (own price, not in LiteLLM).
 - **Analysis (a) "cost of intelligence": exploration built** 2026-10-06
   (`explore/2026-10-06-cost-of-intelligence/`, `docs/plans/2026-10-06-cost-of-intelligence.md`):
@@ -536,6 +540,9 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   (`explore/2026-10-06-capex-vs-price/`, `docs/plans/2026-10-06-capex-vs-price.md`): quarterly
   hyperscaler capex (`030_capex`) beside the cheapest price per ECI level (`040_eci_model_prices`,
   (a)'s series as a mart). Not promoted. When (a) is promoted, switch its main series to `040`.
+  Quarters, headline, sensitivity and price-setter shares were recomputed independently from the
+  SEC facts and mart extracts (no mismatches); a derived quarter absorbs any restatement of only
+  one of its two year-to-date legs (documented in `030_capex`).
   Since `040` reads LiteLLM and Epoch, a bare `cachereg build` refuses to run when LiteLLM has
   fetches and Epoch has none (a partly covered mart); fetch both, or scope with `--sources`.
 - **Epoch aliases left out on purpose** (`entities suggest --source epoch` still proposes them; drop
