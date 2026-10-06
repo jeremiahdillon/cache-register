@@ -121,9 +121,23 @@ def reproduce(
 
 
 @app.command()
-def entities(action: str = typer.Argument("check", help="check | suggest")) -> None:
-    """Report or suggest canonical model/vendor mappings."""
-    _not_yet("Phase 3")
+def entities(
+    action: str = typer.Argument("check", help="check | suggest"),
+    source: str = typer.Option("epoch", help="suggest: openrouter | epoch"),
+    write: bool = typer.Option(False, help="suggest: add the proposals to config/entities/models.yaml"),
+    min_share: float = typer.Option(0.0001, help="suggest --source openrouter: smallest token share considered"),
+) -> None:
+    """Suggest canonical model mappings from staged data (review before committing models.yaml)."""
+    if action != "suggest":
+        _not_yet("Phase 3")
+    from cachereg import entities as ent
+
+    if source == "openrouter":
+        ent.suggest_openrouter(min_share=min_share, write=write, echo=typer.echo)
+    elif source == "epoch":
+        ent.suggest_epoch(write=write, echo=typer.echo)
+    else:
+        raise typer.BadParameter(f"unknown source {source!r}; use openrouter or epoch")
 
 
 @app.command()

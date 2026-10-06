@@ -1,9 +1,10 @@
-# Canonical models (PLAN §4.3, subset used by 010_openrouter_usage). `model_id` is OpenRouter's
+# Canonical models (PLAN §4.3, the models the marts join on). `model_id` is OpenRouter's
 # current model id where one exists. `aliases.openrouter` lists rankings permaslugs (exact model
 # versions); `aliases.litellm` lists LiteLLM price keys in preference order: OpenRouter's own
 # listing first (`openrouter/<id>`), then the vendor's first-party key (dated before undated).
-# Bootstrapped with scripts/suggest_model_aliases.py, then reviewed; hand-added entries are
-# marked `# manual` with the reason. A permaslug may appear under one model only.
+# `aliases.epoch` lists Epoch model groups (the ECI `Model` name); one group per model.
+# Bootstrapped with `cachereg entities suggest --source openrouter|epoch`, then reviewed;
+# hand-added entries are marked `# manual` with the reason. An alias may appear under one model only.
 models:
   amazon/nova-lite-v1:
     aliases:
