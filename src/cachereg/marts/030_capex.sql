@@ -14,7 +14,9 @@
 --   * only 10-K / 10-Q facts (and amendments) filed on or before as_of; for each period the
 --     latest filing wins (a restatement replaces the earlier value from its filing date).
 --   * cash-flow facts are year-to-date: a quarter is a reported 3-month fact, else the
---     difference of two year-to-date facts with the same start (Q4 = FY − 9M).
+--     difference of two year-to-date facts with the same start (Q4 = FY − 9M). The two legs come
+--     from different filings (no filing holds both), each the latest filed on or before as_of, so
+--     an amendment that restates only one leg moves the whole restatement into that quarter.
 --   * a fiscal quarter belongs to the calendar quarter containing its midpoint.
 
 CREATE OR REPLACE TABLE edgar_quarterly AS

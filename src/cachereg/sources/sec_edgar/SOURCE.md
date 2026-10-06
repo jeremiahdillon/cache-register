@@ -38,7 +38,9 @@ Weekly: filings are quarterly.
 ## Known quirks and caveats
 - **Year-to-date flows.** Cash-flow facts are reported from the fiscal-year start (3, 6, 9, 12
   months); some companies also tag the discrete quarter, most do not. Q4 exists only as
-  FY − 9M. Mart `030_capex` derives quarters and records the method.
+  FY − 9M. Mart `030_capex` derives quarters and records the method. The two legs of a
+  difference come from different filings (a 10-Q never holds both); if an amendment restates only
+  one of them, the derived quarter absorbs the whole restatement.
 - **Fiscal years differ:** Microsoft ends in June, Oracle in May, NVIDIA in late January
   (52/53 weeks). `030_capex` maps a fiscal quarter to the calendar quarter of its midpoint.
 - **Tags change.** Capex is `PaymentsToAcquirePropertyPlantAndEquipment` for most companies;

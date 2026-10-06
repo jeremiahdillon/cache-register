@@ -467,3 +467,20 @@ def test_eci_model_price_mart_blends_cheapest_key_and_smooths(epoch_raw):
     assert rows[date(2026, 7, 28)]["usd_per_mtok"] == pytest.approx(2.7)
     assert rows[date(2026, 7, 29)]["usd_per_mtok"] == pytest.approx(2.4)
     assert not _rows("SELECT * FROM eci_model_price_daily WHERE model_group = 'Model Eight'")  # unmapped
+
+
+def test_eci_model_price_mart_backfills_before_the_first_listing(epoch_raw, synthetic_entities):
+    import yaml
+
+    f = synthetic_entities / "models.yaml"
+    models = yaml.safe_load(f.read_text())
+    models["models"]["moonshotai/kimi-9"]["aliases"]["epoch"] = ["Model Eight"]  # first listed mid-window
+    f.write_text(yaml.safe_dump(models))
+    build(date(2026, 8, 10), ["litellm_prices", "epoch_benchmarks"])
+    rows = _rows("SELECT * FROM eci_model_price_daily WHERE model_group = 'Model Eight' ORDER BY day")
+    back = [r for r in rows if r["basis"] == "backfilled"]
+    listed = [r for r in rows if r["basis"] == "listed"]
+    # released 2025-06-01, first listed 2026-07-15 (0.8 × 0.6 + 0.2 × 2.5 = 0.98 per million)
+    assert (back[0]["day"], back[-1]["day"]) == (date(2025, 6, 1), date(2026, 7, 14))
+    assert listed[0]["day"] == date(2026, 7, 15)
+    assert all(r["usd_per_mtok"] == r["usd_per_mtok_daily"] == pytest.approx(0.98) for r in back)

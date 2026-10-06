@@ -185,7 +185,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
     p0 = p.filter(pl.col("cal_quarter") == q0)["median"][0]
     p1 = p.filter(pl.col("cal_quarter") == q1)["median"][0]
     title = (
-        f"Hyperscaler capex grew {r['capex_growth']:.1f}× in five quarters; "
+        f"Hyperscaler capex grew {r['capex_growth']:.1f}× from {qlabel(q0)} to {qlabel(q1)}; "
         f"{names[hero]} tokens got {r[hero]:.0f}× cheaper"
     )
     subtitle = (

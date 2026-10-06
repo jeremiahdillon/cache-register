@@ -7,8 +7,8 @@ While the largest cloud companies' capital spending climbs, how fast is the pric
 model capability falling over the same quarters? (PLAN §10, starter analysis (b).) The two series are
 shown side by side; the analysis makes no causal claim.
 
-## Finding (SEC filings to 2026-09-25, Epoch vintage of 2026-10-06, prices to 2026-10-05)
-- **Hyperscaler capex grew 2.3× in five quarters.** Quarterly cash capex of Microsoft, Alphabet, Amazon,
+## Finding (capex filings to 2026-09-11, Epoch vintage of 2026-10-06, prices to 2026-10-05)
+- **Hyperscaler capex grew 2.3× from 2025 Q1 to 2026 Q2.** Quarterly cash capex of Microsoft, Alphabet, Amazon,
   Meta and Oracle rose from $78bn (2025 Q1) to $182bn (2026 Q2), every quarter higher than the last
   ($97bn, $106bn, $131bn, $148bn in between). 2026 Q3 is incomplete: only Oracle has reported ($28.5bn).
 - **Over the same quarters, o1-level capability (ECI ≥ 140) got 11× cheaper per token**: quarterly
@@ -24,7 +24,8 @@ shown side by side; the analysis makes no causal claim.
 ## Method
 - **Capex** (`030_capex`): cash paid for property and equipment from 10-K/10-Q XBRL facts, selected by
   filing date on or before as-of (restatements replace earlier values from their filing date).
-  Year-to-date facts are differenced into quarters (Q4 = full year − nine months), and each fiscal
+  Year-to-date facts are differenced into quarters (Q4 = full year − nine months; a restatement of
+  only one year-to-date figure lands entirely in that quarter), and each fiscal
   quarter is placed in the calendar quarter containing its midpoint (Oracle's June–August quarter is
   Q3). The group is `hyperscaler` in `config/entities/tickers.yaml`. Only quarters in which all five
   have reported are compared or drawn.
