@@ -529,7 +529,9 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   ECI of OpenRouter paid tokens vs the frontier, lag in months, near-frontier share. Not promoted.
   Note: `or_model_daily` leaves `model_id` null on `:free` permaslugs (resolve via the paid alias).
 - Analysis (a)/(d) unmapped top-50 models: GPT-5.4 Pro, GPT-5.2 Pro (vendor key only,
-  no OpenRouter listing) and Muse Spark (no LiteLLM key).
+  no OpenRouter listing) and Muse Spark (no LiteLLM key). **Small follow-up:** add both Pro models
+  by hand (`# manual`, vendor LiteLLM key, Epoch alias) → `eci_top50` 48/50 (96%), meeting the
+  Phase 3 target. Changes neither (a) nor (d) (never cheapest; not on OpenRouter).
 - **Epoch aliases left out on purpose** (`entities suggest --source epoch` still proposes them; drop
   them if `--write` is used again): `Qwen2.5-72B` → `qwen/qwen2.5-vl-72b-instruct` (Epoch's group
   includes the VL model), and new model `openai/gpt-3.5-turbo-0613` (its keys mix the 16k variant).
