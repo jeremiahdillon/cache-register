@@ -451,3 +451,19 @@ def test_stage_models_requires_the_subset_model_column(data_env):
     _write("epoch_models", mf.FILE, _zip(m), datetime(2026, 9, 1, 6, tzinfo=UTC))
     with pytest.raises(ValueError, match="frontier_ai_models.csv has no column 'Model'"):
         ms.stage()
+
+
+def test_eci_model_price_mart_blends_cheapest_key_and_smooths(epoch_raw):
+    report = build(date(2026, 8, 10), ["litellm_prices", "epoch_benchmarks"])
+    assert "040_eci_model_prices" in report.marts_built
+    rows = {r["day"]: r for r in _rows("SELECT * FROM eci_model_price_daily WHERE model_group = 'Model Nine'")}
+    assert min(rows) == date(2026, 1, 1) and max(rows) == date(2026, 8, 10)  # release → as_of
+    assert {r["basis"] for r in rows.values()} == {"listed"}
+    # 0.8 × input + 0.2 × output per million: 3.0 on the vendor key, 2.4 once the cheaper key appears
+    assert rows[date(2026, 7, 14)]["usd_per_mtok_daily"] == pytest.approx(3.0)
+    assert rows[date(2026, 7, 15)]["usd_per_mtok_daily"] == pytest.approx(2.4)
+    # trailing 28-day median: still 3.0 the first day, the midpoint at 14/14 days, then 2.4
+    assert rows[date(2026, 7, 15)]["usd_per_mtok"] == pytest.approx(3.0)
+    assert rows[date(2026, 7, 28)]["usd_per_mtok"] == pytest.approx(2.7)
+    assert rows[date(2026, 7, 29)]["usd_per_mtok"] == pytest.approx(2.4)
+    assert not _rows("SELECT * FROM eci_model_price_daily WHERE model_group = 'Model Eight'")  # unmapped
