@@ -285,6 +285,32 @@ def _key_matches(key: str, base: str) -> bool:
     return k == base or k.endswith("/" + base)
 
 
+DATED = re.compile(r"-(\d{8}|\d{4}-\d{2}-\d{2}|\d{2}-\d{4}|\d{4})$")
+
+
+def _undated(name: str) -> str:
+    """Comparison form for review-only candidates: no date suffix, "." -> "-", lowercase."""
+    return DATED.sub("", name.lower()).replace(".", "-")
+
+
+# LiteLLM key prefixes that are the vendor's own API (as in VENDOR_PREFIX), by OpenRouter author.
+OWN_PREFIXES = {author: [p for p in prefixes if p] for author, prefixes in VENDOR_PREFIX.items()}
+
+
+def _own_keys(author: str, keys: list[str], bases: list[str]) -> list[str]:
+    """`openrouter/<author>/…` and the vendor's own keys (bare or its LiteLLM prefix); no resellers."""
+    out = []
+    for k in keys:
+        lk = k.lower()
+        if lk.startswith(f"openrouter/{author}/"):
+            out.append(k)
+        elif lk in bases and "" in VENDOR_PREFIX.get(author, []):
+            out.append(k)
+        elif any(lk == f"{p}{b}" for p in OWN_PREFIXES.get(author, []) for b in bases):
+            out.append(k)
+    return out
+
+
 def _litellm_order(keys: list[str]) -> list[str]:
     """openrouter/ keys first, then the rest; dated before undated within each group."""
     return sorted(keys, key=lambda k: (0 if k.startswith("openrouter/") else 1, 0 if DATE_SUFFIX.search(k) else 1, k))
@@ -298,13 +324,19 @@ class EpochSuggestion:
 
 
 def suggest_epoch(write: bool = False, echo=print) -> EpochSuggestion:
-    """For each Epoch model group not yet mapped (ECI order, then groups with scores):
+    """For each ECI model group not yet mapped, in ECI order (groups without ECI are left alone: many
+    are raw version names or moving aliases, and the coverage measure is defined on ECI):
     E1  a version's base equals, or is the last path part of, a LiteLLM key already listed under
         exactly one canonical model → add the group to that model's `epoch` aliases;
     E2  no canonical model owns a matching key, but an `openrouter/<author>/<name>` key matches →
-        a new model `<author>/<name>` with the matching (non-free) keys as its `litellm` list;
-    else unresolved (ambiguous, or no LiteLLM key), queued to data/entities/unresolved_epoch.csv.
-    A canonical model receives at most one Epoch group: a second claimant is unresolved.
+        a new model `<author>/<name>`; its `litellm` list is that key plus the vendor's own matching
+        keys (bare or the vendor's LiteLLM prefix), never resellers' or free-tier keys;
+    E3  (review only, never written) the group's undated name matches exactly one canonical model
+        whose id or openrouter alias is the same once dates and "."/"-" are ignored; printed with
+        the candidate for a human to confirm (PLAN §4.3: dates are never stripped automatically);
+    else unresolved (ambiguous, a host-run group such as `chutes/…`, or no LiteLLM key), queued to
+    data/entities/unresolved_epoch.csv. A canonical model receives at most one Epoch group: a
+    second claimant is unresolved.
     """
     vint = pl.read_parquet(staged_dir("epoch_benchmarks") / "vintages.parquet")
     if vint.is_empty():
@@ -312,9 +344,14 @@ def suggest_epoch(write: bool = False, echo=print) -> EpochSuggestion:
     vid = vint.sort("fetched_at")["vintage_id"][-1]
     models = pl.read_parquet(staged_dir("epoch_benchmarks") / "models.parquet").filter(pl.col("vintage_id") == vid)
     eci = pl.read_parquet(staged_dir("epoch_benchmarks") / "eci.parquet").filter(pl.col("vintage_id") == vid)
-    scores = pl.read_parquet(staged_dir("epoch_benchmarks") / "scores.parquet").filter(pl.col("vintage_id") == vid)
     _, keys, free = _litellm_keys()
     existing = load_models()
+
+    by_undated: dict[str, set[str]] = {}
+    for mid, m in existing.items():
+        names = [mid, *(m or {}).get("aliases", {}).get("openrouter", [])]
+        for n in names:
+            by_undated.setdefault(_undated(n.split(":", 1)[0].rsplit("/", 1)[-1]), set()).add(mid)
 
     owner: dict[str, str] = {}
     for mid, m in existing.items():
@@ -329,10 +366,7 @@ def suggest_epoch(write: bool = False, echo=print) -> EpochSuggestion:
             versions.setdefault(g, []).append(v)
     eci_rows = eci.sort("eci", descending=True, nulls_last=True)
     order = [(g, e, o) for g, e, o in eci_rows.select("model_group", "eci", "organization").iter_rows()]
-    scored = set(models.join(scores, on=["vintage_id", "model_version"])["model_group"].drop_nulls().to_list())
     in_eci = {g for g, _, _ in order}
-    org = dict(models.select("model_group", "organization").unique("model_group").iter_rows())
-    order += [(g, None, org.get(g)) for g in sorted(scored - in_eci)]
     rank = {g: i for i, (g, _, _) in enumerate(order, start=1)}
 
     out = EpochSuggestion()
@@ -356,6 +390,9 @@ def suggest_epoch(write: bool = False, echo=print) -> EpochSuggestion:
                 }
             )
 
+        if "/" in group:  # a group named after one host's run, not a model
+            unresolved("host-run group")
+            continue
         if len(owners) == 1:
             mid = owners[0]
             if mid in claimed:
@@ -370,14 +407,19 @@ def suggest_epoch(write: bool = False, echo=print) -> EpochSuggestion:
             echo(f"  ambiguous {label}  ->  {', '.join(owners)}")
         else:
             paid = [k for k in matched if k not in free]
+            review = sorted({mid for b in bases for mid in by_undated.get(_undated(b), set())} - claimed)
             ids = sorted(
                 {k.removeprefix("openrouter/") for k in paid if k.startswith("openrouter/") and k.count("/") == 2}
             )
-            if len(ids) == 1 and ids[0] not in existing and ids[0] not in claimed and ids[0] not in out.new_models:
+            if len(review) == 1:
+                unresolved("review: same model if the date is ignored", review)
+                echo(f"  E3 review {label}  ->  {review[0]}  (confirm by hand; versions: {', '.join(bases)})")
+            elif len(ids) == 1 and ids[0] not in existing and ids[0] not in claimed and ids[0] not in out.new_models:
                 mid = ids[0]
                 claimed.add(mid)
-                out.new_models[mid] = {"aliases": {"litellm": _litellm_order(paid), "epoch": [group]}}
-                echo(f"  E2 new    {label}  ->  {mid}  litellm: {', '.join(_litellm_order(paid))}")
+                own = _litellm_order(_own_keys(mid.split("/", 1)[0], paid, bases))
+                out.new_models[mid] = {"aliases": {"litellm": own, "epoch": [group]}}
+                echo(f"  E2 new    {label}  ->  {mid}  litellm: {', '.join(own)}")
             elif ids:
                 unresolved("new model id ambiguous or taken", ids)
                 echo(f"  review    {label}  ->  {', '.join(ids)} (new id ambiguous or already used)")
@@ -385,7 +427,7 @@ def suggest_epoch(write: bool = False, echo=print) -> EpochSuggestion:
                 unresolved("no LiteLLM key" if not matched else "no openrouter/ key for a new id", matched)
 
     total = len(in_eci)
-    top = [g for g, _, _ in order[:50] if g in in_eci]
+    top = [g for g, _, _ in order[:50]]
 
     def share(groups, extra):
         hit = sum(1 for g in groups if g in mapped or g in extra)
