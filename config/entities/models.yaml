@@ -45,6 +45,8 @@ models:
       litellm:
       - openrouter/anthropic/claude-3-5-haiku-20241022
       - claude-3-5-haiku-20241022
+      epoch:
+      - Claude 3.5 Haiku
   anthropic/claude-3-7-sonnet-20250219:
     aliases:
       openrouter:
@@ -53,18 +55,24 @@ models:
       - anthropic/claude-3-7-sonnet-20250219:beta
       litellm:
       - claude-3-7-sonnet-20250219
+      epoch:
+      - Claude 3.7 Sonnet
   anthropic/claude-3-haiku:
     aliases:
       openrouter:
       - anthropic/claude-3-haiku
       litellm:
       - openrouter/anthropic/claude-3-haiku
+      epoch:  # manual: Anthropic's dated id claude-3-haiku-20240307
+      - Claude 3 Haiku
   anthropic/claude-3-opus:
     aliases:
       openrouter:
       - anthropic/claude-3-opus
       litellm:
       - openrouter/anthropic/claude-3-opus
+      epoch:  # manual: Anthropic's dated id claude-3-opus-20240229
+      - Claude 3 Opus
   anthropic/claude-3-sonnet:
     aliases:
       openrouter:
@@ -72,6 +80,8 @@ models:
       - anthropic/claude-3-sonnet:beta
       litellm:
       - openrouter/anthropic/claude-3-sonnet
+      epoch:  # manual: Anthropic's dated id claude-3-sonnet-20240229
+      - Claude 3 Sonnet
   anthropic/claude-3.5-sonnet:
     aliases:
       openrouter:
@@ -86,6 +96,8 @@ models:
       - anthropic/claude-3.5-sonnet-20240620
       litellm:
       - claude-3-5-sonnet-20240620
+      epoch:
+      - Claude 3.5 Sonnet
   anthropic/claude-fable-5:
     aliases:
       openrouter:
@@ -93,6 +105,8 @@ models:
       litellm:
       - openrouter/anthropic/claude-fable-5
       - claude-fable-5
+      epoch:
+      - Claude Fable 5
   anthropic/claude-fable-5.1:
     aliases:
       openrouter:
@@ -100,6 +114,8 @@ models:
       litellm:
       - openrouter/anthropic/claude-fable-5.1
       - claude-fable-5-1
+      epoch:
+      - Claude Fable 5.1
   anthropic/claude-haiku-4.5:
     aliases:
       openrouter:
@@ -108,6 +124,8 @@ models:
       - openrouter/anthropic/claude-haiku-4.5
       - claude-haiku-4-5-20251001
       - claude-haiku-4-5
+      epoch:
+      - Claude Haiku 4.5
   anthropic/claude-opus-4:  # manual: Anthropic's dated keys for the same release (OpenRouter's permaslug date differs)
     aliases:
       openrouter:
@@ -115,6 +133,8 @@ models:
       litellm:
       - claude-opus-4-20250514
       - claude-4-opus-20250514
+      epoch:
+      - Claude Opus 4
   anthropic/claude-opus-4.1:
     aliases:
       openrouter:
@@ -123,6 +143,8 @@ models:
       - openrouter/anthropic/claude-opus-4.1
       - claude-opus-4-1-20250805
       - claude-opus-4-1
+      epoch:
+      - Claude Opus 4.1
   anthropic/claude-opus-4.5:
     aliases:
       openrouter:
@@ -130,6 +152,8 @@ models:
       litellm:
       - openrouter/anthropic/claude-opus-4.5
       - claude-opus-4-5
+      epoch:  # manual: Anthropic's dated id claude-opus-4-5-20251101
+      - Claude Opus 4.5
   anthropic/claude-opus-4.6:
     aliases:
       openrouter:
@@ -138,6 +162,8 @@ models:
       - openrouter/anthropic/claude-opus-4.6
       - claude-opus-4-6-20260205
       - claude-opus-4-6
+      epoch:
+      - Claude Opus 4.6
   anthropic/claude-opus-4.7:
     aliases:
       openrouter:
@@ -146,6 +172,8 @@ models:
       - openrouter/anthropic/claude-opus-4.7
       - claude-opus-4-7-20260416
       - claude-opus-4-7
+      epoch:
+      - Claude Opus 4.7
   anthropic/claude-opus-4.8:
     aliases:
       openrouter:
@@ -153,6 +181,8 @@ models:
       litellm:
       - openrouter/anthropic/claude-opus-4.8
       - claude-opus-4-8
+      epoch:
+      - Claude Opus 4.8
   anthropic/claude-opus-5:
     aliases:
       openrouter:
@@ -160,6 +190,8 @@ models:
       litellm:
       - openrouter/anthropic/claude-opus-5
       - claude-opus-5
+      epoch:
+      - Claude Opus 5
   anthropic/claude-opus-5.5:
     aliases:
       openrouter:
@@ -167,12 +199,16 @@ models:
       litellm:
       - openrouter/anthropic/claude-opus-5.5
       - claude-opus-5-5
+      epoch:
+      - Claude Opus 5.5
   anthropic/claude-sonnet-4:
     aliases:
       openrouter:
       - anthropic/claude-4-sonnet-20250522
       litellm:
       - openrouter/anthropic/claude-sonnet-4
+      epoch:  # manual: Anthropic's dated id claude-sonnet-4-20250514
+      - Claude Sonnet 4
   anthropic/claude-sonnet-4.5:
     aliases:
       openrouter:
@@ -181,6 +217,8 @@ models:
       - openrouter/anthropic/claude-sonnet-4.5
       - claude-sonnet-4-5-20250929
       - claude-sonnet-4-5
+      epoch:
+      - Claude Sonnet 4.5
   anthropic/claude-sonnet-4.6:
     aliases:
       openrouter:
@@ -188,6 +226,8 @@ models:
       litellm:
       - openrouter/anthropic/claude-sonnet-4.6
       - claude-sonnet-4-6
+      epoch:
+      - Claude Sonnet 4.6
   anthropic/claude-sonnet-5:
     aliases:
       openrouter:
@@ -195,6 +235,8 @@ models:
       litellm:
       - openrouter/anthropic/claude-sonnet-5
       - claude-sonnet-5
+      epoch:
+      - Claude Sonnet 5
   anthropic/claude-sonnet-5.5:
     aliases:
       openrouter:
@@ -202,6 +244,8 @@ models:
       litellm:
       - openrouter/anthropic/claude-sonnet-5.5
       - claude-sonnet-5-5
+      epoch:
+      - Claude Sonnet 5.5
   arcee-ai/trinity-large-thinking:
     aliases:
       openrouter:
@@ -267,12 +311,16 @@ models:
       litellm:
       - openrouter/deepseek/deepseek-r1
       - deepseek/deepseek-r1
+      epoch:
+      - DeepSeek-R1
   deepseek/deepseek-r1-0528:
     aliases:
       openrouter:
       - deepseek/deepseek-r1-0528
       litellm:
       - openrouter/deepseek/deepseek-r1-0528
+      epoch:
+      - DeepSeek-R1 (May 2025)
   deepseek/deepseek-r1-distill-llama-70b:
     aliases:
       openrouter:
@@ -292,12 +340,16 @@ models:
       litellm:
       - openrouter/deepseek/deepseek-v3.2
       - deepseek/deepseek-v3.2
+      epoch:  # manual: ambiguous with deepseek/deepseek-chat, a moving alias
+      - DeepSeek-V3.2
   deepseek/deepseek-v3.2-exp:
     aliases:
       openrouter:
       - deepseek/deepseek-v3.2-exp
       litellm:
       - openrouter/deepseek/deepseek-v3.2-exp
+      epoch:
+      - DeepSeek-V3.2-Exp
   deepseek/deepseek-v4-flash:
     aliases:
       openrouter:
@@ -305,12 +357,16 @@ models:
       litellm:
       - openrouter/deepseek/deepseek-v4-flash
       - deepseek/deepseek-v4-flash
+      epoch:
+      - DeepSeek-V4-Flash
   deepseek/deepseek-v4-flash-0731:
     aliases:
       openrouter:
       - deepseek/deepseek-v4-flash-20260731
       litellm:
       - openrouter/deepseek/deepseek-v4-flash-0731
+      epoch:
+      - DeepSeek V4 Flash 0731
   deepseek/deepseek-v4-flash-vision-exp:
     aliases:
       openrouter:
@@ -325,18 +381,24 @@ models:
       litellm:
       - openrouter/deepseek/deepseek-v4-pro
       - deepseek/deepseek-v4-pro
+      epoch:
+      - DeepSeek-V4-Pro
   deepseek/deepseek-v4-pro-0813:
     aliases:
       openrouter:
       - deepseek/deepseek-v4-pro-20260813
       litellm:
       - openrouter/deepseek/deepseek-v4-pro-0813
+      epoch:
+      - DeepSeek V4 Pro 0813
   deepseek/deepseek-v4.1-flash:
     aliases:
       openrouter:
       - deepseek/deepseek-v4.1-flash-20260910
       litellm:
       - openrouter/deepseek/deepseek-v4.1-flash
+      epoch:
+      - DeepSeek V4.1 Flash
   google/gemini-2.0-flash-001:
     aliases:
       openrouter:
@@ -344,6 +406,8 @@ models:
       litellm:
       - openrouter/google/gemini-2.0-flash-001
       - gemini/gemini-2.0-flash-001
+      epoch:
+      - Gemini 2.0 Flash (Feb 2025)
   google/gemini-2.0-flash-lite-001:
     aliases:
       openrouter:
@@ -357,6 +421,8 @@ models:
       litellm:
       - openrouter/google/gemini-2.5-flash
       - gemini/gemini-2.5-flash
+      epoch:
+      - Gemini 2.5 Flash (Jun 2025)
   google/gemini-2.5-flash-lite:
     aliases:
       openrouter:
@@ -370,6 +436,8 @@ models:
       - google/gemini-2.5-flash-lite-preview-06-17
       litellm:
       - gemini/gemini-2.5-flash-lite-preview-06-17
+      epoch:
+      - Gemini 2.5 Flash-Lite (Jun 2025)
   google/gemini-2.5-flash-lite-preview-09-2025:
     aliases:
       openrouter:
@@ -382,18 +450,24 @@ models:
       - google/gemini-2.5-flash-preview-04-17
       litellm:
       - gemini/gemini-2.5-flash-preview-04-17
+      epoch:
+      - Gemini 2.5 Flash (Apr 2025)
   google/gemini-2.5-flash-preview-05-20:
     aliases:
       openrouter:
       - google/gemini-2.5-flash-preview-05-20
       litellm:
       - gemini/gemini-2.5-flash-preview-05-20
+      epoch:
+      - Gemini 2.5 Flash (May 2025)
   google/gemini-2.5-flash-preview-09-2025:
     aliases:
       openrouter:
       - google/gemini-2.5-flash-preview-09-2025
       litellm:
       - gemini/gemini-2.5-flash-preview-09-2025
+      epoch:
+      - Gemini 2.5 Flash (Sep 2025)
   google/gemini-2.5-pro:
     aliases:
       openrouter:
@@ -401,6 +475,8 @@ models:
       litellm:
       - openrouter/google/gemini-2.5-pro
       - gemini/gemini-2.5-pro
+      epoch:  # manual: the GA release; ambiguous with -preview
+      - Gemini 2.5 Pro (Jun 2025)
   google/gemini-2.5-pro-exp-03-25:
     aliases:
       openrouter:
@@ -420,6 +496,8 @@ models:
       - google/gemini-2.5-pro-preview-03-25
       litellm:
       - gemini/gemini-2.5-pro-preview-03-25
+      epoch:  # manual: the paid preview; ambiguous with the free -exp
+      - Gemini 2.5 Pro (Mar 2025)
   google/gemini-3-flash-preview:
     aliases:
       openrouter:
@@ -427,6 +505,8 @@ models:
       litellm:
       - openrouter/google/gemini-3-flash-preview
       - gemini/gemini-3-flash-preview
+      epoch:
+      - Gemini 3 Flash
   google/gemini-3-pro-preview:
     aliases:
       openrouter:
@@ -434,6 +514,8 @@ models:
       litellm:
       - openrouter/google/gemini-3-pro-preview
       - gemini/gemini-3-pro-preview
+      epoch:
+      - Gemini 3 Pro
   google/gemini-3.1-flash-lite:
     aliases:
       openrouter:
@@ -441,6 +523,8 @@ models:
       litellm:
       - openrouter/google/gemini-3.1-flash-lite
       - gemini/gemini-3.1-flash-lite
+      epoch:
+      - Gemini 3.1 Flash-Lite
   google/gemini-3.1-flash-lite-preview:
     aliases:
       openrouter:
@@ -455,6 +539,8 @@ models:
       litellm:
       - openrouter/google/gemini-3.1-pro-preview
       - gemini/gemini-3.1-pro-preview
+      epoch:  # manual: ambiguous with the -customtools variant
+      - Gemini 3.1 Pro
   google/gemini-3.1-pro-preview-customtools:
     aliases:
       openrouter:
@@ -469,6 +555,8 @@ models:
       litellm:
       - openrouter/google/gemini-3.5-flash
       - gemini/gemini-3.5-flash
+      epoch:
+      - Gemini 3.5 Flash
   google/gemini-3.5-flash-lite:
     aliases:
       openrouter:
@@ -476,6 +564,8 @@ models:
       litellm:
       - openrouter/google/gemini-3.5-flash-lite
       - gemini/gemini-3.5-flash-lite
+      epoch:
+      - Gemini 3.5 Flash-Lite
   google/gemini-3.6-flash:
     aliases:
       openrouter:
@@ -483,6 +573,8 @@ models:
       litellm:
       - openrouter/google/gemini-3.6-flash
       - gemini/gemini-3.6-flash
+      epoch:
+      - Gemini 3.6 Flash
   google/gemini-3.7-flash:
     aliases:
       openrouter:
@@ -490,6 +582,8 @@ models:
       litellm:
       - openrouter/google/gemini-3.7-flash
       - gemini/gemini-3.7-flash
+      epoch:
+      - Gemini 3.7 Flash
   google/gemini-3.8-flash:
     aliases:
       openrouter:
@@ -497,6 +591,8 @@ models:
       litellm:
       - openrouter/google/gemini-3.8-flash
       - gemini/gemini-3.8-flash
+      epoch:
+      - Gemini 3.8 Flash
   google/gemini-embedding-001:
     aliases:
       openrouter:
@@ -527,36 +623,48 @@ models:
       - google/gemma-2-27b-it
       litellm:
       - openrouter/google/gemma-2-27b-it
+      epoch:
+      - Gemma 2 27B
   google/gemma-3-12b-it:
     aliases:
       openrouter:
       - google/gemma-3-12b-it
       litellm:
       - openrouter/google/gemma-3-12b-it
+      epoch:
+      - Gemma 3 12B
   google/gemma-3-27b-it:
     aliases:
       openrouter:
       - google/gemma-3-27b-it
       litellm:
       - openrouter/google/gemma-3-27b-it
+      epoch:
+      - Gemma 3 27B
   google/gemma-3-4b-it:
     aliases:
       openrouter:
       - google/gemma-3-4b-it
       litellm:
       - openrouter/google/gemma-3-4b-it
+      epoch:
+      - Gemma 3 4B
   google/gemma-4-26b-a4b-it:
     aliases:
       openrouter:
       - google/gemma-4-26b-a4b-it-20260403
       litellm:
       - openrouter/google/gemma-4-26b-a4b-it
+      epoch:
+      - Gemma 4 26B A4B
   google/gemma-4-31b-it:
     aliases:
       openrouter:
       - google/gemma-4-31b-it-20260402
       litellm:
       - openrouter/google/gemma-4-31b-it
+      epoch:
+      - Gemma 4 31B IT
   gryphe/mythomax-l2-13b:
     aliases:
       openrouter:
@@ -575,18 +683,24 @@ models:
       - meta-llama/llama-3.1-70b-instruct
       litellm:
       - openrouter/meta-llama/llama-3.1-70b-instruct
+      epoch:
+      - Llama 3.1-70B
   meta-llama/llama-3.1-8b-instruct:
     aliases:
       openrouter:
       - meta-llama/llama-3.1-8b-instruct
       litellm:
       - openrouter/meta-llama/llama-3.1-8b-instruct
+      epoch:
+      - Llama 3.1-8B
   meta-llama/llama-3.2-1b-instruct:
     aliases:
       openrouter:
       - meta-llama/llama-3.2-1b-instruct
       litellm:
       - openrouter/meta-llama/llama-3.2-1b-instruct
+      epoch:
+      - Llama 3.2 1B
   meta-llama/llama-3.2-3b-instruct:
     aliases:
       openrouter:
@@ -599,30 +713,40 @@ models:
       - meta-llama/llama-3.3-70b-instruct
       litellm:
       - openrouter/meta-llama/llama-3.3-70b-instruct
+      epoch:
+      - Llama 3.3 70B
   meta-llama/llama-4-maverick:
     aliases:
       openrouter:
       - meta-llama/llama-4-maverick-17b-128e-instruct
       litellm:
       - openrouter/meta-llama/llama-4-maverick
+      epoch:  # manual: Meta's id llama-4-maverick-17b-128e-instruct
+      - Llama 4 Maverick
   meta-llama/llama-4-scout:
     aliases:
       openrouter:
       - meta-llama/llama-4-scout-17b-16e-instruct
       litellm:
       - openrouter/meta-llama/llama-4-scout
+      epoch:  # manual: Meta's id llama-4-scout-17b-16e-instruct
+      - Llama 4 Scout
   meta/muse-spark-1.1:
     aliases:
       openrouter:
       - meta/muse-spark-1.1-20260709
       litellm:
       - openrouter/meta/muse-spark-1.1
+      epoch:
+      - Muse Spark 1.1
   meta/muse-spark-1.2:
     aliases:
       openrouter:
       - meta/muse-spark-1.2-20260805
       litellm:
       - openrouter/meta/muse-spark-1.2
+      epoch:
+      - Muse Spark 1.2
   meta/muse-spark-1.2-contributor:
     aliases:
       openrouter:
@@ -635,6 +759,8 @@ models:
       - meta/muse-spark-1.3-20260902
       litellm:
       - openrouter/meta/muse-spark-1.3
+      epoch:
+      - Muse Spark 1.3
   meta/muse-spark-1.3-contributor:
     aliases:
       openrouter:
@@ -647,6 +773,8 @@ models:
       - microsoft/phi-4
       litellm:
       - openrouter/microsoft/phi-4
+      epoch:
+      - Phi-4
   microsoft/wizardlm-2-8x22b:
     aliases:
       openrouter:
@@ -677,18 +805,24 @@ models:
       - minimax/minimax-m2.5-20260211
       litellm:
       - openrouter/minimax/minimax-m2.5
+      epoch:
+      - MiniMax-M2.5
   minimax/minimax-m2.7:
     aliases:
       openrouter:
       - minimax/minimax-m2.7-20260318
       litellm:
       - openrouter/minimax/minimax-m2.7
+      epoch:
+      - MiniMax-M2.7
   minimax/minimax-m3:
     aliases:
       openrouter:
       - minimax/minimax-m3-20260531
       litellm:
       - openrouter/minimax/minimax-m3
+      epoch:
+      - MiniMax-M3
   mistralai/codestral-2508:
     aliases:
       openrouter:
@@ -735,12 +869,16 @@ models:
       litellm:
       - openrouter/mistralai/mistral-large-2407
       - mistral/mistral-large-2407
+      epoch:
+      - Mistral Large 2 (Jul 2024)
   mistralai/mistral-large-2411:
     aliases:
       openrouter:
       - mistralai/mistral-large-2411
       litellm:
       - mistral/mistral-large-2411
+      epoch:
+      - Mistral Large 2 (Nov 2024)
   mistralai/mistral-large-2512:
     aliases:
       openrouter:
@@ -816,6 +954,8 @@ models:
       litellm:
       - openrouter/moonshotai/kimi-k2-thinking
       - moonshot/kimi-k2-thinking
+      epoch:
+      - Kimi K2 Thinking
   moonshotai/kimi-k2.5:
     aliases:
       openrouter:
@@ -823,6 +963,8 @@ models:
       litellm:
       - openrouter/moonshotai/kimi-k2.5
       - moonshot/kimi-k2.5
+      epoch:
+      - Kimi K2.5
   moonshotai/kimi-k2.6:
     aliases:
       openrouter:
@@ -830,6 +972,8 @@ models:
       litellm:
       - openrouter/moonshotai/kimi-k2.6
       - moonshot/kimi-k2.6
+      epoch:
+      - Kimi K2.6
   moonshotai/kimi-k2.7-code:
     aliases:
       openrouter:
@@ -837,6 +981,8 @@ models:
       litellm:
       - openrouter/moonshotai/kimi-k2.7-code
       - moonshot/kimi-k2.7-code
+      epoch:
+      - Kimi K2.7 Code
   moonshotai/kimi-k3:
     aliases:
       openrouter:
@@ -844,6 +990,8 @@ models:
       litellm:
       - openrouter/moonshotai/kimi-k3
       - moonshot/kimi-k3
+      epoch:
+      - Kimi K3
   nousresearch/hermes-3-llama-3.1-405b:
     aliases:
       openrouter:
@@ -881,6 +1029,8 @@ models:
       litellm:
       - openrouter/openai/gpt-3.5-turbo
       - gpt-3.5-turbo
+      epoch:  # manual: gpt-3.5-turbo-0125, OpenRouter's gpt-3.5-turbo
+      - GPT-3.5 Turbo (Jan 2024)
   openai/gpt-4.1:
     aliases:
       openrouter:
@@ -890,6 +1040,8 @@ models:
       - openrouter/openai/gpt-4.1-2025-04-14
       - gpt-4.1-2025-04-14
       - gpt-4.1
+      epoch:
+      - GPT-4.1
   openai/gpt-4.1-mini:
     aliases:
       openrouter:
@@ -899,6 +1051,8 @@ models:
       - openrouter/openai/gpt-4.1-mini-2025-04-14
       - gpt-4.1-mini-2025-04-14
       - gpt-4.1-mini
+      epoch:
+      - GPT-4.1 mini
   openai/gpt-4.1-nano:
     aliases:
       openrouter:
@@ -908,6 +1062,8 @@ models:
       - openrouter/openai/gpt-4.1-nano-2025-04-14
       - gpt-4.1-nano-2025-04-14
       - gpt-4.1-nano
+      epoch:
+      - GPT-4.1 nano
   openai/gpt-4o:
     aliases:
       openrouter:
@@ -922,6 +1078,8 @@ models:
       litellm:
       - openrouter/openai/gpt-4o-2024-08-06
       - gpt-4o-2024-08-06
+      epoch:
+      - GPT-4o (Aug 2024)
   openai/gpt-4o-2024-11-20:
     aliases:
       openrouter:
@@ -929,6 +1087,8 @@ models:
       litellm:
       - openrouter/openai/gpt-4o-2024-11-20
       - gpt-4o-2024-11-20
+      epoch:
+      - GPT-4o (Nov 2024)
   openai/gpt-4o-mini:
     aliases:
       openrouter:
@@ -943,6 +1103,8 @@ models:
       litellm:
       - openrouter/openai/gpt-4o-mini-2024-07-18
       - gpt-4o-mini-2024-07-18
+      epoch:
+      - GPT-4o mini
   openai/gpt-5:
     aliases:
       openrouter:
@@ -951,6 +1113,8 @@ models:
       - openrouter/openai/gpt-5
       - gpt-5-2025-08-07
       - gpt-5
+      epoch:  # manual: ambiguous with openai/gpt-5-chat; Epoch's version gpt-5-2025-08-07 is the reasoning model
+      - GPT-5
   openai/gpt-5-chat:
     aliases:
       openrouter:
@@ -973,6 +1137,8 @@ models:
       - openrouter/openai/gpt-5-mini
       - gpt-5-mini-2025-08-07
       - gpt-5-mini
+      epoch:
+      - GPT-5 mini
   openai/gpt-5-nano:
     aliases:
       openrouter:
@@ -981,6 +1147,8 @@ models:
       - openrouter/openai/gpt-5-nano
       - gpt-5-nano-2025-08-07
       - gpt-5-nano
+      epoch:
+      - GPT-5 nano
   openai/gpt-5.1:
     aliases:
       openrouter:
@@ -988,6 +1156,8 @@ models:
       litellm:
       - openrouter/openai/gpt-5.1
       - gpt-5.1
+      epoch:  # manual: Epoch's dated API id gpt-5.1-2025-11-13
+      - GPT-5.1
   openai/gpt-5.1-codex:
     aliases:
       openrouter:
@@ -1002,6 +1172,8 @@ models:
       litellm:
       - openrouter/openai/gpt-5.2
       - gpt-5.2
+      epoch:  # manual: Epoch's dated API id gpt-5.2-2025-12-11
+      - GPT-5.2
   openai/gpt-5.2-codex:
     aliases:
       openrouter:
@@ -1016,6 +1188,8 @@ models:
       litellm:
       - openrouter/openai/gpt-5.3-codex
       - gpt-5.3-codex
+      epoch:
+      - GPT-5.3 Codex
   openai/gpt-5.4:
     aliases:
       openrouter:
@@ -1023,6 +1197,8 @@ models:
       litellm:
       - openrouter/openai/gpt-5.4
       - gpt-5.4
+      epoch:  # manual: Epoch's dated API id gpt-5.4-2026-03-05
+      - GPT-5.4
   openai/gpt-5.4-mini:
     aliases:
       openrouter:
@@ -1030,6 +1206,8 @@ models:
       litellm:
       - openrouter/openai/gpt-5.4-mini
       - gpt-5.4-mini
+      epoch:  # manual: Epoch's dated API id
+      - GPT-5.4 Mini
   openai/gpt-5.4-nano:
     aliases:
       openrouter:
@@ -1037,6 +1215,8 @@ models:
       litellm:
       - openrouter/openai/gpt-5.4-nano
       - gpt-5.4-nano
+      epoch:  # manual: Epoch's dated API id
+      - GPT-5.4 Nano
   openai/gpt-5.5:
     aliases:
       openrouter:
@@ -1044,6 +1224,8 @@ models:
       litellm:
       - openrouter/openai/gpt-5.5
       - gpt-5.5
+      epoch:
+      - GPT-5.5
   openai/gpt-5.6-luna:
     aliases:
       openrouter:
@@ -1051,6 +1233,8 @@ models:
       litellm:
       - openrouter/openai/gpt-5.6-luna
       - gpt-5.6-luna
+      epoch:
+      - GPT-5.6 Luna
   openai/gpt-5.6-luna-pro:
     aliases:
       openrouter:
@@ -1064,6 +1248,8 @@ models:
       litellm:
       - openrouter/openai/gpt-5.6-sol
       - gpt-5.6-sol
+      epoch:
+      - GPT-5.6 Sol
   openai/gpt-5.6-sol-pro:
     aliases:
       openrouter:
@@ -1077,6 +1263,8 @@ models:
       litellm:
       - openrouter/openai/gpt-5.6-terra
       - gpt-5.6-terra
+      epoch:
+      - GPT-5.6 Terra
   openai/gpt-6-astra:
     aliases:
       openrouter:
@@ -1084,6 +1272,8 @@ models:
       litellm:
       - openrouter/openai/gpt-6-astra
       - gpt-6-astra
+      epoch:
+      - GPT-6 Astra
   openai/gpt-6-luna:
     aliases:
       openrouter:
@@ -1091,6 +1281,8 @@ models:
       litellm:
       - openrouter/openai/gpt-6-luna
       - gpt-6-luna
+      epoch:
+      - GPT-6 Luna
   openai/gpt-6-luna-pro:
     aliases:
       openrouter:
@@ -1104,6 +1296,8 @@ models:
       litellm:
       - openrouter/openai/gpt-6-sol
       - gpt-6-sol
+      epoch:
+      - GPT-6 Sol
   openai/gpt-6.1-sol:
     aliases:
       openrouter:
@@ -1111,18 +1305,24 @@ models:
       litellm:
       - openrouter/openai/gpt-6.1-sol
       - gpt-6.1-sol
+      epoch:
+      - GPT-6.1 Sol
   openai/gpt-oss-120b:
     aliases:
       openrouter:
       - openai/gpt-oss-120b
       litellm:
       - openrouter/openai/gpt-oss-120b
+      epoch:
+      - gpt-oss-120b
   openai/gpt-oss-20b:
     aliases:
       openrouter:
       - openai/gpt-oss-20b
       litellm:
       - openrouter/openai/gpt-oss-20b
+      epoch:
+      - gpt-oss-20b
   openai/gpt-oss-safeguard-20b:
     aliases:
       openrouter:
@@ -1137,6 +1337,8 @@ models:
       - openrouter/openai/o1
       - o1-2024-12-17
       - o1
+      epoch:
+      - o1
   openai/o1-mini:
     aliases:
       openrouter:
@@ -1144,12 +1346,16 @@ models:
       litellm:
       - openrouter/openai/o1-mini
       - o1-mini
+      epoch:  # manual: OpenAI's dated id o1-mini-2024-09-12
+      - o1-mini
   openai/o1-preview:
     aliases:
       openrouter:
       - openai/o1-preview
       litellm:
       - openrouter/openai/o1-preview
+      - o1-preview
+      epoch:  # manual: OpenAI's dated id o1-preview-2024-09-12
       - o1-preview
   openai/o3:
     aliases:
@@ -1159,6 +1365,8 @@ models:
       - openrouter/openai/o3
       - o3-2025-04-16
       - o3
+      epoch:
+      - o3
   openai/o3-mini:
     aliases:
       openrouter:
@@ -1166,6 +1374,8 @@ models:
       litellm:
       - openrouter/openai/o3-mini
       - o3-mini-2025-01-31
+      - o3-mini
+      epoch:
       - o3-mini
   openai/o3-mini-high:
     aliases:
@@ -1180,6 +1390,8 @@ models:
       litellm:
       - openrouter/openai/o4-mini
       - o4-mini-2025-04-16
+      - o4-mini
+      epoch:
       - o4-mini
   openai/o4-mini-high:
     aliases:
@@ -1255,12 +1467,16 @@ models:
       - qwen/qwen3-14b-04-28
       litellm:
       - openrouter/qwen/qwen3-14b
+      epoch:
+      - Qwen3-14B
   qwen/qwen3-235b-a22b:
     aliases:
       openrouter:
       - qwen/qwen3-235b-a22b-04-28
       litellm:
       - openrouter/qwen/qwen3-235b-a22b
+      epoch:
+      - Qwen3-235B-A22B
   qwen/qwen3-235b-a22b-2507:
     aliases:
       openrouter:
@@ -1273,6 +1489,8 @@ models:
       - qwen/qwen3-235b-a22b-thinking-2507
       litellm:
       - openrouter/qwen/qwen3-235b-a22b-thinking-2507
+      epoch:
+      - Qwen3-235B-A22B-Thinking (Jul 2025)
   qwen/qwen3-30b-a3b:
     aliases:
       openrouter:
@@ -1280,24 +1498,32 @@ models:
       litellm:
       - openrouter/qwen/qwen3-30b-a3b
       - dashscope/qwen3-30b-a3b
+      epoch:
+      - Qwen3-30B-A3B
   qwen/qwen3-30b-a3b-instruct-2507:
     aliases:
       openrouter:
       - qwen/qwen3-30b-a3b-instruct-2507
       litellm:
       - openrouter/qwen/qwen3-30b-a3b-instruct-2507
+      epoch:
+      - Qwen3-30B-A3B-Instruct (Jul 2025)
   qwen/qwen3-32b:
     aliases:
       openrouter:
       - qwen/qwen3-32b-04-28
       litellm:
       - openrouter/qwen/qwen3-32b
+      epoch:
+      - Qwen3-32B
   qwen/qwen3-8b:
     aliases:
       openrouter:
       - qwen/qwen3-8b-04-28
       litellm:
       - openrouter/qwen/qwen3-8b
+      epoch:
+      - Qwen3-8B
   qwen/qwen3-coder:
     aliases:
       openrouter:
@@ -1370,54 +1596,72 @@ models:
       - qwen/qwen3.5-35b-a3b-20260224
       litellm:
       - openrouter/qwen/qwen3.5-35b-a3b
+      epoch:
+      - Qwen3.5-35B-A3B
   qwen/qwen3.5-397b-a17b:
     aliases:
       openrouter:
       - qwen/qwen3.5-397b-a17b-20260216
       litellm:
       - openrouter/qwen/qwen3.5-397b-a17b
+      epoch:
+      - Qwen3.5 397B-A17B
   qwen/qwen3.5-9b:
     aliases:
       openrouter:
       - qwen/qwen3.5-9b-20260310
       litellm:
       - openrouter/qwen/qwen3.5-9b
+      epoch:
+      - Qwen3.5-9B
   qwen/qwen3.5-flash-02-23:
     aliases:
       openrouter:
       - qwen/qwen3.5-flash-20260224
       litellm:
       - openrouter/qwen/qwen3.5-flash-02-23
+      epoch:  # manual: Alibaba's hosted qwen3.5-flash
+      - Qwen 3.5 Flash (hosted 35B-A3B)
   qwen/qwen3.5-plus-02-15:
     aliases:
       openrouter:
       - qwen/qwen3.5-plus-20260216
       litellm:
       - openrouter/qwen/qwen3.5-plus-02-15
+      epoch:  # manual: Alibaba's hosted qwen3.5-plus
+      - Qwen 3.5 Plus (hosted 397B-A17B)
   qwen/qwen3.6-35b-a3b:
     aliases:
       openrouter:
       - qwen/qwen3.6-35b-a3b-20260415
       litellm:
       - openrouter/qwen/qwen3.6-35b-a3b
+      epoch:
+      - Qwen 3.6 35B-A3B
   qwen/qwen3.6-flash:
     aliases:
       openrouter:
       - qwen/qwen3.6-flash
       litellm:
       - openrouter/qwen/qwen3.6-flash
+      epoch:
+      - Qwen 3.6 Flash
   qwen/qwen3.6-plus:
     aliases:
       openrouter:
       - qwen/qwen3.6-plus-04-02
       litellm:
       - openrouter/qwen/qwen3.6-plus
+      epoch:
+      - Qwen 3.6 Plus
   qwen/qwen3.7-flash:
     aliases:
       openrouter:
       - qwen/qwen3.7-flash-20260727
       litellm:
       - openrouter/qwen/qwen3.7-flash
+      epoch:
+      - Qwen3.7 Flash
   qwen/qwen3.7-max:
     aliases:
       openrouter:
@@ -1425,6 +1669,8 @@ models:
       litellm:
       - openrouter/qwen/qwen3.7-max
       - dashscope/qwen3.7-max
+      epoch:
+      - Qwen3.7-Max
   qwen/qwen3.7-plus:
     aliases:
       openrouter:
@@ -1432,12 +1678,16 @@ models:
       litellm:
       - openrouter/qwen/qwen3.7-plus
       - dashscope/qwen3.7-plus
+      epoch:
+      - Qwen3.7-Plus
   qwen/qwen3.8-27b:
     aliases:
       openrouter:
       - qwen/qwen3.8-27b-20260814
       litellm:
       - openrouter/qwen/qwen3.8-27b
+      epoch:
+      - Qwen 3.8 27B
   qwen/qwen3.8-flash:
     aliases:
       openrouter:
@@ -1452,12 +1702,16 @@ models:
       litellm:
       - openrouter/qwen/qwen3.8-max
       - dashscope/qwen3.8-max
+      epoch:
+      - Qwen 3.8 Max
   qwen/qwen3.8-max-0902:
     aliases:
       openrouter:
       - qwen/qwen3.8-max-20260902
       litellm:
       - openrouter/qwen/qwen3.8-max-0902
+      epoch:
+      - Qwen3.8 Max (0902)
   sao10k/l3.1-euryale-70b:
     aliases:
       openrouter:
@@ -1536,18 +1790,24 @@ models:
       - x-ai/grok-2-1212
       litellm:
       - xai/grok-2-1212
+      epoch:
+      - Grok-2 (Dec 2024)
   x-ai/grok-3-beta:
     aliases:
       openrouter:
       - x-ai/grok-3-beta
       litellm:
       - xai/grok-3-beta
+      epoch:
+      - Grok 3
   x-ai/grok-3-mini:
     aliases:
       openrouter:
       - x-ai/grok-3-mini
       litellm:
       - xai/grok-3-mini
+      epoch:  # manual: ambiguous with grok-3-mini-beta (the same model's earlier id)
+      - Grok-3 mini
   x-ai/grok-3-mini-beta:
     aliases:
       openrouter:
@@ -1560,6 +1820,8 @@ models:
       - x-ai/grok-4-07-09
       litellm:
       - xai/grok-4-0709
+      epoch:
+      - Grok 4
   x-ai/grok-4-fast:
     aliases:
       openrouter:
@@ -1567,6 +1829,8 @@ models:
       litellm:
       - xai/grok-4-fast-reasoning
       - xai/grok-4-fast-non-reasoning
+      epoch:  # manual: no LiteLLM key in Epoch's version list
+      - Grok 4 Fast
   x-ai/grok-4.1-fast:
     aliases:
       openrouter:
@@ -1580,6 +1844,8 @@ models:
       litellm:
       - openrouter/x-ai/grok-4.20
       - xai/grok-4.20
+      epoch:  # manual: Epoch versions grok-4-20, grok-4.20-0309-reasoning
+      - Grok 4.20
   x-ai/grok-4.3:
     aliases:
       openrouter:
@@ -1587,6 +1853,8 @@ models:
       litellm:
       - openrouter/x-ai/grok-4.3
       - xai/grok-4.3
+      epoch:
+      - Grok 4.3 Beta
   x-ai/grok-4.5:
     aliases:
       openrouter:
@@ -1594,6 +1862,8 @@ models:
       litellm:
       - openrouter/x-ai/grok-4.5
       - xai/grok-4.5
+      epoch:
+      - Grok 4.5
   x-ai/grok-4.6:
     aliases:
       openrouter:
@@ -1601,6 +1871,8 @@ models:
       litellm:
       - openrouter/x-ai/grok-4.6
       - xai/grok-4.6
+      epoch:
+      - Grok 4.6
   x-ai/grok-4.7:
     aliases:
       openrouter:
@@ -1608,6 +1880,8 @@ models:
       litellm:
       - openrouter/x-ai/grok-4.7
       - xai/grok-4.7
+      epoch:
+      - Grok 4.7
   x-ai/grok-code-fast-1:
     aliases:
       openrouter:
@@ -1681,6 +1955,8 @@ models:
       litellm:
       - openrouter/z-ai/glm-4.7
       - zai/glm-4.7
+      epoch:
+      - GLM-4.7
   z-ai/glm-4.7-flash:
     aliases:
       openrouter:
@@ -1694,6 +1970,8 @@ models:
       litellm:
       - openrouter/z-ai/glm-5
       - zai/glm-5
+      epoch:
+      - GLM-5
   z-ai/glm-5-turbo:
     aliases:
       openrouter:
@@ -1707,6 +1985,8 @@ models:
       litellm:
       - openrouter/z-ai/glm-5.1
       - zai/glm-5.1
+      epoch:
+      - GLM-5.1
   z-ai/glm-5.2:
     aliases:
       openrouter:
@@ -1714,6 +1994,8 @@ models:
       litellm:
       - openrouter/z-ai/glm-5.2
       - zai/glm-5.2
+      epoch:
+      - GLM-5.2
   z-ai/glm-5.3:
     aliases:
       openrouter:
@@ -1721,6 +2003,8 @@ models:
       litellm:
       - openrouter/z-ai/glm-5.3
       - zai/glm-5.3
+      epoch:
+      - GLM-5.3
   z-ai/glm-5.3-flash:
     aliases:
       openrouter:
@@ -1728,6 +2012,8 @@ models:
       litellm:
       - openrouter/z-ai/glm-5.3-flash
       - zai/glm-5.3-flash
+      epoch:
+      - GLM-5.3-Flash
   z-ai/glm-5.3-flashx:
     aliases:
       openrouter:
@@ -1740,3 +2026,75 @@ models:
       - z-ai/glm-5v-turbo-20260401
       litellm:
       - openrouter/z-ai/glm-5v-turbo
+  google/gemini-2.5-pro-preview-05-06:
+    aliases:
+      litellm:
+      - openrouter/google/gemini-2.5-pro-preview-05-06
+      - gemini/gemini-2.5-pro-preview-05-06
+      epoch:
+      - Gemini 2.5 Pro (May 2025)
+  meta-llama/llama-2-13b-chat:
+    aliases:
+      litellm:
+      - openrouter/meta-llama/llama-2-13b-chat
+      epoch:
+      - Llama 2-13B
+  meta-llama/llama-2-70b-chat:
+    aliases:
+      litellm:
+      - openrouter/meta-llama/llama-2-70b-chat
+      epoch:
+      - Llama 2-70B
+  openai/gpt-4-turbo:
+    aliases:
+      litellm:
+      - openrouter/openai/gpt-4-turbo
+      - gpt-4-0125-preview
+      - gpt-4-1106-preview
+      - gpt-4-turbo
+      epoch:
+      - GPT-4 Turbo (Nov 2023)
+  openai/gpt-4o-2024-05-13:
+    aliases:
+      litellm:
+      - openrouter/openai/gpt-4o-2024-05-13
+      - gpt-4o-2024-05-13
+      epoch:
+      - GPT-4o (May 2024)
+  openai/gpt-5.5-pro:
+    aliases:
+      litellm:
+      - openrouter/openai/gpt-5.5-pro
+      - gpt-5.5-pro
+      epoch:
+      - GPT-5.5 Pro
+  qwen/qwen3-30b-a3b-thinking-2507:
+    aliases:
+      litellm:
+      - openrouter/qwen/qwen3-30b-a3b-thinking-2507
+      epoch:
+      - Qwen3-30B-A3B-Thinking (Jul 2025)
+  qwen/qwen3.6-27b:
+    aliases:
+      litellm:
+      - openrouter/qwen/qwen3.6-27b
+      epoch:
+      - Qwen3.6 27B
+  qwen/qwen3.6-max-preview:
+    aliases:
+      litellm:
+      - openrouter/qwen/qwen3.6-max-preview
+      epoch:
+      - Qwen 3.6 Max (Preview)
+  thinkingmachines/inkling:
+    aliases:
+      litellm:
+      - openrouter/thinkingmachines/inkling
+      epoch:
+      - Inkling
+  thinkingmachines/inkling-small:
+    aliases:
+      litellm:
+      - openrouter/thinkingmachines/inkling-small
+      epoch:
+      - Inkling-Small
