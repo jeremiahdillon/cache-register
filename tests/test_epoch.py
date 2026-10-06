@@ -10,8 +10,10 @@ from datetime import UTC, date, datetime
 
 import pytest
 
+from cachereg.build import build
 from cachereg.core.http import Response
 from cachereg.core.store import RawFetch
+from cachereg.core.warehouse import connect, query
 from cachereg.sources import _epoch_zip
 from cachereg.sources.epoch_benchmarks import fetch as bf
 from cachereg.sources.epoch_benchmarks import stage as bs
@@ -316,3 +318,87 @@ def test_stage_models(data_env):
     )
     assert m["Model Year"]["publication_date_precision"] == "year" and m["Model Year"]["parameters"] is None
     assert out["_rejected_rows"]["rejected"][0] == 1
+
+
+# ---- marts -------------------------------------------------------------------------------------
+
+
+@pytest.fixture
+def epoch_raw(synthetic_raw, synthetic_entities):
+    """The OpenRouter/LiteLLM synthetic fixture plus two Epoch vintages and `epoch` aliases."""
+    import yaml
+
+    f = synthetic_entities / "models.yaml"
+    models = yaml.safe_load(f.read_text())
+    models["models"]["openai/gpt-9"]["aliases"]["epoch"] = ["Model Nine"]
+    f.write_text(yaml.safe_dump(models))
+    _write("epoch_benchmarks", bf.FILE, bench_zip(), datetime(2026, 8, 1, 6, tzinfo=UTC))
+    _write(
+        "epoch_benchmarks",
+        bf.FILE,
+        bench_zip({"Model Nine": 155.0, "Model Eight": 121.0}),
+        datetime(2026, 8, 20, 6, tzinfo=UTC),
+    )
+    _write("epoch_models", mf.FILE, models_zip(), datetime(2026, 8, 1, 6, tzinfo=UTC))
+    return synthetic_raw
+
+
+def _rows(sql: str) -> list[dict]:
+    con = connect()
+    try:
+        return query(con, sql).to_dicts()
+    finally:
+        con.close()
+
+
+def test_eci_mart_reads_one_vintage_and_joins_prices(epoch_raw):
+    report = build(date(2026, 8, 10), ["openrouter_rankings", "litellm_prices", "epoch_benchmarks"])
+    assert "020_epoch_capabilities" in report.marts_built
+    eci = {r["model_group"]: r for r in _rows("SELECT * FROM epoch_eci")}
+    assert eci["Model Nine"]["eci"] == 150.0  # the Aug 1 vintage, not Aug 20's re-fit
+    assert "Model Ten" not in eci  # released after as_of
+    assert eci["Model Nine"]["model_id"] == "openai/gpt-9" and eci["Model Eight"]["model_id"] is None
+    cov = {r["measure"]: r for r in _rows("SELECT * FROM epoch_alias_coverage")}
+    assert (cov["eci_models"]["models"], cov["eci_models"]["mapped"]) == (2, 1)
+    # Analysis (a)'s join path: ECI → canonical model → LiteLLM price keys → staged prices.
+    priced = _rows(
+        """SELECT e.model_group, p.key, p.input_usd_per_token FROM epoch_eci e
+           JOIN dim_model_alias l ON l.source = 'litellm' AND l.model_id = e.model_id
+           JOIN stg_litellm_prices_prices p ON p.key = l.alias"""
+    )
+    assert {r["model_group"] for r in priced} == {"Model Nine"} and priced[0]["input_usd_per_token"] > 0
+    scores = _rows("SELECT * FROM epoch_scores WHERE benchmark = 'Bench A' ORDER BY row")
+    assert [r["row"] for r in scores] == [1, 2]  # null-version row excluded; repeated runs kept
+    assert all(r["model_id"] == "openai/gpt-9" and r["in_eci"] for r in scores)
+
+    build(date(2026, 8, 25), ["epoch_benchmarks"])
+    assert {r["model_group"]: r["eci"] for r in _rows("SELECT * FROM epoch_eci")}["Model Nine"] == 155.0
+
+
+def test_eci_mart_falls_back_to_the_earliest_vintage(epoch_raw):
+    report = build(date(2026, 7, 1), ["epoch_benchmarks"])
+    assert report.vintages["epoch_benchmarks"]["vintage_after_as_of"] is True
+    eci = {r["model_group"]: r["eci"] for r in _rows("SELECT * FROM epoch_eci")}
+    assert eci == {"Model Nine": 150.0, "Model Eight": 120.0}  # the earliest vintage, flagged
+
+
+@pytest.mark.parametrize(("as_of", "visible"), [(date(2026, 6, 30), False), (date(2026, 12, 31), True)])
+def test_models_mart_partial_dates_count_from_the_end_of_their_period(epoch_raw, as_of, visible):
+    build(as_of, ["epoch_models"])
+    names = {r["model"] for r in _rows("SELECT model FROM epoch_ai_models")}
+    assert ("Model Year" in names) is visible
+    assert "Model Eight" in names  # 2025-06 (month precision)
+
+
+def test_models_mart_month_precision_counts_from_the_last_day(epoch_raw):
+    build(date(2025, 6, 29), ["epoch_models"])
+    assert "Model Eight" not in {r["model"] for r in _rows("SELECT model FROM epoch_ai_models")}
+    build(date(2025, 6, 30), ["epoch_models"])
+    assert "Model Eight" in {r["model"] for r in _rows("SELECT model FROM epoch_ai_models")}
+
+
+def test_models_mart_day_precision_and_alias(epoch_raw):
+    build(date(2026, 9, 29), ["epoch_models"])
+    assert "Model Late" not in {r["model"] for r in _rows("SELECT model FROM epoch_ai_models")}
+    nine = _rows("SELECT * FROM epoch_ai_models WHERE model = 'Model Nine'")[0]
+    assert nine["model_id"] == "openai/gpt-9"
