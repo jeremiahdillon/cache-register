@@ -1,0 +1,8 @@
+# Exploration config (same schema as receipt.yaml; no short link — explorations never get one).
+title: Does quality win usage?
+sources: [openrouter_rankings, epoch_benchmarks, litellm_prices]
+config:
+  near_points: 3      # "near the frontier" = within this many ECI points of the best model on OpenRouter
+  summary_weeks: 13   # headline numbers are medians over this many trailing complete weeks
+visuals:
+  - {name: gap, chart: gap, targets: [x_png, linkedin_png, blog_html]}
