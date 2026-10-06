@@ -4,9 +4,13 @@
 usage, model prices, benchmarks, business adoption and the capital behind it — turned into
 charts and videos. Every published visual links back to the exact code that made it.
 
-> **Status:** early. One source family (OpenRouter) and one receipt,
-> [`receipts/openrouter-wallet-share`](receipts/openrouter-wallet-share/). The plan is in
-> [`docs/PLAN.md`](docs/PLAN.md).
+> **Status:** early. Two source families (OpenRouter, LiteLLM prices) and two receipts. The plan is
+> in [`docs/PLAN.md`](docs/PLAN.md).
+>
+> | Receipt | Short link | Finding |
+> |---|---|---|
+> | [`openrouter-wallet-share`](receipts/openrouter-wallet-share/) | [cacheregister.dev/openrouter-wallet-share](https://cacheregister.dev/openrouter-wallet-share) | Who gets paid on OpenRouter: weekly share of estimated spend by model developer. |
+> | [`open-middle`](receipts/open-middle/) | [cacheregister.dev/open-middle](https://cacheregister.dev/open-middle) | Mid-size open-weight models (100B–1T parameters) accounted for 74% of OpenRouter's token growth from Mar 30 to Oct 4, 2026. |
 
 ## How it works
 

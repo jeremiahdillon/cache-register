@@ -26,6 +26,12 @@ MAX_SLUG = 32
 RESERVED = {"index", "404", "assets", "about", "api", "static"}
 TEMPLATES = REPO_ROOT / "assets" / "templates"
 SPLASH_FONTS = ("display", "body", "mono")  # the faces site.html declares
+# Splash intro timing (ms): cursor alone, then one keystroke per letter (a fixed, slightly uneven
+# rhythm so it reads as typed), a pause, then the rest of the page fades in.
+TYPE_START = 1100
+KEYSTROKES = (95, 70, 110, 80, 125, 75, 90, 105)
+WORD_GAP = 180
+REVEAL_PAUSE = 650
 
 
 @dataclass(frozen=True)
@@ -103,13 +109,29 @@ def _bare(url: str) -> str:
     return re.sub(r"^https?://", "", url).rstrip("/")
 
 
+def _typed(text: str) -> tuple[str, int]:
+    """Wrap each character in a span that appears at its keystroke time; returns (markup, typing ms)."""
+    spans, t = [], 0
+    for i, ch in enumerate(text):
+        t += WORD_GAP if ch == " " else KEYSTROKES[i % len(KEYSTROKES)]
+        spans.append(f'<span class="k" style="--t:{TYPE_START + t}ms">{html.escape(ch)}</span>')
+    return "".join(spans), t
+
+
 def _splash_page(kicker: str, heading: str, lede: str, page_title: str, indexable: bool = True) -> str:
     b = brand()
     home = html.escape(b["site_url"].rstrip("/") + "/", quote=True)
     index_meta = f'<link rel="canonical" href="{home}">' if indexable else '<meta name="robots" content="noindex">'
+    heading_typed, typing_ms = _typed(heading)
     return _template(
         "site.html",
-        raw={"index_meta": index_meta},
+        raw={
+            "index_meta": index_meta,
+            "heading_typed": heading_typed,
+            "type_start_ms": str(TYPE_START),
+            "typing_ms": str(typing_ms),
+            "reveal_ms": str(TYPE_START + typing_ms + REVEAL_PAUSE),
+        },
         kicker=kicker,
         heading=heading,
         lede=lede,

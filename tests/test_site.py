@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -72,7 +73,11 @@ def test_splash_and_404_read_brand_and_keep_redirects(tmp_path):
     build_site(out, tmp_path)
 
     index = (out / "index.html").read_text(encoding="utf-8")
-    assert f"<h1>{b['name']}<" in index and f"{b['tagline']}." in index
+    assert f'<h1 aria-label="{b["name"]}">' in index and f"{b['tagline']}." in index
+    typed = re.findall(r'<span class="k" style="--t:(\d+)ms">([^<])</span>', index)
+    assert "".join(ch for _, ch in typed) == b["name"]  # the title types in, letter by letter
+    times = [int(t) for t, _ in typed]
+    assert times == sorted(times) and f"reveal .8s ease-out {times[-1] + 650}ms" in index
     assert f'href="{b["repo_url"]}"' in index and b["colors"]["canvas"] in index and b["colors"]["signal"] in index
     for tag in ('name="description"', 'property="og:title"', 'property="og:image"', 'rel="icon"'):
         assert tag in index
