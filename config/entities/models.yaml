@@ -89,6 +89,8 @@ models:
       - anthropic/claude-3.5-sonnet:beta
       litellm:
       - openrouter/anthropic/claude-3.5-sonnet
+      epoch:  # manual: OpenRouter's undated id is the 20241022 version
+      - Claude 3.5 Sonnet (October 2024)
   anthropic/claude-3.5-sonnet-20240620:
     aliases:
       openrouter:
@@ -292,18 +294,24 @@ models:
       litellm:
       - openrouter/deepseek/deepseek-chat
       - deepseek/deepseek-chat
+      epoch:  # manual: original V3 (Dec 2024); OpenRouter's deepseek-chat-v3
+      - DeepSeek-V3
   deepseek/deepseek-chat-v3-0324:
     aliases:
       openrouter:
       - deepseek/deepseek-chat-v3-0324
       litellm:
       - openrouter/deepseek/deepseek-chat-v3-0324
+      epoch:  # manual: Epoch version deepseek-v3-0324
+      - DeepSeek-V3 (Mar 2025)
   deepseek/deepseek-chat-v3.1:
     aliases:
       openrouter:
       - deepseek/deepseek-chat-v3.1
       litellm:
       - openrouter/deepseek/deepseek-chat-v3.1
+      epoch:  # manual: Epoch version deepseek-v3.1
+      - DeepSeek-V3.1
   deepseek/deepseek-r1:
     aliases:
       openrouter:
@@ -399,6 +407,18 @@ models:
       - openrouter/deepseek/deepseek-v4.1-flash
       epoch:
       - DeepSeek V4.1 Flash
+  google/gemini-1.5-flash-002:  # manual: Epoch-only model (price keys, no OpenRouter rankings alias)
+    aliases:
+      litellm:
+      - gemini/gemini-1.5-flash-002
+      epoch:
+      - Gemini 1.5 Flash (Sep 2024)
+  google/gemini-1.5-pro-002:  # manual: Epoch-only model (price keys, no OpenRouter rankings alias)
+    aliases:
+      litellm:
+      - gemini/gemini-1.5-pro-002
+      epoch:
+      - Gemini 1.5 Pro (Sept 2024)
   google/gemini-2.0-flash-001:
     aliases:
       openrouter:
@@ -842,6 +862,18 @@ models:
       - mistralai/devstral-small-2507
       litellm:
       - mistral/devstral-small-2507
+  mistralai/magistral-small-2506:  # manual: Epoch-only model (price keys, no OpenRouter rankings alias)
+    aliases:
+      litellm:
+      - mistral/magistral-small-2506
+      epoch:
+      - Magistral Small 1.0
+  mistralai/magistral-small-2509:  # manual: Epoch-only model (price keys, no OpenRouter rankings alias)
+    aliases:
+      litellm:
+      - mistral/magistral-small-1-2-2509
+      epoch:
+      - Magistral Small 1.2
   mistralai/ministral-14b-2512:
     aliases:
       openrouter:
@@ -886,6 +918,13 @@ models:
       litellm:
       - openrouter/mistralai/mistral-large-2512
       - mistral/mistral-large-2512
+  mistralai/mistral-medium-3:  # manual: Epoch-only model (price keys, no OpenRouter rankings alias)
+    aliases:
+      litellm:
+      - openrouter/mistralai/mistral-medium-3
+      - mistral/mistral-medium-2505
+      epoch:
+      - Mistral Medium 3
   mistralai/mistral-medium-3-5:
     aliases:
       openrouter:
@@ -893,6 +932,8 @@ models:
       litellm:
       - openrouter/mistralai/mistral-medium-3-5
       - mistral/mistral-medium-3-5
+      epoch:  # manual: same model
+      - Mistral Medium 3.5
   mistralai/mistral-nemo:
     aliases:
       openrouter:
@@ -923,6 +964,8 @@ models:
       - mistralai/mistral-small-3.2-24b-instruct-2506
       litellm:
       - openrouter/mistralai/mistral-small-3.2-24b-instruct
+      epoch:  # manual: instruct 2506
+      - Mistral Small 3.2
   mistralai/mistral-tiny:
     aliases:
       openrouter:
@@ -941,6 +984,8 @@ models:
       - moonshotai/kimi-k2
       litellm:
       - openrouter/moonshotai/kimi-k2
+      epoch:  # manual: the July 2025 release; 0905 is separate
+      - Kimi K2 (Jul 2025)
   moonshotai/kimi-k2-0905:
     aliases:
       openrouter:
@@ -1016,6 +1061,8 @@ models:
       - nvidia/nemotron-3-ultra-550b-a55b-20260604
       litellm:
       - openrouter/nvidia/nemotron-3-ultra-550b-a55b
+      epoch:  # manual: same model
+      - Nemotron 3 Ultra
   openai/chatgpt-4o-latest:
     aliases:
       openrouter:
@@ -1064,6 +1111,13 @@ models:
       - gpt-4.1-nano
       epoch:
       - GPT-4.1 nano
+  openai/gpt-4.5-preview:  # manual: Epoch-only model (price keys, no OpenRouter rankings alias)
+    aliases:
+      litellm:
+      - gpt-4.5-preview-2025-02-27
+      - gpt-4.5-preview
+      epoch:
+      - GPT-4.5
   openai/gpt-4o:
     aliases:
       openrouter:
@@ -1429,6 +1483,8 @@ models:
       - qwen/qwen-2.5-72b-instruct
       litellm:
       - openrouter/qwen/qwen-2.5-72b-instruct
+      epoch:  # manual: text instruct model; not the VL model
+      - Qwen2.5-72B
   qwen/qwen-2.5-7b-instruct:
     aliases:
       openrouter:
@@ -1483,6 +1539,8 @@ models:
       - qwen/qwen3-235b-a22b-07-25
       litellm:
       - openrouter/qwen/qwen3-235b-a22b-2507
+      epoch:  # manual: same release, instruct 2507
+      - Qwen3-235B-A22B-Instruct (Jul 2025)
   qwen/qwen3-235b-a22b-thinking-2507:
     aliases:
       openrouter:
@@ -1549,6 +1607,12 @@ models:
       litellm:
       - openrouter/qwen/qwen3-coder-plus
       - dashscope/qwen3-coder-plus
+  qwen/qwen3-max:  # manual: Epoch-only model (price keys, no OpenRouter rankings alias)
+    aliases:
+      litellm:
+      - openrouter/qwen/qwen3-max
+      epoch:
+      - Qwen3-Max
   qwen/qwen3-next-80b-a3b-instruct:
     aliases:
       openrouter:
