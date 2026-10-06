@@ -496,7 +496,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 
 ## 10. Build phases
 
-### Status (2026-10-04)
+### Status (2026-10-06)
 
 | Phase | State |
 |---|---|
@@ -504,7 +504,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | 0.5 Vertical slice | **Done** — OpenRouter rankings + model prices, marts, first receipt `receipts/openrouter-wallet-share`; motion renderer A chosen (§6.3) |
 | Layout | **Done** — explorations vs receipts, scoped build, `reproduce` (`docs/plans/2026-10-03-explore-and-receipts.md`) |
 | 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), derived charts publishable (author policy); the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
-| 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. Next: Epoch, then the other native-history sources |
+| 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. Next: **Epoch** (see the open item below), then OpenRouter `session-cost` / `app-rankings`, EDGAR, Ramp (manual import) |
 | 3–7 | Not started |
 
 **Open items carried between sessions**
@@ -516,6 +516,28 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 - Backlog: embedded/subset fonts for `blog_html` (now Google Fonts with system fallback); vector
   `blog_svg` with chrome + footer (also enables a no-data blog version); `promote` command.
 - LiteLLM lists many models late (most Chinese-lab models only from 2026-09-05/18): ~26% of top-50 tokens (10% of est. spend) are priced with a model's first later listing, flagged per row and reported. Re-check when Phase 3 entities land; Gemini 2.5 Flash preview `:thinking` variants stay unpriced (own price, not in LiteLLM).
+- **Epoch adapter — research done 2026-10-06, not yet planned.** Two CC BY 4.0 zips, updated in
+  place several times a week (no version history; `etag` differs per update → Latest-only):
+  `https://epoch.ai/data/benchmark_data.zip` (Capabilities & benchmarking: `model_metadata.csv`,
+  `benchmark_metadata.csv`, `epoch_capabilities_index/eci_scores.csv`, ~80 per-benchmark CSVs keyed
+  by `Model version` with `mean_score`/`Best score (across scorers)`, `Release date`,
+  `Organization`; README gives the citation "Epoch AI, ‘Capabilities & benchmarking’ … epoch.ai/benchmarks")
+  and `https://epoch.ai/data/ai_models.zip` (`notable_ai_models.csv`, `frontier_ai_models.csv`,
+  `large_scale_ai_models.csv`, `all_ai_models.csv`; citation "Epoch AI, ‘Data on AI models’ …
+  epoch.ai/data/ai-models"). Both permit redistribution with attribution. Epoch model names need
+  `epoch` aliases in `config/entities/models.yaml` to join prices (LiteLLM) for analysis (a)
+  "cost of intelligence"; a good point to start `cachereg entities suggest` (Phase 3) by folding in
+  `scripts/suggest_model_aliases.py`. Per-benchmark score columns are listed in
+  `benchmark_metadata.csv`.
+- **Scheduling (Phase 6):** a launchd agent on the author's Mac runs `cachereg fetch --due` daily
+  (template in `ops/launchd/`; `fetch --due` is not built yet). Until then, fetch LiteLLM and
+  OpenRouter rankings by hand before rendering; daily history makes later receipts less stale.
+- Published receipts are left as rendered unless the author asks: `open-middle` must not change;
+  `openrouter-wallet-share`'s committed PNGs predate the 2026-10-05 layout changes, so a re-render
+  would change its visuals. Rendered floats are rounded to 9 significant digits (after
+  `data_hash`), so re-renders of unchanged data no longer churn `data.json`.
+- Dependency supply-chain re-check of the Phase 0.5 dependencies is still pending (the scoring
+  service was unavailable on 2026-10-06).
 - `scripts/suggest_model_aliases.py --write` is append-only; run it after new models enter the top 50 and review the proposals (fold into `cachereg entities suggest` in Phase 3).
 
 | Phase | Deliverable | Done when |
