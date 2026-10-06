@@ -22,15 +22,13 @@ The plan of record is `docs/PLAN.md`. Read the relevant section before changing 
 
 ## Conventions
 
-- Python 3.12, uv, ruff (`make format`), pytest. Installs go through `sfw` on the author's machine.
-- Score new dependencies (Socket `depscore`) before adding them; keep the dependency set small.
+- Python 3.12, uv, ruff (`make format`), pytest.
+- Check new dependencies for supply-chain risk before adding them; keep the dependency set small.
 - **Explorations** go in `explore/YYYY-MM-DD-<slug>/` (date = start date; `explore.yaml`; no short
   link; may be abandoned). **Receipts** are promoted topics in `receipts/<topic>/` (`receipt.yaml`,
   committed `output/`); promote by copying the exploration and noting it in the exploration's
   README. Charts follow the contract at the top of `src/cachereg/render.py`. Never hand-edit
   `output/`; re-render with `cachereg render receipts/<topic>`. The repo does not track posts.
-- Code ported from the author's earlier projects is re-implemented to these contracts and
-  reviewed — never copied verbatim (PLAN §2.4).
 - **No branches or PRs.** Commit in small logical steps and push straight to `main`; the
   pre-push hook runs the guard, gitleaks, lint and tests.
 - **Short links** belong to receipts only: the receipt folder name (lowercase-hyphenated, ≤ 32

@@ -26,6 +26,5 @@ build/
 .idea/
 .vscode/
 
-# Local review / delegation scratch
-.delegate/
+# Local scratch
 _review/

@@ -1,6 +1,6 @@
 # Cache Register — Project Plan
 
-Status: DRAFT v5 · 2026-10-02 · reviewed twice by DeepSeek (v2: 4 rounds; v4: 2 rounds), both converged
+Status: DRAFT v5 · 2026-10-02
 
 ## 1. Purpose
 
@@ -88,12 +88,10 @@ ranked by value-to-effort:
 Spend derivation (`rankings-daily` publishes tokens, not dollars): `est_spend = Σ tokens × blended_price`,
 `blended_price = 0.8 × prompt_price + 0.2 × completion_price`, using price at that date (LiteLLM
 history / OpenRouter models snapshot). **Join keys:** `rankings-daily.model_permaslug` ↔
-`/api/v1/models.canonical_slug` (the method used in `openrouter-charts`); LiteLLM keys
+`/api/v1/models.canonical_slug`; LiteLLM keys
 (provider-prefixed, e.g. `bedrock/…`) reach the same rows only through the entity resolver
 (§4.3), which maps both to a canonical `model_id` + `variant`. Unmatched permaslugs are
-reported with their token share, never silently dropped. This method is already
-proven in the author's earlier `openrouter-charts` project (reconstructed OpenRouter's published
-OpenAI-vs-Anthropic wallet-share chart; results nearly blend-invariant between 50/50 and 90/10).
+reported with their token share, never silently dropped.
 Known biases: caching ignored (overstates spend, most for heavily-cached coding traffic); list
 prices only (no negotiated discounts, no per-provider/host price variance); top-50 truncation
 (tail in `other`); `:free` variants have zero price and are reported separately, not blended;
@@ -120,20 +118,6 @@ documents its assumptions in its mart.
    therefore the first backlog item scheduled after Phase 6.
 3. **Derived aggregates** — mart outputs that are sufficiently transformed (e.g. monthly
    price-per-intelligence index) may be publishable where licenses allow; same flag-driven export.
-
-### 2.4 Prior art in the author's other projects — reuse policy
-
-These were quick, single-purpose builds and have not been carefully reviewed. **Port the ideas,
-not the files.** Each reused piece is re-implemented under this repo's contracts (source
-contract, entity YAML, Story model, curated dataset), gets tests on synthetic fixtures, and
-is reviewed with the `code` lens before merging. Nothing is copied verbatim without that review.
-
-| Project | Worth keeping (idea / method) | Must change when ported |
-|---|---|---|
-| `openrouter-charts` (README only; generator scripts lived in `/tmp` and are lost) | `rankings-daily` pull; token→spend method (0.8/0.2 blend, caveats); wallet-share reconstruction; revenue run-rate figures with citations | Rewrite from the documented method as the Phase 0.5 slice; figures → `curated/disclosures.csv` rows with URLs |
-| `ai-frontier-chart/build.py` (~300 lines) | Epoch benchmark zip loader; "best score so far per lab" frontier logic; AA "best reasoning-effort variant per model" collapse; disambiguating same-name releases | Hard-coded lab mapping (`lab_of`, `RACE_LABS`) → `entities/vendors.yaml`; hand-entered vendor/leaderboard scores (`VENDOR`, `RACE_GOOGLE`, `RACE_LEADERBOARD`) → curated dataset with source URLs; string-munged model names → entity resolver; single script → source adapters + marts + analysis; silent `continue` on unparseable/undated rows → counted, logged and surfaced in coverage; silent "max score per cleaned name" → explicit, documented variant-selection rule in a mart |
-| `ai-frontier-chart/video/capture.mjs` + `encode.swift` | **Deterministic `renderAt(t_ms)` page contract** + `window.ready` duration handshake + frame capture → MP4 (proven 1080×1350/30fps) | Hard-coded macOS Chrome path & raw DevTools protocol → Playwright (bundled Chromium); Swift/AVFoundation → ffmpeg (cross-platform); frames to a cache dir, not `/tmp`; browser always closed in `try/finally`; viewport/size parameterized per render target (was fixed 1080×1350); custom canvas chart **not** ported — only the frame-capture idea informs candidate B (§6.3) |
-| `linkedin-carousel/build_carousel.py` | Carousel/PDF layout for LinkedIn document posts | Backlog render target |
 
 ---
 
@@ -388,8 +372,7 @@ plus `run_manifest.json`.
      frame-data hash), then ffmpeg encodes; final frame held 3s.
   Two motion primitives in v1: `bar_race` and `line_reveal`. Anything else is an explicit
   matplotlib story (`motion_backend: matplotlib`, same theme tokens).
-- **Alternative B (same spec, different driver)**: inspired by the author's `ai-frontier-chart`
-  frame-capture pipeline, but **not** its hand-written canvas chart. B loads the *same Altair
+- **Alternative B (same spec, different driver)**: B loads the *same Altair
   spec* in a headless Playwright page via vega-embed, and a small generic `setFrame(i)` shim
   swaps in precomputed frame *i*'s rows (`view.data('frame', rows).run()`) and exports the view
   to PNG. Frame data comes from the same Python step 1–4 above, so there is still one chart
@@ -450,16 +433,15 @@ wordmark. Attribution text comes from
 ## 8. Security (public from day one)
 
 - **Secrets**: the loader reads environment variables only. Locally they come from a file
-  outside the repo whose path is set by `CACHEREG_SECRETS_FILE` (the author reuses the existing
-  machine-wide secrets file that earlier projects already source; never named in the repo);
+  outside the repo whose path is set by `CACHEREG_SECRETS_FILE` (never named in the repo);
   replicators can instead use a repo-local `.env` (gitignored). Variables: `OPENROUTER_API_KEY`,
   `ARTIFICIAL_ANALYSIS_API_KEY`, `RAMP_DATA_API_KEY`, `SEC_EDGAR_USER_AGENT`, optional `HF_TOKEN`. macOS Keychain backend is backlog.
   Secrets never logged; HTTP client redacts auth headers/query params in errors and manifests.
 - **Pre-commit**: gitleaks; block `data/`, `outputs/`, `*.parquet`, `*.duckdb`, `.env*`; block
   files > 1 MB outside `published/`; block absolute home paths, usernames, hostnames, local IPs
   (`/Users/`, `/home/`, machine name patterns) in committed text.
-- **Workflow (decided 2026-10-02): solo, straight to `main`, no branches or PRs.** The author
-  sequences commits (typically 6–8am) and pushes directly. The gate is the local **pre-push
+- **Workflow (decided 2026-10-02): solo, straight to `main`, no branches or PRs.** Commits are
+  pushed directly to `main`. The gate is the local **pre-push
   hook** (`.githooks/pre-push`): guard + pinned gitleaks over exactly the commits being
   pushed, then lint + tests. GitHub **push protection** blocks known secret formats server-side
   regardless. CI is a single backstop job after the push (full-history guard + gitleaks, lint,
@@ -471,8 +453,8 @@ wordmark. Attribution text comes from
   blocks force-pushes and deletion (lift temporarily only to purge a leak).
 - **Operational opsec**: no machine names, paths, schedules-with-local-detail, IPs, or account
   identifiers in commits; launchd plist only as template; EDGAR contact email from env only.
-- **Supply chain**: deps added via `sfw`-routed installs; new deps scored (Socket/Endor) before
-  adding; lockfile committed; minimal dependency set.
+- **Supply chain**: new deps checked for supply-chain risk before adding; lockfile committed;
+  minimal dependency set.
 - `SECURITY.md` with reporting instructions.
 
 ---
@@ -525,10 +507,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | 3–7 | Not started |
 
 **Open items carried between sessions**
-- Re-score the Phase 0.5 dependencies (altair, duckdb, polars, vl-convert-python, imageio-ffmpeg,
-  pillow, playwright) with Socket `depscore`/Endor once those services respond; they were
-  installed through Socket Firewall only.
-- **Ramp without a key:** the author has no Ramp Data key. On ramp.com/data/ai-index the "Get the
+- **Ramp without a key:** on ramp.com/data/ai-index the "Get the
   data" button copies the series to the clipboard, so the Ramp adapter starts with a manual import
   (`cachereg fetch ramp --from-clipboard` / `--from-file`), monthly. Check the clipboard format when
   building it. Automating the click is out of scope (no scraping); the Ramp Data Partner Program key
@@ -537,15 +516,13 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   `blog_svg` with chrome + footer (also enables a no-data blog version); `promote` command.
 - LiteLLM lists many models late (most Chinese-lab models only from 2026-09-05/18): ~26% of top-50 tokens (10% of est. spend) are priced with a model's first later listing, flagged per row and reported. Re-check when Phase 3 entities land; Gemini 2.5 Flash preview `:thinking` variants stay unpriced (own price, not in LiteLLM).
 - `scripts/suggest_model_aliases.py --write` is append-only; run it after new models enter the top 50 and review the proposals (fold into `cachereg entities suggest` in Phase 3).
-- Reviewer note for adversarial reviews: the default reviewer (DeepSeek) has timed out on long
-  plan reviews; a retry usually works; `--model gemini` worked but cost ~20× more per round.
 
 | Phase | Deliverable | Done when |
 |---|---|---|
 | **0. Scaffold & security** | git init, uv project, CLI skeleton, settings/secrets loader, gitignore, pre-commit + CI guards (gitleaks + custom), LICENSEs, SECURITY.md, CLAUDE.md, public GitHub repo with push protection + branch protection | CI green; a deliberate fake secret / data file / home path is blocked by **CI** (not just pre-commit) |
-| **0.5 Vertical slice** | OpenRouter `rankings-daily` adapter (native, CC BY 4.0, verified, method already proven) + OpenRouter models adapter (snapshot, redistribution to verify; prices only) — CI runs the slice on synthetic fixtures, the author runs it with a key → staged → `usage_share` mart → port the `openrouter-charts` wallet-share analysis as the first explore → `x_png` + `blog_html` + one `bar_race` MP4, stamped, with manifest; plus the motion spike (A vs B) | One command renders all three from a clean clone; motion spike meets the §6.3 gate or the backend decision is changed |
+| **0.5 Vertical slice** | OpenRouter `rankings-daily` adapter (native, CC BY 4.0, verified) + OpenRouter models adapter (snapshot, redistribution to verify; prices only) — CI runs the slice on synthetic fixtures, the author runs it with a key → staged → `usage_share` mart → a wallet-share analysis as the first explore → `x_png` + `blog_html` + one `bar_race` MP4, stamped, with manifest; plus the motion spike (A vs B) | One command renders all three from a clean clone; motion spike meets the §6.3 gate or the backend decision is changed |
 | **1. Source verification** | For each Tier-1 source: confirm endpoints, auth, rate limits, ToS, license, `redistribution`, `derived_charts`, `revisions`, historical availability → fill `SOURCE.md` + registry | All `unknown` flags resolved or explicitly deferred; Phase-5 analysis list re-confirmed |
-| **2. Tier-1 adapters** | Native-history first: LiteLLM, Epoch (port the `ai-frontier-chart` loader), Ramp AI Index, OpenRouter `app-rankings`/`session-cost`, BTOS, Anthropic Economic Index, EDGAR, LMArena; then snapshot: Artificial Analysis (endpoint already used in `ai-frontier-chart`), Ramp Rate, HF; curated disclosures seeded (incl. the revenue run-rate figures already sourced in `openrouter-charts`) | `cachereg fetch && cachereg build` works from a clean clone with keys |
+| **2. Tier-1 adapters** | Native-history first: LiteLLM, Epoch, Ramp AI Index, OpenRouter `app-rankings`/`session-cost`, BTOS, Anthropic Economic Index, EDGAR, LMArena; then snapshot: Artificial Analysis, Ramp Rate, HF; curated disclosures seeded | `cachereg fetch && cachereg build` works from a clean clone with keys |
 | **3. Entities & marts** | Resolver + `entities suggest/check`; marts: `model_dim`, `price_history`, `benchmarks`, `usage_share`, `adoption`, `capex`, `disclosures` | Coverage ≥95% per mart measure as defined in §4.3 |
 | **4. Story & viz kit (full)** | Generalize the slice: theme, remaining v1 targets, `table`, `publish` (with its check), `_template` | Template analysis renders every v1 target on synthetic data in CI |
 | **5. Starter analyses** | See table below | Each has README findings + v1 targets rendered |

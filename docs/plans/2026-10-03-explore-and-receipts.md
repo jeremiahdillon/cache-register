@@ -1,6 +1,6 @@
 # Plan: explorations and receipts
 
-Status: APPROVED · 2026-10-03 · adversarial review converged (3 rounds) · supersedes the `analyses/explore` / `analyses/series` layout in PLAN §3 and §5.
+Status: APPROVED · 2026-10-03 · supersedes the `analyses/explore` / `analyses/series` layout in PLAN §3 and §5.
 
 ## Goal
 
