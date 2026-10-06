@@ -482,3 +482,38 @@ def test_licence_gate_charts_need_explicit_forbidden_data_needs_explicit_allowed
     assert render_mod.licence_gate(["a"]) == (None, "redistribution not allowed for: a")
     charts, data = render_mod.licence_gate(["b"])
     assert charts == "derived_charts forbidden for: b" and data == charts  # no data where no charts
+
+
+def test_published_floats_are_rounded_but_the_data_hash_is_not(synthetic_raw, tmp_path, monkeypatch):
+    from cachereg.render import FLOAT_SIG_FIGS, build_story, render
+    from cachereg.story import config as folder_config
+    from cachereg.story.hashing import data_hash
+
+    _fast_video(monkeypatch)
+    build(date(2026, 8, 31))
+    receipt = _receipt_copy(tmp_path)
+    story, _, _ = build_story(folder_config.load(receipt), date(2026, 8, 31))
+    result = render(receipt)
+    assert result.manifest["data_hash"] == data_hash(story.frames)  # hash of the unrounded data
+    shares = [float(r["share"]) for r in json.loads((receipt / "output" / "data.json").read_text())["groups"]]
+    assert shares and all(float(f"{s:.{FLOAT_SIG_FIGS}g}") == s for s in shares)
+
+
+def test_git_dirty_ignores_the_output_folder_being_written(tmp_path, monkeypatch):
+    import subprocess
+
+    from cachereg import render as render_mod
+
+    repo = tmp_path / "repo"
+    (repo / "receipts" / "t" / "output").mkdir(parents=True)
+    (repo / "a.txt").write_text("a")
+    for args in (["init", "-q"], ["add", "."], ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "x"]):
+        subprocess.run(["git", *args], cwd=repo, check=True)
+    monkeypatch.setattr(render_mod, "REPO_ROOT", repo)
+    monkeypatch.setattr("cachereg.core.paths.REPO_ROOT", repo)
+    out = repo / "receipts" / "t" / "output"
+    (out / "x.png").write_bytes(b"new output")
+    assert render_mod._git_sha(out)[1] is False  # only the output folder changed
+    assert render_mod._git_sha()[1] is True
+    (repo / "a.txt").write_text("edited")
+    assert render_mod._git_sha(out)[1] is True

@@ -69,6 +69,9 @@ def load_analysis(path: Path):
         sys.path.remove(str(path))
 
 
+FLOAT_SIG_FIGS = 9
+
+
 def build_story(cfg: folder_config.FolderConfig, as_of: date):
     analysis, charts = load_analysis(cfg.path)
     con = connect()
@@ -77,6 +80,14 @@ def build_story(cfg: folder_config.FolderConfig, as_of: date):
     finally:
         con.close()
     return story, analysis, charts
+
+
+def round_frames(frames: dict[str, pl.DataFrame]) -> dict[str, pl.DataFrame]:
+    """Floats to FLOAT_SIG_FIGS, so summation-order noise in the last bits never changes the published
+    data.json or the HTML's inlined data between renders of the same data. Applied after data_hash,
+    which has its own canonical form (rounding twice could flip a borderline digit)."""
+    floats = pl.col(pl.Float32, pl.Float64)
+    return {k: v.with_columns(floats.round_sig_figs(FLOAT_SIG_FIGS)) for k, v in frames.items()}
 
 
 # ---- licensing ----------------------------------------------------------------------------
@@ -172,11 +183,14 @@ def render_html(story, analysis, chart, target: Target, rec: Receipt, out: Path)
 # ---- manifest -------------------------------------------------------------------------------
 
 
-def _git_sha() -> tuple[str, bool]:
+def _git_sha(exclude: Path | None = None) -> tuple[str, bool]:
+    """HEAD and whether the tree is dirty, ignoring ``exclude`` (the output folder being written)."""
+
     def run(*a):
         return subprocess.run(["git", *a], cwd=REPO_ROOT, capture_output=True, text=True).stdout.strip()
 
-    return run("rev-parse", "HEAD"), bool(run("status", "--porcelain"))
+    paths = ["--", ".", f":(exclude){repo_relative(exclude)}"] if exclude is not None else []
+    return run("rev-parse", "HEAD"), bool(run("status", "--porcelain", *paths))
 
 
 def source_vintages(source_ids, as_of: date) -> dict:
@@ -259,6 +273,7 @@ def render(
         )
     source_ids = list(cfg.sources) if cfg.sources else list(story.sources)
     d_hash, i_hash = data_hash(story.frames), inputs_hash(cfg.path)
+    story.frames = round_frames(story.frames)
     rel = repo_relative(cfg.path)
     if out_dir is None:
         out_dir = cfg.path / "output" if is_receipt else outputs_dir() / cfg.path.name / str(as_of)
@@ -317,7 +332,7 @@ def render(
         (out_dir / "data.json").write_text(frames_json)
         result.outputs["data.json"] = _sha256(out_dir / "data.json")
 
-    sha, dirty = _git_sha()
+    sha, dirty = _git_sha(out_dir if out_dir.resolve().is_relative_to(REPO_ROOT.resolve()) else None)
     result.manifest = {
         "kind": cfg.kind,
         "folder": rel,
