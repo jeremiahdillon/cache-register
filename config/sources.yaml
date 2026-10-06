@@ -68,3 +68,15 @@ sources:
     cadence: weekly
     requires: []
     enabled: true
+
+  # SEC EDGAR (verified 2026-10-06, SOURCE.md): public information, may be copied with citation;
+  # facts carry their filing date and restatements are new facts, so Exact.
+  - id: sec_edgar
+    history: native
+    revisions: append-only
+    redistribution: allowed
+    derived_charts: allowed
+    attribution: "SEC EDGAR XBRL financial data (sec.gov)"
+    cadence: weekly
+    requires: [SEC_EDGAR_USER_AGENT]
+    enabled: true

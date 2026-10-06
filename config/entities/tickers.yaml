@@ -1,0 +1,11 @@
+# Listed companies fetched from SEC EDGAR (source `sec_edgar`, PLAN §2.1 #11). Keyed by ticker;
+# the CIK is the join key (tickers change). `group` selects companies for group totals in the
+# `030_capex` mart: hyperscaler | neocloud | supplier. `vendor` is an id in vendors.yaml, if any.
+companies:
+  MSFT:  {cik: 789019,  name: Microsoft,  group: hyperscaler, vendor: microsoft}
+  GOOGL: {cik: 1652044, name: Alphabet,   group: hyperscaler, vendor: google}
+  AMZN:  {cik: 1018724, name: Amazon,     group: hyperscaler, vendor: amazon}
+  META:  {cik: 1326801, name: Meta,       group: hyperscaler, vendor: meta}
+  ORCL:  {cik: 1341439, name: Oracle,     group: hyperscaler}
+  CRWV:  {cik: 1769628, name: CoreWeave,  group: neocloud}
+  NVDA:  {cik: 1045810, name: NVIDIA,     group: supplier,    vendor: nvidia}
