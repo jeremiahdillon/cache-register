@@ -43,15 +43,16 @@ h1{font:700 clamp(52px,12vw,136px)/.92 'Space Grotesk',system-ui,sans-serif;lett
 h1 .cursor{display:inline-block;width:.09em;height:.74em;margin-left:.06em;background:var(--signal);
   vertical-align:baseline;animation:blink 1.1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
-/* Intro: the cursor blinks alone, the title types in around it (each letter collapsed until its
-   --t), then everything else fades in together. Reduced motion shows the finished page. */
+/* Intro: the cursor blinks alone, the title types in around it (each letter collapsed from load
+   until its --t, then back to its own style: no fill, so no end-of-animation rounding), then
+   everything else fades in together. Reduced motion shows the finished page. */
 @media (prefers-reduced-motion:no-preference){
-  h1 .k{animation:key 1ms steps(1) var(--t) both}
+  h1 .k{animation:key var(--t) steps(1)}
   h1 .cursor{animation:blink 1.1s steps(1) infinite,hold ${typing_ms}ms steps(1) ${type_start_ms}ms}
   .reveal{animation:reveal .8s ease-out ${reveal_ms}ms both}
 }
 @media (prefers-reduced-motion:reduce){h1 .cursor{animation:none}}
-@keyframes key{from{font-size:0}}
+@keyframes key{from,to{font-size:0}}
 @keyframes hold{from,to{opacity:1}}
 @keyframes reveal{from{opacity:0;transform:translateY(6px)}}
 .lede{font-size:clamp(18px,2.4vw,24px);color:var(--ink2);margin:24px 0 40px;text-wrap:balance}

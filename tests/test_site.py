@@ -78,6 +78,10 @@ def test_splash_and_404_read_brand_and_keep_redirects(tmp_path):
     assert "".join(ch for _, ch in typed) == b["name"]  # the title types in, letter by letter
     times = [int(t) for t, _ in typed]
     assert times == sorted(times) and f"reveal .8s ease-out {times[-1] + 650}ms" in index
+    # Letters must hide *until* --t and then fall back to their own style. A fill mode would hold the
+    # end keyframe, and Chrome finishes a 1 ms step animation at progress 0.9999… (stays hidden).
+    letter_rule = re.search(r"h1 \.k\{animation:([^}]*)\}", index).group(1)
+    assert "var(--t)" in letter_rule and not re.search(r"\b(both|forwards)\b", letter_rule)
     assert f'href="{b["repo_url"]}"' in index and b["colors"]["canvas"] in index and b["colors"]["signal"] in index
     for tag in ('name="description"', 'property="og:title"', 'property="og:image"', 'rel="icon"'):
         assert tag in index
