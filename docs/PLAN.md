@@ -508,7 +508,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), derived charts publishable (author policy); the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
 | 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. `epoch_benchmarks` + `epoch_models` done 2026-10-06 (`docs/plans/2026-10-06-epoch.md`; CC BY 4.0, Latest-only, weekly): marts `020_epoch_capabilities` (ECI, scores, alias coverage) and `021_epoch_models`. `sec_edgar` done 2026-10-06 (`docs/plans/2026-10-06-sec-edgar.md`; XBRL companyfacts for `config/entities/tickers.yaml`, Exact by filing date): mart `030_capex` (quarterly cash capex per company and group, calendar quarters by midpoint, completeness flags). Next: OpenRouter `session-cost` / `app-rankings`, Ramp (manual import) |
 | 3. Entities & marts | **Started** 2026-10-06 — `cachereg entities suggest --source openrouter\|epoch` (replaces the bootstrap script); `aliases.epoch` maps 171 of 274 ECI models, 47 of the top 50 (94%; target 95%); 17 cheap models near ECI 130–150 mapped by hand for analysis (a) |
-| 4–7 | Not started (Phase 5: explorations for analyses (a) and (d) built 2026-10-06) |
+| 4–7 | Not started (Phase 5: explorations for analyses (a), (b) and (d) built 2026-10-06) |
 
 **Open items carried between sessions**
 - **Ramp without a key:** on ramp.com/data/ai-index the "Get the
@@ -532,11 +532,12 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   no OpenRouter listing) and Muse Spark (no LiteLLM key). **Small follow-up:** add both Pro models
   by hand (`# manual`, vendor LiteLLM key, Epoch alias) → `eci_top50` 48/50 (96%), meeting the
   Phase 3 target. Changes neither (a) nor (d) (never cheapest; not on OpenRouter).
-- **Analysis (b) "capex vs price collapse": data ready** 2026-10-06 (`030_capex`), exploration not
-  started. Use complete quarters only (`capex_group_quarterly.complete`); cash capex excludes
-  finance leases (the `incl_finance_leases` column is partial, see `finance_lease_companies`).
-  Next step: move (a)'s cheapest-price computation into a mart, numbered after `030_capex`
-  (the (a) plan's `030_cost_of_intelligence.sql` name is now taken), then build the exploration.
+- **Analysis (b) "capex vs price collapse": exploration built** 2026-10-06
+  (`explore/2026-10-06-capex-vs-price/`, `docs/plans/2026-10-06-capex-vs-price.md`): quarterly
+  hyperscaler capex (`030_capex`) beside the cheapest price per ECI level (`040_eci_model_prices`,
+  (a)'s series as a mart). Not promoted. When (a) is promoted, switch its main series to `040`.
+  Since `040` reads LiteLLM and Epoch, a bare `cachereg build` refuses to run when LiteLLM has
+  fetches and Epoch has none (a partly covered mart); fetch both, or scope with `--sources`.
 - **Epoch aliases left out on purpose** (`entities suggest --source epoch` still proposes them; drop
   them if `--write` is used again): `Qwen2.5-72B` → `qwen/qwen2.5-vl-72b-instruct` (Epoch's group
   includes the VL model), and new model `openai/gpt-3.5-turbo-0613` (its keys mix the 16k variant).
