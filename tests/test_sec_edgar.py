@@ -167,6 +167,11 @@ def test_tickers_validation(tmp_path, monkeypatch):
     tickers(tmp_path, monkeypatch, {"A": {"cik": 1, "name": "A", "group": "bank"}})
     with pytest.raises(ValueError, match="group"):
         companies.load_companies()
+    tickers(tmp_path, monkeypatch, {"A": {"cik": 1, "name": "A", "group": "neocloud", "vendor": "nvidia"}})
+    assert companies.load_companies()[0].vendor_id == "nvidia"
+    tickers(tmp_path, monkeypatch, {"A": {"cik": 1, "name": "A", "group": "neocloud", "vendor": "nvidai"}})
+    with pytest.raises(ValueError, match="vendors.yaml"):
+        companies.load_companies()
     tickers(
         tmp_path,
         monkeypatch,
@@ -201,8 +206,10 @@ def test_stage_counts_unparsable_facts_and_needs_every_company(edgar_raw, tmp_pa
     bad = calendar_company()
     bad["facts"]["us-gaap"][PPE]["units"]["USD"] += [fact("2025-01-01", "2025-03-31", None, "2025-04-25")]
     bad["facts"]["us-gaap"][PPE]["units"]["USD"] += [fact("2025-01-01", "not a date", 1, "2025-04-25")]
+    bad["facts"]["us-gaap"][PPE]["units"]["USD"] += ["not a fact"]
+    bad["facts"]["us-gaap"]["Odd"] = {"label": "Odd", "units": ["not", "a", "dict"]}
     write_fetch({"0000000001": bad}, datetime(2026, 9, 8, 12, tzinfo=UTC))
-    assert es.stage()["_rejected_rows"]["rejected"][0] == 2
+    assert es.stage()["_rejected_rows"]["rejected"][0] == 4
     tickers(tmp_path, monkeypatch, {"ZZZ": {"cik": 9, "name": "Z", "group": "supplier"}})
     with pytest.raises(ValueError, match="no stored facts for ZZZ"):
         es.stage()

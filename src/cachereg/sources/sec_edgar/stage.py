@@ -109,7 +109,7 @@ def stage() -> dict[str, pl.DataFrame]:
                     x.get("frame"),
                     f.manifest["fetch_id"],
                 )
-            except (KeyError, TypeError, ValueError):
+            except (AttributeError, KeyError, TypeError, ValueError):  # AttributeError: x is None
                 rejected += 1
                 continue
             rows.append(row)

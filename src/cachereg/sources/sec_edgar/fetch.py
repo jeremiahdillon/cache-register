@@ -34,12 +34,26 @@ def decode(body: bytes) -> dict:
 
 
 def iter_facts(data: dict):
-    """(taxonomy, tag, unit, fact) for every fact in a companyfacts document."""
+    """(taxonomy, tag, unit, fact) for every fact in a companyfacts document.
+
+    A part of the document that is not the expected shape (a concept, unit list or fact that is not
+    an object or list) is yielded with ``fact=None``, so stage counts it as rejected instead of failing.
+    """
     for taxonomy, tags in data["facts"].items():
+        if not isinstance(tags, dict):
+            yield taxonomy, None, None, None
+            continue
         for tag, concept in tags.items():
-            for unit, facts in (concept.get("units") or {}).items():
+            units = concept.get("units") if isinstance(concept, dict) else None
+            if not isinstance(units, dict):
+                yield taxonomy, tag, None, None
+                continue
+            for unit, facts in units.items():
+                if not isinstance(facts, list):
+                    yield taxonomy, tag, unit, None
+                    continue
                 for fact in facts:
-                    yield taxonomy, tag, unit, fact
+                    yield taxonomy, tag, unit, fact if isinstance(fact, dict) else None
 
 
 def fetch(full: bool = False, today: date | None = None) -> RawFetch:
@@ -56,7 +70,9 @@ def fetch(full: bool = False, today: date | None = None) -> RawFetch:
         if cik10(data.get("cik", "")) != company.cik:
             raise ValueError(f"{company.ticker}: response is for CIK {data.get('cik')!r}, not {company.cik}")
         for _, _, _, f in iter_facts(data):
-            key = (f.get("filed") or "", f.get("accn") or "")
+            if f is None:
+                continue
+            key = (str(f.get("filed") or ""), str(f.get("accn") or ""))
             if key[0]:
                 newest = max(newest or key, key)
                 oldest = min(oldest or key, key)

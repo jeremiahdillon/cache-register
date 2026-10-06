@@ -484,3 +484,48 @@ def test_eci_model_price_mart_backfills_before_the_first_listing(epoch_raw, synt
     assert (back[0]["day"], back[-1]["day"]) == (date(2025, 6, 1), date(2026, 7, 14))
     assert listed[0]["day"] == date(2026, 7, 15)
     assert all(r["usd_per_mtok"] == r["usd_per_mtok_daily"] == pytest.approx(0.98) for r in back)
+
+
+def test_eci_model_price_mart_median_window_over_a_listing_gap(data_env, synthetic_entities):
+    """A model delisted for ten days: the 28-day median spans only listed days (as polars'
+    rolling_median_by in the cost-of-intelligence exploration)."""
+    import json
+
+    import polars as pl
+    import yaml
+
+    f = synthetic_entities / "models.yaml"
+    models = yaml.safe_load(f.read_text())
+    models["models"]["openai/gpt-9"]["aliases"]["epoch"] = ["Model Nine"]
+    f.write_text(yaml.safe_dump(models))
+    _write("epoch_benchmarks", bf.FILE, bench_zip(), datetime(2026, 8, 1, 6, tzinfo=UTC))
+
+    def entry(i, o):
+        return {"input_cost_per_token": i, "output_cost_per_token": o, "litellm_provider": "x", "mode": "chat"}
+
+    def at(d):
+        return int(datetime(d.year, d.month, d.day, 1, tzinfo=UTC).timestamp())
+
+    states = {  # blended per million: 3.0, delisted from Jul 1, back at 2.0 from Jul 11
+        "c1": (at(date(2024, 12, 31)), {"gpt-9-20260101": entry(1.25e-6, 10e-6)}),
+        "c2": (at(date(2026, 7, 1)), {"other": entry(1e-6, 1e-6)}),
+        "c3": (at(date(2026, 7, 11)), {"gpt-9-20260101": entry(1e-6, 6e-6)}),
+    }
+    r = RawFetch("litellm_prices", "1", fetched_at=datetime(2026, 8, 11, 6, tzinfo=UTC))
+    listing = "".join(f"{sha}\t{t}\n" for sha, (t, _) in sorted(states.items(), key=lambda kv: -kv[1][0]))
+    r.add("first_parent.tsv", listing.encode(), "https://example.test/x.git", 200)
+    for sha, (_, body) in states.items():
+        r.add(f"prices_{sha}.json", json.dumps(body).encode(), "https://example.test", 200)
+    r.vintage = {"kind": "git_commit", "value": "c3", "window": ["2025-01-01", "2026-08-10"]}
+    r.write()
+
+    build(date(2026, 8, 10), ["litellm_prices", "epoch_benchmarks"])
+    rows = pl.DataFrame(_rows("SELECT * FROM eci_model_price_daily WHERE model_group = 'Model Nine' ORDER BY day"))
+    by_day = {r["day"]: r for r in rows.to_dicts()}
+    assert date(2026, 7, 5) not in by_day  # no row while delisted
+    assert by_day[date(2026, 7, 11)]["usd_per_mtok"] == pytest.approx(3.0)  # 17 days at 3.0, 1 at 2.0
+    assert by_day[date(2026, 7, 19)]["usd_per_mtok"] == pytest.approx(2.5)  # Jun 22–30 vs Jul 11–19: 9 and 9
+    assert by_day[date(2026, 7, 20)]["usd_per_mtok"] == pytest.approx(2.0)
+    # the exploration's definition: polars' trailing 28-day rolling median over the listed days
+    expected = rows.sort("day").select(pl.col("usd_per_mtok_daily").rolling_median_by("day", window_size="28d"))
+    assert rows.sort("day")["usd_per_mtok"].to_list() == pytest.approx(expected.to_series().to_list())

@@ -9,6 +9,7 @@ import yaml
 from cachereg.core.paths import REPO_ROOT
 
 TICKERS_FILE = REPO_ROOT / "config" / "entities" / "tickers.yaml"  # tests point this at a synthetic file
+VENDORS_FILE = REPO_ROOT / "config" / "entities" / "vendors.yaml"
 GROUPS = {"hyperscaler", "neocloud", "supplier"}
 
 
@@ -30,6 +31,7 @@ def cik10(value: int | str) -> str:
 
 def load_companies() -> list[Company]:
     data = yaml.safe_load(TICKERS_FILE.read_text()) or {}
+    vendors = set((yaml.safe_load(VENDORS_FILE.read_text()) or {}).get("vendors") or {})
     out, seen = [], set()
     for ticker, c in (data.get("companies") or {}).items():
         cik = cik10(c["cik"])
@@ -37,6 +39,8 @@ def load_companies() -> list[Company]:
             raise ValueError(f"tickers.yaml: CIK {cik} listed twice")
         if c["group"] not in GROUPS:
             raise ValueError(f"tickers.yaml: {ticker} group must be one of {sorted(GROUPS)}")
+        if c.get("vendor") is not None and c["vendor"] not in vendors:
+            raise ValueError(f"tickers.yaml: {ticker} vendor {c['vendor']!r} is not in vendors.yaml")
         seen.add(cik)
         out.append(Company(ticker, cik, c["name"], c["group"], c.get("vendor")))
     return out
