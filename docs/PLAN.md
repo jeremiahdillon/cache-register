@@ -507,8 +507,8 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | Layout | **Done** — explorations vs receipts, scoped build, `reproduce` (`docs/plans/2026-10-03-explore-and-receipts.md`) |
 | 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), derived charts publishable (author policy); the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
 | 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. `epoch_benchmarks` + `epoch_models` done 2026-10-06 (`docs/plans/2026-10-06-epoch.md`; CC BY 4.0, Latest-only, weekly): marts `020_epoch_capabilities` (ECI, scores, alias coverage) and `021_epoch_models`. Next: OpenRouter `session-cost` / `app-rankings`, EDGAR, Ramp (manual import) |
-| 3. Entities & marts | **Started** 2026-10-06 — `cachereg entities suggest --source openrouter\|epoch` (replaces the bootstrap script); `aliases.epoch` maps 154 of 274 ECI models, 47 of the top 50 (94%; target 95%) |
-| 4–7 | Not started |
+| 3. Entities & marts | **Started** 2026-10-06 — `cachereg entities suggest --source openrouter\|epoch` (replaces the bootstrap script); `aliases.epoch` maps 171 of 274 ECI models, 47 of the top 50 (94%; target 95%); 17 cheap models near ECI 130–150 mapped by hand for analysis (a) |
+| 4–7 | Not started (Phase 5: analysis (a) exploration built 2026-10-06) |
 
 **Open items carried between sessions**
 - **Ramp without a key:** on ramp.com/data/ai-index the "Get the
@@ -519,11 +519,12 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 - Backlog: embedded/subset fonts for `blog_html` (now Google Fonts with system fallback); vector
   `blog_svg` with chrome + footer (also enables a no-data blog version); `promote` command.
 - LiteLLM lists many models late (most Chinese-lab models only from 2026-09-05/18): ~26% of top-50 tokens (10% of est. spend) are priced with a model's first later listing, flagged per row and reported. Re-check when Phase 3 entities land; Gemini 2.5 Flash preview `:thinking` variants stay unpriced (own price, not in LiteLLM).
-- **Analysis (a) "cost of intelligence" is unblocked:** `epoch_eci.model_id` joins
-  `dim_model_alias` (`litellm`) and LiteLLM price history (tested). ECI is re-fitted by Epoch on
-  every update, so a chart over time uses one ECI vintage with model release dates, and prices by
-  date (Exact); the analysis README must say so. Unmapped top-50 models: GPT-5.4 Pro, GPT-5.2 Pro
-  (vendor key only, no OpenRouter listing) and Muse Spark (no LiteLLM key).
+- **Analysis (a) "cost of intelligence": exploration built** 2026-10-06
+  (`explore/2026-10-06-cost-of-intelligence/`, `docs/plans/2026-10-06-cost-of-intelligence.md`):
+  cheapest blended list price per ECI level (130/140/150) per day, static chart + sensitivity and
+  coverage tables. Next: decide on promotion to a receipt, then the motion hero; move the computation
+  into a mart when (b) needs it. Unmapped top-50 models: GPT-5.4 Pro, GPT-5.2 Pro (vendor key only,
+  no OpenRouter listing) and Muse Spark (no LiteLLM key).
 - **Epoch aliases left out on purpose** (`entities suggest --source epoch` still proposes them; drop
   them if `--write` is used again): `Qwen2.5-72B` → `qwen/qwen2.5-vl-72b-instruct` (Epoch's group
   includes the VL model), and new model `openai/gpt-3.5-turbo-0613` (its keys mix the 16k variant).

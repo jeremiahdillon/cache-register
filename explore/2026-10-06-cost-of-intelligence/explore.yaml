@@ -1,0 +1,11 @@
+# Exploration config (same schema as receipt.yaml; no short link — explorations never get one).
+title: The cost of intelligence
+sources: [epoch_benchmarks, litellm_prices]
+config:
+  levels:                  # Epoch Capabilities Index thresholds; 130 and 150 are Epoch's anchors
+    - {eci: 130, name: Claude 3.5 Sonnet-level}
+    - {eci: 140, name: o1-level}
+    - {eci: 150, name: GPT-5-level}
+  headline_level: 150
+visuals:
+  - {name: steps, chart: steps, targets: [x_png, linkedin_png, blog_html]}
