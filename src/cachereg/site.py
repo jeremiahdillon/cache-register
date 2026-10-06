@@ -28,10 +28,10 @@ TEMPLATES = REPO_ROOT / "assets" / "templates"
 SPLASH_FONTS = ("display", "body", "mono")  # the faces site.html declares
 # Splash intro timing (ms): cursor alone, then one keystroke per letter (a fixed, slightly uneven
 # rhythm so it reads as typed), a pause, then the rest of the page fades in.
-TYPE_START = 1100
+TYPE_START = 2000
 KEYSTROKES = (95, 70, 110, 80, 125, 75, 90, 105)
 WORD_GAP = 180
-REVEAL_PAUSE = 650
+REVEAL_PAUSE = 1100
 
 
 @dataclass(frozen=True)

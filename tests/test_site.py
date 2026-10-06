@@ -64,7 +64,7 @@ def test_short_url_is_short():
 
 
 def test_splash_and_404_read_brand_and_keep_redirects(tmp_path):
-    from cachereg.site import TEMPLATES
+    from cachereg.site import REVEAL_PAUSE, TEMPLATES
     from cachereg.viz.brand import brand
 
     b = brand()
@@ -77,7 +77,7 @@ def test_splash_and_404_read_brand_and_keep_redirects(tmp_path):
     typed = re.findall(r'<span class="k" style="--t:(\d+)ms">([^<])</span>', index)
     assert "".join(ch for _, ch in typed) == b["name"]  # the title types in, letter by letter
     times = [int(t) for t, _ in typed]
-    assert times == sorted(times) and f"reveal .8s ease-out {times[-1] + 650}ms" in index
+    assert times == sorted(times) and f"reveal .8s ease-out {times[-1] + REVEAL_PAUSE}ms" in index
     # Letters must hide *until* --t and then fall back to their own style. A fill mode would hold the
     # end keyframe, and Chrome finishes a 1 ms step animation at progress 0.9999… (stays hidden).
     letter_rule = re.search(r"h1 \.k\{animation:([^}]*)\}", index).group(1)
