@@ -46,3 +46,25 @@ sources:
     cadence: daily
     requires: []
     enabled: true
+
+  # Epoch AI (verified 2026-10-06, SOURCE.md): CC BY 4.0, revised in place with no version
+  # history, so Latest-only (the same native + revised convention as openrouter_rankings).
+  - id: epoch_benchmarks
+    history: native
+    revisions: revised
+    redistribution: allowed-with-attribution
+    derived_charts: allowed-with-attribution
+    attribution: "Epoch AI, ‘Capabilities & benchmarking’ (epoch.ai/benchmarks), CC BY 4.0"
+    cadence: weekly
+    requires: []
+    enabled: true
+
+  - id: epoch_models
+    history: native
+    revisions: revised
+    redistribution: allowed-with-attribution
+    derived_charts: allowed-with-attribution
+    attribution: "Epoch AI, ‘Data on AI models’ (epoch.ai/data/ai-models), CC BY 4.0"
+    cadence: weekly
+    requires: []
+    enabled: true
