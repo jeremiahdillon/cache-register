@@ -7,6 +7,7 @@ named in their help text (see docs/PLAN.md §10).
 from __future__ import annotations
 
 from datetime import UTC, date, datetime
+from pathlib import Path
 
 import typer
 
@@ -53,13 +54,23 @@ def fetch(
     due: bool = typer.Option(
         False, help="Only sources whose cadence has passed since their latest fetch; a missing secret is not an error."
     ),
+    from_clipboard: bool = typer.Option(False, help="Manual sources: import the clipboard (macOS)."),
+    from_file: Path = typer.Option(None, help="Manual sources: import this file."),
+    cut: str = typer.Option(None, help="Manual sources: which part of the source the input is."),
 ) -> None:
-    """Download raw data from sources into data/raw (immutable, one folder per fetch)."""
+    """Download raw data from sources into data/raw (immutable, one folder per fetch).
+
+    Sources with `input: manual` are imported one input at a time with --from-clipboard or
+    --from-file; otherwise they are listed as `manual` (with their due date) and never fail a run.
+    """
     known = load_sources()
     ids = sources or [s.id for s in known.values() if s.enabled]
     unknown = [s for s in ids if s not in known]
     if unknown:
         raise typer.BadParameter(f"unknown source(s) {', '.join(unknown)}; known: {', '.join(known)}")
+    if from_clipboard or from_file is not None or cut is not None:
+        _fetch_manual(known, sources or [], from_clipboard, from_file, cut, full, due)
+        return
     failed = False
     if due:
         from cachereg.core.schedule import due_date
@@ -78,6 +89,9 @@ def fetch(
                 typer.echo(f"  wait  {sid:<22} next due {when}")
         ids = [s for s in ids if s not in held]
     for sid in ids:
+        if known[sid].input == "manual":
+            _manual_line(known[sid])
+            continue
         try:
             raw = known[sid].module("fetch").fetch(full=full)
             out = raw.write()
@@ -91,6 +105,48 @@ def fetch(
             typer.echo(f"  FAIL  {sid:<22} {_outcome(sid, f'{type(e).__name__}: {e}')}", err=True)
     if failed:
         raise typer.Exit(code=1)
+
+
+def _manual_line(src) -> None:
+    """A manual source in a normal or scheduled run: say when it is due and how to import it."""
+    from cachereg.core.schedule import due_date
+
+    when = due_date(src)
+    shown = "now" if when is None or when <= _today() else str(when)
+    typer.echo(f"  manual {src.id:<21} due {shown}; import with: cachereg fetch {src.id} --from-clipboard --cut …")
+
+
+def _manual_help(src) -> None:
+    hook = getattr(src.module("fetch"), "manual_help", None)
+    if hook:
+        typer.echo(hook())
+
+
+def _fetch_manual(known, ids, clipboard: bool, file, cut, full: bool, due: bool) -> None:
+    from cachereg.core.manual import read_input
+
+    if full or due:
+        raise typer.BadParameter("--from-clipboard/--from-file/--cut cannot be combined with --full or --due")
+    if len(ids) != 1:
+        raise typer.BadParameter("a manual import takes exactly one source id")
+    src = known[ids[0]]
+    if src.input != "manual":
+        raise typer.BadParameter(f"{src.id} is not a manual source (input: {src.input})")
+    if not clipboard and file is None:
+        raise typer.BadParameter("--cut needs --from-clipboard or --from-file")
+    if cut is None:
+        typer.echo(f"  FAIL  {src.id:<22} --cut is required; the cuts are:", err=True)
+        _manual_help(src)
+        raise typer.Exit(code=1)
+    try:
+        manual = read_input(clipboard, file, cut)
+        raw = src.module("fetch").fetch(full=False, manual=manual)
+        out = raw.write()
+    except Exception as e:  # noqa: BLE001 (reported like any failed fetch; nothing was written)
+        typer.echo(f"  FAIL  {src.id:<22} {_outcome(src.id, f'{type(e).__name__}: {e}')}", err=True)
+        raise typer.Exit(code=1) from None
+    _outcome(src.id)
+    typer.echo(f"  ok    {src.id:<22} {cut} ({manual.via}) -> {repo_relative(out)}")
 
 
 @app.command()
@@ -125,8 +181,6 @@ def render(
     force: bool = typer.Option(False, help="Receipts: re-render even if data and code are unchanged."),
 ) -> None:
     """Render every visual. Receipts write to their committed output/; explorations to outputs/."""
-    from pathlib import Path
-
     from cachereg.render import render as run_render
 
     r = run_render(Path(folder), _day(as_of), targets=targets.split(",") if targets else None, force=force)
@@ -147,8 +201,6 @@ def reproduce(
     no_fetch: bool = typer.Option(False, help="Use raw data already downloaded."),
 ) -> None:
     """Rebuild one receipt on its own (only its sources and marts) and compare with the committed run."""
-    from pathlib import Path
-
     from cachereg.reproduce import reproduce as run_reproduce
 
     r = run_reproduce(Path(receipt), latest=latest, no_fetch=no_fetch)
@@ -183,8 +235,6 @@ def entities(
 @app.command()
 def site(out: str = typer.Option("_site", help="Output folder (gitignored).")) -> None:
     """Build the short-link site published to GitHub Pages (cacheregister.dev/<link>)."""
-    from pathlib import Path
-
     from cachereg.site import build_site, short_url
 
     for link in build_site(Path(out)):  # receipts only

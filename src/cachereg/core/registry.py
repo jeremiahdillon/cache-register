@@ -13,6 +13,7 @@ from cachereg.core.paths import REPO_ROOT
 FIELDS = {"id", "history", "revisions", "redistribution", "derived_charts", "attribution", "cadence", "requires"}
 RIGHTS = {"allowed", "allowed-with-attribution", "forbidden", "unknown"}
 CADENCES = ("daily", "weekly", "monthly")  # PLAN §4.5; core/schedule.py turns each into a next-due date
+INPUTS = ("api", "manual")  # manual: imported by the author with `fetch --from-clipboard/--from-file`
 
 
 @dataclass(frozen=True)
@@ -26,6 +27,7 @@ class Source:
     cadence: str
     requires: tuple[str, ...]
     enabled: bool
+    input: str = "api"
 
     def module(self, name: str) -> ModuleType:
         return importlib.import_module(f"cachereg.sources.{self.id}.{name}")
@@ -52,6 +54,8 @@ def load_sources(path=None) -> dict[str, Source]:
             raise ValueError(
                 f"source {entry['id']!r}: unknown cadence {entry['cadence']!r}; use one of {', '.join(CADENCES)}"
             )
+        if entry.get("input", "api") not in INPUTS:
+            raise ValueError(f"source {entry['id']!r}: input must be one of {', '.join(INPUTS)}")
         out[entry["id"]] = Source(
             id=entry["id"],
             history=entry["history"],
@@ -62,5 +66,6 @@ def load_sources(path=None) -> dict[str, Source]:
             cadence=entry["cadence"],
             requires=tuple(entry.get("requires") or ()),
             enabled=bool(entry.get("enabled", True)),
+            input=entry.get("input", "api"),
         )
     return out
