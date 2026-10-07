@@ -507,7 +507,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | Layout | **Done** — explorations vs receipts, scoped build, `reproduce` (`docs/plans/2026-10-03-explore-and-receipts.md`) |
 | 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), derived charts publishable (author policy); the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
 | 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. `epoch_benchmarks` + `epoch_models` done 2026-10-06 (`docs/plans/2026-10-06-epoch.md`; CC BY 4.0, Latest-only, weekly): marts `020_epoch_capabilities` (ECI, scores, alias coverage) and `021_epoch_models`. `sec_edgar` done 2026-10-06 (`docs/plans/2026-10-06-sec-edgar.md`; XBRL companyfacts for `config/entities/tickers.yaml`, Exact by filing date): mart `030_capex` (quarterly cash capex per company and group, calendar quarters by midpoint, completeness flags). Next: OpenRouter `session-cost` / `app-rankings`, Ramp (manual import) |
-| 3. Entities & marts | **Started** 2026-10-06 — `cachereg entities suggest --source openrouter\|epoch` (replaces the bootstrap script); `aliases.epoch` maps 171 of 274 ECI models, 47 of the top 50 (94%; target 95%); 17 cheap models near ECI 130–150 mapped by hand for analysis (a) |
+| 3. Entities & marts | **Started** 2026-10-06 — `cachereg entities suggest --source openrouter\|epoch` (replaces the bootstrap script); `aliases.epoch` maps 173 of 274 ECI models, 49 of the top 50 (98%; target 95% met — Muse Spark has no LiteLLM key); 17 cheap models near ECI 130–150 and GPT-5.2/5.4 Pro mapped by hand |
 | 4–7 | Not started (Phase 5: explorations for analyses (a), (b) and (d) built 2026-10-06) |
 
 **Open items carried between sessions**
@@ -532,10 +532,14 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   (`explore/2026-10-06-quality-vs-usage/`, `docs/plans/2026-10-06-quality-vs-usage.md`): token-weighted
   ECI of OpenRouter paid tokens vs the frontier, lag in months, near-frontier share. Not promoted.
   Note: `or_model_daily` leaves `model_id` null on `:free` permaslugs (resolve via the paid alias).
-- Analysis (a)/(d) unmapped top-50 models: GPT-5.4 Pro, GPT-5.2 Pro (vendor key only,
-  no OpenRouter listing) and Muse Spark (no LiteLLM key). **Small follow-up:** add both Pro models
-  by hand (`# manual`, vendor LiteLLM key, Epoch alias) → `eci_top50` 48/50 (96%), meeting the
-  Phase 3 target. Changes neither (a) nor (d) (never cheapest; not on OpenRouter).
+- Analysis (a)/(d) top-50 coverage: GPT-5.4 Pro and GPT-5.2 Pro mapped by hand (`# manual`; not in
+  OpenRouter's rankings, so `suggest` never proposes them) → `eci_top50` 49/50 (98%). Neither changes (a)
+  (never cheapest; charts identical) or (d) (not on OpenRouter). Muse Spark stays unmapped (no LiteLLM key);
+  GPT-5 Pro (rank 51) is unmapped too.
+- **(d) `within_2x_cheapest` is fragile at the boundary:** several models are priced at exactly 2× the
+  cheapest (e.g. $2.00 vs $1.00), and DuckDB's parallel `sum()` leaves ~1e-15 noise in `usd_per_mtok`, so a
+  rebuild can move a week's share by ~1–2 points. Fix before promoting (d): compare with a relative
+  tolerance or round prices to a cent per Mtok first.
 - **Analysis (b) "capex vs price collapse": exploration built** 2026-10-06
   (`explore/2026-10-06-capex-vs-price/`, `docs/plans/2026-10-06-capex-vs-price.md`): quarterly
   hyperscaler capex (`030_capex`) beside the cheapest price per ECI level (`040_eci_model_prices`,

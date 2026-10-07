@@ -1228,6 +1228,14 @@ models:
       - gpt-5.2
       epoch:  # manual: Epoch's dated API id gpt-5.2-2025-12-11
       - GPT-5.2
+  openai/gpt-5.2-pro:  # manual: in Epoch's top 50 but not in OpenRouter's rankings, so `suggest` never proposes it
+    aliases:
+      litellm:
+      - openrouter/openai/gpt-5.2-pro
+      - gpt-5.2-pro-2025-12-11
+      - gpt-5.2-pro
+      epoch:  # manual: Epoch's dated API id gpt-5.2-pro-2025-12-11
+      - GPT-5.2 Pro
   openai/gpt-5.2-codex:
     aliases:
       openrouter:
@@ -1253,6 +1261,14 @@ models:
       - gpt-5.4
       epoch:  # manual: Epoch's dated API id gpt-5.4-2026-03-05
       - GPT-5.4
+  openai/gpt-5.4-pro:  # manual: in Epoch's top 50 but not in OpenRouter's rankings, so `suggest` never proposes it
+    aliases:
+      litellm:
+      - openrouter/openai/gpt-5.4-pro
+      - gpt-5.4-pro-2026-03-05
+      - gpt-5.4-pro
+      epoch:  # manual: Epoch's dated API id gpt-5.4-pro-2026-03-05
+      - GPT-5.4 Pro
   openai/gpt-5.4-mini:
     aliases:
       openrouter:

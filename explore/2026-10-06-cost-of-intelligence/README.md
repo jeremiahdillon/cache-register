@@ -67,15 +67,15 @@ price (`story.frames["coverage"]`):
 
 | Level | Models | Mapped and priced | Unmapped |
 |---|---|---|---|
-| ≥ 130 | 159 | 146 | Pro tiers (GPT-5/5.2/5.4 Pro, o3-pro), GPT-5.5 Instant, Muse Spark, Qwen2.5-Max, QwQ-32B, two R1 distills, three Gemini 2.0 experimental releases |
-| ≥ 140 | 116 | 110 | Pro tiers, GPT-5.5 Instant, Muse Spark |
-| ≥ 150 | 54 | 50 | Pro tiers, Muse Spark |
+| ≥ 130 | 159 | 148 | Pro tiers (GPT-5 Pro, o3-pro), GPT-5.5 Instant, Muse Spark, Qwen2.5-Max, QwQ-32B, two R1 distills, three Gemini 2.0 experimental releases |
+| ≥ 140 | 116 | 112 | Pro tiers, GPT-5.5 Instant, Muse Spark |
+| ≥ 150 | 54 | 52 | Pro tiers, Muse Spark |
 
 Seventeen cheap models near the lower levels were mapped for this analysis (DeepSeek-V3/V3-0324/V3.1,
 Gemini 1.5 Flash/Pro 002, Mistral Small 3.2, Qwen3-235B-2507, Kimi K2 and others; `# manual` in
-`models.yaml`). Pro tiers cannot set a minimum. The other unmapped models (QwQ-32B, Qwen2.5-Max, the R1 distills) have
-no unambiguous OpenRouter or first-party key in LiteLLM; if they were cheaper, the ≥ 130 line would be lower early
-in 2025.
+`models.yaml`). GPT-5.2 Pro and GPT-5.4 Pro are mapped too (`# manual`) but, like every Pro tier, never set a
+minimum. The other unmapped models (QwQ-32B, Qwen2.5-Max, the R1 distills) have no unambiguous OpenRouter or
+first-party key in LiteLLM; if they were cheaper, the ≥ 130 line would be lower early in 2025.
 
 ## Caveats
 - **Price per token, not per task.** Reasoning models can use many more output tokens per answer, so a
