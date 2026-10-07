@@ -32,6 +32,20 @@ def _today() -> date:
     return datetime.now(UTC).date()
 
 
+def _outcome(sid: str, error: str | None = None, kind: str = "FAIL") -> str:
+    """Record a fetch outcome and return the redacted message to print. Never raises: the state file is
+    bookkeeping for `status`, so failing to save it must not fail a fetch or stop the other sources."""
+    try:
+        message = fetch_state.clean(error) if error else ""
+    except Exception:  # noqa: BLE001 (if redaction itself fails, print nothing that might hold a secret)
+        message = "(message withheld: redaction failed)"
+    try:
+        fetch_state.record(sid, error, kind)
+    except Exception as e:  # noqa: BLE001
+        typer.echo(f"  WARN  {sid:<22} fetch state not saved ({type(e).__name__})", err=True)
+    return message
+
+
 @app.command()
 def fetch(
     sources: list[str] = typer.Argument(None, help="Source ids; omit for all enabled sources."),
@@ -57,8 +71,7 @@ def fetch(
             except ValueError as e:  # e.g. an unknown cadence: report it, keep the other sources going
                 failed = True
                 held.add(sid)
-                fetch_state.record(sid, str(e))
-                typer.echo(f"  FAIL  {sid:<22} {fetch_state.clean(str(e))}", err=True)
+                typer.echo(f"  FAIL  {sid:<22} {_outcome(sid, str(e))}", err=True)
                 continue
             if when is not None and when > today:
                 held.add(sid)
@@ -68,16 +81,14 @@ def fetch(
         try:
             raw = known[sid].module("fetch").fetch(full=full)
             out = raw.write()
-            fetch_state.record(sid)
+            _outcome(sid)
             typer.echo(f"  ok    {sid:<22} {len(raw.files)} file(s) -> {repo_relative(out)}")
         except MissingSecretError as e:
             failed = failed or not due  # scheduled runs: a missing key is reported, not a failure
-            fetch_state.record(sid, str(e), kind="skip")
-            typer.echo(f"  skip  {sid:<22} {fetch_state.clean(str(e))}", err=True)
+            typer.echo(f"  skip  {sid:<22} {_outcome(sid, str(e), 'skip')}", err=True)
         except Exception as e:  # noqa: BLE001 (report per source, keep going)
             failed = True
-            fetch_state.record(sid, f"{type(e).__name__}: {e}")
-            typer.echo(f"  FAIL  {sid:<22} {fetch_state.clean(f'{type(e).__name__}: {e}')}", err=True)
+            typer.echo(f"  FAIL  {sid:<22} {_outcome(sid, f'{type(e).__name__}: {e}')}", err=True)
     if failed:
         raise typer.Exit(code=1)
 
@@ -188,14 +199,18 @@ def status() -> None:
     today = _today()
     try:
         state = fetch_state.load()
-    except ValueError as e:
+    except (ValueError, OSError) as e:
         state = {}
         typer.echo(f"  WARN  fetch state unreadable ({e}); last errors not shown", err=True)
     typer.echo(f"  {'source':<22} {'cadence':<8} {'last fetch':<11} {'next due':<11} last error")
     for src in load_sources().values():
         if not src.enabled:
             continue
-        last = last_fetch_date(src.id)
+        try:
+            last = last_fetch_date(src.id)
+        except (ValueError, KeyError, TypeError, OSError) as e:  # a corrupt raw folder or manifest: show it, keep going
+            typer.echo(f"  {src.id:<22} {src.cadence:<8} {'?':<11} {'?':<11} raw store unreadable ({type(e).__name__})")
+            continue
         due = next_due(src.cadence, last) if last else None
         when = "now" if due is None or due <= today else str(due)
         entry = state.get(src.id)

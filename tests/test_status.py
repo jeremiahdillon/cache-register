@@ -117,3 +117,35 @@ def test_messages_are_one_short_line():
     assert fetch_state.clean("a\nb") == "a"
     assert len(fetch_state.clean("x" * 1000)) == fetch_state.MAX_MESSAGE
     assert fetch_state.clean("") == ""
+
+
+def test_a_state_write_failure_never_fails_a_fetch_or_stops_the_run(sources, monkeypatch):
+    def full_disk(*a, **k):
+        raise OSError(28, "No space left on device")
+
+    monkeypatch.setattr(fetch_state, "_save", full_disk)
+    sources.clear()
+    r = invoke("fetch", "ok", "broken", "needs_key")
+    assert r.exit_code == 1, r.output  # from the missing key only (plain fetch), not from the state file
+    assert "ok    ok" in r.output and "ok    broken" in r.output and "skip  needs_key" in r.output
+    assert r.output.count("fetch state not saved (OSError)") == 3
+    assert "FAIL" not in r.output
+
+
+def test_status_reports_a_corrupt_raw_folder_and_keeps_going(sources, data_env):
+    (data_env / "data" / "raw" / "ok" / "not-a-date" / "x").mkdir(parents=True)
+    (data_env / "data" / "raw" / "ok" / "not-a-date" / "x" / "manifest.json").write_text('{"fetch_id": "z"}')
+    r = invoke("status")
+    assert r.exit_code == 0, r.output
+    assert "raw store unreadable (ValueError)" in rows(r.output)["ok"]
+    assert rows(r.output)["weekly_old"].split()[2] == "2026-03-01"
+    bad = data_env / "data" / "raw" / "broken" / "2026-03-09" / "y"
+    bad.mkdir(parents=True)
+    (bad / "manifest.json").write_text("[1, 2]")  # valid JSON, not an object
+    assert "raw store unreadable (TypeError)" in rows(invoke("status").output)["broken"]
+
+
+def test_the_state_file_is_replaced_atomically_without_leftovers(data_env):
+    for i in range(3):
+        fetch_state.record("s", None if i % 2 else f"err {i}")
+    assert [p.name for p in fetch_state.state_file().parent.iterdir()] == ["fetch.json"]

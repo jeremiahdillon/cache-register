@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -42,9 +43,14 @@ def clean(message: str) -> str:
 def _save(data: dict) -> None:
     f = state_file()
     f.parent.mkdir(parents=True, exist_ok=True)
-    tmp = f.with_suffix(".json.tmp")
-    tmp.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
-    os.replace(tmp, f)  # atomic: a crash never leaves a half-written file
+    fd, tmp = tempfile.mkstemp(dir=f.parent, prefix=".fetch.", suffix=".tmp")  # unique per writer
+    try:
+        with os.fdopen(fd, "w") as out:
+            out.write(json.dumps(data, indent=2, sort_keys=True) + "\n")
+        os.replace(tmp, f)  # atomic: a crash never leaves a half-written file
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise
 
 
 def record(source: str, error: str | None = None, kind: str = "FAIL", at: datetime | None = None) -> None:

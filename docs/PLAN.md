@@ -552,7 +552,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 - **(d) `within_2x_cheapest` boundary: fixed** 2026-10-07. Several models are priced at exactly 2× the
   cheapest (e.g. $2.00 vs $1.00), and DuckDB's parallel `sum()` left ~1e-15 noise in `usd_per_mtok`, so
   rebuilds moved single weeks by up to 9 points (13-week and quarterly medians unchanged). Weekly prices are
-  now rounded to $0.000001/Mtok in SQL (exactly 2× counts as within); repeated rebuilds give identical (d)
+  now rounded to $0.000001/Mtok in SQL (exactly 2× counts as within when both prices are whole multiples of that unit); repeated rebuilds give identical (d)
   frames (same `data_hash`).
 - **Analysis (b) "capex vs price collapse": exploration built** 2026-10-06
   (`explore/2026-10-06-capex-vs-price/`, `docs/plans/2026-10-06-capex-vs-price.md`): quarterly
