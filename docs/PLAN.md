@@ -533,9 +533,11 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 **Open items carried between sessions**
 - **Ramp AI Index (2026-10-07):** imported by hand, monthly: run `cachereg fetch ramp_ai_index
   --from-clipboard` (no `--cut`) for the list of 13 views with their page URLs, then one import per
-  view. First real import still to do (author). The token views (Ramp Token Spend Management) are a
-  different population from adoption; never mix the denominators. Check `ramp_cut_coverage`,
-  `ramp_price_check` and `ramp_token_check` after each round of imports. The Data Partner key remains
+  view. First real import 2026-10-07 (all 13 cuts, checks clean after the price-check fix); next due
+  2026-11-07. The token views (Ramp Token Spend Management) are a different population from adoption;
+  never mix the denominators. Blended prices run below Input (cached tokens, apparently), so never
+  treat Blended as a mix of Input and Output. Check `ramp_cut_coverage`, `ramp_price_check` and
+  `ramp_token_check` after each round of imports. The Data Partner key remains
   the automated route; with a key, check whether the API covers the token views.
 - Backlog: embedded/subset fonts for `blog_html` (now Google Fonts with system fallback); vector
   `blog_svg` with chrome + footer (also enables a no-data blog version); `promote` command.
