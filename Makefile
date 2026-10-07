@@ -39,9 +39,9 @@ SCHEDULE_LOGS := $(HOME)/Library/Logs/cachereg
 install-schedule:
 	@test -x .venv/bin/cachereg || { echo "run 'make setup' first"; exit 1; }
 	@mkdir -p "$(dir $(SCHEDULE_PLIST))" "$(SCHEDULE_LOGS)"
-	@sed -e 's|@CACHEREG@|$(CURDIR)/.venv/bin/cachereg|' -e 's|@REPO@|$(CURDIR)|' \
-		-e 's|@LOG_DIR@|$(SCHEDULE_LOGS)|' -e 's|@HOUR@|$(SCHEDULE_HOUR)|' -e 's|@MINUTE@|$(SCHEDULE_MINUTE)|' \
-		ops/launchd/cachereg.fetch.plist.template > "$(SCHEDULE_PLIST)"
+	@.venv/bin/python -m cachereg.core.schedule ops/launchd/cachereg.fetch.plist.template "$(SCHEDULE_PLIST)" \
+		"CACHEREG=$(CURDIR)/.venv/bin/cachereg" "REPO=$(CURDIR)" "LOG_DIR=$(SCHEDULE_LOGS)" \
+		"HOUR=$(SCHEDULE_HOUR)" "MINUTE=$(SCHEDULE_MINUTE)"
 	@plutil -lint "$(SCHEDULE_PLIST)"
 	@echo "Secrets the agent will see (it starts without your shell environment):"
 	@env -i HOME="$(HOME)" PATH=/usr/bin:/bin .venv/bin/cachereg status

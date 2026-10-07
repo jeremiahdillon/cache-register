@@ -26,6 +26,11 @@ def _day(value: str | None) -> date | None:
     return date.fromisoformat(value) if value else None
 
 
+def _today() -> date:
+    """UTC date, as raw fetch folders are dated (a seam for tests)."""
+    return datetime.now(UTC).date()
+
+
 @app.command()
 def fetch(
     sources: list[str] = typer.Argument(None, help="Source ids; omit for all enabled sources."),
@@ -40,17 +45,23 @@ def fetch(
     unknown = [s for s in ids if s not in known]
     if unknown:
         raise typer.BadParameter(f"unknown source(s) {', '.join(unknown)}; known: {', '.join(known)}")
+    failed = False
     if due:
         from cachereg.core.schedule import due_date
 
-        today, waiting = datetime.now(UTC).date(), []
+        today, held = _today(), set()
         for sid in ids:
-            when = due_date(known[sid])
+            try:
+                when = due_date(known[sid])
+            except ValueError as e:  # e.g. an unknown cadence: report it, keep the other sources going
+                failed = True
+                held.add(sid)
+                typer.echo(f"  FAIL  {sid:<22} {e}", err=True)
+                continue
             if when is not None and when > today:
-                waiting.append(sid)
+                held.add(sid)
                 typer.echo(f"  wait  {sid:<22} next due {when}")
-        ids = [s for s in ids if s not in waiting]
-    failed = False
+        ids = [s for s in ids if s not in held]
     for sid in ids:
         try:
             raw = known[sid].module("fetch").fetch(full=full)

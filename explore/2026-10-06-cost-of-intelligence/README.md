@@ -69,7 +69,7 @@ price (`story.frames["coverage"]`):
 |---|---|---|---|
 | ≥ 130 | 159 | 148 | Pro tiers (GPT-5 Pro, o3-pro), GPT-5.5 Instant, Muse Spark, Qwen2.5-Max, QwQ-32B, two R1 distills, three Gemini 2.0 experimental releases |
 | ≥ 140 | 116 | 112 | Pro tiers, GPT-5.5 Instant, Muse Spark |
-| ≥ 150 | 54 | 52 | Pro tiers, Muse Spark |
+| ≥ 150 | 54 | 52 | GPT-5 Pro, Muse Spark |
 
 Seventeen cheap models near the lower levels were mapped for this analysis (DeepSeek-V3/V3-0324/V3.1,
 Gemini 1.5 Flash/Pro 002, Mistral Small 3.2, Qwen3-235B-2507, Kimi K2 and others; `# manual` in
