@@ -10,6 +10,8 @@
 #   cadence:        daily | weekly | monthly
 #   requires:       secret names from .env.example, if any
 #   enabled:        true | false
+#   input:          api (default) | manual — manual sources are imported by the author with
+#                   `cachereg fetch <id> --from-clipboard | --from-file PATH --cut NAME`
 # Author policy (2026-10-05): derived works (charts, video, derived figures) may be published from
 # every source, credited; only raw data is gated. So for redistribution `unknown` is treated as
 # forbidden, while derived_charts blocks only when set to `forbidden` explicitly.
@@ -104,4 +106,18 @@ sources:
     attribution: "OpenRouter session cost by harness (openrouter.ai), as of {as_of}"
     cadence: weekly
     requires: [OPENROUTER_API_KEY]
+    enabled: true
+
+  # Ramp AI Index (2026-10-07, SOURCE.md): imported by hand from ramp.com/data/ai-index ("Get the
+  # data" copies a view's full history), one view (cut) per import, until a Data Partner key exists.
+  # Revised in place, so Latest-only. No licence is granted for the data: raw stays local.
+  - id: ramp_ai_index
+    history: native
+    revisions: revised
+    redistribution: unknown
+    derived_charts: allowed-with-attribution
+    attribution: "Ramp AI Index (ramp.com/data/ai-index), as of {as_of}"
+    cadence: monthly
+    requires: []
+    input: manual
     enabled: true
