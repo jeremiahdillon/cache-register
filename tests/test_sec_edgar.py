@@ -11,6 +11,7 @@ import yaml
 
 from cachereg.build import build
 from cachereg.core.http import Response
+from cachereg.core.paths import REPO_ROOT
 from cachereg.core.settings import MissingSecretError
 from cachereg.core.store import RawFetch
 from cachereg.core.warehouse import connect, query
@@ -288,3 +289,17 @@ def test_build_records_the_filing_used_as_the_revision(edgar_raw):
     rev = report.vintages["sec_edgar"]["revision"]
     assert rev == {"kind": "edgar_filed", "value": "0000000000-25-0820", "date": "2025-08-20"}
     assert report.vintages["sec_edgar"]["vintage_after_as_of"] is False
+
+
+def test_vendor_check_reads_the_redirected_entities_dir(tmp_path, monkeypatch, synthetic_entities):
+    (synthetic_entities / "vendors.yaml").write_text("vendors:\n  synthco: {name: Synth, open_weights: false}\n")
+    tickers(tmp_path, monkeypatch, {"A": {"cik": 1, "name": "A", "group": "supplier", "vendor": "synthco"}})
+    assert companies.load_companies()[0].vendor_id == "synthco"
+
+
+def test_every_shipped_ticker_vendor_resolves():
+    shipped = REPO_ROOT / "config" / "entities"
+    vendors = yaml.safe_load((shipped / "vendors.yaml").read_text())["vendors"]
+    listed = yaml.safe_load((shipped / "tickers.yaml").read_text())["companies"]
+    missing = {t: c["vendor"] for t, c in listed.items() if c.get("vendor") is not None and c["vendor"] not in vendors}
+    assert not missing, f"tickers.yaml vendors not in vendors.yaml: {missing}"

@@ -6,10 +6,16 @@ import os
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+ENTITIES_DIR = REPO_ROOT / "config" / "entities"  # tests point this at synthetic files
 
 
 def data_dir() -> Path:
     return Path(os.environ.get("CACHEREG_DATA_DIR", REPO_ROOT / "data"))
+
+
+def entities_dir() -> Path:
+    """config/entities, read at call time so one patch redirects build, entities and sources alike."""
+    return ENTITIES_DIR
 
 
 def raw_dir(source: str) -> Path:

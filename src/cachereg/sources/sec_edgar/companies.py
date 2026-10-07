@@ -6,10 +6,9 @@ from dataclasses import dataclass
 
 import yaml
 
-from cachereg.core.paths import REPO_ROOT
+from cachereg.core.paths import REPO_ROOT, entities_dir
 
 TICKERS_FILE = REPO_ROOT / "config" / "entities" / "tickers.yaml"  # tests point this at a synthetic file
-VENDORS_FILE = REPO_ROOT / "config" / "entities" / "vendors.yaml"
 GROUPS = {"hyperscaler", "neocloud", "supplier"}
 
 
@@ -31,7 +30,7 @@ def cik10(value: int | str) -> str:
 
 def load_companies() -> list[Company]:
     data = yaml.safe_load(TICKERS_FILE.read_text()) or {}
-    vendors = set((yaml.safe_load(VENDORS_FILE.read_text()) or {}).get("vendors") or {})
+    vendors = set((yaml.safe_load((entities_dir() / "vendors.yaml").read_text()) or {}).get("vendors") or {})
     out, seen = [], set()
     for ticker, c in (data.get("companies") or {}).items():
         cik = cik10(c["cik"])

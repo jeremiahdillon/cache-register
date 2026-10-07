@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import pytest
 
+from cachereg.core import paths
+
 
 def test_model_aliases_are_ranked_and_unique(tmp_path, monkeypatch):
     from cachereg import build as build_mod
@@ -13,7 +15,7 @@ def test_model_aliases_are_ranked_and_unique(tmp_path, monkeypatch):
         "  a/m1: {aliases: {openrouter: [a/m1-2026], litellm: [openrouter/a/m1, m1]}}\n"
         "  a/m2: {aliases: {openrouter: [a/m2]}}\n"
     )
-    monkeypatch.setattr(build_mod, "ENTITIES_DIR", tmp_path)
+    monkeypatch.setattr(paths, "ENTITIES_DIR", tmp_path)
     f = build_mod._model_alias_frame()
     lk = f.filter((f["model_id"] == "a/m1") & (f["source"] == "litellm"))
     assert lk["alias"].to_list() == ["openrouter/a/m1", "m1"] and lk["rank"].to_list() == [1, 2]
@@ -128,7 +130,6 @@ def _epoch_zip(groups: dict[str, tuple[float | None, list[str]]]) -> bytes:
 def epoch_entities(data_env, tmp_path, monkeypatch):
     from datetime import UTC, date, datetime
 
-    from cachereg import build as build_mod
     from cachereg import entities
     from cachereg.build import build
     from tests.test_epoch import _write
@@ -136,8 +137,8 @@ def epoch_entities(data_env, tmp_path, monkeypatch):
     d = tmp_path / "entities"
     d.mkdir()
     (d / "models.yaml").write_text(MODELS_YAML)
-    (d / "vendors.yaml").write_text((build_mod.ENTITIES_DIR / "vendors.yaml").read_text())
-    monkeypatch.setattr(build_mod, "ENTITIES_DIR", d)
+    (d / "vendors.yaml").write_text((paths.entities_dir() / "vendors.yaml").read_text())
+    monkeypatch.setattr(paths, "ENTITIES_DIR", d)
     groups = {
         "GPT 9": (150.0, ["gpt-9-20260101_high", "gpt-9-20260101_16k"]),  # E1 via vendor-direct key
         "GPT 9 Again": (149.0, ["gpt-9-20260101_low"]),  # same model: second claimant

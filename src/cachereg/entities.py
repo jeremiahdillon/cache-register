@@ -20,12 +20,11 @@ from pathlib import Path
 import polars as pl
 import yaml
 
-from cachereg import build as build_mod
-from cachereg.core.paths import data_dir, repo_relative, staged_dir
+from cachereg.core.paths import data_dir, entities_dir, repo_relative, staged_dir
 
 
 def models_yaml() -> Path:
-    return build_mod.ENTITIES_DIR / "models.yaml"  # tests point ENTITIES_DIR at synthetic files
+    return entities_dir() / "models.yaml"
 
 
 def load_models() -> dict:

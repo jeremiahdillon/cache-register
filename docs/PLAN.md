@@ -528,10 +528,9 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   remains the automated route.
 - Backlog: embedded/subset fonts for `blog_html` (now Google Fonts with system fallback); vector
   `blog_svg` with chrome + footer (also enables a no-data blog version); `promote` command.
-- Small backlog (`sec_edgar`): `companies.VENDORS_FILE` (vendor-id check for `tickers.yaml`) reads
-  the shipped `vendors.yaml` even in tests, while `build.ENTITIES_DIR` is redirected to a synthetic
-  copy. Harmless today (the fixture copies the same file); fix by passing the entities dir in, not by
-  importing `build` from a source. Add a test that every `vendor` in `tickers.yaml` resolves.
+- `config/entities` is read through `core.paths.entities_dir()` by `build`, `entities` and
+  `sec_edgar` alike, so tests redirect all of them with one patch (`sec_edgar`'s vendor check used to
+  read the shipped `vendors.yaml` in tests). A test checks that every `vendor` in `tickers.yaml` resolves.
 - LiteLLM lists many models late (most Chinese-lab models only from 2026-09-05/18): ~26% of top-50 tokens (10% of est. spend) are priced with a model's first later listing, flagged per row and reported. Re-check when Phase 3 entities land; Gemini 2.5 Flash preview `:thinking` variants stay unpriced (own price, not in LiteLLM).
 - **Analysis (a) "cost of intelligence": exploration built** 2026-10-06
   (`explore/2026-10-06-cost-of-intelligence/`, `docs/plans/2026-10-06-cost-of-intelligence.md`):

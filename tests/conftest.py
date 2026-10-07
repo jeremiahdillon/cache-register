@@ -123,14 +123,14 @@ def synthetic_entities(tmp_path, monkeypatch):
 
     import yaml
 
-    from cachereg import build as build_mod
+    from cachereg.core import paths
 
     d = tmp_path / "entities"
     d.mkdir()
-    shutil.copy(build_mod.ENTITIES_DIR / "vendors.yaml", d / "vendors.yaml")
+    shutil.copy(paths.entities_dir() / "vendors.yaml", d / "vendors.yaml")
     models = {m: {"aliases": {"openrouter": o, "litellm": lk}} for m, (o, lk) in SYNTHETIC_MODELS.items()}
     (d / "models.yaml").write_text(yaml.safe_dump({"models": models}))
-    monkeypatch.setattr(build_mod, "ENTITIES_DIR", d)
+    monkeypatch.setattr(paths, "ENTITIES_DIR", d)
     return d
 
 

@@ -18,11 +18,10 @@ import duckdb
 import polars as pl
 import yaml
 
-from cachereg.core.paths import REPO_ROOT, staged_dir, warehouse_path
+from cachereg.core.paths import entities_dir, staged_dir, warehouse_path
 from cachereg.core.registry import load_sources, reproducibility_class
 from cachereg.core.store import list_fetches
 
-ENTITIES_DIR = REPO_ROOT / "config" / "entities"  # tests point this at synthetic files
 INPUTS_RE = re.compile(r"^--\s*inputs:\s*(.+)$", re.M)
 TABLE_RE = re.compile(r"CREATE\s+OR\s+REPLACE\s+TABLE\s+([A-Za-z_][A-Za-z0-9_]*)", re.I)
 
@@ -120,7 +119,7 @@ def _stage(source_ids: list[str]) -> tuple[dict[str, int], dict[str, int]]:
 
 
 def _vendor_alias_frame() -> pl.DataFrame:
-    data = yaml.safe_load((ENTITIES_DIR / "vendors.yaml").read_text())
+    data = yaml.safe_load((entities_dir() / "vendors.yaml").read_text())
     rows = [
         {
             "vendor_id": vid,
@@ -143,7 +142,7 @@ def _model_alias_frame() -> pl.DataFrame:
     For sources whose list is a preference order (``litellm``), rank 1 is preferred. A source alias
     may belong to one model only, or a join through it would fan out.
     """
-    f = ENTITIES_DIR / "models.yaml"
+    f = entities_dir() / "models.yaml"
     models = (yaml.safe_load(f.read_text()) or {}).get("models") or {} if f.is_file() else {}
     rows, owner = [], {}
     for mid, m in models.items():
