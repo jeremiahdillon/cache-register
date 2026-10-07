@@ -1,6 +1,12 @@
 # Plan: Ramp AI Index as a manual import (Phase 2 source, prepares analyses (c) and (e))
 
-Status: DRAFT · 2026-10-07 · for author review before building
+Status: DONE · 2026-10-07
+
+Outcome: built as planned after an adversarial review of the plan (4 rounds; six findings fixed:
+same-second fetch ids, the duplicated overall series, per-cut coverage, a clipboard seam, and data
+checks for the price views and for token volume vs spend). Core gained `input: manual` and
+`fetch --from-clipboard/--from-file --cut`; source `ramp_ai_index` (13 cuts); marts `060`–`062`; 72
+synthetic tests. The first real import is the author's.
 
 ## Goal
 
