@@ -30,6 +30,9 @@ def _day(value: str | None) -> date | None:
 def fetch(
     sources: list[str] = typer.Argument(None, help="Source ids; omit for all enabled sources."),
     full: bool = typer.Option(False, help="Re-fetch full history instead of the trailing window."),
+    due: bool = typer.Option(
+        False, help="Only sources whose cadence has passed since their latest fetch; a missing secret is not an error."
+    ),
 ) -> None:
     """Download raw data from sources into data/raw (immutable, one folder per fetch)."""
     known = load_sources()
@@ -37,6 +40,16 @@ def fetch(
     unknown = [s for s in ids if s not in known]
     if unknown:
         raise typer.BadParameter(f"unknown source(s) {', '.join(unknown)}; known: {', '.join(known)}")
+    if due:
+        from cachereg.core.schedule import due_date
+
+        today, waiting = datetime.now(UTC).date(), []
+        for sid in ids:
+            when = due_date(known[sid])
+            if when is not None and when > today:
+                waiting.append(sid)
+                typer.echo(f"  wait  {sid:<22} next due {when}")
+        ids = [s for s in ids if s not in waiting]
     failed = False
     for sid in ids:
         try:
@@ -44,7 +57,7 @@ def fetch(
             out = raw.write()
             typer.echo(f"  ok    {sid:<22} {len(raw.files)} file(s) -> {repo_relative(out)}")
         except MissingSecretError as e:
-            failed = True
+            failed = failed or not due  # scheduled runs: a missing key is reported, not a failure
             typer.echo(f"  skip  {sid:<22} {e}", err=True)
         except Exception as e:  # noqa: BLE001 (report per source, keep going)
             failed = True

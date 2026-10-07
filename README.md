@@ -47,6 +47,9 @@ make check          # guard + lint + tests
 Keys are needed only for the sources you use; `.env.example` lists them and where to get
 them. You can also keep them outside the repo and point `CACHEREG_SECRETS_FILE` at that file.
 
+On a Mac, `make install-schedule` writes a launchd agent that runs `cachereg fetch --due` daily
+(only sources whose cadence has passed) and prints the `launchctl` command to load it.
+
 ## Licenses
 
 | What | License |

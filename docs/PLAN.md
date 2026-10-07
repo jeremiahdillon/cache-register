@@ -274,12 +274,21 @@ entry (+ entity aliases). Core is never edited for a new source. In v1 a new sou
 
 ### 4.5 Scheduling
 
-- `launchd` agent runs `cachereg fetch --due` daily; each source declares a cadence
-  (daily/weekly/monthly) in `sources.yaml`; `--due` fetches only what's stale.
-- Plist is a **template** with placeholders; `make install-schedule` renders it into
-  `~/Library/LaunchAgents/` locally. The rendered plist is never committed.
-- `cachereg status`: freshness per source, last error, coverage, disk usage.
-- Logs go to `~/Library/Logs/cachereg/` (outside the repo).
+- A `launchd` agent runs `cachereg fetch --due` daily. Each source declares a cadence
+  (daily/weekly/monthly) in `sources.yaml`; `--due` fetches a source when that cadence has passed
+  since its latest fetch in the raw store, judged by the fetch folder's UTC date (`daily`: the date
+  changed; `weekly`: 7 days; `monthly`: one calendar month, clamped to month end). Never-fetched
+  sources are due; a failed fetch writes nothing and is retried next run. Sources not yet due print
+  `wait … next due <date>`. Under `--due` a missing secret is reported (`skip`) but is not an error, so
+  the exit code means a real failure; plain `fetch` still exits 1 on it. Logic: `core/schedule.py`.
+- The plist is a **template** (`ops/launchd/cachereg.fetch.plist.template`, label
+  `dev.cacheregister.fetch`, placeholders only). `make install-schedule` renders it into
+  `~/Library/LaunchAgents/` (time via `SCHEDULE_HOUR`/`SCHEDULE_MINUTE`), lints it, shows which
+  secrets the agent's bare environment can see, and prints the `launchctl` commands to load, run and
+  unload it; it never loads the agent. The agent runs the project's `.venv/bin/cachereg` (so run
+  `make setup` after dependency changes). The rendered plist is never committed.
+- Logs go to `~/Library/Logs/cachereg/fetch.log` (outside the repo; not rotated).
+- Still to do: `cachereg status` freshness per source, last error, coverage, disk usage.
 
 ---
 
@@ -508,7 +517,8 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), derived charts publishable (author policy); the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
 | 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. `epoch_benchmarks` + `epoch_models` done 2026-10-06 (`docs/plans/2026-10-06-epoch.md`; CC BY 4.0, Latest-only, weekly): marts `020_epoch_capabilities` (ECI, scores, alias coverage) and `021_epoch_models`. `sec_edgar` done 2026-10-06 (`docs/plans/2026-10-06-sec-edgar.md`; XBRL companyfacts for `config/entities/tickers.yaml`, Exact by filing date): mart `030_capex` (quarterly cash capex per company and group, calendar quarters by midpoint, completeness flags). Next: OpenRouter `session-cost` / `app-rankings`, Ramp (manual import) |
 | 3. Entities & marts | **Started** 2026-10-06 — `cachereg entities suggest --source openrouter\|epoch` (replaces the bootstrap script); `aliases.epoch` maps 173 of 274 ECI models, 49 of the top 50 (98%; target 95% met — Muse Spark has no LiteLLM key); 17 cheap models near ECI 130–150 and GPT-5.2/5.4 Pro mapped by hand |
-| 4–7 | Not started (Phase 5: explorations for analyses (a), (b) and (d) built 2026-10-06) |
+| 4–5, 7 | Not started (Phase 5: explorations for analyses (a), (b) and (d) built 2026-10-06) |
+| 6. Scheduling & ops | **Started** 2026-10-06 — `cachereg fetch --due`, launchd template and `make install-schedule` (§4.5); the author loads the agent by hand. Next: freshness and last error in `status`, then a week unattended with no gaps |
 
 **Open items carried between sessions**
 - **Ramp without a key:** on ramp.com/data/ai-index the "Get the
@@ -553,9 +563,9 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   them if `--write` is used again): `Qwen2.5-72B` → `qwen/qwen2.5-vl-72b-instruct` (Epoch's group
   includes the VL model), and new model `openai/gpt-3.5-turbo-0613` (its keys mix the 16k variant).
   E3 candidates (same model if the date is ignored) are never written; confirm them by hand.
-- **Scheduling (Phase 6):** a launchd agent on the author's Mac runs `cachereg fetch --due` daily
-  (template in `ops/launchd/`; `fetch --due` is not built yet). Until then, fetch LiteLLM and
-  OpenRouter rankings by hand before rendering; daily history makes later receipts less stale.
+- **Scheduling (Phase 6):** `fetch --due` and the launchd template are built (§4.5). Once the agent is
+  loaded, OpenRouter rankings and LiteLLM accrue daily history; until then fetch them by hand before
+  rendering. Check `~/Library/Logs/cachereg/fetch.log` after the first runs.
 - Published receipts are left as rendered unless the author asks: `open-middle` must not change;
   `openrouter-wallet-share`'s committed PNGs predate the 2026-10-05 layout changes, so a re-render
   would change its visuals. Rendered floats are rounded to 9 significant digits (after
