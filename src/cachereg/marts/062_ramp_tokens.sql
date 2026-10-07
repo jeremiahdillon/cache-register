@@ -37,9 +37,12 @@ JOIN ramp_cut_coverage c ON c.cut = p.cut AND c.import_used = p.fetch_id
 LEFT JOIN dim_vendor_alias v ON v.source = 'ramp' AND v.alias = p.series_label
 WHERE p.day <= getvariable('as_of');
 
--- The three price views share one header, so the import cannot check which is which. Blended is a
--- token-weighted mix of input and output, so input <= blended <= output should hold; a day that
--- breaks it points to a view imported under the wrong cut (or a definition change at Ramp).
+-- The three price views share one header, so the import cannot check which is which. Output is the
+-- dearest per token, so input <= output and blended <= output should hold; a day that breaks either
+-- points to a view imported under the wrong cut (or a definition change at Ramp). Blended is NOT
+-- bounded below by input: on real data it falls well below input (Anthropic: blended / input from
+-- ~1.2 in early 2025 to ~0.5 in 2026), consistent with blended counting cheap cached-input tokens
+-- that the Input view leaves out. So a Blended <-> Input swap cannot be detected here.
 CREATE OR REPLACE TABLE ramp_price_check AS
 WITH w AS (
     SELECT
@@ -54,7 +57,7 @@ WITH w AS (
 SELECT
     *,
     CASE WHEN input IS NULL OR blended IS NULL OR output IS NULL THEN NULL
-         ELSE input <= blended + 1e-9 AND blended <= output + 1e-9 END AS within_bounds
+         ELSE input <= output + 1e-9 AND blended <= output + 1e-9 END AS within_bounds
 FROM w
 ORDER BY day, series_label;
 

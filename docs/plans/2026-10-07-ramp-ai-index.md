@@ -6,7 +6,10 @@ Outcome: built as planned after an adversarial review of the plan (4 rounds; six
 same-second fetch ids, the duplicated overall series, per-cut coverage, a clipboard seam, and data
 checks for the price views and for token volume vs spend). Core gained `input: manual` and
 `fetch --from-clipboard/--from-file --cut`; source `ramp_ai_index` (13 cuts); marts `060`–`062`; 72
-synthetic tests. The first real import is the author's.
+synthetic tests. First real import 2026-10-07 (13 cuts, 0 rejected rows, all labels mapped, the two
+overall-adoption copies agree, `ramp_token_check` clean): `ramp_price_check`'s `input ≤ blended` bound
+was wrong (Blended runs below Input, likely cached tokens), so the check is now input ≤ output and
+blended ≤ output, and a Blended ↔ Input swap is a stated residual risk.
 
 ## Goal
 

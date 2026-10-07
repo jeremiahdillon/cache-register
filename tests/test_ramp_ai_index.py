@@ -431,3 +431,15 @@ def test_a_view_imported_twice_under_two_cuts_is_reported_identical(data_env, sy
     imp("token_price/input", SAMPLES["token_price/blended"] + b"\n", at=AT + timedelta(hours=1))  # bytes differ
     ident = marts(date(2026, 4, 30))("SELECT * FROM ramp_price_identical WHERE identical")
     assert set(ident.select("kind_a", "kind_b").iter_rows()) == {("blended", "input")}
+
+
+def test_blended_below_input_is_not_flagged_but_input_above_output_is(data_env, synthetic_entities):
+    # Real Ramp data: blended (which appears to count cheap cached tokens) often runs below input.
+    import_all(skip=("token_price/blended",))
+    imp(
+        "token_price/blended",
+        wide("token_price/blended", list(cuts.PRICES), DAYS, scale=0.1),
+        at=AT + timedelta(hours=1),
+    )
+    pc = marts(date(2026, 4, 30))("SELECT * FROM ramp_price_check")
+    assert (pc["blended"] < pc["input"]).all() and pc["within_bounds"].all()

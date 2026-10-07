@@ -63,10 +63,15 @@ and Token spend, so neither is relied on.
 ## Known quirks and caveats
 - **The paste does not name its view.** The cut is declared and checked against the header, but the
   header cannot tell apart the three price views (identical headers) or Token volume from Token spend
-  (same columns). Mart 062 checks those with the data: `ramp_price_check` (input ≤ blended ≤ output)
-  and `ramp_token_check` (spend ÷ volume implies a price ratio between labs, which a swap inverts).
-  Residual risk: a swap in weeks when Anthropic and OpenAI are priced alike, or on days when input
-  and output prices coincide, is not detectable.
+  (same columns). Mart 062 checks those with the data: `ramp_price_check` (input ≤ output and
+  blended ≤ output) and `ramp_token_check` (spend ÷ volume implies a price ratio between labs, which a
+  swap inverts). Residual risk: a Blended ↔ Input swap is not detectable (see below), nor a
+  volume ↔ spend swap in weeks when Anthropic and OpenAI are priced alike.
+- **Blended is below Input on most days** (first real import, 2026-10-07: Anthropic 502 of 631 days,
+  OpenAI 207): blended ÷ input for Anthropic falls from ~1.2 in early 2025 to ~0.5 in 2026, while
+  output is above both on every day. Blended evidently counts cheap cached-input tokens that the
+  Input view excludes (Ramp does not say), so Blended is not a mix of the Input and Output prices
+  and must not be compared with them as one.
 - **Wrong-click guard:** an import identical to the latest import of any other cut is refused (the
   clipboard did not change).
 - **The token index** is 0–100 where 100 is "the peak for any single series in the chart"; stacked
