@@ -1,0 +1,9 @@
+# Harnesses in OpenRouter's session-cost dataset (PLAN §4.3), keyed by its `app_slug`.
+# `app_id` is the app's id in OpenRouter's app-rankings dataset (checked by hand against it,
+# 2026-10-07); `vendor` (id in vendors.yaml) marks a harness published by a model maker.
+# A session-cost slug missing here is reported by mart 055, not an error.
+harnesses:
+  claude-code:  {app_id: 2627404, name: Claude Code, vendor: anthropic}
+  codex:        {app_id: 2668297, name: Codex, vendor: openai}
+  hermes-agent: {app_id: 3067167, name: Hermes Agent}
+  kilo-code:    {app_id: 2262242, name: Kilo Code}
