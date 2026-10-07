@@ -80,17 +80,21 @@ it, and the first month of vintages gets a one-off comparison in SOURCE.md.
   before `today − 1`).
 - Per week: `sort=popular`, `limit=100`, `offset=0`, then `offset=100` only when the first page is
   full → top 200.
-- Category tags (decision 1): for the newest week only, one request per
-  subcategory (15, `limit=100`), giving which apps carry which subcategory tag **now**. The group
-  of each subcategory is taken from one request per `category` (4). 19 requests per fetch.
-- Backfill (first run or `--full`): ~91 weeks × 2 + 19 ≈ 200 requests. Refresh: the trailing 5
-  weeks (10 requests) + 19. Requests are spaced 2.1 s apart (30/min); `http.get` already retries
+- Category tags (decision 1): for the newest week only, one filter request per subcategory (15)
+  and per category group (4), each `limit=100`, plus `offset=100` when the first page is full, so
+  each filter covers its top 200 (the API maximum), 19–38 requests. **Tags are per app**: an app
+  returned by `subcategory=S` carries tag S, an app returned by `category=G` is in group G. No
+  subcategory → group table is assumed (the API publishes none); an app can have several of
+  each. Apps outside a filter's top 200 that week, and apps that were in the top 200 only in
+  earlier weeks but are absent from the newest week's filters, get no tag (`untagged`; caveat).
+- Backfill (first run or `--full`): ~91 weeks × 2 + 19–38 ≈ 200–220 requests. Refresh: the
+  trailing 5 weeks (10 requests) + 19–38. Requests are spaced 2.1 s apart (30/min); `http.get` already retries
   429 with Retry-After. A backfill takes ~7 minutes and uses ~40% of the day's budget.
 - Validation before storing, else the fetch fails and writes nothing: `meta.version == "v1"`;
   `meta.start_date`/`end_date` equal the request (no clamping); `data` a list; ranks contiguous
   from `offset + 1`; `total_tokens` all digits; `app_id` int and unique within the week.
 - Files: `apps_{start:%Y%m%d}_{end:%Y%m%d}_o{offset}.json`,
-  `category_{group|sub}_{name}_{start:%Y%m%d}.json`. Vintage `{kind: api_as_of, value: max as_of,
+  `tag_{category|subcategory}_{name}_{start:%Y%m%d}_o{offset}.json`. Vintage `{kind: api_as_of, value: max as_of,
   window: [first week start, last week end]}`.
 - Cadence **weekly** (a week only exists once it is complete). Registry: `history: native`,
   `revisions: revised` → Latest-only, `redistribution`/`derived_charts:
@@ -101,8 +105,9 @@ it, and the first month of vintages gets a one-off comparison in SOURCE.md.
 - `weekly`: `week_start` (Date), `week_end`, `rank` (Int64), `app_id` (Int64), `app_name`,
   `total_tokens` (Int64; parsed from the string, rejected if not digits), `total_requests`
   (Int64), `fetch_id`, `fetched_at`, `api_as_of`.
-- `categories`: `app_id`, `app_name`, `category`, `subcategory` (null on group-level rows),
-  `rank`, `tag_week_start`, `fetch_id`, `fetched_at`.
+- `tags`: one row per app × filter: `app_id` (Int64), `app_name`, `tag_kind` (`category` |
+  `subcategory`), `tag` (String), `rank_in_tag` (Int64), `tag_week_start` (Date), `fetch_id`,
+  `fetched_at`.
 - `_rejected_rows`.
 
 ### 2. `openrouter_session_cost`
@@ -115,7 +120,7 @@ it, and the first month of vintages gets a one-off comparison in SOURCE.md.
   snapshot changed mid-fetch: retry the whole fetch once, then fail); `version == "v1"`;
   (app_slug, permaslug, turn_range) unique; every row's `turn_range` equals the filter; cost a
   finite number ≥ 0. A null window (no snapshot published) fails the fetch without storing.
-- Files `session_cost_{turn_range}.json`; vintage `{kind: snapshot, value: <window_end_date>,
+- Files `session_cost_{turn_range}_o{offset}.json`; vintage `{kind: snapshot, value: <window_end_date>,
   window_days, as_of}`.
 - Cadence **weekly** (snapshots are weekly; with a 7-day cadence a fetch can lag a snapshot by a
   week but cannot skip one unless OpenRouter skips a week; gaps show as missing `window_end_date`
@@ -154,11 +159,12 @@ it, and the first month of vintages gets a one-off comparison in SOURCE.md.
 - `or_app_weekly`: `week_start`, `app_id`, `app_name` (as served that week), `rank`,
   `total_tokens`, `total_requests`, `tokens_per_request`, `fetch_id`; `week_start ≤ as_of − 6`.
 - `or_app_dim`: `app_id`, latest name, first/last week seen in the top 200, current
-  subcategories and category groups (from the newest category fetch on or before the cutoff;
-  **current tags applied to all history**: caveat).
-- `or_app_category_weekly`: tokens per category group and subcategory per week, top-200 apps
-  only, apps counted in each of their tags (tags can overlap; the table says so) and an
-  `untagged` bucket.
+  `categories` and `subcategories` as sorted `VARCHAR[]` lists (empty when untagged), from the
+  newest tag fetch on or before the cutoff (**current tags applied to all history**: caveat).
+- `or_app_category_weekly`: per week × (`tag_kind`, `tag`): tokens, requests and app count of
+  the week's top-200 apps carrying that tag. An app is counted under each of its tags, so rows of
+  one `tag_kind` can sum to more than the week's total (column `tags_overlap` documents it); an
+  `untagged` row per `tag_kind` holds the apps with no tag of that kind.
 
 **`051_openrouter_app_share`** (inputs: `openrouter_apps`, `openrouter_rankings`)
 - `or_app_share_weekly`: per week, OpenRouter total tokens (rankings-daily summed Mon–Sun,
@@ -191,7 +197,8 @@ the existing synthetic permaslugs, harnesses `harness-a` / `harness-b`.
 - Fetch (apps): ISO-week windows from 2025-01-06 to the last complete week; refresh plans the
   trailing 5 weeks; second page only when the first is full; clamped `meta.start_date`,
   non-contiguous ranks, non-digit tokens and duplicate `app_id` refused before storing;
-  request spacing (clock patched); category requests only for the newest week.
+  request spacing (clock patched); tag requests only for the newest week, second tag page only
+  when the first is full; session-cost page file names unique per offset.
 - Fetch (session cost): four turn-range requests; pagination when a page is full and the
   5000 cap; mismatched `window_end_date` between responses retried once then refused; null
   window refused; duplicate cells refused.
@@ -224,7 +231,7 @@ per source with the facts above; `.env.example` unchanged (same key).
 
 ## Decisions (author review, 2026-10-07)
 
-1. **Category tags: yes.** The 19 tag requests run on every fetch (newest week only).
+1. **Category tags: yes.** The 19–38 tag requests run on every fetch (newest week only).
 2. **Window grain: weekly only.** Calendar-month windows can be added later as their own windows
    if an analysis needs monthly ranks (a month's top 200 is not the sum of its weeks' top 200).
 3. **Top 200**, not top 100: both pages per week.
