@@ -1,6 +1,13 @@
 # Plan: OpenRouter app rankings and session cost (two Phase 2 sources)
 
-Status: APPROVED · 2026-10-07 (decisions below; not built yet)
+Status: DONE · 2026-10-07
+
+Outcome: both sources and marts `050`, `051`, `055` are built (40 synthetic tests). First fetches
+2026-10-07: session-cost snapshot ending 2026-10-04 (651 cells, 4 harnesses, 633 cells with a
+`model_id`); app-rankings 91 weeks × 200 apps (2,653 distinct apps) plus tags (one filter,
+`category=coding`, filled a second page). The top 200 apps hold 28–63% of OpenRouter's weekly
+tokens (median 38%); 89 of 91 weeks have a share, because rankings-daily lacks one day in the weeks
+of 2025-06-09 and 2025-07-14. In the newest week 132 of the top 200 apps carry no category tag.
 
 ## Goal
 
