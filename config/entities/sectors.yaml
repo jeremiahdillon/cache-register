@@ -1,0 +1,25 @@
+# NAICS 2-digit sectors (2022 titles) and the labels sources use for them (PLAN §4.3).
+# `aliases.ramp`: the sector names in the Ramp AI Index views (shortened NAICS titles).
+# `assumed: true` marks a mapping inferred from the label, not stated by the source.
+sectors:
+  "11":    {title: "Agriculture, Forestry, Fishing and Hunting", aliases: {ramp: ["Agriculture, Forestry, Fishing and Hunting"]}}
+  "21":    {title: "Mining, Quarrying, and Oil and Gas Extraction", aliases: {ramp: ["Mining, Quarrying, and Oil and Gas Extraction"]}}
+  "22":    {title: "Utilities", aliases: {ramp: ["Utilities"]}}
+  "23":    {title: "Construction", aliases: {ramp: ["Construction"]}}
+  "31-33": {title: "Manufacturing", aliases: {ramp: ["Manufacturing"]}}
+  "42":    {title: "Wholesale Trade", aliases: {ramp: ["Wholesale Trade"]}}
+  "44-45": {title: "Retail Trade", aliases: {ramp: ["Retail"]}}
+  "48-49": {title: "Transportation and Warehousing", aliases: {ramp: ["Transportation and Warehousing"]}}
+  # Ramp's "Technology and media" is taken to be Information (51); it may also hold parts of 54.
+  "51":    {title: "Information", assumed: true, aliases: {ramp: ["Technology and media"]}}
+  "52":    {title: "Finance and Insurance", aliases: {ramp: ["Finance and insurance"]}}
+  "53":    {title: "Real Estate and Rental and Leasing", aliases: {ramp: ["Real Estate and Rental and Leasing"]}}
+  "54":    {title: "Professional, Scientific, and Technical Services", aliases: {ramp: ["Professional, scientific, and technical services"]}}
+  "55":    {title: "Management of Companies and Enterprises", aliases: {ramp: ["Management of Companies and Enterprises"]}}
+  "56":    {title: "Administrative and Support and Waste Management and Remediation Services", aliases: {ramp: ["Administrative and Support and Waste Management and Remediation Services"]}}
+  "61":    {title: "Educational Services", aliases: {ramp: ["Educational Services"]}}
+  "62":    {title: "Health Care and Social Assistance", aliases: {ramp: ["Health care"]}}
+  "71":    {title: "Arts, Entertainment, and Recreation", aliases: {ramp: ["Arts, Entertainment, and Recreation"]}}
+  "72":    {title: "Accommodation and Food Services", aliases: {ramp: ["Accommodation and food services"]}}
+  "81":    {title: "Other Services (except Public Administration)", aliases: {ramp: ["Other Services (except Public Administration)"]}}
+  "92":    {title: "Public Administration", aliases: {ramp: ["Public Administration"]}}

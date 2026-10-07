@@ -266,3 +266,18 @@ def test_suggest_openrouter_matches_the_bootstrap_rules(synthetic_raw, synthetic
     (synthetic_entities / "models.yaml").write_text("models: {}\n")
     props = entities.suggest_openrouter(min_share=0, echo=lambda *_: None)
     assert props == {m: {"aliases": {"openrouter": o, "litellm": lk}} for m, (o, lk) in SYNTHETIC_MODELS.items()}
+
+
+def test_vendor_and_sector_aliases_are_unique_per_source():
+    """A source label may name one vendor (or one sector) only, or joins through it would fan out."""
+    import yaml
+
+    from cachereg.build import _vendor_alias_frame
+    from cachereg.core import paths
+
+    va = _vendor_alias_frame()
+    assert va.height == va.select("source", "alias").unique().height
+    sectors = yaml.safe_load((paths.entities_dir() / "sectors.yaml").read_text())["sectors"]
+    ramp = [a for s in sectors.values() for a in s["aliases"]["ramp"]]
+    assert len(ramp) == len(set(ramp)) == 20
+    assert all(isinstance(code, str) for code in sectors)

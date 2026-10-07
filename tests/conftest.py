@@ -118,7 +118,7 @@ def write_synthetic_litellm(fetched: datetime, end: date) -> None:
 
 @pytest.fixture
 def synthetic_entities(tmp_path, monkeypatch):
-    """Synthetic config/entities: the real vendors.yaml plus a models.yaml for the synthetic models."""
+    """Synthetic config/entities: the real vendors.yaml and sectors.yaml plus a models.yaml for the synthetic models."""
     import shutil
 
     import yaml
@@ -128,6 +128,7 @@ def synthetic_entities(tmp_path, monkeypatch):
     d = tmp_path / "entities"
     d.mkdir()
     shutil.copy(paths.entities_dir() / "vendors.yaml", d / "vendors.yaml")
+    shutil.copy(paths.entities_dir() / "sectors.yaml", d / "sectors.yaml")
     models = {m: {"aliases": {"openrouter": o, "litellm": lk}} for m, (o, lk) in SYNTHETIC_MODELS.items()}
     (d / "models.yaml").write_text(yaml.safe_dump({"models": models}))
     monkeypatch.setattr(paths, "ENTITIES_DIR", d)

@@ -1,32 +1,34 @@
-# Canonical vendors (PLAN §4.3). `aliases` lists the author prefixes each source uses.
+# Canonical vendors (PLAN §4.3). `aliases` lists the author prefixes each source uses
+# (`ramp`: the lab names in the Ramp AI Index views).
 # `hq` is the country of the developer's headquarters (ISO 3166 alpha-2).
 # Ids starting with "_" are not model makers (anonymous pre-release models, routers).
 # `cachereg entities check` (Phase 3) reports prefixes that are not mapped here.
 vendors:
-  openai:           {name: OpenAI,                  open_weights: false, hq: US, aliases: {openrouter: [openai]}}
-  anthropic:        {name: Anthropic,               open_weights: false, hq: US, aliases: {openrouter: [anthropic]}}
-  google:           {name: Google,                  open_weights: false, hq: US, aliases: {openrouter: [google]}}
-  xai:              {name: xAI,                     open_weights: false, hq: US, aliases: {openrouter: [x-ai]}}
-  meta:             {name: Meta,                    open_weights: true,  hq: US, aliases: {openrouter: [meta-llama, meta]}}
-  nvidia:           {name: NVIDIA,                  open_weights: true,  hq: US, aliases: {openrouter: [nvidia]}}
+  openai:           {name: OpenAI,                  open_weights: false, hq: US, aliases: {openrouter: [openai], ramp: [OpenAI]}}
+  anthropic:        {name: Anthropic,               open_weights: false, hq: US, aliases: {openrouter: [anthropic], ramp: [Anthropic]}}
+  google:           {name: Google,                  open_weights: false, hq: US, aliases: {openrouter: [google], ramp: [Google]}}
+  xai:              {name: xAI,                     open_weights: false, hq: US, aliases: {openrouter: [x-ai], ramp: [xAI]}}
+  meta:             {name: Meta,                    open_weights: true,  hq: US, aliases: {openrouter: [meta-llama, meta], ramp: [Meta]}}
+  nvidia:           {name: NVIDIA,                  open_weights: true,  hq: US, aliases: {openrouter: [nvidia], ramp: [NVIDIA]}}
   microsoft:        {name: Microsoft,               open_weights: true,  hq: US, aliases: {openrouter: [microsoft]}}
-  amazon:           {name: Amazon,                  open_weights: false, hq: US, aliases: {openrouter: [amazon]}}
+  amazon:           {name: Amazon,                  open_weights: false, hq: US, aliases: {openrouter: [amazon], ramp: [Amazon]}}
   poolside:         {name: Poolside,                open_weights: false, hq: US, aliases: {openrouter: [poolside]}}
   arcee:            {name: Arcee AI,                open_weights: true,  hq: US, aliases: {openrouter: [arcee-ai]}}
   perplexity:       {name: Perplexity,              open_weights: false, hq: US, aliases: {openrouter: [perplexity]}}
   thinkingmachines: {name: Thinking Machines,       open_weights: false, hq: US, aliases: {openrouter: [thinkingmachines]}}
-  mistral:          {name: Mistral,                 open_weights: true,  hq: FR, aliases: {openrouter: [mistralai]}}
+  mistral:          {name: Mistral,                 open_weights: true,  hq: FR, aliases: {openrouter: [mistralai], ramp: [Mistral AI, Mistral]}}
   cohere:           {name: Cohere,                  open_weights: true,  hq: CA, aliases: {openrouter: [cohere]}}
   upstage:          {name: Upstage,                 open_weights: true,  hq: KR, aliases: {openrouter: [upstage]}}
-  deepseek:         {name: DeepSeek,                open_weights: true,  hq: CN, aliases: {openrouter: [deepseek]}}
-  alibaba:          {name: Alibaba (Qwen),          open_weights: true,  hq: CN, aliases: {openrouter: [qwen, alibaba]}}
-  moonshot:         {name: Moonshot AI,             open_weights: true,  hq: CN, aliases: {openrouter: [moonshotai]}}
-  zai:              {name: Z.ai,                    open_weights: true,  hq: CN, aliases: {openrouter: [z-ai, thudm]}}
-  minimax:          {name: MiniMax,                 open_weights: true,  hq: CN, aliases: {openrouter: [minimax]}}
+  deepseek:         {name: DeepSeek,                open_weights: true,  hq: CN, aliases: {openrouter: [deepseek], ramp: [DeepSeek]}}
+  alibaba:          {name: Alibaba (Qwen),          open_weights: true,  hq: CN, aliases: {openrouter: [qwen, alibaba], ramp: [Alibaba]}}
+  moonshot:         {name: Moonshot AI,             open_weights: true,  hq: CN, aliases: {openrouter: [moonshotai], ramp: [Moonshot]}}
+  zai:              {name: Z.ai,                    open_weights: true,  hq: CN, aliases: {openrouter: [z-ai, thudm], ramp: [Z.ai]}}
+  minimax:          {name: MiniMax,                 open_weights: true,  hq: CN, aliases: {openrouter: [minimax], ramp: [MiniMax]}}
   xiaomi:           {name: Xiaomi,                  open_weights: true,  hq: CN, aliases: {openrouter: [xiaomi]}}
   tencent:          {name: Tencent,                 open_weights: true,  hq: CN, aliases: {openrouter: [tencent]}}
   stepfun:          {name: StepFun,                 open_weights: true,  hq: CN, aliases: {openrouter: [stepfun]}}
   ant:              {name: Ant Group (inclusionAI), open_weights: true,  hq: CN, aliases: {openrouter: [inclusionai]}}
   bytedance:        {name: ByteDance Seed,          open_weights: false, hq: CN, aliases: {openrouter: [bytedance-seed]}}
+  cursor:           {name: Cursor (Anysphere),      open_weights: false, hq: US, aliases: {ramp: [Cursor]}}
   _stealth:         {name: Stealth (unannounced),   open_weights: false, hq: null, aliases: {openrouter: [stealth]}}
   _router:          {name: OpenRouter routers,      open_weights: false, hq: null, aliases: {openrouter: [openrouter]}}
