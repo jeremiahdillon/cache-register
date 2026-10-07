@@ -545,10 +545,11 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   OpenRouter's rankings, so `suggest` never proposes them) → `eci_top50` 49/50 (98%). Neither changes (a)
   (never cheapest; charts identical) or (d) (not on OpenRouter). Muse Spark stays unmapped (no LiteLLM key);
   GPT-5 Pro (rank 51) is unmapped too.
-- **(d) `within_2x_cheapest` is fragile at the boundary:** several models are priced at exactly 2× the
-  cheapest (e.g. $2.00 vs $1.00), and DuckDB's parallel `sum()` leaves ~1e-15 noise in `usd_per_mtok`, so a
-  rebuild can move a week's share by ~1–2 points. Fix before promoting (d): compare with a relative
-  tolerance or round prices to a cent per Mtok first.
+- **(d) `within_2x_cheapest` boundary: fixed** 2026-10-07. Several models are priced at exactly 2× the
+  cheapest (e.g. $2.00 vs $1.00), and DuckDB's parallel `sum()` left ~1e-15 noise in `usd_per_mtok`, so
+  rebuilds moved single weeks by up to 9 points (13-week and quarterly medians unchanged). Weekly prices are
+  now rounded to $0.000001/Mtok in SQL (exactly 2× counts as within); repeated rebuilds give identical (d)
+  frames (same `data_hash`).
 - **Analysis (b) "capex vs price collapse": exploration built** 2026-10-06
   (`explore/2026-10-06-capex-vs-price/`, `docs/plans/2026-10-06-capex-vs-price.md`): quarterly
   hyperscaler capex (`030_capex`) beside the cheapest price per ECI level (`040_eci_model_prices`,

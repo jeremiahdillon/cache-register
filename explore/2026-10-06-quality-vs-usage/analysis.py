@@ -26,8 +26,10 @@ def weekly_models(con, as_of: date, include_free: bool = False) -> tuple[pl.Data
         f"""
         SELECT date_trunc('week', d.date)::DATE AS week, e.model_group, e.display_name, e.eci,
                sum(d.total_tokens) AS tokens,
-               sum(d.total_tokens * d.blended_usd_per_token) FILTER (WHERE NOT d.is_free)
-                 / sum(d.total_tokens) FILTER (WHERE NOT d.is_free) * 1e6 AS usd_per_mtok
+               -- Rounded to $0.000001/Mtok: parallel sums leave ~1e-15 noise, which made prices at exactly
+               -- 2x the cheapest flip in or out of `within_2x_cheapest` between rebuilds.
+               round(sum(d.total_tokens * d.blended_usd_per_token) FILTER (WHERE NOT d.is_free)
+                 / sum(d.total_tokens) FILTER (WHERE NOT d.is_free) * 1e6, 6) AS usd_per_mtok
         FROM or_model_daily d
         -- `:free` permaslugs carry no model_id in the mart: resolve them through their paid model's alias.
         LEFT JOIN dim_model_alias fa

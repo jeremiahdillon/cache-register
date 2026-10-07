@@ -33,6 +33,10 @@ Do OpenRouter tokens go to the most capable models? (PLAN §10, starter analysis
 - **Near-frontier share:** tokens on models within 3 ECI points (`near_points`) of the week's best top-50 model.
 - **Within 2× of cheapest:** a model's token-weighted blended price that week (`or_model_daily`, LiteLLM list
   prices, 80% input + 20% output) ÷ the cheapest price among that week's top-50 models with at least its ECI.
+  Weekly prices are rounded to $0.000001 per million tokens before comparing, and a model at exactly 2× counts
+  as within. Without the rounding, floating-point noise from the parallel sums made models priced at exactly 2×
+  (e.g. $2.00 vs $1.00) flip in or out between rebuilds, moving single weeks by up to 9 points. The quarterly and
+  13-week figures above did not change.
 
 ### Sensitivity (last 13 weeks)
 
