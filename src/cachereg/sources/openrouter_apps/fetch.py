@@ -83,13 +83,20 @@ def check_page(body: dict, start: date, end: date, offset: int, seen: set) -> No
 
 
 def fetch_ranked(client: Client, raw: RawFetch, start: date, end: date, name, extra=None) -> list:
-    """Ranks 1–100, then 101–200 when the first page is full; stores each page, returns as_of values."""
+    """Ranks 1–100, then 101–200 when the first page is full; stores each page, returns as_of values.
+
+    An unfiltered week is never empty: an empty first page (e.g. a week not yet materialised) fails
+    the fetch, or the mart would silently drop the week or keep an older vintage. A tag filter can
+    be empty.
+    """
     as_of, seen = [], set()
     for offset in (0, LIMIT):
         params = {"start_date": start.isoformat(), "end_date": end.isoformat(), "sort": "popular"}
         params |= {"limit": str(LIMIT), "offset": str(offset), **(extra or {})}
         resp, body = client.get(ENDPOINT, params)
         check_page(body, start, end, offset, seen)
+        if offset == 0 and not body["data"] and not extra:
+            raise ValueError(f"app-rankings: no apps for the week {start}..{end}")
         as_of.append(body["meta"].get("as_of"))
         raw.add(name(offset), json.dumps(body).encode(), resp.url, resp.status)
         if len(body["data"]) < LIMIT:

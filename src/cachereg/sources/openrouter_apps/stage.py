@@ -53,10 +53,16 @@ def stage() -> dict[str, pl.DataFrame]:
         for name in f.manifest["files"]:
             body = json.loads(f.read(name))
             meta = body.get("meta") or {}
-            start = date.fromisoformat(meta["start_date"])
-            if name.startswith("tag_"):
-                _, kind, tag, *_ = name.split("_")
-            for r in body.get("data") or []:
+            data = body.get("data") or []
+            try:
+                start = date.fromisoformat(meta["start_date"])
+                end = date.fromisoformat(meta["end_date"])
+                if name.startswith("tag_"):
+                    _, kind, tag, *_ = name.split("_")
+            except (KeyError, TypeError, ValueError):
+                rejected += len(data)  # a file without a readable window: all its rows are rejected
+                continue
+            for r in data:
                 try:
                     if name.startswith("tag_"):
                         row = {"app_id": _count(r["app_id"]), "app_name": r["app_name"], "tag_kind": kind, "tag": tag}
@@ -65,7 +71,7 @@ def stage() -> dict[str, pl.DataFrame]:
                         weekly.append(
                             {
                                 "week_start": start,
-                                "week_end": date.fromisoformat(meta["end_date"]),
+                                "week_end": end,
                                 "rank": int(r["rank"]),
                                 "app_id": _count(r["app_id"]),
                                 "app_name": r["app_name"],

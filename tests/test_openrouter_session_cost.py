@@ -141,6 +141,8 @@ def test_a_snapshot_published_mid_fetch_is_retried_once(api):
     api["window"] = lambda n: "2026-09-27" if n <= 2 else "2026-10-04"  # changes at request 3
     raw = sf.fetch()
     assert raw.vintage["value"] == "2026-10-04" and len(api["seen"]) == 3 + 4
+    assert sorted(raw.files) == sorted(sf.file_name(t, 0) for t in sf.TURN_RANGES)  # a fresh RawFetch
+    assert {json.loads(b)["meta"]["window_end_date"] for b in raw.files.values()} == {"2026-10-04"}
 
 
 def test_a_snapshot_that_keeps_changing_fails(api):

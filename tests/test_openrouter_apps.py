@@ -164,6 +164,19 @@ def test_fetch_refuses_bad_pages(api, mutate, match):
         af.fetch(today=TODAY)
 
 
+def test_an_empty_week_is_refused_but_an_empty_tag_filter_is_not(api):
+    def empty_week(b, p):
+        if p["start_date"] == "2025-01-27" and "category" not in p and "subcategory" not in p:
+            b["data"] = []
+
+    api["mutate"] = empty_week
+    with pytest.raises(ValueError, match="no apps for the week 2025-01-27"):
+        af.fetch(today=TODAY)
+    api["mutate"] = None
+    raw = af.fetch(today=TODAY)  # e.g. `category=creative` has no members in the synthetic data
+    assert json.loads(raw.files["tag_category_creative_20250127_o0.json"])["data"] == []
+
+
 def test_duplicate_app_ids_across_the_two_pages_are_refused(api, monkeypatch):
     monkeypatch.setattr(af, "LIMIT", 2)
 
@@ -223,6 +236,20 @@ def test_stage_parses_big_token_strings_tags_and_rejects(data_env):
     t = out["tags"]
     assert sorted(t.filter(t["app_id"] == 102)["tag"].to_list()) == ["entertainment", "general-chat", "roleplay"]
     assert t["tag_week_start"].unique().to_list() == [WEEKS[0]]
+
+
+def test_stage_rejects_a_file_without_a_readable_window(data_env):
+    r = RawFetch("openrouter_apps", "1", fetched_at=datetime(2025, 2, 5, 12, tzinfo=UTC))
+    good = page(ranking(WEEKS[0]), str(WEEKS[0]), str(WEEKS[0] + timedelta(days=6)), 0, 100)
+    bad = page(ranking(WEEKS[1]), None, "2025-01-19", 0, 100)
+    r.add(af.file_name(WEEKS[0], WEEKS[0] + timedelta(days=6), 0), json.dumps(good).encode(), "https://x.test", 200)
+    r.add(af.file_name(WEEKS[1], WEEKS[1] + timedelta(days=6), 0), json.dumps(bad).encode(), "https://x.test", 200)
+    r.add("tag_oddname.json", json.dumps(good).encode(), "https://x.test", 200)
+    r.write()
+    out = ast.stage()
+    assert out["weekly"]["week_start"].unique().to_list() == [WEEKS[0]]
+    assert out["tags"].height == 0
+    assert int(out["_rejected_rows"]["rejected"][0]) == 3 + 3  # both unreadable files' rows
 
 
 # --- marts -------------------------------------------------------------------
