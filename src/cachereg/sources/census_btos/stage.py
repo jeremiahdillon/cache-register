@@ -57,12 +57,21 @@ def size_classes() -> list[dict]:
     ]
 
 
+DATE_FIELDS = ("collection_start", "collection_end", "reference_start", "reference_end")
+
+
 def _cycles(dated: list[tuple[tuple, str, dict]]) -> list[tuple]:
-    """Merge the date sheets: (priority, file, cycles); lower priority wins for a cycle."""
+    """Merge the date sheets: (priority, file, cycles); lower priority wins for a cycle.
+
+    Collection and reference dates must agree across every sheet and version that lists a cycle (a stage
+    error otherwise: the monthly method rests on them). Publication dates may move; the winner's is kept.
+    """
     chosen = {}
     for _, key, cycles in sorted(dated, key=lambda d: d[0]):
         for code, c in cycles.items():
-            chosen.setdefault(code, (c, key))
+            first = chosen.setdefault(code, (c, key))[0]
+            if any(getattr(first, f) != getattr(c, f) for f in DATE_FIELDS):
+                raise ValueError(f"{SOURCE}: cycle {code} has other collection or reference dates in {key}")
     rows, previous_year = [], None
     for code in sorted(chosen):
         c, key = chosen[code]
@@ -101,6 +110,13 @@ def stage() -> dict[str, pl.DataFrame]:
                     *tag, spec.wording, c.question, c.answer, c.breakdown, c.group_key, c.sector_code, c.size_class,
                     c.cycle, c.estimate_pct, c.se_pct, "suppressed" if c.suppressed else "published",
                 ))  # fmt: skip
+    wording_at, cycle_at = list(ESTIMATES_SCHEMA).index("wording"), list(ESTIMATES_SCHEMA).index("cycle")
+    by_wording: dict[str, set[str]] = {}
+    for row in estimates:
+        by_wording.setdefault(row[wording_at], set()).add(row[cycle_at])
+    both = sorted(by_wording.get("original", set()) & by_wording.get("current", set()))
+    if both:  # the two wordings are separate series; Census never asked both in one cycle
+        raise ValueError(f"{SOURCE}: cycles hold values in both AI wordings: {both}")
     return {
         "estimates": pl.DataFrame(estimates, schema=ESTIMATES_SCHEMA, orient="row"),
         "versions": pl.DataFrame(versions, schema=VERSIONS_SCHEMA, orient="row"),

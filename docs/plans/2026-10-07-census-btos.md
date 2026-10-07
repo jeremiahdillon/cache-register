@@ -288,10 +288,12 @@ Excel reader (below), which lives with the sources as `_epoch_zip.py` does.
     measure different things (§6).
   - `btos_ramp_census_check`: Ramp's `ramp_census_restated` vs our recomputation of Ramp's rules
     (unweighted mean of the national current-use `yes` cycles grouped by the month collection starts,
-    and by the month it ends): month, Ramp's value, both recomputations with their cycle counts,
-    `matches` (`collection_start` | `collection_end` | `both` | `neither`), `agree` (either rule within
-    0.005) and `wording_agrees`. It checks both adapters at once. Built: Ramp used the start rule
-    through May 2026 and the end rule from June 2026; all 35 months agree.
+    and by the month it ends, each per wording): month, wording, Ramp's value, both recomputations
+    with their cycle counts, `matches` (`collection_start` | `collection_end` | `both` | `neither`) and
+    `agree` (either rule within 0.005). Each Ramp month is compared only with the wording its
+    `census_question_version` names, so the two series are never averaged together. It checks both
+    adapters at once. Built: Ramp used the start rule through May 2026 and the end rule from June
+    2026; all 35 months agree.
   - Sizes: not joined. An analysis shows BTOS's seven classes beside Ramp's three labels as two
     panels; `070`/`071` and `060` already hold both.
 

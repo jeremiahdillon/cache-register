@@ -10,6 +10,7 @@ from __future__ import annotations
 import io
 import zipfile
 from datetime import UTC, date, datetime, timedelta
+from xml.etree import ElementTree as ET
 from xml.sax.saxutils import escape
 
 import pytest
@@ -62,8 +63,8 @@ def yes_value(group: tuple, cycle: str, kind: str = "ai_current") -> float:
     return v + (4.0 if kind == "ai_expected" else 0.0)
 
 
-def cell(group: tuple, kind: str, answer: str, cycle: str, wording: str, se: bool) -> str:
-    asked = ORIGINAL if wording == "original" else CURRENT
+def cell(group: tuple, kind: str, answer: str, cycle: str, wording: str, se: bool, asked=None) -> str:
+    asked = asked or (ORIGINAL if wording == "original" else CURRENT)
     if cycle not in asked:
         return "."
     if answer == "Yes" and group and group[0] == "11" and (group[0], cycle) in SUPPRESSED:
@@ -84,7 +85,8 @@ def estimate_sheet(breakdown: str, wording: str, se: bool, cycles: list[str], **
         for g in GROUPS[breakdown]:
             for aid, answer in enumerate(workbook.ANSWERS, start=1):
                 text = override["question"] if kind == "ai_current" and "question" in override else qtext(kind, wording)
-                rows.append([*g, qid, text, str(aid), answer, *(cell(g, kind, answer, c, wording, se) for c in cols)])
+                values = (cell(g, kind, answer, c, wording, se, override.get("asked")) for c in cols)
+                rows.append([*g, qid, text, str(aid), answer, *values])
     rows += [[], ["Source: U.S. Census Bureau, Business Trends and Outlook Survey (BTOS), synthetic test workbook."]]
     return rows
 
@@ -104,21 +106,22 @@ def cycle_dates(c: str) -> tuple[date, date, date, date, date | None]:
     )
 
 
-def current_dates() -> list[list]:
+def current_dates(dates: dict | None = None) -> list[list]:
+    """The date sheet; `dates` replaces some cycles' (collection start, end, reference start, end, publication)."""
     rows = [["Sample Year", "Cycle", "Panel", "Smpdt", "Collection Start", "Col End", "Reference Period Start",
              "Ref End", "Publication Date", None]]  # fmt: skip
     for i, c in enumerate(ALL):
         year = {"202517": "4", "202521": "SHUTDOWN", "202601": "5"}.get(c)
-        cs, ce, rs, re_, pub = cycle_dates(c)
+        cs, ce, rs, re_, pub = (dates or {}).get(c) or cycle_dates(c)
         rows.append([year, "1", str(i % 6 + 1), c, serial(cs), serial(ce), serial(rs), serial(re_),
                      serial(pub) if pub else None])  # fmt: skip
     return rows + [[None]]
 
 
-def original_dates() -> list[list]:
+def original_dates(cycles: list[str] = ORIGINAL, dates: dict | None = None) -> list[list]:
     rows = [["Smpdt", "Col Start", "Col End", "Ref Start", "Ref End"]]
-    for c in ORIGINAL:
-        rows.append([c, *(d.strftime("%m/%d/%Y") for d in cycle_dates(c)[:4])])
+    for c in cycles:
+        rows.append([c, *(d.strftime("%m/%d/%Y") for d in ((dates or {}).get(c) or cycle_dates(c))[:4])])
     return rows
 
 
@@ -183,22 +186,22 @@ def write_xlsx(sheets: dict[str, list[list]], shared: bool = True, doctype: bool
     return buf.getvalue()
 
 
-def current_file(breakdown: str, **override) -> bytes:
+def current_file(breakdown: str, dates: dict | None = None, **override) -> bytes:
     return write_xlsx({
         files.CURRENT_ESTIMATES: estimate_sheet(breakdown, "current", False, ALL, **override),
         files.CURRENT_ERRORS: estimate_sheet(breakdown, "current", True, ALL, **override),
         "Index Estimates": [["Option Text", *sorted(ALL, reverse=True)]],
-        files.DATES: current_dates(),
+        files.DATES: current_dates(dates),
         "Data Dictionary": [["Item", "Description", "Notes"]],
     })  # fmt: skip
 
 
-def original_file() -> bytes:
+def original_file(cycles: list[str] = ORIGINAL, dates: dict | None = None) -> bytes:
     sheets = {}
     for t in files.BY_KEY["ai_original"].tables:
-        sheets[t.estimates] = estimate_sheet(t.breakdown, "original", False, ORIGINAL)
-        sheets[t.errors] = estimate_sheet(t.breakdown, "original", True, ORIGINAL)
-    sheets[files.DATES] = original_dates()
+        sheets[t.estimates] = estimate_sheet(t.breakdown, "original", False, cycles, asked=cycles)
+        sheets[t.errors] = estimate_sheet(t.breakdown, "original", True, cycles, asked=cycles)
+    sheets[files.DATES] = original_dates(cycles, dates)
     return write_xlsx(sheets, shared=False)  # inline strings: the other string form
 
 
@@ -249,6 +252,51 @@ def test_reader_refuses_bad_workbooks(monkeypatch):
     monkeypatch.setattr(_xlsx, "MAX_UNCOMPRESSED", 10)
     with pytest.raises(ValueError, match="expands"):
         _xlsx.read_sheets(write_xlsx({"One": [["a"]]}), ["One"])
+
+
+def one_part(xml: bytes) -> zipfile.ZipFile:
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as z:
+        z.writestr("p.xml", xml)
+    return zipfile.ZipFile(io.BytesIO(buf.getvalue()))
+
+
+def parse_part(xml: bytes):
+    return ET.parse(_xlsx._open_part(one_part(xml), "p.xml")).getroot()  # noqa: S314 (the guard under test)
+
+
+@pytest.mark.parametrize(
+    ("xml", "match"),
+    [
+        (b'<?xml version="1.0"?><!-- <a --><!DOCTYPE t [<!ENTITY x "x">]><t>&x;</t>', "DOCTYPE"),  # after a comment
+        (b"<t/><!DOCTYPE t>", "DOCTYPE"),  # anywhere in the part
+        (b'<?xml version="1.0"?><!ENTITY x "x"><t/>', "DOCTYPE or ENTITY"),
+        ('<?xml version="1.0" encoding="UTF-16"?><!DOCTYPE t><t/>'.encode("utf-16"), "not UTF-8"),
+        (b'<?xml version="1.0" encoding="ISO-8859-1"?><t/>', "not UTF-8"),
+    ],
+)
+def test_reader_guard_refuses_declarations_anywhere_and_non_utf8(xml, match):
+    with pytest.raises(ValueError, match=match):
+        parse_part(xml)
+
+
+def test_reader_reports_malformed_xml_as_value_error():
+    body = write_xlsx({"One": [["a"]]})
+    with zipfile.ZipFile(io.BytesIO(body)) as src, _DeterministicZip(buf := io.BytesIO(), "w") as out:
+        for name in src.namelist():
+            data = src.read(name)
+            out.writestr(name, data.replace(b"</row>", b"") if name.endswith("sheet1.xml") else data)
+    with pytest.raises(ValueError, match="unreadable workbook: ParseError"):
+        _xlsx.read_sheets(buf.getvalue(), ["One"])
+
+
+def test_reader_guard_accepts_utf8_escaped_text_and_sees_a_split_declaration(monkeypatch):
+    assert parse_part(b'\xef\xbb\xbf<?xml version="1.0" encoding="UTF-8"?><t>&lt;!DOCTYPE x&gt;</t>').text == (
+        "<!DOCTYPE x>")  # fmt: skip
+    monkeypatch.setattr(_xlsx, "CHUNK", 8)  # the declaration spans two reads
+    with pytest.raises(ValueError, match="DOCTYPE"):
+        parse_part(b'<?xml version="1.0"?>   <!DOCTYPE t><t/>')
+    assert parse_part(b'<?xml version="1.0"?><t>' + b"x" * 100 + b"</t>").text == "x" * 100
 
 
 # --- the workbook parser --------------------------------------------------------------------------
@@ -323,6 +371,25 @@ def test_unreadable_cells_and_unknown_codes_are_counted_not_staged():
     assert "9Z" not in {c.sector_code for c in p.cells}
 
 
+def test_an_ai_question_without_the_abbreviation_still_stops_the_parse():
+    question = "In the last two weeks, did this business use artificial intelligence tools?"
+    with pytest.raises(ValueError, match="unknown AI question"):
+        workbook.parse(current_file("national", question=question), files.BY_KEY["national"])
+
+
+def test_missing_and_orphan_standard_errors_are_counted():
+    est = estimate_sheet("national", "current", False, ALL)
+    se = estimate_sheet("national", "current", True, ALL)
+    i = next(i for i, r in enumerate(se) if r[1:2] and "Artificial" in r[1] and r[3] == "Yes")
+    orphan = [*se[i][:3], "Maybe", *se[i][4:]]
+    se[i] = orphan  # the Yes row's errors are missing, and an SE row has no estimate row
+    body = write_xlsx({files.CURRENT_ESTIMATES: est, files.CURRENT_ERRORS: se, files.DATES: current_dates()})
+    p = workbook.parse(body, files.BY_KEY["national"])
+    assert p.rejected == len(CURRENT) + 1  # four published estimates without an SE, one orphan SE row
+    missing = [c for c in p.cells if c.question == "ai_current" and c.answer == "yes"]
+    assert len(missing) == len(CURRENT) and all(c.se_pct is None and c.estimate_pct for c in missing)
+
+
 # --- fetch ----------------------------------------------------------------------------------------
 
 
@@ -380,11 +447,31 @@ def test_stage_keeps_every_version_and_merges_dates(data_env, synthetic_entities
 def test_an_unreadable_stored_version_is_reported_not_fatal(data_env, synthetic_entities, monkeypatch):
     raw = fetch_at(monkeypatch)
     stored = list_fetches("census_btos")[0]
-    (stored.path / "size.xlsx").write_bytes(b"truncated")
+    (stored.path / "size.xlsx").write_bytes(b"truncated")  # not a zip
+    good = (stored.path / "sector.xlsx").read_bytes()
+    with zipfile.ZipFile(io.BytesIO(good)) as src, _DeterministicZip(buf := io.BytesIO(), "w") as out:
+        for name in src.namelist():  # a valid zip with malformed sheet XML
+            data = src.read(name)
+            out.writestr(name, data.replace(b"</row>", b"", 1) if name.endswith("sheet1.xml") else data)
+    (stored.path / "sector.xlsx").write_bytes(buf.getvalue())
     out = bs.stage()
     bad = out["versions"].filter(~out["versions"]["readable"])
-    assert bad["file"].to_list() == ["size"] and raw.fetch_id == bad["fetch_id"][0]
-    assert out["_rejected_rows"]["rejected"][0] == 1
+    assert sorted(bad["file"].to_list()) == ["sector", "size"] and set(bad["fetch_id"]) == {raw.fetch_id}
+    assert out["_rejected_rows"]["rejected"][0] == 2
+
+
+def test_stage_refuses_a_cycle_in_both_wordings(data_env, synthetic_entities, monkeypatch):
+    overlap = [*ORIGINAL, "202524"]  # the original wording "asked" in a current-wording cycle
+    fetch_at(monkeypatch, ai_original=original_file(overlap))
+    with pytest.raises(ValueError, match=r"both AI wordings: \['202524'\]"):
+        bs.stage()
+
+
+def test_stage_refuses_disagreeing_collection_dates(data_env, synthetic_entities, monkeypatch):
+    cs, ce, rs, re_, pub = cycle_dates("202518")
+    fetch_at(monkeypatch, ai_original=original_file(dates={"202518": (cs, ce, rs + timedelta(days=1), re_, pub)}))
+    with pytest.raises(ValueError, match="cycle 202518 has other collection or reference dates"):
+        bs.stage()
 
 
 def test_ai_use_breaks_and_coverage(data_env, synthetic_entities, monkeypatch):
@@ -453,6 +540,21 @@ def test_monthly_series_by_reference_days(data_env, synthetic_entities, monkeypa
     assert flagged == {date(2025, 8, 1), date(2025, 11, 1)}  # 202518 refs Aug; 202525 refs Nov
 
 
+def test_a_three_week_reference_period_is_weighted_by_its_days(data_env, synthetic_entities, monkeypatch):
+    # As after a 53-week ISO year: a 21-day collection fortnight 26, then fortnight 01 refers to 3 weeks.
+    long = {
+        "202526": (date(2025, 12, 15), date(2026, 1, 4), date(2025, 12, 1), date(2025, 12, 14), date(2026, 1, 8)),
+        "202601": (date(2026, 1, 5), date(2026, 1, 18), date(2025, 12, 15), date(2026, 1, 4), date(2026, 1, 22)),
+    }
+    fetch_at(monkeypatch, **{k: current_file(k, dates=long) for k in ("national", "sector", "size", "sector_size")})
+    build(date(2026, 1, 31), ["census_btos"])
+    m = q("SELECT * FROM btos_ai_monthly WHERE breakdown = 'national' AND question = 'ai_current'")
+    by = {r["month"]: r for r in m.iter_rows(named=True)}
+    dec, jan = by[date(2025, 12, 1)], by[date(2026, 1, 1)]
+    assert dec["pct"] == pytest.approx((14 * 18.0 + 17 * 18.3) / 31) and dec["ref_days_covered"] == 31
+    assert jan["pct"] == pytest.approx(18.3) and jan["ref_days_covered"] == 4 and jan["partial"]
+
+
 # --- with Ramp (analysis (c)) ---------------------------------------------------------------------
 
 RAMP_OVERALL = ("Date", "Series", "Adoption rate (%)", "Monthly change (pp)", "Yearly change (pp)",
@@ -469,10 +571,12 @@ def ramp_import(cut: str, rows: list[list], at: datetime) -> None:
     raw.write()
 
 
-def ramp_census(dec: float = 17.833333) -> list[list]:  # Ramp's rule on NATIONAL_YES
-    pre, post = "pre_nov_2025_wording_change", "post_nov_2025_wording_change"
-    census = {"2025-08-01": (9.25, pre), "2025-09-01": (9.95, pre), "2025-10-01": (None, None),
-              "2025-11-01": (17.5, post), "2025-12-01": (dec, post)}  # fmt: skip
+PRE, POST = "pre_nov_2025_wording_change", "post_nov_2025_wording_change"
+
+
+def ramp_census(dec: float = 17.833333, nov_version: str = POST) -> list[list]:  # Ramp's rule on NATIONAL_YES
+    census = {"2025-08-01": (9.25, PRE), "2025-09-01": (9.95, PRE), "2025-10-01": (None, None),
+              "2025-11-01": (17.5, nov_version), "2025-12-01": (dec, POST)}  # fmt: skip
     rows = []
     for i, (m, (v, ver)) in enumerate(census.items()):
         rows.append([m, "Ramp Overall", 40.0 + i, 0.5, "", ""])
@@ -480,9 +584,9 @@ def ramp_census(dec: float = 17.833333) -> list[list]:  # Ramp's rule on NATIONA
     return rows
 
 
-def two_lenses(monkeypatch, dec: float = 17.833333):
+def two_lenses(monkeypatch, dec: float = 17.833333, nov_version: str = POST):
     fetch_at(monkeypatch)
-    ramp_import("adoption/overall", ramp_census(dec), AT)
+    ramp_import("adoption/overall", ramp_census(dec, nov_version), AT)
     sector_rows = [
         [m, s, 30.0, 0.5] for m in ("2025-11-01", "2025-12-01") for s in ("Technology and media", "Construction")
     ]
@@ -508,7 +612,7 @@ def test_ramp_census_check_reproduces_ramps_rules(data_env, synthetic_entities, 
     c = q("SELECT * FROM btos_ramp_census_check")
     assert c["month"].to_list() == [date(2025, m, 1) for m in (8, 9, 10, 11, 12)]
     known = c.filter(c["ramp_pct"].is_not_null())
-    assert known["agree"].all() and known["wording_agrees"].all()
+    assert known["agree"].all()
     # Aug and Sep straddle a month boundary differently under the two rules; Nov has one cycle either way.
     assert dict(known.select("month", "matches").iter_rows()) == {
         date(2025, 8, 1): "collection_start", date(2025, 9, 1): "collection_start",
@@ -529,6 +633,12 @@ def test_ramp_census_check_flags_a_mismatch(data_env, synthetic_entities, monkey
     two_lenses(monkeypatch, dec=18.5)
     c = q("SELECT month, matches FROM btos_ramp_census_check WHERE NOT agree")
     assert c.rows() == [(date(2025, 12, 1), "neither")]
+
+
+def test_ramp_census_check_compares_only_the_wording_ramp_names(data_env, synthetic_entities, monkeypatch):
+    two_lenses(monkeypatch, nov_version=PRE)  # Ramp labels November with the original wording
+    c = q("SELECT wording, ramp_pct, matches FROM btos_ramp_census_check WHERE month = '2025-11-01'")
+    assert set(c.rows()) == {("original", 17.5, "neither"), ("current", None, None)}
 
 
 # --- registry and entities ------------------------------------------------------------------------

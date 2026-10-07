@@ -20,7 +20,9 @@ from cachereg.sources import _xlsx
 from cachereg.sources.census_btos.files import DATES, File, Table
 
 FIXED = ("Question ID", "Question", "Answer ID", "Answer")
-AI_MARK = "Artificial Intelligence (AI)"
+# Rows that look like AI questions go to `classify`, which knows the two series and refuses anything
+# else; the mark is deliberately broader than either question, so a reworded one cannot slip past.
+AI_MARK = re.compile(r"(?i:artificial intelligence)|\bAI\b")
 QUESTIONS = {
     "ai_current": "In the last two weeks, did this business use Artificial Intelligence (AI) ",
     "ai_expected": "During the next six months, do you think this business will be using Artificial Intelligence (AI) ",
@@ -135,7 +137,7 @@ def _rows_by_key(sheet: list[list], table: Table, label: str) -> tuple[list[str]
         if not question:  # blank rows and the trailing "Source: …" line
             rejected += any(cells[1:])
             continue
-        if AI_MARK not in question:
+        if not AI_MARK.search(question):
             continue
         key = (*cells[:n], question, cells[n + 3] if len(cells) > n + 3 else "")
         if key in rows:
@@ -150,6 +152,7 @@ def _table(sheets: dict, table: Table, spec: File, out: Parsed) -> None:
     if se_cycles != cycles:
         raise ValueError(f"{table.errors!r} has other cycle columns than {table.estimates!r}")
     out.rejected += rejected + se_rejected
+    out.rejected += len(se.keys() - est.keys())  # standard errors with no estimate row
     n = len(table.keys)
     for key, values in est.items():
         codes, question, answer = key[:n], key[n], key[n + 1]
@@ -161,8 +164,8 @@ def _table(sheets: dict, table: Table, spec: File, out: Parsed) -> None:
         if (sector is not None and not SECTOR_CODE.match(sector)) or (size is not None and size not in SIZE_CLASSES):
             out.rejected += 1
             continue
-        errors = se.get(key, [""] * len(cycles))
-        for cycle, raw, raw_se in zip(cycles, values, errors, strict=True):
+        errors = se.get(key)
+        for cycle, raw, raw_se in zip(cycles, values, errors or [""] * len(cycles), strict=True):
             value, suppressed, ok = _value(raw)
             if not ok:
                 out.rejected += 1
@@ -170,6 +173,8 @@ def _table(sheets: dict, table: Table, spec: File, out: Parsed) -> None:
             if value is None and not suppressed:
                 continue  # not asked in this cycle
             se_value, _, se_ok = _value(raw_se)
+            if not suppressed and (errors is None or not se_ok):
+                out.rejected += 1  # a published estimate whose standard error is missing or unreadable
             out.cells.append(
                 Cell(table.breakdown, sector, size, kind, ANSWERS[answer], cycle, value,
                      se_value if se_ok and not suppressed else None, suppressed)

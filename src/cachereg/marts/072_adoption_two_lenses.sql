@@ -63,39 +63,61 @@ ORDER BY scope, naics NULLS FIRST, lens, month;
 -- Ramp's "Census Estimate" against our BTOS data under Ramp's own rules: the unweighted mean of the
 -- national current-use `yes` cycles grouped by the month their collection starts, or ends. Ramp used
 -- the start rule through May 2026 and the end rule from June 2026 (first real build, 2026-10-08), so a
--- month agrees when either rule reproduces it. Checks both adapters at once; a month where neither does
--- points to a Census revision, a changed Ramp method, or a wrong import.
+-- month agrees when either rule reproduces it. Both rules group by wording too, and each Ramp month is
+-- compared only with the wording its `census_question_version` names (pre_… = original, post_… =
+-- current): the two series are never averaged together, even in a month that held both. Checks both
+-- adapters at once; `neither` points to a Census revision, a changed Ramp method, or a wrong import.
 CREATE OR REPLACE TABLE btos_ramp_census_check AS
 WITH national AS (
     SELECT *
     FROM btos_ai_use
     WHERE breakdown = 'national' AND question = 'ai_current' AND answer = 'yes' AND status = 'published'
 ),
-by_start AS (
-    SELECT CAST(date_trunc('month', collection_start) AS DATE) AS month, wording, avg(estimate_pct) AS pct,
-           count(*) AS n_cycles
-    FROM national GROUP BY ALL
+rules AS (
+    SELECT 'start' AS rule, CAST(date_trunc('month', collection_start) AS DATE) AS month, wording, estimate_pct
+    FROM national
+    UNION ALL
+    SELECT 'end', CAST(date_trunc('month', collection_end) AS DATE), wording, estimate_pct
+    FROM national
 ),
-by_end AS (
-    SELECT CAST(date_trunc('month', collection_end) AS DATE) AS month, avg(estimate_pct) AS pct, count(*) AS n_cycles
-    FROM national GROUP BY ALL
+ours AS (
+    SELECT
+        month,
+        wording,
+        avg(estimate_pct) FILTER (WHERE rule = 'start') AS start_rule_pct,
+        count(*) FILTER (WHERE rule = 'start') AS start_rule_cycles,
+        avg(estimate_pct) FILTER (WHERE rule = 'end') AS end_rule_pct,
+        count(*) FILTER (WHERE rule = 'end') AS end_rule_cycles
+    FROM rules
+    GROUP BY ALL
+),
+ramp AS (
+    SELECT
+        month,
+        adoption_pct,
+        census_question_version,
+        CASE
+            WHEN census_question_version LIKE 'pre%' THEN 'original'
+            WHEN census_question_version LIKE 'post%' THEN 'current'
+        END AS wording
+    FROM ramp_census_restated
 ),
 span AS (SELECT min(month) AS first_month, max(month) AS last_month FROM ramp_census_restated),
 joined AS (
     SELECT
-        coalesce(r.month, s.month, e.month) AS month,
+        coalesce(r.month, o.month) AS month,
         r.adoption_pct AS ramp_pct,
         r.census_question_version,
-        s.wording,
-        s.pct AS start_rule_pct,
-        s.n_cycles AS start_rule_cycles,
-        e.pct AS end_rule_pct,
-        e.n_cycles AS end_rule_cycles,
-        abs(r.adoption_pct - s.pct) <= 0.005 AS start_ok,
-        abs(r.adoption_pct - e.pct) <= 0.005 AS end_ok
-    FROM ramp_census_restated r
-    FULL JOIN by_start s ON s.month = r.month
-    FULL JOIN by_end e ON e.month = coalesce(r.month, s.month)
+        coalesce(r.wording, o.wording) AS wording,
+        o.start_rule_pct,
+        o.start_rule_cycles,
+        o.end_rule_pct,
+        o.end_rule_cycles,
+        abs(r.adoption_pct - o.start_rule_pct) <= 0.005 AS start_ok,
+        abs(r.adoption_pct - o.end_rule_pct) <= 0.005 AS end_ok
+    FROM ramp r
+    -- A Ramp month without a version (its empty shutdown row) pairs by month alone.
+    FULL JOIN ours o ON o.month = r.month AND o.wording = coalesce(r.wording, o.wording)
 )
 SELECT
     j.month,
@@ -113,12 +135,8 @@ SELECT
         WHEN coalesce(j.end_ok, false) THEN 'collection_end'
         ELSE 'neither'
     END AS matches,
-    CASE WHEN j.ramp_pct IS NOT NULL THEN coalesce(j.start_ok, false) OR coalesce(j.end_ok, false) END AS agree,
-    CASE
-        WHEN j.census_question_version IS NULL OR j.wording IS NULL THEN NULL
-        ELSE (j.census_question_version LIKE 'pre%') = (j.wording = 'original')
-    END AS wording_agrees
+    CASE WHEN j.ramp_pct IS NOT NULL THEN coalesce(j.start_ok, false) OR coalesce(j.end_ok, false) END AS agree
 FROM joined j
 CROSS JOIN span
 WHERE j.month BETWEEN span.first_month AND span.last_month
-ORDER BY j.month;
+ORDER BY j.month, j.wording;
