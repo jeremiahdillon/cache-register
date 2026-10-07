@@ -140,6 +140,15 @@ def test_fetch_due_lists_a_due_manual_source_and_waits_for_one_that_is_not(sourc
     assert r.exit_code == 0 and "wait  hand" in r.output and "next due 2026-04-10" in r.output
 
 
+def test_plain_fetch_still_lists_a_manual_source_whose_raw_store_is_corrupt(sources):
+    run("hand", "--from-clipboard", "--cut", "cut-a")
+    (stored,) = list_fetches("hand")
+    (stored.path / "manifest.json").write_text("{not json")
+    r = run()
+    assert r.exit_code == 0, r.output
+    assert "manual hand" in r.output and "due ?" in r.output
+
+
 def test_manual_import_from_clipboard_writes_one_fetch(sources):
     r = run("hand", "--from-clipboard", "--cut", "cut-a")
     assert r.exit_code == 0, r.output

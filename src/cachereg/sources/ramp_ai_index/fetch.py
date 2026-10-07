@@ -23,12 +23,16 @@ def manual_help() -> str:
 
 
 def latest_imports() -> dict[str, bytes]:
-    """The latest stored bytes of every cut."""
+    """The latest readable stored bytes of every cut (an unreadable old import is skipped: it must
+    not block new imports; stage counts it as rejected)."""
     out = {}
     for f in list_fetches(SOURCE):  # oldest first, so later imports win
         cut = (f.manifest.get("vintage") or {}).get("cut")
         if cut in cuts.BY_ID:
-            out[cut] = f.read(cuts.BY_ID[cut].file_name)
+            try:
+                out[cut] = f.read(cuts.BY_ID[cut].file_name)
+            except OSError:
+                continue
     return out
 
 

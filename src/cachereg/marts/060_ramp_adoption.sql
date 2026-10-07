@@ -90,28 +90,29 @@ JOIN ramp_cut_coverage c ON c.cut = a.cut AND c.import_used = a.fetch_id
 WHERE a.series_kind = 'census' AND a.month <= getvariable('as_of')
 ORDER BY a.month;
 
--- Labels that join to no vendor or sector (counted, never dropped from the series).
+-- Labels (in periods up to as_of) that join to no vendor or sector (counted, never dropped from the series).
 CREATE OR REPLACE TABLE ramp_label_coverage AS
 WITH labels AS (
     SELECT DISTINCT 'vendor' AS kind, a.cut, a.series_label AS label
     FROM stg_ramp_ai_index_adoption a JOIN ramp_cut_coverage c ON c.cut = a.cut AND c.import_used = a.fetch_id
-    WHERE a.series_kind = 'vendor'
+    WHERE a.series_kind = 'vendor' AND a.month <= getvariable('as_of')
     UNION
     SELECT DISTINCT 'vendor', t.cut, t.maker_label
     FROM stg_ramp_ai_index_token_index t JOIN ramp_cut_coverage c ON c.cut = t.cut AND c.import_used = t.fetch_id
+    WHERE t.week <= getvariable('as_of')
     UNION
     SELECT DISTINCT 'sector', a.cut, a.series_label
     FROM stg_ramp_ai_index_adoption a JOIN ramp_cut_coverage c ON c.cut = a.cut AND c.import_used = a.fetch_id
-    WHERE a.series_kind = 'sector'
+    WHERE a.series_kind = 'sector' AND a.month <= getvariable('as_of')
     UNION
     SELECT DISTINCT 'sector', p.cut, p.group_label
     FROM stg_ramp_ai_index_spend_per_employee p
     JOIN ramp_cut_coverage c ON c.cut = p.cut AND c.import_used = p.fetch_id
-    WHERE p.dimension = 'sector'
+    WHERE p.dimension = 'sector' AND p.month <= getvariable('as_of')
     UNION
     SELECT DISTINCT 'sector', s.cut, s.sector_label
     FROM stg_ramp_ai_index_spend_share s JOIN ramp_cut_coverage c ON c.cut = s.cut AND c.import_used = s.fetch_id
-    WHERE s.scope = 'sector'
+    WHERE s.scope = 'sector' AND s.month <= getvariable('as_of')
 )
 SELECT
     l.kind,

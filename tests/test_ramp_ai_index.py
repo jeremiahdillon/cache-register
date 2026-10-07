@@ -122,6 +122,12 @@ def test_scientific_notation_and_empty_cells():
     assert [c.value for c in cells] == [2.5e-9, None]
 
 
+def test_number_forms_ramp_could_write_are_accepted():
+    cut = cuts.BY_ID["token_volume/maker"]
+    body = tsv(["Date", "OpenAI", "Anthropic"], [["2026-01-04", "+1.5", ".5"], ["2026-01-11", "2.", "-2E-3"]])
+    assert [c.value for c in cuts.parse(body, cut)] == [1.5, 0.5, 2.0, -0.002]
+
+
 def test_short_rows_are_padded_with_empty_cells():
     cut = cuts.BY_ID["adoption/overall"]
     body = tsv(list(cut.columns), [["2026-01-01", "Census Estimate"]])
@@ -154,6 +160,12 @@ PRICE_HEADER = ["Date", *cuts.PRICES]
         ("adoption/size", tsv(list(cuts.BY_ID["adoption/size"].columns), [["2026-01-01", "Large", "n/a", 0]]),
          "not a number"),
         ("adoption/size", tsv(list(cuts.BY_ID["adoption/size"].columns), [["2026-01-01", "Large", "inf", 0]]),
+         "not a number"),
+        ("adoption/size", tsv(list(cuts.BY_ID["adoption/size"].columns), [["2026-01-01", "Large", "nan", 0]]),
+         "not a number"),
+        ("adoption/size", tsv(list(cuts.BY_ID["adoption/size"].columns), [["2026-01-01", "Large", "1_000", 0]]),
+         "not a number"),
+        ("adoption/size", tsv(list(cuts.BY_ID["adoption/size"].columns), [["2026-01-01", "Large", "1e999", 0]]),
          "finite"),
         ("adoption/size", tsv(list(cuts.BY_ID["adoption/size"].columns), [["2026-01-01", "", 1, 0]]), "empty"),
         ("adoption/size", tsv(list(cuts.BY_ID["adoption/size"].columns),
@@ -203,6 +215,15 @@ def test_wrong_click_guard_refuses_another_cuts_latest_bytes_and_accepts_a_reimp
         imp("token_price/input", SAMPLES["token_price/blended"])  # same header, so only the guard can tell
     imp("token_price/blended", at=datetime(2026, 4, 11, tzinfo=UTC))  # same cut again: stored
     assert len(list_fetches("ramp_ai_index")) == 2
+
+
+def test_an_unreadable_old_import_blocks_neither_new_imports_nor_stage(data_env, synthetic_entities):
+    imp("adoption/size")
+    (old,) = list_fetches("ramp_ai_index")
+    (old.path / "adoption__size.tsv").unlink()
+    imp("adoption/sector", at=datetime(2026, 4, 11, tzinfo=UTC))  # the guard skips the unreadable import
+    out = rs.stage()
+    assert out["_rejected_rows"]["rejected"][0] == 1 and set(out["adoption"]["cut"]) == {"adoption/sector"}
 
 
 def test_two_imports_in_the_same_second_both_land(data_env):
@@ -362,6 +383,17 @@ def test_a_never_imported_cut_is_listed_and_periods_after_as_of_are_dropped(data
     cov = q("SELECT * FROM ramp_cut_coverage WHERE cut = 'token_price/output'")
     assert cov["first_import"][0] is None and cov["present_at_cutoff"][0] is False
     assert q("SELECT max(month) AS m FROM ramp_adoption")["m"][0] == date(2026, 2, 1)
+
+
+def test_label_coverage_only_covers_periods_up_to_as_of(data_env, synthetic_entities):
+    import_all(skip=("adoption/models",))
+    cut = cuts.BY_ID["adoption/models"]
+    rows = [[m, "OpenAI", 30, 0.5, ""] for m in MONTHS] + [["2026-03-01", "Late Labs", 1, 0.5, ""]]
+    imp("adoption/models", tsv(list(cut.columns), rows), at=AT + timedelta(hours=1))
+    q = marts(date(2026, 2, 15))
+    assert "Late Labs" not in q("SELECT label FROM ramp_label_coverage")["label"].to_list()
+    q = marts(date(2026, 4, 30))
+    assert "Late Labs" in q("SELECT label FROM ramp_label_coverage WHERE NOT mapped")["label"].to_list()
 
 
 def test_token_shares_ignore_rescaling_and_the_checks_pass_on_consistent_data(data_env, synthetic_entities):

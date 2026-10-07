@@ -111,8 +111,12 @@ def _manual_line(src) -> None:
     """A manual source in a normal or scheduled run: say when it is due and how to import it."""
     from cachereg.core.schedule import due_date
 
-    when = due_date(src)
-    shown = "now" if when is None or when <= _today() else str(when)
+    try:
+        when = due_date(src)
+    except (ValueError, KeyError, TypeError, OSError):  # a corrupt raw folder or manifest: still list it
+        shown = "?"
+    else:
+        shown = "now" if when is None or when <= _today() else str(when)
     typer.echo(f"  manual {src.id:<21} due {shown}; import with: cachereg fetch {src.id} --from-clipboard --cut …")
 
 

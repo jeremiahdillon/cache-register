@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from datetime import date
 
 PAGE = "https://ramp.com/data/ai-index"
+NUMBER = re.compile(r"[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?")  # plain decimals or scientific notation
 ANY = r".+"
 
 
@@ -102,11 +103,10 @@ class Cell:
 def _number(text: str, where: str) -> float | None:
     if text == "":
         return None
-    try:
-        x = float(text)
-    except ValueError:
-        raise ValueError(f"{where}: {text!r} is not a number") from None
-    if not math.isfinite(x):
+    if not NUMBER.fullmatch(text):  # float() would also take "1_000", "nan", "inf"
+        raise ValueError(f"{where}: {text!r} is not a number")
+    x = float(text)
+    if not math.isfinite(x):  # e.g. 1e999
         raise ValueError(f"{where}: {text!r} is not a finite number")
     return x
 

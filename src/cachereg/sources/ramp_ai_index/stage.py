@@ -134,7 +134,11 @@ def stage() -> dict[str, pl.DataFrame]:
         if cut is None:
             rejected += 1  # a raw import of a cut this adapter no longer knows: counted, never staged
             continue
-        body = f.read(cut.file_name)
+        try:
+            body = f.read(cut.file_name)
+        except OSError:
+            rejected += 1  # the raw file is missing or unreadable: counted, never fatal
+            continue
         try:
             cells = cuts.parse(body, cut)
         except ValueError:
