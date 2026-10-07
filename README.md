@@ -40,7 +40,7 @@ git clone https://github.com/jeremiahdillon/cache-register
 cd cache-register
 make setup          # installs dependencies and the pre-commit guard
 cp .env.example .env   # then fill in the keys you have
-make status         # shows which keys are configured (never their values)
+make status         # per source: cadence, last fetch, next due, last error; which keys are set (never values)
 make check          # guard + lint + tests
 ```
 

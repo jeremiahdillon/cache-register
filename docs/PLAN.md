@@ -288,7 +288,11 @@ entry (+ entity aliases). Core is never edited for a new source. In v1 a new sou
   unload it; it never loads the agent. The agent runs the project's `.venv/bin/cachereg` (so run
   `make setup` after dependency changes). The rendered plist is never committed.
 - Logs go to `~/Library/Logs/cachereg/fetch.log` (outside the repo; not rotated).
-- Still to do: `cachereg status` freshness per source, last error, coverage, disk usage.
+- `cachereg status` lists each enabled source's cadence, last fetch date (raw store), next due date and
+  last error, then which secrets are set. A failed fetch writes nothing to `data/raw`, so `fetch` records
+  each source's outcome in `data/state/fetch.json` (gitignored, outside the raw store; messages redacted
+  and cut to one line; a success clears the error; `build` never reads it). Logic: `core/fetch_state.py`.
+- Still to do: coverage and disk usage in `status`.
 
 ---
 
@@ -507,7 +511,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 
 ## 10. Build phases
 
-### Status (2026-10-06)
+### Status (2026-10-07)
 
 | Phase | State |
 |---|---|
@@ -518,7 +522,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. `epoch_benchmarks` + `epoch_models` done 2026-10-06 (`docs/plans/2026-10-06-epoch.md`; CC BY 4.0, Latest-only, weekly): marts `020_epoch_capabilities` (ECI, scores, alias coverage) and `021_epoch_models`. `sec_edgar` done 2026-10-06 (`docs/plans/2026-10-06-sec-edgar.md`; XBRL companyfacts for `config/entities/tickers.yaml`, Exact by filing date): mart `030_capex` (quarterly cash capex per company and group, calendar quarters by midpoint, completeness flags). Next: OpenRouter `session-cost` / `app-rankings`, Ramp (manual import) |
 | 3. Entities & marts | **Started** 2026-10-06 — `cachereg entities suggest --source openrouter\|epoch` (replaces the bootstrap script); `aliases.epoch` maps 173 of 274 ECI models, 49 of the top 50 (98%; target 95% met — Muse Spark has no LiteLLM key); 17 cheap models near ECI 130–150 and GPT-5.2/5.4 Pro mapped by hand |
 | 4–5, 7 | Not started (Phase 5: explorations for analyses (a), (b) and (d) built 2026-10-06) |
-| 6. Scheduling & ops | **Started** 2026-10-06 — `cachereg fetch --due`, launchd template and `make install-schedule` (§4.5); the author loads the agent by hand. Next: freshness and last error in `status`, then a week unattended with no gaps |
+| 6. Scheduling & ops | **Started** 2026-10-06 — `cachereg fetch --due`, launchd template and `make install-schedule` (§4.5); the author loads the agent by hand (loaded 2026-10-07; first run fetched the daily sources). 2026-10-07: `status` shows cadence, last fetch, next due and last error per source. Next: a week unattended with no gaps |
 
 **Open items carried between sessions**
 - **Ramp without a key:** on ramp.com/data/ai-index the "Get the

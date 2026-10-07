@@ -10,6 +10,7 @@ from datetime import UTC, date, datetime
 
 import typer
 
+from cachereg.core import fetch_state
 from cachereg.core.paths import repo_relative
 from cachereg.core.registry import load_sources
 from cachereg.core.settings import SECRETS, MissingSecretError, secret_status
@@ -56,7 +57,8 @@ def fetch(
             except ValueError as e:  # e.g. an unknown cadence: report it, keep the other sources going
                 failed = True
                 held.add(sid)
-                typer.echo(f"  FAIL  {sid:<22} {e}", err=True)
+                fetch_state.record(sid, str(e))
+                typer.echo(f"  FAIL  {sid:<22} {fetch_state.clean(str(e))}", err=True)
                 continue
             if when is not None and when > today:
                 held.add(sid)
@@ -66,13 +68,16 @@ def fetch(
         try:
             raw = known[sid].module("fetch").fetch(full=full)
             out = raw.write()
+            fetch_state.record(sid)
             typer.echo(f"  ok    {sid:<22} {len(raw.files)} file(s) -> {repo_relative(out)}")
         except MissingSecretError as e:
             failed = failed or not due  # scheduled runs: a missing key is reported, not a failure
-            typer.echo(f"  skip  {sid:<22} {e}", err=True)
+            fetch_state.record(sid, str(e), kind="skip")
+            typer.echo(f"  skip  {sid:<22} {fetch_state.clean(str(e))}", err=True)
         except Exception as e:  # noqa: BLE001 (report per source, keep going)
             failed = True
-            typer.echo(f"  FAIL  {sid:<22} {type(e).__name__}: {e}", err=True)
+            fetch_state.record(sid, f"{type(e).__name__}: {e}")
+            typer.echo(f"  FAIL  {sid:<22} {fetch_state.clean(f'{type(e).__name__}: {e}')}", err=True)
     if failed:
         raise typer.Exit(code=1)
 
@@ -177,7 +182,27 @@ def site(out: str = typer.Option("_site", help="Output folder (gitignored).")) -
 
 @app.command()
 def status() -> None:
-    """Show which credentials are configured (never their values)."""
+    """Per enabled source: cadence, last fetch, next due date and last error; then which credentials are set."""
+    from cachereg.core.schedule import last_fetch_date, next_due
+
+    today = _today()
+    try:
+        state = fetch_state.load()
+    except ValueError as e:
+        state = {}
+        typer.echo(f"  WARN  fetch state unreadable ({e}); last errors not shown", err=True)
+    typer.echo(f"  {'source':<22} {'cadence':<8} {'last fetch':<11} {'next due':<11} last error")
+    for src in load_sources().values():
+        if not src.enabled:
+            continue
+        last = last_fetch_date(src.id)
+        due = next_due(src.cadence, last) if last else None
+        when = "now" if due is None or due <= today else str(due)
+        entry = state.get(src.id)
+        err = entry.get("last_error") if isinstance(entry, dict) else None
+        shown = f"{str(err.get('at'))[:10]} {err.get('kind')}: {err.get('message')}" if isinstance(err, dict) else "-"
+        typer.echo(f"  {src.id:<22} {src.cadence:<8} {str(last or 'never'):<11} {when:<11} {shown}")
+    typer.echo("")
     configured = secret_status()
     for name, ok in configured.items():
         mark = "set    " if ok else "missing"
