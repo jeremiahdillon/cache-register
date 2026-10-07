@@ -121,3 +121,16 @@ sources:
     requires: []
     input: manual
     enabled: true
+
+  # Census BTOS (verified 2026-10-07, SOURCE.md): public census.gov Excel downloads, no key; a work of
+  # the U.S. Government (public domain). Files are re-uploaded in place each biweekly release with no
+  # version history, so Latest-only until btos_revision_check shows past cells never change.
+  - id: census_btos
+    history: native
+    revisions: revised
+    redistribution: allowed
+    derived_charts: allowed
+    attribution: "U.S. Census Bureau, Business Trends and Outlook Survey (census.gov/hfp/btos), as of {as_of}"
+    cadence: weekly
+    requires: []
+    enabled: true
