@@ -12,6 +12,7 @@ from cachereg.core.paths import REPO_ROOT
 
 FIELDS = {"id", "history", "revisions", "redistribution", "derived_charts", "attribution", "cadence", "requires"}
 RIGHTS = {"allowed", "allowed-with-attribution", "forbidden", "unknown"}
+CADENCES = ("daily", "weekly", "monthly")  # PLAN §4.5; core/schedule.py turns each into a next-due date
 
 
 @dataclass(frozen=True)
@@ -47,6 +48,10 @@ def load_sources(path=None) -> dict[str, Source]:
         for right in ("redistribution", "derived_charts"):
             if entry[right] not in RIGHTS:
                 raise ValueError(f"source {entry['id']!r}: {right} must be one of {sorted(RIGHTS)}")
+        if entry["cadence"] not in CADENCES:
+            raise ValueError(
+                f"source {entry['id']!r}: unknown cadence {entry['cadence']!r}; use one of {', '.join(CADENCES)}"
+            )
         out[entry["id"]] = Source(
             id=entry["id"],
             history=entry["history"],

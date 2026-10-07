@@ -12,7 +12,7 @@ from typer.testing import CliRunner
 
 from cachereg import cli
 from cachereg.core.paths import REPO_ROOT
-from cachereg.core.registry import Source
+from cachereg.core.registry import Source, load_sources
 from cachereg.core.schedule import add_months, due_date, next_due, render_plist
 from cachereg.core.settings import MissingSecretError
 from cachereg.core.store import RawFetch
@@ -34,6 +34,18 @@ def test_next_due_per_cadence():
     assert next_due("monthly", date(2026, 3, 15)) == date(2026, 4, 15)
     with pytest.raises(ValueError, match="cadence"):
         next_due("hourly", date(2026, 3, 1))
+
+
+def test_load_sources_rejects_an_unknown_cadence(tmp_path):
+    entry = (
+        "sources:\n  - {id: s, history: native, revisions: none, redistribution: allowed, derived_charts: allowed,\n"
+        "     attribution: t, cadence: %s, requires: []}\n"
+    )
+    (tmp_path / "ok.yaml").write_text(entry % "monthly")
+    assert load_sources(tmp_path / "ok.yaml")["s"].cadence == "monthly"
+    (tmp_path / "bad.yaml").write_text(entry % "hourly")
+    with pytest.raises(ValueError, match="source 's': unknown cadence 'hourly'; use one of daily, weekly, monthly"):
+        load_sources(tmp_path / "bad.yaml")
 
 
 def test_monthly_clamps_to_month_end():

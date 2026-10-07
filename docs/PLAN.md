@@ -566,7 +566,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 - **Scheduling (Phase 6):** `fetch --due` and the launchd template are built (§4.5). Once the agent is
   loaded, OpenRouter rankings and LiteLLM accrue daily history; until then fetch them by hand before
   rendering. Check `~/Library/Logs/cachereg/fetch.log` after the first runs.
-  Small backlog: validate `cadence` in `load_sources` (today `--due` reports an unknown one per source).
+  `load_sources` rejects an unknown `cadence` with the source's id and the allowed values.
 - Published receipts are left as rendered unless the author asks: `open-middle` must not change;
   `openrouter-wallet-share`'s committed PNGs predate the 2026-10-05 layout changes, so a re-render
   would change its visuals. Rendered floats are rounded to 9 significant digits (after

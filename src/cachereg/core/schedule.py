@@ -15,10 +15,8 @@ from datetime import date, timedelta
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-from cachereg.core.registry import Source
+from cachereg.core.registry import CADENCES, Source
 from cachereg.core.store import list_fetches
-
-CADENCES = ("daily", "weekly", "monthly")
 
 
 def add_months(day: date, months: int) -> date:
