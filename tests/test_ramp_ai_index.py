@@ -3,20 +3,23 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 
+import polars as pl
 import pytest
 
+from cachereg.build import build
 from cachereg.core.manual import ManualInput
 from cachereg.core.registry import load_sources
 from cachereg.core.store import list_fetches
+from cachereg.core.warehouse import connect, query
 from cachereg.sources.ramp_ai_index import cuts
 from cachereg.sources.ramp_ai_index import fetch as rf
 from cachereg.sources.ramp_ai_index import stage as rs
 
 MONTHS = ["2026-03-01", "2026-02-01", "2026-01-01"]  # newest first, as Ramp pastes adoption
 WEEKS = ["2026-01-04", "2026-01-11", "2026-01-18"]  # Sundays
-DAYS = ["2026-01-05", "2026-01-06", "2026-01-07"]
+DAYS = [(date(2025, 12, 29) + timedelta(days=d)).isoformat() for d in range(21)]  # covers the three weeks
 AT = datetime(2026, 4, 10, 12, tzinfo=UTC)
 
 
@@ -66,8 +69,9 @@ SAMPLES = {
     "spend_share/overall": wide(
         "spend_share/overall", ["AI share of business spend (%)", "Construction (%)", "Retail (%)"], MONTHS
     ),  # fmt: skip
-    "token_volume/maker": wide("token_volume/maker", ["OpenAI", "Anthropic", "Acme Labs"], WEEKS),
-    "token_spend/maker": wide("token_spend/maker", ["Anthropic", "OpenAI", "Acme Labs"], WEEKS, scale=0.7),
+    # Consistent with the prices below: Anthropic costs 1.5x OpenAI, so spend = volume x price.
+    "token_volume/maker": tsv(["Date", "OpenAI", "Anthropic", "Acme Labs"], [[w, 4, 2, 1] for w in WEEKS]),
+    "token_spend/maker": tsv(["Date", "Anthropic", "OpenAI", "Acme Labs"], [[w, 3, 4, 1] for w in WEEKS]),
     "token_price/blended": wide("token_price/blended", list(cuts.PRICES), DAYS, scale=0.5),
     "token_price/input": wide("token_price/input", list(cuts.PRICES), DAYS, scale=0.25),
     "token_price/output": wide("token_price/output", list(cuts.PRICES), DAYS, scale=2.0),
@@ -220,7 +224,7 @@ def staged(data_env, synthetic_entities):
 def test_stage_writes_every_table(staged):
     assert {t: df.height for t, df in staged.items() if not t.startswith("_")} == {
         "adoption": 6 + 12 + 6 + 6, "spend_per_employee": 9 + 6 + 6, "spend_share": 9, "token_index": 18,
-        "token_price": 27, "imports": 13, "cuts": 13, "sectors": 20,
+        "token_price": 189, "imports": 13, "cuts": 13, "sectors": 20,
     }  # fmt: skip
     assert staged["_rejected_rows"]["rejected"][0] == 0
 
@@ -284,3 +288,114 @@ def test_stage_counts_an_unreadable_import_as_rejected(data_env, synthetic_entit
     (stored.path / "adoption__size.tsv").write_bytes(b"Date\tnope\n2026-01-01\t1\n2026-02-01\t2")
     out = rs.stage()
     assert out["_rejected_rows"]["rejected"][0] == 2 and out["adoption"].height == 0
+
+
+# --- marts 060-062 --------------------------------------------------------------------------
+
+
+def marts(as_of: date):
+    build(as_of, ["ramp_ai_index"])
+
+    def q(sql: str):
+        con = connect()
+        try:
+            return query(con, sql)
+        finally:
+            con.close()
+
+    return q
+
+
+def import_all(skip: tuple[str, ...] = (), at: datetime = AT) -> None:
+    for i, cut_id in enumerate(c for c in SAMPLES if c not in skip):
+        imp(cut_id, at=at + timedelta(minutes=i))
+
+
+def test_marts_build_with_coverage_and_entity_joins(data_env, synthetic_entities):
+    import_all()
+    q = marts(date(2026, 4, 30))
+    cov = q("SELECT * FROM ramp_cut_coverage ORDER BY position")
+    assert cov.height == 13 and cov["present_at_cutoff"].all() and not cov["cut_after_cutoff"].any()
+    a = q("SELECT * FROM ramp_adoption")
+    overall = a.filter(a["series_kind"] == "overall")
+    assert set(overall["cut"]) == {"adoption/overall"} and overall.height == 3  # one overall series
+    assert overall.sort("month")["adoption_pct"].to_list() == [39.75, 40.0, 40.5]
+    vendors = a.filter((a["series_kind"] == "vendor") & (a["month"] == date(2026, 3, 1)))
+    assert dict(vendors.select("series_label", "vendor_id").iter_rows()) == {
+        "OpenAI": "openai", "Anthropic": "anthropic", "Acme Labs": None}  # fmt: skip
+    assert sorted(vendors["vendor_rank"].to_list()) == [1, 1, 1]  # all tied in the sample
+    sector = a.filter(a["series_label"] == "Construction")
+    assert set(sector["naics"]) == {"23"} and not sector["naics_assumed"].any()
+    labels = q("SELECT kind, label FROM ramp_label_coverage WHERE NOT mapped ORDER BY kind, label")
+    assert set(labels.iter_rows()) == {("vendor", "Acme Labs"), ("sector", "Widget making")}
+    check = q("SELECT * FROM ramp_overall_check")
+    assert check["disagree"].all() and check["models_view_pct"].to_list() == [28.0, 29.0, 30.0]
+    census = q("SELECT * FROM ramp_census_restated")
+    assert census["census_question_version"].to_list() == ["v1", None, "v2"]
+    spe = q("SELECT * FROM ramp_spend_per_employee WHERE dimension = 'sector'")
+    assert set(spe["naics"]) == {"23", "44-45"} and spe["first_month"].sum() == 2
+    share = q("SELECT * FROM ramp_spend_share WHERE scope = 'overall'")
+    assert share.height == 3 and share["naics"].null_count() == 3
+
+
+def test_each_cut_uses_its_latest_import_on_or_before_the_cutoff(data_env, synthetic_entities):
+    import_all(skip=("adoption/size",))
+    later = datetime(2026, 5, 2, tzinfo=UTC)
+    imp("adoption/size", at=later)  # first imported after the cutoff below
+    revised = SAMPLES["adoption/sector"].replace(b"Construction\t20.0", b"Construction\t21.5")
+    imp("adoption/sector", revised, at=later)
+    q = marts(date(2026, 4, 30))
+    cov = {r["cut"]: r for r in q("SELECT * FROM ramp_cut_coverage").iter_rows(named=True)}
+    assert cov["adoption/size"]["present_at_cutoff"] is False and cov["adoption/size"]["cut_after_cutoff"] is True
+    assert q("SELECT count(*) AS n FROM ramp_adoption WHERE series_kind = 'size'")["n"][0] == 0
+    old = q("SELECT adoption_pct FROM ramp_adoption WHERE series_label = 'Construction' AND month = '2026-03-01'")
+    assert old["adoption_pct"].to_list() == [20.0]
+    q = marts(date(2026, 5, 31))
+    new = q("SELECT adoption_pct FROM ramp_adoption WHERE series_label = 'Construction' AND month = '2026-03-01'")
+    assert new["adoption_pct"].to_list() == [21.5]
+    assert q("SELECT count(*) AS n FROM ramp_adoption WHERE series_kind = 'size'")["n"][0] == 6
+
+
+def test_a_never_imported_cut_is_listed_and_periods_after_as_of_are_dropped(data_env, synthetic_entities):
+    import_all(skip=("token_price/output",))
+    q = marts(date(2026, 2, 15))  # before the import: the earliest import is used (flagged by build)
+    cov = q("SELECT * FROM ramp_cut_coverage WHERE cut = 'token_price/output'")
+    assert cov["first_import"][0] is None and cov["present_at_cutoff"][0] is False
+    assert q("SELECT max(month) AS m FROM ramp_adoption")["m"][0] == date(2026, 2, 1)
+
+
+def test_token_shares_ignore_rescaling_and_the_checks_pass_on_consistent_data(data_env, synthetic_entities):
+    import_all()
+    q = marts(date(2026, 4, 30))
+    shares = q("SELECT * FROM ramp_token_share ORDER BY week, measure, maker_label")
+    sums = shares.group_by("week", "measure").agg(pl.col("share").sum().alias("total"))
+    assert all(abs(x - 1) < 1e-12 for x in sums["total"])
+    before = shares.select("week", "measure", "maker_label", "share")
+    rescaled = SAMPLES["token_volume/maker"].replace(b"\t4\t2\t1", b"\t100\t50\t25")  # a new peak, same shares
+    imp("token_volume/maker", rescaled, at=AT + timedelta(days=1))
+    after = marts(date(2026, 4, 30))("SELECT week, measure, maker_label, share FROM ramp_token_share")
+    assert before.sort("week", "measure", "maker_label").equals(after.sort("week", "measure", "maker_label"))
+    tc = q("SELECT * FROM ramp_token_check")
+    assert tc.height == 3 and tc["decisive"].all() and not tc["suspect_swap"].any()
+    assert all(abs(x - 1.5) < 1e-9 for x in tc["implied_price_ratio"])
+    pc = q("SELECT * FROM ramp_price_check")
+    assert pc.height == 63 and pc["within_bounds"].all()
+    assert not q("SELECT * FROM ramp_price_identical")["identical"].any()
+
+
+def test_swapped_views_show_up_in_the_checks(data_env, synthetic_entities):
+    import_all(skip=("token_volume/maker", "token_spend/maker", "token_price/input", "token_price/output"))
+    imp("token_volume/maker", SAMPLES["token_spend/maker"], at=AT + timedelta(hours=1))
+    imp("token_spend/maker", SAMPLES["token_volume/maker"], at=AT + timedelta(hours=2))
+    imp("token_price/input", SAMPLES["token_price/output"], at=AT + timedelta(hours=3))
+    imp("token_price/output", SAMPLES["token_price/input"], at=AT + timedelta(hours=4))
+    q = marts(date(2026, 4, 30))
+    assert q("SELECT * FROM ramp_token_check")["suspect_swap"].all()
+    assert not q("SELECT * FROM ramp_price_check")["within_bounds"].any()
+
+
+def test_a_view_imported_twice_under_two_cuts_is_reported_identical(data_env, synthetic_entities):
+    import_all(skip=("token_price/input",))
+    imp("token_price/input", SAMPLES["token_price/blended"] + b"\n", at=AT + timedelta(hours=1))  # bytes differ
+    ident = marts(date(2026, 4, 30))("SELECT * FROM ramp_price_identical WHERE identical")
+    assert set(ident.select("kind_a", "kind_b").iter_rows()) == {("blended", "input")}
