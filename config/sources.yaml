@@ -81,6 +81,18 @@ sources:
     requires: [SEC_EDGAR_USER_AGENT]
     enabled: true
 
+  # OpenRouter app rankings (verified 2026-10-07, SOURCE.md): CC BY 4.0. Weekly windows, revised in
+  # place like rankings-daily (late events, apps hidden or merged), so Latest-only.
+  - id: openrouter_apps
+    history: native
+    revisions: revised
+    redistribution: allowed-with-attribution
+    derived_charts: allowed-with-attribution
+    attribution: "OpenRouter (openrouter.ai/apps), as of {as_of}"
+    cadence: weekly
+    requires: [OPENROUTER_API_KEY]
+    enabled: true
+
   # OpenRouter session cost (verified 2026-10-07, SOURCE.md): CC BY 4.0. No date parameters:
   # only the current weekly snapshot (30-day window) can be fetched, so it is a snapshot source
   # (Author-only) and its history starts at our first fetch.
