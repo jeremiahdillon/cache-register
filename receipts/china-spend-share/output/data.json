@@ -1,0 +1,3468 @@
+{
+ "display": [
+  {
+   "week": "2025-01-06",
+   "OpenAI": "31134.349",
+   "Chinese labs": "5976.7802",
+   "Anthropic": "1294695.97"
+  },
+  {
+   "week": "2025-01-13",
+   "OpenAI": "31431.9761",
+   "Chinese labs": "7344.98988",
+   "Anthropic": "1325398.86"
+  },
+  {
+   "week": "2025-01-20",
+   "OpenAI": "34258.8388",
+   "Chinese labs": "12831.3819",
+   "Anthropic": "1430007.4"
+  },
+  {
+   "week": "2025-01-27",
+   "OpenAI": "43109.9475",
+   "Chinese labs": "17828.9417",
+   "Anthropic": "1657411.88"
+  },
+  {
+   "week": "2025-02-03",
+   "OpenAI": "51924.4056",
+   "Chinese labs": "18249.9768",
+   "Anthropic": "1845556.95"
+  },
+  {
+   "week": "2025-02-10",
+   "OpenAI": "62751.9818",
+   "Chinese labs": "17815.9195",
+   "Anthropic": "1809215.17"
+  },
+  {
+   "week": "2025-02-17",
+   "OpenAI": "73152.3068",
+   "Chinese labs": "18618.8002",
+   "Anthropic": "1792519.42"
+  },
+  {
+   "week": "2025-02-24",
+   "OpenAI": "69624.9839",
+   "Chinese labs": "19306.5922",
+   "Anthropic": "2050188.76"
+  },
+  {
+   "week": "2025-03-03",
+   "OpenAI": "61825.2221",
+   "Chinese labs": "21329.9692",
+   "Anthropic": "2427737.17"
+  },
+  {
+   "week": "2025-03-10",
+   "OpenAI": "58806.2277",
+   "Chinese labs": "25879.6012",
+   "Anthropic": "2756126.75"
+  },
+  {
+   "week": "2025-03-17",
+   "OpenAI": "60407.7592",
+   "Chinese labs": "30249.0409",
+   "Anthropic": "2862092.9"
+  },
+  {
+   "week": "2025-03-24",
+   "OpenAI": "75616.2033",
+   "Chinese labs": "34167.4548",
+   "Anthropic": "2732777.18"
+  },
+  {
+   "week": "2025-03-31",
+   "OpenAI": "98273.5491",
+   "Chinese labs": "36393.7174",
+   "Anthropic": "2634050.78"
+  },
+  {
+   "week": "2025-04-07",
+   "OpenAI": "135804.722",
+   "Chinese labs": "31663.968",
+   "Anthropic": "2673806.77"
+  },
+  {
+   "week": "2025-04-14",
+   "OpenAI": "179561.976",
+   "Chinese labs": "24870.5194",
+   "Anthropic": "2656207.61"
+  },
+  {
+   "week": "2025-04-21",
+   "OpenAI": "186565.049",
+   "Chinese labs": "26382.2195",
+   "Anthropic": "2466403.61"
+  },
+  {
+   "week": "2025-04-28",
+   "OpenAI": "199795.811",
+   "Chinese labs": "37570.7789",
+   "Anthropic": "2280123.13"
+  },
+  {
+   "week": "2025-05-05",
+   "OpenAI": "253352.423",
+   "Chinese labs": "45196.9138",
+   "Anthropic": "2220922.87"
+  },
+  {
+   "week": "2025-05-12",
+   "OpenAI": "302179.335",
+   "Chinese labs": "41447.1451",
+   "Anthropic": "2419078.48"
+  },
+  {
+   "week": "2025-05-19",
+   "OpenAI": "331374.491",
+   "Chinese labs": "38467.3598",
+   "Anthropic": "2877158.72"
+  },
+  {
+   "week": "2025-05-26",
+   "OpenAI": "330348.15",
+   "Chinese labs": "40540.4703",
+   "Anthropic": "3161242.97"
+  },
+  {
+   "week": "2025-06-02",
+   "OpenAI": "283433.369",
+   "Chinese labs": "40484.604",
+   "Anthropic": "2992653.74"
+  },
+  {
+   "week": "2025-06-09",
+   "OpenAI": "227523.09",
+   "Chinese labs": "39989.6606",
+   "Anthropic": "2859293.19"
+  },
+  {
+   "week": "2025-06-16",
+   "OpenAI": "205922.99",
+   "Chinese labs": "43412.5512",
+   "Anthropic": "3032995.18"
+  },
+  {
+   "week": "2025-06-23",
+   "OpenAI": "202334.405",
+   "Chinese labs": "47046.6512",
+   "Anthropic": "3013766.88"
+  },
+  {
+   "week": "2025-06-30",
+   "OpenAI": "194868.642",
+   "Chinese labs": "50260.6399",
+   "Anthropic": "2871140.44"
+  },
+  {
+   "week": "2025-07-07",
+   "OpenAI": "187766.103",
+   "Chinese labs": "63198.9535",
+   "Anthropic": "2976047.42"
+  },
+  {
+   "week": "2025-07-14",
+   "OpenAI": "200470.385",
+   "Chinese labs": "100905.309",
+   "Anthropic": "3528534.12"
+  },
+  {
+   "week": "2025-07-21",
+   "OpenAI": "228220.987",
+   "Chinese labs": "184492.177",
+   "Anthropic": "4457781.23"
+  },
+  {
+   "week": "2025-07-28",
+   "OpenAI": "267981.875",
+   "Chinese labs": "310880.268",
+   "Anthropic": "4974138.55"
+  },
+  {
+   "week": "2025-08-04",
+   "OpenAI": "342275.985",
+   "Chinese labs": "416256.289",
+   "Anthropic": "4891244.43"
+  },
+  {
+   "week": "2025-08-11",
+   "OpenAI": "405196.229",
+   "Chinese labs": "453303.452",
+   "Anthropic": "4675553.22"
+  },
+  {
+   "week": "2025-08-18",
+   "OpenAI": "450017.254",
+   "Chinese labs": "430820.032",
+   "Anthropic": "4460198.74"
+  },
+  {
+   "week": "2025-08-25",
+   "OpenAI": "516519.689",
+   "Chinese labs": "366572.187",
+   "Anthropic": "4272333.83"
+  },
+  {
+   "week": "2025-09-01",
+   "OpenAI": "572174.783",
+   "Chinese labs": "302162.282",
+   "Anthropic": "4165360.71"
+  },
+  {
+   "week": "2025-09-08",
+   "OpenAI": "625316.858",
+   "Chinese labs": "260050.575",
+   "Anthropic": "4186335.36"
+  },
+  {
+   "week": "2025-09-15",
+   "OpenAI": "712178.622",
+   "Chinese labs": "228581.968",
+   "Anthropic": "4216164.57"
+  },
+  {
+   "week": "2025-09-22",
+   "OpenAI": "737540.934",
+   "Chinese labs": "220353.747",
+   "Anthropic": "4102235.56"
+  },
+  {
+   "week": "2025-09-29",
+   "OpenAI": "656624.929",
+   "Chinese labs": "240175.82",
+   "Anthropic": "4101538.17"
+  },
+  {
+   "week": "2025-10-06",
+   "OpenAI": "581716.034",
+   "Chinese labs": "258748.081",
+   "Anthropic": "4236536.37"
+  },
+  {
+   "week": "2025-10-13",
+   "OpenAI": "531728.874",
+   "Chinese labs": "267048.187",
+   "Anthropic": "4207796.43"
+  },
+  {
+   "week": "2025-10-20",
+   "OpenAI": "495173.598",
+   "Chinese labs": "281165.555",
+   "Anthropic": "4275033.02"
+  },
+  {
+   "week": "2025-10-27",
+   "OpenAI": "502022.949",
+   "Chinese labs": "307029.438",
+   "Anthropic": "4544128.92"
+  },
+  {
+   "week": "2025-11-03",
+   "OpenAI": "528790.9",
+   "Chinese labs": "339938.935",
+   "Anthropic": "4593270.15"
+  },
+  {
+   "week": "2025-11-10",
+   "OpenAI": "572893.501",
+   "Chinese labs": "348951.772",
+   "Anthropic": "4235152.03"
+  },
+  {
+   "week": "2025-11-17",
+   "OpenAI": "616672.246",
+   "Chinese labs": "332130.775",
+   "Anthropic": "3913324.03"
+  },
+  {
+   "week": "2025-11-24",
+   "OpenAI": "617621.513",
+   "Chinese labs": "313341.973",
+   "Anthropic": "4232485.25"
+  },
+  {
+   "week": "2025-12-01",
+   "OpenAI": "654346.1",
+   "Chinese labs": "298466.672",
+   "Anthropic": "4829432.44"
+  },
+  {
+   "week": "2025-12-08",
+   "OpenAI": "826238.739",
+   "Chinese labs": "296924.289",
+   "Anthropic": "5005629.23"
+  },
+  {
+   "week": "2025-12-15",
+   "OpenAI": "910582.553",
+   "Chinese labs": "315010.202",
+   "Anthropic": "4726869.96"
+  },
+  {
+   "week": "2025-12-22",
+   "OpenAI": "732186.689",
+   "Chinese labs": "359814.427",
+   "Anthropic": "4307759.67"
+  },
+  {
+   "week": "2025-12-29",
+   "OpenAI": "635251.943",
+   "Chinese labs": "413190.89",
+   "Anthropic": "4764490.41"
+  },
+  {
+   "week": "2026-01-05",
+   "OpenAI": "788576.714",
+   "Chinese labs": "433349.498",
+   "Anthropic": "6796885.64"
+  },
+  {
+   "week": "2026-01-12",
+   "OpenAI": "946312.875",
+   "Chinese labs": "424983.137",
+   "Anthropic": "8397907.84"
+  },
+  {
+   "week": "2026-01-19",
+   "OpenAI": "1118694.26",
+   "Chinese labs": "555894.142",
+   "Anthropic": "8288770.3"
+  },
+  {
+   "week": "2026-01-26",
+   "OpenAI": "1331045.47",
+   "Chinese labs": "1061850.94",
+   "Anthropic": "8316817.4"
+  },
+  {
+   "week": "2026-02-02",
+   "OpenAI": "1416846.37",
+   "Chinese labs": "2041788.67",
+   "Anthropic": "9309477.27"
+  },
+  {
+   "week": "2026-02-09",
+   "OpenAI": "1432126.87",
+   "Chinese labs": "3087621.44",
+   "Anthropic": "10741711.5"
+  },
+  {
+   "week": "2026-02-16",
+   "OpenAI": "1503643.57",
+   "Chinese labs": "3343199.2",
+   "Anthropic": "12270362.0"
+  },
+  {
+   "week": "2026-02-23",
+   "OpenAI": "1803804.48",
+   "Chinese labs": "2893482.54",
+   "Anthropic": "13626315.7"
+  },
+  {
+   "week": "2026-03-02",
+   "OpenAI": "2317545.49",
+   "Chinese labs": "2547051.04",
+   "Anthropic": "14816029.6"
+  },
+  {
+   "week": "2026-03-09",
+   "OpenAI": "2699728.32",
+   "Chinese labs": "2835741.65",
+   "Anthropic": "16127638.4"
+  },
+  {
+   "week": "2026-03-16",
+   "OpenAI": "2986568.44",
+   "Chinese labs": "3678936.36",
+   "Anthropic": "17353611.0"
+  },
+  {
+   "week": "2026-03-23",
+   "OpenAI": "3184814.64",
+   "Chinese labs": "4105723.53",
+   "Anthropic": "17754027.8"
+  },
+  {
+   "week": "2026-03-30",
+   "OpenAI": "3299917.35",
+   "Chinese labs": "3978711.94",
+   "Anthropic": "18014253.3"
+  },
+  {
+   "week": "2026-04-06",
+   "OpenAI": "3642170.42",
+   "Chinese labs": "3898250.8",
+   "Anthropic": "19837577.5"
+  },
+  {
+   "week": "2026-04-13",
+   "OpenAI": "3933522.6",
+   "Chinese labs": "4332024.86",
+   "Anthropic": "22948067.2"
+  },
+  {
+   "week": "2026-04-20",
+   "OpenAI": "4239242.46",
+   "Chinese labs": "5311554.01",
+   "Anthropic": "24169399.5"
+  },
+  {
+   "week": "2026-04-27",
+   "OpenAI": "5048969.43",
+   "Chinese labs": "5942786.33",
+   "Anthropic": "23591240.5"
+  },
+  {
+   "week": "2026-05-04",
+   "OpenAI": "5998006.23",
+   "Chinese labs": "6027166.75",
+   "Anthropic": "25097045.9"
+  },
+  {
+   "week": "2026-05-11",
+   "OpenAI": "6763433.76",
+   "Chinese labs": "5876337.34",
+   "Anthropic": "28782290.4"
+  },
+  {
+   "week": "2026-05-18",
+   "OpenAI": "7243621.35",
+   "Chinese labs": "6245227.87",
+   "Anthropic": "33645480.1"
+  },
+  {
+   "week": "2026-05-25",
+   "OpenAI": "7197731.71",
+   "Chinese labs": "7630003.84",
+   "Anthropic": "37717716.5"
+  },
+  {
+   "week": "2026-06-01",
+   "OpenAI": "7099710.57",
+   "Chinese labs": "9428251.51",
+   "Anthropic": "42057518.0"
+  },
+  {
+   "week": "2026-06-08",
+   "OpenAI": "8741744.23",
+   "Chinese labs": "11984335.5",
+   "Anthropic": "48246819.4"
+  },
+  {
+   "week": "2026-06-15",
+   "OpenAI": "11830334.3",
+   "Chinese labs": "14713486.9",
+   "Anthropic": "50582819.0"
+  },
+  {
+   "week": "2026-06-22",
+   "OpenAI": "13517849.1",
+   "Chinese labs": "16174590.0",
+   "Anthropic": "51031102.8"
+  },
+  {
+   "week": "2026-06-29",
+   "OpenAI": "13406412.7",
+   "Chinese labs": "17204418.3",
+   "Anthropic": "53898219.2"
+  },
+  {
+   "week": "2026-07-06",
+   "OpenAI": "13558516.4",
+   "Chinese labs": "19481536.1",
+   "Anthropic": "56324304.3"
+  },
+  {
+   "week": "2026-07-13",
+   "OpenAI": "14217407.0",
+   "Chinese labs": "23395829.6",
+   "Anthropic": "52559215.9"
+  },
+  {
+   "week": "2026-07-20",
+   "OpenAI": "13322056.2",
+   "Chinese labs": "26042216.6",
+   "Anthropic": "41201787.5"
+  },
+  {
+   "week": "2026-07-27",
+   "OpenAI": "12324287.5",
+   "Chinese labs": "25767276.5",
+   "Anthropic": "33141108.4"
+  },
+  {
+   "week": "2026-08-03",
+   "OpenAI": "13840514.0",
+   "Chinese labs": "25906840.9",
+   "Anthropic": "36369946.8"
+  },
+  {
+   "week": "2026-08-10",
+   "OpenAI": "17356230.6",
+   "Chinese labs": "28597015.6",
+   "Anthropic": "40842010.8"
+  },
+  {
+   "week": "2026-08-17",
+   "OpenAI": "19974469.9",
+   "Chinese labs": "34079905.4",
+   "Anthropic": "36459896.9"
+  },
+  {
+   "week": "2026-08-24",
+   "OpenAI": "20852697.5",
+   "Chinese labs": "42558941.4",
+   "Anthropic": "33045439.6"
+  },
+  {
+   "week": "2026-08-31",
+   "OpenAI": "24652721.9",
+   "Chinese labs": "48734357.0",
+   "Anthropic": "34248559.2"
+  },
+  {
+   "week": "2026-09-07",
+   "OpenAI": "33502835.0",
+   "Chinese labs": "47347853.5",
+   "Anthropic": "32769057.9"
+  },
+  {
+   "week": "2026-09-14",
+   "OpenAI": "39186487.5",
+   "Chinese labs": "43282583.2",
+   "Anthropic": "31867841.3"
+  },
+  {
+   "week": "2026-09-21",
+   "OpenAI": "38264381.5",
+   "Chinese labs": "40794523.8",
+   "Anthropic": "34102009.2"
+  },
+  {
+   "week": "2026-09-28",
+   "OpenAI": "38302143.6",
+   "Chinese labs": "39265356.6",
+   "Anthropic": "35976147.4"
+  }
+ ],
+ "groups": [
+  {
+   "week": "2025-01-06",
+   "group": "Anthropic",
+   "est_spend_usd": "1273189.85",
+   "share": "0.971727724"
+  },
+  {
+   "week": "2025-01-06",
+   "group": "Chinese labs",
+   "est_spend_usd": "6622.69168",
+   "share": "0.00505459033"
+  },
+  {
+   "week": "2025-01-06",
+   "group": "OpenAI",
+   "est_spend_usd": "30420.5812",
+   "share": "0.0232176859"
+  },
+  {
+   "week": "2025-01-13",
+   "group": "Anthropic",
+   "est_spend_usd": "1337708.2",
+   "share": "0.972910502"
+  },
+  {
+   "week": "2025-01-13",
+   "group": "Chinese labs",
+   "est_spend_usd": "4684.95723",
+   "share": "0.00340735304"
+  },
+  {
+   "week": "2025-01-13",
+   "group": "OpenAI",
+   "est_spend_usd": "32561.8845",
+   "share": "0.0236821449"
+  },
+  {
+   "week": "2025-01-20",
+   "group": "Anthropic",
+   "est_spend_usd": "1352989.19",
+   "share": "0.968801266"
+  },
+  {
+   "week": "2025-01-20",
+   "group": "Chinese labs",
+   "est_spend_usd": "13387.3534",
+   "share": "0.00958594863"
+  },
+  {
+   "week": "2025-01-20",
+   "group": "OpenAI",
+   "est_spend_usd": "30183.5541",
+   "share": "0.0216127857"
+  },
+  {
+   "week": "2025-01-27",
+   "group": "Anthropic",
+   "est_spend_usd": "1676343.04",
+   "share": "0.963241013"
+  },
+  {
+   "week": "2025-01-27",
+   "group": "Chinese labs",
+   "est_spend_usd": "19865.8636",
+   "share": "0.0114150947"
+  },
+  {
+   "week": "2025-01-27",
+   "group": "OpenAI",
+   "est_spend_usd": "44106.3624",
+   "share": "0.0253438922"
+  },
+  {
+   "week": "2025-02-03",
+   "group": "Anthropic",
+   "est_spend_usd": "1923972.24",
+   "share": "0.963811368"
+  },
+  {
+   "week": "2025-02-03",
+   "group": "Chinese labs",
+   "est_spend_usd": "18196.6862",
+   "share": "0.0091156061"
+  },
+  {
+   "week": "2025-02-03",
+   "group": "OpenAI",
+   "est_spend_usd": "54043.5111",
+   "share": "0.027073026"
+  },
+  {
+   "week": "2025-02-10",
+   "group": "Anthropic",
+   "est_spend_usd": "1857940.27",
+   "share": "0.962570996"
+  },
+  {
+   "week": "2025-02-10",
+   "group": "Chinese labs",
+   "est_spend_usd": "16740.6712",
+   "share": "0.00867309072"
+  },
+  {
+   "week": "2025-02-10",
+   "group": "OpenAI",
+   "est_spend_usd": "55504.2379",
+   "share": "0.0287559133"
+  },
+  {
+   "week": "2025-02-17",
+   "group": "Anthropic",
+   "est_spend_usd": "1597007.89",
+   "share": "0.938009678"
+  },
+  {
+   "week": "2025-02-17",
+   "group": "Chinese labs",
+   "est_spend_usd": "19585.6492",
+   "share": "0.0115037181"
+  },
+  {
+   "week": "2025-02-17",
+   "group": "OpenAI",
+   "est_spend_usd": "85955.9405",
+   "share": "0.0504866035"
+  },
+  {
+   "week": "2025-02-24",
+   "group": "Anthropic",
+   "est_spend_usd": "2118121.63",
+   "share": "0.961961407"
+  },
+  {
+   "week": "2025-02-24",
+   "group": "Chinese labs",
+   "est_spend_usd": "18563.2311",
+   "share": "0.00843063573"
+  },
+  {
+   "week": "2025-02-24",
+   "group": "OpenAI",
+   "est_spend_usd": "65193.1082",
+   "share": "0.029607957"
+  },
+  {
+   "week": "2025-03-03",
+   "group": "Anthropic",
+   "est_spend_usd": "2367503.9",
+   "share": "0.966258735"
+  },
+  {
+   "week": "2025-03-03",
+   "group": "Chinese labs",
+   "est_spend_usd": "20514.2574",
+   "share": "0.00837256502"
+  },
+  {
+   "week": "2025-03-03",
+   "group": "OpenAI",
+   "est_spend_usd": "62157.7789",
+   "share": "0.0253687002"
+  },
+  {
+   "week": "2025-03-10",
+   "group": "Anthropic",
+   "est_spend_usd": "2857819.24",
+   "share": "0.971604655"
+  },
+  {
+   "week": "2025-03-10",
+   "group": "Chinese labs",
+   "est_spend_usd": "25728.131",
+   "share": "0.00874707942"
+  },
+  {
+   "week": "2025-03-10",
+   "group": "OpenAI",
+   "est_spend_usd": "57792.2223",
+   "share": "0.0196482659"
+  },
+  {
+   "week": "2025-03-17",
+   "group": "Anthropic",
+   "est_spend_usd": "2941364.61",
+   "share": "0.970620804"
+  },
+  {
+   "week": "2025-03-17",
+   "group": "Chinese labs",
+   "est_spend_usd": "31547.8853",
+   "share": "0.0104104856"
+  },
+  {
+   "week": "2025-03-17",
+   "group": "OpenAI",
+   "est_spend_usd": "57482.6873",
+   "share": "0.01896871"
+  },
+  {
+   "week": "2025-03-24",
+   "group": "Anthropic",
+   "est_spend_usd": "2707823.15",
+   "share": "0.964026194"
+  },
+  {
+   "week": "2025-03-24",
+   "group": "Chinese labs",
+   "est_spend_usd": "32172.2622",
+   "share": "0.0114538143"
+  },
+  {
+   "week": "2025-03-24",
+   "group": "OpenAI",
+   "est_spend_usd": "68873.4399",
+   "share": "0.0245199914"
+  },
+  {
+   "week": "2025-03-31",
+   "group": "Anthropic",
+   "est_spend_usd": "2574097.8",
+   "share": "0.945625772"
+  },
+  {
+   "week": "2025-03-31",
+   "group": "Chinese labs",
+   "est_spend_usd": "40777.4097",
+   "share": "0.0149800717"
+  },
+  {
+   "week": "2025-03-31",
+   "group": "OpenAI",
+   "est_spend_usd": "107235.246",
+   "share": "0.0393941567"
+  },
+  {
+   "week": "2025-04-07",
+   "group": "Anthropic",
+   "est_spend_usd": "2680184.36",
+   "share": "0.949819642"
+  },
+  {
+   "week": "2025-04-07",
+   "group": "Chinese labs",
+   "est_spend_usd": "31847.7879",
+   "share": "0.0112864081"
+  },
+  {
+   "week": "2025-04-07",
+   "group": "OpenAI",
+   "est_spend_usd": "109750.265",
+   "share": "0.0388939503"
+  },
+  {
+   "week": "2025-04-14",
+   "group": "Anthropic",
+   "est_spend_usd": "2760760.58",
+   "share": "0.920429457"
+  },
+  {
+   "week": "2025-04-14",
+   "group": "Chinese labs",
+   "est_spend_usd": "22182.8866",
+   "share": "0.00739570915"
+  },
+  {
+   "week": "2025-04-14",
+   "group": "OpenAI",
+   "est_spend_usd": "216483.114",
+   "share": "0.0721748335"
+  },
+  {
+   "week": "2025-04-21",
+   "group": "Anthropic",
+   "est_spend_usd": "2423124.92",
+   "share": "0.924177869"
+  },
+  {
+   "week": "2025-04-21",
+   "group": "Chinese labs",
+   "est_spend_usd": "23268.5164",
+   "share": "0.00887459316"
+  },
+  {
+   "week": "2025-04-21",
+   "group": "OpenAI",
+   "est_spend_usd": "175531.413",
+   "share": "0.0669475378"
+  },
+  {
+   "week": "2025-04-28",
+   "group": "Anthropic",
+   "est_spend_usd": "2258604.01",
+   "share": "0.912889194"
+  },
+  {
+   "week": "2025-04-28",
+   "group": "Chinese labs",
+   "est_spend_usd": "36808.9587",
+   "share": "0.0148775529"
+  },
+  {
+   "week": "2025-04-28",
+   "group": "OpenAI",
+   "est_spend_usd": "178714.258",
+   "share": "0.0722332529"
+  },
+  {
+   "week": "2025-05-05",
+   "group": "Anthropic",
+   "est_spend_usd": "2180159.55",
+   "share": "0.872140726"
+  },
+  {
+   "week": "2025-05-05",
+   "group": "Chinese labs",
+   "est_spend_usd": "53396.682",
+   "share": "0.0213605563"
+  },
+  {
+   "week": "2025-05-05",
+   "group": "OpenAI",
+   "est_spend_usd": "266223.317",
+   "share": "0.106498718"
+  },
+  {
+   "week": "2025-05-12",
+   "group": "Anthropic",
+   "est_spend_usd": "2264768.36",
+   "share": "0.869659086"
+  },
+  {
+   "week": "2025-05-12",
+   "group": "Chinese labs",
+   "est_spend_usd": "37185.3325",
+   "share": "0.0142789713"
+  },
+  {
+   "week": "2025-05-12",
+   "group": "OpenAI",
+   "est_spend_usd": "302248.8",
+   "share": "0.116061943"
+  },
+  {
+   "week": "2025-05-19",
+   "group": "Anthropic",
+   "est_spend_usd": "2966617.65",
+   "share": "0.887508621"
+  },
+  {
+   "week": "2025-05-19",
+   "group": "Chinese labs",
+   "est_spend_usd": "38021.2333",
+   "share": "0.011374628"
+  },
+  {
+   "week": "2025-05-19",
+   "group": "OpenAI",
+   "est_spend_usd": "337996.422",
+   "share": "0.101116751"
+  },
+  {
+   "week": "2025-05-26",
+   "group": "Anthropic",
+   "est_spend_usd": "3310631.22",
+   "share": "0.895121022"
+  },
+  {
+   "week": "2025-05-26",
+   "group": "Chinese labs",
+   "est_spend_usd": "40641.6401",
+   "share": "0.0109885952"
+  },
+  {
+   "week": "2025-05-26",
+   "group": "OpenAI",
+   "est_spend_usd": "347256.319",
+   "share": "0.0938903824"
+  },
+  {
+   "week": "2025-06-02",
+   "group": "Anthropic",
+   "est_spend_usd": "3057091.79",
+   "share": "0.902107617"
+  },
+  {
+   "week": "2025-06-02",
+   "group": "Chinese labs",
+   "est_spend_usd": "42857.3676",
+   "share": "0.012646646"
+  },
+  {
+   "week": "2025-06-02",
+   "group": "OpenAI",
+   "est_spend_usd": "288883.54",
+   "share": "0.0852457368"
+  },
+  {
+   "week": "2025-06-09",
+   "group": "Anthropic",
+   "est_spend_usd": "2545800.17",
+   "share": "0.912442998"
+  },
+  {
+   "week": "2025-06-09",
+   "group": "Chinese labs",
+   "est_spend_usd": "35582.0407",
+   "share": "0.0127529977"
+  },
+  {
+   "week": "2025-06-09",
+   "group": "OpenAI",
+   "est_spend_usd": "208710.075",
+   "share": "0.0748040042"
+  },
+  {
+   "week": "2025-06-16",
+   "group": "Anthropic",
+   "est_spend_usd": "3288480.61",
+   "share": "0.929420212"
+  },
+  {
+   "week": "2025-06-16",
+   "group": "Chinese labs",
+   "est_spend_usd": "45937.1934",
+   "share": "0.0129831862"
+  },
+  {
+   "week": "2025-06-16",
+   "group": "OpenAI",
+   "est_spend_usd": "203788.668",
+   "share": "0.0575966015"
+  },
+  {
+   "week": "2025-06-23",
+   "group": "Anthropic",
+   "est_spend_usd": "3009219.33",
+   "share": "0.92227628"
+  },
+  {
+   "week": "2025-06-23",
+   "group": "Chinese labs",
+   "est_spend_usd": "46193.7775",
+   "share": "0.0141576338"
+  },
+  {
+   "week": "2025-06-23",
+   "group": "OpenAI",
+   "est_spend_usd": "207404.548",
+   "share": "0.0635660862"
+  },
+  {
+   "week": "2025-06-30",
+   "group": "Anthropic",
+   "est_spend_usd": "2748148.27",
+   "share": "0.919497545"
+  },
+  {
+   "week": "2025-06-30",
+   "group": "Chinese labs",
+   "est_spend_usd": "49861.8563",
+   "share": "0.0166831808"
+  },
+  {
+   "week": "2025-06-30",
+   "group": "OpenAI",
+   "est_spend_usd": "190739.855",
+   "share": "0.0638192743"
+  },
+  {
+   "week": "2025-07-07",
+   "group": "Anthropic",
+   "est_spend_usd": "2979045.89",
+   "share": "0.923803544"
+  },
+  {
+   "week": "2025-07-07",
+   "group": "Chinese labs",
+   "est_spend_usd": "55125.0696",
+   "share": "0.0170943102"
+  },
+  {
+   "week": "2025-07-07",
+   "group": "OpenAI",
+   "est_spend_usd": "190590.311",
+   "share": "0.0591021458"
+  },
+  {
+   "week": "2025-07-14",
+   "group": "Anthropic",
+   "est_spend_usd": "3197949.62",
+   "share": "0.921658445"
+  },
+  {
+   "week": "2025-07-14",
+   "group": "Chinese labs",
+   "est_spend_usd": "92683.8186",
+   "share": "0.0267117479"
+  },
+  {
+   "week": "2025-07-14",
+   "group": "OpenAI",
+   "est_spend_usd": "179143.936",
+   "share": "0.0516298071"
+  },
+  {
+   "week": "2025-07-21",
+   "group": "Anthropic",
+   "est_spend_usd": "4739191.36",
+   "share": "0.919281126"
+  },
+  {
+   "week": "2025-07-21",
+   "group": "Chinese labs",
+   "est_spend_usd": "163128.531",
+   "share": "0.0316427357"
+  },
+  {
+   "week": "2025-07-21",
+   "group": "OpenAI",
+   "est_spend_usd": "253003.355",
+   "share": "0.049076138"
+  },
+  {
+   "week": "2025-07-28",
+   "group": "Anthropic",
+   "est_spend_usd": "5154792.6",
+   "share": "0.904103134"
+  },
+  {
+   "week": "2025-07-28",
+   "group": "Chinese labs",
+   "est_spend_usd": "319027.829",
+   "share": "0.0559545423"
+  },
+  {
+   "week": "2025-07-28",
+   "group": "OpenAI",
+   "est_spend_usd": "227733.302",
+   "share": "0.0399423233"
+  },
+  {
+   "week": "2025-08-04",
+   "group": "Anthropic",
+   "est_spend_usd": "4847777.64",
+   "share": "0.857471628"
+  },
+  {
+   "week": "2025-08-04",
+   "group": "Chinese labs",
+   "est_spend_usd": "442336.882",
+   "share": "0.0782402484"
+  },
+  {
+   "week": "2025-08-04",
+   "group": "OpenAI",
+   "est_spend_usd": "363457.542",
+   "share": "0.064288124"
+  },
+  {
+   "week": "2025-08-11",
+   "group": "Anthropic",
+   "est_spend_usd": "4714629.85",
+   "share": "0.843342568"
+  },
+  {
+   "week": "2025-08-11",
+   "group": "Chinese labs",
+   "est_spend_usd": "461323.563",
+   "share": "0.0825205392"
+  },
+  {
+   "week": "2025-08-11",
+   "group": "OpenAI",
+   "est_spend_usd": "414455.553",
+   "share": "0.0741368933"
+  },
+  {
+   "week": "2025-08-18",
+   "group": "Anthropic",
+   "est_spend_usd": "4425175.55",
+   "share": "0.834651912"
+  },
+  {
+   "week": "2025-08-18",
+   "group": "Chinese labs",
+   "est_spend_usd": "448229.802",
+   "share": "0.0845426033"
+  },
+  {
+   "week": "2025-08-18",
+   "group": "OpenAI",
+   "est_spend_usd": "428416.268",
+   "share": "0.0808054852"
+  },
+  {
+   "week": "2025-08-25",
+   "group": "Anthropic",
+   "est_spend_usd": "4275814.03",
+   "share": "0.827028629"
+  },
+  {
+   "week": "2025-08-25",
+   "group": "Chinese labs",
+   "est_spend_usd": "365496.961",
+   "share": "0.0706944803"
+  },
+  {
+   "week": "2025-08-25",
+   "group": "OpenAI",
+   "est_spend_usd": "528780.925",
+   "share": "0.102276891"
+  },
+  {
+   "week": "2025-09-01",
+   "group": "Anthropic",
+   "est_spend_usd": "4112531.72",
+   "share": "0.825859767"
+  },
+  {
+   "week": "2025-09-01",
+   "group": "Chinese labs",
+   "est_spend_usd": "287065.024",
+   "share": "0.057647082"
+  },
+  {
+   "week": "2025-09-01",
+   "group": "OpenAI",
+   "est_spend_usd": "580100.64",
+   "share": "0.116493151"
+  },
+  {
+   "week": "2025-09-08",
+   "group": "Anthropic",
+   "est_spend_usd": "4160565.36",
+   "share": "0.827264572"
+  },
+  {
+   "week": "2025-09-08",
+   "group": "Chinese labs",
+   "est_spend_usd": "269022.119",
+   "share": "0.0534909199"
+  },
+  {
+   "week": "2025-09-08",
+   "group": "OpenAI",
+   "est_spend_usd": "599716.928",
+   "share": "0.119244508"
+  },
+  {
+   "week": "2025-09-15",
+   "group": "Anthropic",
+   "est_spend_usd": "4311679.0",
+   "share": "0.821506128"
+  },
+  {
+   "week": "2025-09-15",
+   "group": "Chinese labs",
+   "est_spend_usd": "215093.039",
+   "share": "0.0409817729"
+  },
+  {
+   "week": "2025-09-15",
+   "group": "OpenAI",
+   "est_spend_usd": "721732.937",
+   "share": "0.137512099"
+  },
+  {
+   "week": "2025-09-22",
+   "group": "Anthropic",
+   "est_spend_usd": "4080734.9",
+   "share": "0.799926665"
+  },
+  {
+   "week": "2025-09-22",
+   "group": "Chinese labs",
+   "est_spend_usd": "215119.674",
+   "share": "0.042168866"
+  },
+  {
+   "week": "2025-09-22",
+   "group": "OpenAI",
+   "est_spend_usd": "805531.688",
+   "share": "0.157904469"
+  },
+  {
+   "week": "2025-09-29",
+   "group": "Anthropic",
+   "est_spend_usd": "3935793.45",
+   "share": "0.821798572"
+  },
+  {
+   "week": "2025-09-29",
+   "group": "Chinese labs",
+   "est_spend_usd": "236082.604",
+   "share": "0.0492943415"
+  },
+  {
+   "week": "2025-09-29",
+   "group": "OpenAI",
+   "est_spend_usd": "617367.423",
+   "share": "0.128907086"
+  },
+  {
+   "week": "2025-10-06",
+   "group": "Anthropic",
+   "est_spend_usd": "4453830.87",
+   "share": "0.838213152"
+  },
+  {
+   "week": "2025-10-06",
+   "group": "Chinese labs",
+   "est_spend_usd": "273418.4",
+   "share": "0.0514574767"
+  },
+  {
+   "week": "2025-10-06",
+   "group": "OpenAI",
+   "est_spend_usd": "586233.18",
+   "share": "0.110329372"
+  },
+  {
+   "week": "2025-10-13",
+   "group": "Anthropic",
+   "est_spend_usd": "4102690.27",
+   "share": "0.838688353"
+  },
+  {
+   "week": "2025-10-13",
+   "group": "Chinese labs",
+   "est_spend_usd": "252072.922",
+   "share": "0.0515297549"
+  },
+  {
+   "week": "2025-10-13",
+   "group": "OpenAI",
+   "est_spend_usd": "537030.35",
+   "share": "0.109781892"
+  },
+  {
+   "week": "2025-10-20",
+   "group": "Anthropic",
+   "est_spend_usd": "4171974.29",
+   "share": "0.846375402"
+  },
+  {
+   "week": "2025-10-20",
+   "group": "Chinese labs",
+   "est_spend_usd": "290628.503",
+   "share": "0.0589602905"
+  },
+  {
+   "week": "2025-10-20",
+   "group": "OpenAI",
+   "est_spend_usd": "466621.614",
+   "share": "0.0946643073"
+  },
+  {
+   "week": "2025-10-27",
+   "group": "Anthropic",
+   "est_spend_usd": "4653493.23",
+   "share": "0.853030815"
+  },
+  {
+   "week": "2025-10-27",
+   "group": "Chinese labs",
+   "est_spend_usd": "291332.292",
+   "share": "0.0534040582"
+  },
+  {
+   "week": "2025-10-27",
+   "group": "OpenAI",
+   "est_spend_usd": "510420.813",
+   "share": "0.0935651264"
+  },
+  {
+   "week": "2025-11-03",
+   "group": "Anthropic",
+   "est_spend_usd": "4697554.95",
+   "share": "0.842911907"
+  },
+  {
+   "week": "2025-11-03",
+   "group": "Chinese labs",
+   "est_spend_usd": "354824.666",
+   "share": "0.0636684273"
+  },
+  {
+   "week": "2025-11-03",
+   "group": "OpenAI",
+   "est_spend_usd": "520628.558",
+   "share": "0.0934196652"
+  },
+  {
+   "week": "2025-11-10",
+   "group": "Anthropic",
+   "est_spend_usd": "4324477.48",
+   "share": "0.824222228"
+  },
+  {
+   "week": "2025-11-10",
+   "group": "Chinese labs",
+   "est_spend_usd": "358774.117",
+   "share": "0.0683804236"
+  },
+  {
+   "week": "2025-11-10",
+   "group": "OpenAI",
+   "est_spend_usd": "563485.67",
+   "share": "0.107397348"
+  },
+  {
+   "week": "2025-11-17",
+   "group": "Anthropic",
+   "est_spend_usd": "3594098.21",
+   "share": "0.787919125"
+  },
+  {
+   "week": "2025-11-17",
+   "group": "Chinese labs",
+   "est_spend_usd": "323434.187",
+   "share": "0.0709051246"
+  },
+  {
+   "week": "2025-11-17",
+   "group": "OpenAI",
+   "est_spend_usd": "643974.106",
+   "share": "0.141175751"
+  },
+  {
+   "week": "2025-11-24",
+   "group": "Anthropic",
+   "est_spend_usd": "4140622.22",
+   "share": "0.815282452"
+  },
+  {
+   "week": "2025-11-24",
+   "group": "Chinese labs",
+   "est_spend_usd": "322880.608",
+   "share": "0.0635747189"
+  },
+  {
+   "week": "2025-11-24",
+   "group": "OpenAI",
+   "est_spend_usd": "615255.104",
+   "share": "0.121142829"
+  },
+  {
+   "week": "2025-12-01",
+   "group": "Anthropic",
+   "est_spend_usd": "5054598.33",
+   "share": "0.851692003"
+  },
+  {
+   "week": "2025-12-01",
+   "group": "Chinese labs",
+   "est_spend_usd": "284172.49",
+   "share": "0.0478826252"
+  },
+  {
+   "week": "2025-12-01",
+   "group": "OpenAI",
+   "est_spend_usd": "596001.739",
+   "share": "0.100425371"
+  },
+  {
+   "week": "2025-12-08",
+   "group": "Anthropic",
+   "est_spend_usd": "5067910.88",
+   "share": "0.819960374"
+  },
+  {
+   "week": "2025-12-08",
+   "group": "Chinese labs",
+   "est_spend_usd": "302641.098",
+   "share": "0.0489656811"
+  },
+  {
+   "week": "2025-12-08",
+   "group": "OpenAI",
+   "est_spend_usd": "810125.82",
+   "share": "0.131073945"
+  },
+  {
+   "week": "2025-12-15",
+   "group": "Anthropic",
+   "est_spend_usd": "4832096.85",
+   "share": "0.776984253"
+  },
+  {
+   "week": "2025-12-15",
+   "group": "Chinese labs",
+   "est_spend_usd": "298242.471",
+   "share": "0.0479563451"
+  },
+  {
+   "week": "2025-12-15",
+   "group": "OpenAI",
+   "est_spend_usd": "1088701.58",
+   "share": "0.175059402"
+  },
+  {
+   "week": "2025-12-22",
+   "group": "Anthropic",
+   "est_spend_usd": "4175375.28",
+   "share": "0.804334782"
+  },
+  {
+   "week": "2025-12-22",
+   "group": "Chinese labs",
+   "est_spend_usd": "360914.769",
+   "share": "0.069525799"
+  },
+  {
+   "week": "2025-12-22",
+   "group": "OpenAI",
+   "est_spend_usd": "654801.238",
+   "share": "0.126139419"
+  },
+  {
+   "week": "2025-12-29",
+   "group": "Anthropic",
+   "est_spend_usd": "4048191.26",
+   "share": "0.809991463"
+  },
+  {
+   "week": "2025-12-29",
+   "group": "Chinese labs",
+   "est_spend_usd": "419185.7",
+   "share": "0.0838737146"
+  },
+  {
+   "week": "2025-12-29",
+   "group": "OpenAI",
+   "est_spend_usd": "530442.703",
+   "share": "0.106134822"
+  },
+  {
+   "week": "2026-01-05",
+   "group": "Anthropic",
+   "est_spend_usd": "6786203.83",
+   "share": "0.841438543"
+  },
+  {
+   "week": "2026-01-05",
+   "group": "Chinese labs",
+   "est_spend_usd": "453477.392",
+   "share": "0.0562278065"
+  },
+  {
+   "week": "2026-01-05",
+   "group": "OpenAI",
+   "est_spend_usd": "825321.13",
+   "share": "0.10233365"
+  },
+  {
+   "week": "2026-01-12",
+   "group": "Anthropic",
+   "est_spend_usd": "9566943.66",
+   "share": "0.873899145"
+  },
+  {
+   "week": "2026-01-12",
+   "group": "Chinese labs",
+   "est_spend_usd": "407257.509",
+   "share": "0.0372012214"
+  },
+  {
+   "week": "2026-01-12",
+   "group": "OpenAI",
+   "est_spend_usd": "973221.893",
+   "share": "0.0888996331"
+  },
+  {
+   "week": "2026-01-19",
+   "group": "Anthropic",
+   "est_spend_usd": "7671540.21",
+   "share": "0.841457501"
+  },
+  {
+   "week": "2026-01-19",
+   "group": "Chinese labs",
+   "est_spend_usd": "431940.137",
+   "share": "0.0473776137"
+  },
+  {
+   "week": "2026-01-19",
+   "group": "OpenAI",
+   "est_spend_usd": "1013486.58",
+   "share": "0.111164886"
+  },
+  {
+   "week": "2026-01-26",
+   "group": "Anthropic",
+   "est_spend_usd": "8245057.14",
+   "share": "0.772582174"
+  },
+  {
+   "week": "2026-01-26",
+   "group": "Chinese labs",
+   "est_spend_usd": "952438.785",
+   "share": "0.0892458614"
+  },
+  {
+   "week": "2026-01-26",
+   "group": "OpenAI",
+   "est_spend_usd": "1474581.97",
+   "share": "0.138171965"
+  },
+  {
+   "week": "2026-02-02",
+   "group": "Anthropic",
+   "est_spend_usd": "9105615.11",
+   "share": "0.735644844"
+  },
+  {
+   "week": "2026-02-02",
+   "group": "Chinese labs",
+   "est_spend_usd": "1910586.06",
+   "share": "0.15435671"
+  },
+  {
+   "week": "2026-02-02",
+   "group": "OpenAI",
+   "est_spend_usd": "1361531.35",
+   "share": "0.109998446"
+  },
+  {
+   "week": "2026-02-09",
+   "group": "Anthropic",
+   "est_spend_usd": "10781621.7",
+   "share": "0.689145816"
+  },
+  {
+   "week": "2026-02-09",
+   "group": "Chinese labs",
+   "est_spend_usd": "3393543.77",
+   "share": "0.216910457"
+  },
+  {
+   "week": "2026-02-09",
+   "group": "OpenAI",
+   "est_spend_usd": "1469740.82",
+   "share": "0.0939437276"
+  },
+  {
+   "week": "2026-02-16",
+   "group": "Anthropic",
+   "est_spend_usd": "12297987.4",
+   "share": "0.707663675"
+  },
+  {
+   "week": "2026-02-16",
+   "group": "Chinese labs",
+   "est_spend_usd": "3652812.14",
+   "share": "0.210193943"
+  },
+  {
+   "week": "2026-02-16",
+   "group": "OpenAI",
+   "est_spend_usd": "1427494.48",
+   "share": "0.0821423828"
+  },
+  {
+   "week": "2026-02-23",
+   "group": "Anthropic",
+   "est_spend_usd": "13703851.3",
+   "share": "0.758488134"
+  },
+  {
+   "week": "2026-02-23",
+   "group": "Chinese labs",
+   "est_spend_usd": "2673628.77",
+   "share": "0.147981443"
+  },
+  {
+   "week": "2026-02-23",
+   "group": "OpenAI",
+   "est_spend_usd": "1689844.51",
+   "share": "0.0935304227"
+  },
+  {
+   "week": "2026-03-02",
+   "group": "Anthropic",
+   "est_spend_usd": "14799572.6",
+   "share": "0.748153422"
+  },
+  {
+   "week": "2026-03-02",
+   "group": "Chinese labs",
+   "est_spend_usd": "2573860.46",
+   "share": "0.130114738"
+  },
+  {
+   "week": "2026-03-02",
+   "group": "OpenAI",
+   "est_spend_usd": "2408034.44",
+   "share": "0.12173184"
+  },
+  {
+   "week": "2026-03-09",
+   "group": "Anthropic",
+   "est_spend_usd": "15961121.9",
+   "share": "0.756729403"
+  },
+  {
+   "week": "2026-03-09",
+   "group": "Chinese labs",
+   "est_spend_usd": "2366854.46",
+   "share": "0.11221444"
+  },
+  {
+   "week": "2026-03-09",
+   "group": "OpenAI",
+   "est_spend_usd": "2764268.56",
+   "share": "0.131056157"
+  },
+  {
+   "week": "2026-03-16",
+   "group": "Anthropic",
+   "est_spend_usd": "17788737.1",
+   "share": "0.720586328"
+  },
+  {
+   "week": "2026-03-16",
+   "group": "Chinese labs",
+   "est_spend_usd": "4035397.2",
+   "share": "0.163465907"
+  },
+  {
+   "week": "2026-03-16",
+   "group": "OpenAI",
+   "est_spend_usd": "2862341.72",
+   "share": "0.115947765"
+  },
+  {
+   "week": "2026-03-23",
+   "group": "Anthropic",
+   "est_spend_usd": "17875848.1",
+   "share": "0.697968144"
+  },
+  {
+   "week": "2026-03-23",
+   "group": "Chinese labs",
+   "est_spend_usd": "4278096.6",
+   "share": "0.167039635"
+  },
+  {
+   "week": "2026-03-23",
+   "group": "OpenAI",
+   "est_spend_usd": "3457321.76",
+   "share": "0.134992222"
+  },
+  {
+   "week": "2026-03-30",
+   "group": "Anthropic",
+   "est_spend_usd": "17475677.7",
+   "share": "0.720074756"
+  },
+  {
+   "week": "2026-03-30",
+   "group": "Chinese labs",
+   "est_spend_usd": "3831303.73",
+   "share": "0.157866559"
+  },
+  {
+   "week": "2026-03-30",
+   "group": "OpenAI",
+   "est_spend_usd": "2962273.32",
+   "share": "0.122058685"
+  },
+  {
+   "week": "2026-04-06",
+   "group": "Anthropic",
+   "est_spend_usd": "19229809.7",
+   "share": "0.711641792"
+  },
+  {
+   "week": "2026-04-06",
+   "group": "Chinese labs",
+   "est_spend_usd": "3974143.69",
+   "share": "0.147072008"
+  },
+  {
+   "week": "2026-04-06",
+   "group": "OpenAI",
+   "est_spend_usd": "3817800.98",
+   "share": "0.1412862"
+  },
+  {
+   "week": "2026-04-13",
+   "group": "Anthropic",
+   "est_spend_usd": "23415013.0",
+   "share": "0.750499672"
+  },
+  {
+   "week": "2026-04-13",
+   "group": "Chinese labs",
+   "est_spend_usd": "3813412.09",
+   "share": "0.122227757"
+  },
+  {
+   "week": "2026-04-13",
+   "group": "OpenAI",
+   "est_spend_usd": "3970806.41",
+   "share": "0.127272571"
+  },
+  {
+   "week": "2026-04-20",
+   "group": "Anthropic",
+   "est_spend_usd": "25732432.9",
+   "share": "0.726202457"
+  },
+  {
+   "week": "2026-04-20",
+   "group": "Chinese labs",
+   "est_spend_usd": "5727131.58",
+   "share": "0.161627042"
+  },
+  {
+   "week": "2026-04-20",
+   "group": "OpenAI",
+   "est_spend_usd": "3974676.58",
+   "share": "0.112170501"
+  },
+  {
+   "week": "2026-04-27",
+   "group": "Anthropic",
+   "est_spend_usd": "21797719.3",
+   "share": "0.664299898"
+  },
+  {
+   "week": "2026-04-27",
+   "group": "Chinese labs",
+   "est_spend_usd": "5978540.77",
+   "share": "0.182199981"
+  },
+  {
+   "week": "2026-04-27",
+   "group": "OpenAI",
+   "est_spend_usd": "5036810.27",
+   "share": "0.153500121"
+  },
+  {
+   "week": "2026-05-04",
+   "group": "Anthropic",
+   "est_spend_usd": "25037090.5",
+   "share": "0.671747075"
+  },
+  {
+   "week": "2026-05-04",
+   "group": "Chinese labs",
+   "est_spend_usd": "6086932.18",
+   "share": "0.163312862"
+  },
+  {
+   "week": "2026-05-04",
+   "group": "OpenAI",
+   "est_spend_usd": "6147580.6",
+   "share": "0.164940063"
+  },
+  {
+   "week": "2026-05-11",
+   "group": "Anthropic",
+   "est_spend_usd": "28516283.4",
+   "share": "0.693276969"
+  },
+  {
+   "week": "2026-05-11",
+   "group": "Chinese labs",
+   "est_spend_usd": "5956261.86",
+   "share": "0.144806359"
+  },
+  {
+   "week": "2026-05-11",
+   "group": "OpenAI",
+   "est_spend_usd": "6660053.47",
+   "share": "0.161916672"
+  },
+  {
+   "week": "2026-05-18",
+   "group": "Anthropic",
+   "est_spend_usd": "33059504.3",
+   "share": "0.716326523"
+  },
+  {
+   "week": "2026-05-18",
+   "group": "Chinese labs",
+   "est_spend_usd": "5505893.45",
+   "share": "0.119300564"
+  },
+  {
+   "week": "2026-05-18",
+   "group": "OpenAI",
+   "est_spend_usd": "7586047.5",
+   "share": "0.164372913"
+  },
+  {
+   "week": "2026-05-25",
+   "group": "Anthropic",
+   "est_spend_usd": "39946628.4",
+   "share": "0.724960129"
+  },
+  {
+   "week": "2026-05-25",
+   "group": "Chinese labs",
+   "est_spend_usd": "8012862.73",
+   "share": "0.145419181"
+  },
+  {
+   "week": "2026-05-25",
+   "group": "OpenAI",
+   "est_spend_usd": "7142336.93",
+   "share": "0.129620689"
+  },
+  {
+   "week": "2026-06-01",
+   "group": "Anthropic",
+   "est_spend_usd": "37918104.9",
+   "share": "0.704447794"
+  },
+  {
+   "week": "2026-06-01",
+   "group": "Chinese labs",
+   "est_spend_usd": "8988396.44",
+   "share": "0.166987672"
+  },
+  {
+   "week": "2026-06-01",
+   "group": "OpenAI",
+   "est_spend_usd": "6920205.48",
+   "share": "0.128564534"
+  },
+  {
+   "week": "2026-06-08",
+   "group": "Anthropic",
+   "est_spend_usd": "52447233.8",
+   "share": "0.732639575"
+  },
+  {
+   "week": "2026-06-08",
+   "group": "Chinese labs",
+   "est_spend_usd": "11723350.4",
+   "share": "0.163764413"
+  },
+  {
+   "week": "2026-06-08",
+   "group": "OpenAI",
+   "est_spend_usd": "7416094.38",
+   "share": "0.103596011"
+  },
+  {
+   "week": "2026-06-15",
+   "group": "Anthropic",
+   "est_spend_usd": "50174705.2",
+   "share": "0.635996077"
+  },
+  {
+   "week": "2026-06-15",
+   "group": "Chinese labs",
+   "est_spend_usd": "15502244.7",
+   "share": "0.196500742"
+  },
+  {
+   "week": "2026-06-15",
+   "group": "OpenAI",
+   "est_spend_usd": "13214582.7",
+   "share": "0.167503181"
+  },
+  {
+   "week": "2026-06-22",
+   "group": "Anthropic",
+   "est_spend_usd": "49534632.0",
+   "share": "0.625936621"
+  },
+  {
+   "week": "2026-06-22",
+   "group": "Chinese labs",
+   "est_spend_usd": "16126107.9",
+   "share": "0.203775037"
+  },
+  {
+   "week": "2026-06-22",
+   "group": "OpenAI",
+   "est_spend_usd": "13476077.4",
+   "share": "0.170288342"
+  },
+  {
+   "week": "2026-06-29",
+   "group": "Anthropic",
+   "est_spend_usd": "54880442.3",
+   "share": "0.640161928"
+  },
+  {
+   "week": "2026-06-29",
+   "group": "Chinese labs",
+   "est_spend_usd": "16943899.5",
+   "share": "0.197644897"
+  },
+  {
+   "week": "2026-06-29",
+   "group": "OpenAI",
+   "est_spend_usd": "13904658.8",
+   "share": "0.162193175"
+  },
+  {
+   "week": "2026-07-06",
+   "group": "Anthropic",
+   "est_spend_usd": "56297360.4",
+   "share": "0.643829716"
+  },
+  {
+   "week": "2026-07-06",
+   "group": "Chinese labs",
+   "est_spend_usd": "18803766.2",
+   "share": "0.215044247"
+  },
+  {
+   "week": "2026-07-06",
+   "group": "OpenAI",
+   "est_spend_usd": "12340255.7",
+   "share": "0.141126037"
+  },
+  {
+   "week": "2026-07-13",
+   "group": "Anthropic",
+   "est_spend_usd": "57822054.2",
+   "share": "0.59705363"
+  },
+  {
+   "week": "2026-07-13",
+   "group": "Chinese labs",
+   "est_spend_usd": "23374712.6",
+   "share": "0.241360449"
+  },
+  {
+   "week": "2026-07-13",
+   "group": "OpenAI",
+   "est_spend_usd": "15648895.5",
+   "share": "0.161585921"
+  },
+  {
+   "week": "2026-07-20",
+   "group": "Anthropic",
+   "est_spend_usd": "38295395.0",
+   "share": "0.481357332"
+  },
+  {
+   "week": "2026-07-20",
+   "group": "Chinese labs",
+   "est_spend_usd": "28030127.1",
+   "share": "0.352327145"
+  },
+  {
+   "week": "2026-07-20",
+   "group": "OpenAI",
+   "est_spend_usd": "13231581.2",
+   "share": "0.166315522"
+  },
+  {
+   "week": "2026-07-27",
+   "group": "Anthropic",
+   "est_spend_usd": "30394305.7",
+   "share": "0.458405752"
+  },
+  {
+   "week": "2026-07-27",
+   "group": "Chinese labs",
+   "est_spend_usd": "24733899.8",
+   "share": "0.373035728"
+  },
+  {
+   "week": "2026-07-27",
+   "group": "OpenAI",
+   "est_spend_usd": "11176166.8",
+   "share": "0.168558519"
+  },
+  {
+   "week": "2026-08-03",
+   "group": "Anthropic",
+   "est_spend_usd": "33480427.2",
+   "share": "0.46011819"
+  },
+  {
+   "week": "2026-08-03",
+   "group": "Chinese labs",
+   "est_spend_usd": "25571179.4",
+   "share": "0.351422181"
+  },
+  {
+   "week": "2026-08-03",
+   "group": "OpenAI",
+   "est_spend_usd": "13713235.0",
+   "share": "0.188459628"
+  },
+  {
+   "week": "2026-08-10",
+   "group": "Anthropic",
+   "est_spend_usd": "48124626.9",
+   "share": "0.519507188"
+  },
+  {
+   "week": "2026-08-10",
+   "group": "Chinese labs",
+   "est_spend_usd": "27751105.0",
+   "share": "0.299574239"
+  },
+  {
+   "week": "2026-08-10",
+   "group": "OpenAI",
+   "est_spend_usd": "16759419.4",
+   "share": "0.180918573"
+  },
+  {
+   "week": "2026-08-17",
+   "group": "Anthropic",
+   "est_spend_usd": "33638362.1",
+   "share": "0.37734061"
+  },
+  {
+   "week": "2026-08-17",
+   "group": "Chinese labs",
+   "est_spend_usd": "33314672.9",
+   "share": "0.373709605"
+  },
+  {
+   "week": "2026-08-17",
+   "group": "OpenAI",
+   "est_spend_usd": "22192848.5",
+   "share": "0.248949785"
+  },
+  {
+   "week": "2026-08-24",
+   "group": "Anthropic",
+   "est_spend_usd": "30438236.6",
+   "share": "0.334008337"
+  },
+  {
+   "week": "2026-08-24",
+   "group": "Chinese labs",
+   "est_spend_usd": "41939170.6",
+   "share": "0.460211701"
+  },
+  {
+   "week": "2026-08-24",
+   "group": "OpenAI",
+   "est_spend_usd": "18752763.0",
+   "share": "0.205779962"
+  },
+  {
+   "week": "2026-08-31",
+   "group": "Anthropic",
+   "est_spend_usd": "37666923.1",
+   "share": "0.329192755"
+  },
+  {
+   "week": "2026-08-31",
+   "group": "Chinese labs",
+   "est_spend_usd": "53042751.4",
+   "share": "0.463570902"
+  },
+  {
+   "week": "2026-08-31",
+   "group": "OpenAI",
+   "est_spend_usd": "23712415.4",
+   "share": "0.207236343"
+  },
+  {
+   "week": "2026-09-07",
+   "group": "Anthropic",
+   "est_spend_usd": "31222154.0",
+   "share": "0.282379141"
+  },
+  {
+   "week": "2026-09-07",
+   "group": "Chinese labs",
+   "est_spend_usd": "46912754.4",
+   "share": "0.424287937"
+  },
+  {
+   "week": "2026-09-07",
+   "group": "OpenAI",
+   "est_spend_usd": "32433293.9",
+   "share": "0.293332923"
+  },
+  {
+   "week": "2026-09-14",
+   "group": "Anthropic",
+   "est_spend_usd": "30965000.5",
+   "share": "0.260384062"
+  },
+  {
+   "week": "2026-09-14",
+   "group": "Chinese labs",
+   "est_spend_usd": "42523153.6",
+   "share": "0.357576338"
+  },
+  {
+   "week": "2026-09-14",
+   "group": "OpenAI",
+   "est_spend_usd": "45432336.8",
+   "share": "0.3820396"
+  },
+  {
+   "week": "2026-09-21",
+   "group": "Anthropic",
+   "est_spend_usd": "34319210.2",
+   "share": "0.315032993"
+  },
+  {
+   "week": "2026-09-21",
+   "group": "Chinese labs",
+   "est_spend_usd": "41171271.0",
+   "share": "0.377931445"
+  },
+  {
+   "week": "2026-09-21",
+   "group": "OpenAI",
+   "est_spend_usd": "33447982.5",
+   "share": "0.307035562"
+  },
+  {
+   "week": "2026-09-28",
+   "group": "Anthropic",
+   "est_spend_usd": "36804616.0",
+   "share": "0.317702293"
+  },
+  {
+   "week": "2026-09-28",
+   "group": "Chinese labs",
+   "est_spend_usd": "38312399.5",
+   "share": "0.330717679"
+  },
+  {
+   "week": "2026-09-28",
+   "group": "OpenAI",
+   "est_spend_usd": "40729224.2",
+   "share": "0.351580028"
+  }
+ ],
+ "totals": [
+  {
+   "week": "2025-01-06",
+   "spend_shown": "1310233.13",
+   "unpriced_share": "0.0",
+   "stale_share": "0.0282434557",
+   "spend_all": "1372632.63",
+   "left_out_share": "0.045459729"
+  },
+  {
+   "week": "2025-01-13",
+   "spend_shown": "1374955.04",
+   "unpriced_share": "0.0",
+   "stale_share": "0.0145325125",
+   "spend_all": "1438355.26",
+   "left_out_share": "0.0440782751"
+  },
+  {
+   "week": "2025-01-20",
+   "spend_shown": "1396560.1",
+   "unpriced_share": "0.0",
+   "stale_share": "0.0532718296",
+   "spend_all": "1463157.22",
+   "left_out_share": "0.0455160378"
+  },
+  {
+   "week": "2025-01-27",
+   "spend_shown": "1740315.26",
+   "unpriced_share": "0.00337840375",
+   "stale_share": "0.0387705423",
+   "spend_all": "1792932.44",
+   "left_out_share": "0.0293469946"
+  },
+  {
+   "week": "2025-02-03",
+   "spend_shown": "1996212.44",
+   "unpriced_share": "0.0085458724",
+   "stale_share": "0.0336710049",
+   "spend_all": "2050686.62",
+   "left_out_share": "0.0265638751"
+  },
+  {
+   "week": "2025-02-10",
+   "spend_shown": "1930185.18",
+   "unpriced_share": "0.00376793977",
+   "stale_share": "0.0307066017",
+   "spend_all": "1995769.63",
+   "left_out_share": "0.0328617318"
+  },
+  {
+   "week": "2025-02-17",
+   "spend_shown": "1702549.48",
+   "unpriced_share": "0.00196830973",
+   "stale_share": "0.0489758361",
+   "spend_all": "1791519.38",
+   "left_out_share": "0.049661704"
+  },
+  {
+   "week": "2025-02-24",
+   "spend_shown": "2201877.97",
+   "unpriced_share": "0.000900900753",
+   "stale_share": "0.0347026969",
+   "spend_all": "2300295.53",
+   "left_out_share": "0.0427847467"
+  },
+  {
+   "week": "2025-03-03",
+   "spend_shown": "2450175.94",
+   "unpriced_share": "0.00360793201",
+   "stale_share": "0.0473430671",
+   "spend_all": "2557016.39",
+   "left_out_share": "0.0417832471"
+  },
+  {
+   "week": "2025-03-10",
+   "spend_shown": "2941339.59",
+   "unpriced_share": "0.00317445121",
+   "stale_share": "0.02116489",
+   "spend_all": "3045126.23",
+   "left_out_share": "0.0340828708"
+  },
+  {
+   "week": "2025-03-17",
+   "spend_shown": "3030395.18",
+   "unpriced_share": "0.00363642056",
+   "stale_share": "0.0375034579",
+   "spend_all": "3134433.32",
+   "left_out_share": "0.0331920086"
+  },
+  {
+   "week": "2025-03-24",
+   "spend_shown": "2808868.85",
+   "unpriced_share": "0.0070122568",
+   "stale_share": "0.0602817778",
+   "spend_all": "2918432.39",
+   "left_out_share": "0.0375419149"
+  },
+  {
+   "week": "2025-03-31",
+   "spend_shown": "2722110.46",
+   "unpriced_share": "0.003094024",
+   "stale_share": "0.0683311214",
+   "spend_all": "2843604.29",
+   "left_out_share": "0.0427252967"
+  },
+  {
+   "week": "2025-04-07",
+   "spend_shown": "2821782.41",
+   "unpriced_share": "0.00274946322",
+   "stale_share": "0.0802945297",
+   "spend_all": "3043318.32",
+   "left_out_share": "0.0727941953"
+  },
+  {
+   "week": "2025-04-14",
+   "spend_shown": "2999426.58",
+   "unpriced_share": "0.00574215007",
+   "stale_share": "0.0844137449",
+   "spend_all": "3351584.08",
+   "left_out_share": "0.10507196"
+  },
+  {
+   "week": "2025-04-21",
+   "spend_shown": "2621924.85",
+   "unpriced_share": "0.00651932644",
+   "stale_share": "0.0972164528",
+   "spend_all": "3017917.65",
+   "left_out_share": "0.131213917"
+  },
+  {
+   "week": "2025-04-28",
+   "spend_shown": "2474127.23",
+   "unpriced_share": "0.0",
+   "stale_share": "0.116755267",
+   "spend_all": "2814378.07",
+   "left_out_share": "0.120897346"
+  },
+  {
+   "week": "2025-05-05",
+   "spend_shown": "2499779.55",
+   "unpriced_share": "0.0",
+   "stale_share": "0.124600117",
+   "spend_all": "2922046.38",
+   "left_out_share": "0.144510652"
+  },
+  {
+   "week": "2025-05-12",
+   "spend_shown": "2604202.49",
+   "unpriced_share": "0.0",
+   "stale_share": "0.0940562335",
+   "spend_all": "3167351.88",
+   "left_out_share": "0.177798175"
+  },
+  {
+   "week": "2025-05-19",
+   "spend_shown": "3342635.31",
+   "unpriced_share": "0.000367619377",
+   "stale_share": "0.158273393",
+   "spend_all": "4009704.7",
+   "left_out_share": "0.166363722"
+  },
+  {
+   "week": "2025-05-26",
+   "spend_shown": "3698529.18",
+   "unpriced_share": "0.0",
+   "stale_share": "0.271324312",
+   "spend_all": "4481291.78",
+   "left_out_share": "0.174673429"
+  },
+  {
+   "week": "2025-06-02",
+   "spend_shown": "3388832.7",
+   "unpriced_share": "0.0",
+   "stale_share": "0.305847967",
+   "spend_all": "4164497.91",
+   "left_out_share": "0.186256597"
+  },
+  {
+   "week": "2025-06-09",
+   "spend_shown": "2790092.29",
+   "unpriced_share": "0.0",
+   "stale_share": "0.397977644",
+   "spend_all": "3476733.2",
+   "left_out_share": "0.197496003"
+  },
+  {
+   "week": "2025-06-16",
+   "spend_shown": "3538206.48",
+   "unpriced_share": "0.0",
+   "stale_share": "0.22164431",
+   "spend_all": "4348340.45",
+   "left_out_share": "0.186308773"
+  },
+  {
+   "week": "2025-06-23",
+   "spend_shown": "3262817.65",
+   "unpriced_share": "0.0",
+   "stale_share": "0.13821079",
+   "spend_all": "4167472.98",
+   "left_out_share": "0.217075272"
+  },
+  {
+   "week": "2025-06-30",
+   "spend_shown": "2988749.98",
+   "unpriced_share": "0.00124718138",
+   "stale_share": "0.154074977",
+   "spend_all": "3886302.24",
+   "left_out_share": "0.230952769"
+  },
+  {
+   "week": "2025-07-07",
+   "spend_shown": "3224761.27",
+   "unpriced_share": "0.00137252024",
+   "stale_share": "0.153631271",
+   "spend_all": "4192234.04",
+   "left_out_share": "0.230777374"
+  },
+  {
+   "week": "2025-07-14",
+   "spend_shown": "3469777.37",
+   "unpriced_share": "0.00463466807",
+   "stale_share": "0.177979401",
+   "spend_all": "4360671.2",
+   "left_out_share": "0.204301994"
+  },
+  {
+   "week": "2025-07-21",
+   "spend_shown": "5155323.25",
+   "unpriced_share": "0.00126279814",
+   "stale_share": "0.171728627",
+   "spend_all": "6200712.67",
+   "left_out_share": "0.168591818"
+  },
+  {
+   "week": "2025-07-28",
+   "spend_shown": "5701553.73",
+   "unpriced_share": "0.00455541762",
+   "stale_share": "0.145111155",
+   "spend_all": "6667317.94",
+   "left_out_share": "0.144850482"
+  },
+  {
+   "week": "2025-08-04",
+   "spend_shown": "5653572.06",
+   "unpriced_share": "0.0",
+   "stale_share": "0.257325387",
+   "spend_all": "6562531.8",
+   "left_out_share": "0.13850748"
+  },
+  {
+   "week": "2025-08-11",
+   "spend_shown": "5590408.97",
+   "unpriced_share": "0.00129438747",
+   "stale_share": "0.141960726",
+   "spend_all": "6379431.43",
+   "left_out_share": "0.123682254"
+  },
+  {
+   "week": "2025-08-18",
+   "spend_shown": "5301821.62",
+   "unpriced_share": "0.0",
+   "stale_share": "0.111219847",
+   "spend_all": "6365659.77",
+   "left_out_share": "0.167121428"
+  },
+  {
+   "week": "2025-08-25",
+   "spend_shown": "5170091.91",
+   "unpriced_share": "0.00153996955",
+   "stale_share": "0.0990806485",
+   "spend_all": "6558687.84",
+   "left_out_share": "0.211718558"
+  },
+  {
+   "week": "2025-09-01",
+   "spend_shown": "4979697.39",
+   "unpriced_share": "0.0",
+   "stale_share": "0.123636478",
+   "spend_all": "6529906.93",
+   "left_out_share": "0.237401475"
+  },
+  {
+   "week": "2025-09-08",
+   "spend_shown": "5029304.41",
+   "unpriced_share": "0.0",
+   "stale_share": "0.115848395",
+   "spend_all": "6443804.15",
+   "left_out_share": "0.21951315"
+  },
+  {
+   "week": "2025-09-15",
+   "spend_shown": "5248504.98",
+   "unpriced_share": "0.00307329394",
+   "stale_share": "0.0838054875",
+   "spend_all": "6634244.67",
+   "left_out_share": "0.208876784"
+  },
+  {
+   "week": "2025-09-22",
+   "spend_shown": "5101386.26",
+   "unpriced_share": "0.00492958387",
+   "stale_share": "0.0772270691",
+   "spend_all": "6448044.84",
+   "left_out_share": "0.208847583"
+  },
+  {
+   "week": "2025-09-29",
+   "spend_shown": "4789243.48",
+   "unpriced_share": "0.00606326004",
+   "stale_share": "0.115569279",
+   "spend_all": "6183323.56",
+   "left_out_share": "0.225458052"
+  },
+  {
+   "week": "2025-10-06",
+   "spend_shown": "5313482.45",
+   "unpriced_share": "0.0",
+   "stale_share": "0.183804243",
+   "spend_all": "6774912.45",
+   "left_out_share": "0.215712012"
+  },
+  {
+   "week": "2025-10-13",
+   "spend_shown": "4891793.55",
+   "unpriced_share": "0.00348817889",
+   "stale_share": "0.151603571",
+   "spend_all": "6353376.2",
+   "left_out_share": "0.230048184"
+  },
+  {
+   "week": "2025-10-20",
+   "spend_shown": "4929224.41",
+   "unpriced_share": "0.00254437899",
+   "stale_share": "0.174400957",
+   "spend_all": "6462031.88",
+   "left_out_share": "0.23720209"
+  },
+  {
+   "week": "2025-10-27",
+   "spend_shown": "5455246.33",
+   "unpriced_share": "0.0",
+   "stale_share": "0.14534995",
+   "spend_all": "7201234.08",
+   "left_out_share": "0.242456742"
+  },
+  {
+   "week": "2025-11-03",
+   "spend_shown": "5573008.18",
+   "unpriced_share": "0.00210340736",
+   "stale_share": "0.189574678",
+   "spend_all": "7293418.83",
+   "left_out_share": "0.23588535"
+  },
+  {
+   "week": "2025-11-10",
+   "spend_shown": "5246737.27",
+   "unpriced_share": "0.00528459719",
+   "stale_share": "0.145479637",
+   "spend_all": "6979109.0",
+   "left_out_share": "0.248222479"
+  },
+  {
+   "week": "2025-11-17",
+   "spend_shown": "4561506.51",
+   "unpriced_share": "0.00605539118",
+   "stale_share": "0.120883388",
+   "spend_all": "6762707.55",
+   "left_out_share": "0.325491088"
+  },
+  {
+   "week": "2025-11-24",
+   "spend_shown": "5078757.94",
+   "unpriced_share": "0.0212575977",
+   "stale_share": "0.108090231",
+   "spend_all": "7137433.56",
+   "left_out_share": "0.288433596"
+  },
+  {
+   "week": "2025-12-01",
+   "spend_shown": "5934772.56",
+   "unpriced_share": "0.0181144002",
+   "stale_share": "0.0800403261",
+   "spend_all": "8012608.29",
+   "left_out_share": "0.259320767"
+  },
+  {
+   "week": "2025-12-08",
+   "spend_shown": "6180677.8",
+   "unpriced_share": "0.0207959538",
+   "stale_share": "0.0662532968",
+   "spend_all": "8101535.03",
+   "left_out_share": "0.237097936"
+  },
+  {
+   "week": "2025-12-15",
+   "spend_shown": "6219040.89",
+   "unpriced_share": "0.00403821356",
+   "stale_share": "0.0667720969",
+   "spend_all": "8018041.35",
+   "left_out_share": "0.224369067"
+  },
+  {
+   "week": "2025-12-22",
+   "spend_shown": "5191091.28",
+   "unpriced_share": "0.00374700995",
+   "stale_share": "0.104361552",
+   "spend_all": "6830195.82",
+   "left_out_share": "0.239979143"
+  },
+  {
+   "week": "2025-12-29",
+   "spend_shown": "4997819.67",
+   "unpriced_share": "0.00122848213",
+   "stale_share": "0.120317048",
+   "spend_all": "6647343.51",
+   "left_out_share": "0.248147827"
+  },
+  {
+   "week": "2026-01-05",
+   "spend_shown": "8065002.35",
+   "unpriced_share": "0.00186048957",
+   "stale_share": "0.0879697156",
+   "spend_all": "9939180.21",
+   "left_out_share": "0.188564632"
+  },
+  {
+   "week": "2026-01-12",
+   "spend_shown": "10947423.1",
+   "unpriced_share": "0.000538124137",
+   "stale_share": "0.0588855131",
+   "spend_all": "14219669.1",
+   "left_out_share": "0.23012111"
+  },
+  {
+   "week": "2026-01-19",
+   "spend_shown": "9116966.93",
+   "unpriced_share": "0.00425546026",
+   "stale_share": "0.0575335177",
+   "spend_all": "11387923.2",
+   "left_out_share": "0.199417947"
+  },
+  {
+   "week": "2026-01-26",
+   "spend_shown": "10672077.9",
+   "unpriced_share": "0.00337086399",
+   "stale_share": "0.094483764",
+   "spend_all": "13019325.9",
+   "left_out_share": "0.180289519"
+  },
+  {
+   "week": "2026-02-02",
+   "spend_shown": "12377732.5",
+   "unpriced_share": "0.0",
+   "stale_share": "0.0214963305",
+   "spend_all": "14751841.3",
+   "left_out_share": "0.160936437"
+  },
+  {
+   "week": "2026-02-09",
+   "spend_shown": "15644906.3",
+   "unpriced_share": "0.000481947333",
+   "stale_share": "0.260423137",
+   "spend_all": "18152464.1",
+   "left_out_share": "0.138138698"
+  },
+  {
+   "week": "2026-02-16",
+   "spend_shown": "17378294.0",
+   "unpriced_share": "0.00203624208",
+   "stale_share": "0.319810227",
+   "spend_all": "20045169.6",
+   "left_out_share": "0.133043304"
+  },
+  {
+   "week": "2026-02-23",
+   "spend_shown": "18067324.6",
+   "unpriced_share": "0.00682686483",
+   "stale_share": "0.0697477125",
+   "spend_all": "21277044.6",
+   "left_out_share": "0.150853658"
+  },
+  {
+   "week": "2026-03-02",
+   "spend_shown": "19781467.5",
+   "unpriced_share": "0.00731245506",
+   "stale_share": "0.0339270544",
+   "spend_all": "23077715.4",
+   "left_out_share": "0.142832504"
+  },
+  {
+   "week": "2026-03-09",
+   "spend_shown": "21092244.9",
+   "unpriced_share": "0.00396428955",
+   "stale_share": "0.0178934286",
+   "spend_all": "24402434.7",
+   "left_out_share": "0.13564998"
+  },
+  {
+   "week": "2026-03-16",
+   "spend_shown": "24686476.0",
+   "unpriced_share": "0.131491132",
+   "stale_share": "0.11146214",
+   "spend_all": "27878947.2",
+   "left_out_share": "0.114511901"
+  },
+  {
+   "week": "2026-03-23",
+   "spend_shown": "25611266.5",
+   "unpriced_share": "0.270251586",
+   "stale_share": "0.141021411",
+   "spend_all": "28728954.6",
+   "left_out_share": "0.108520766"
+  },
+  {
+   "week": "2026-03-30",
+   "spend_shown": "24269254.8",
+   "unpriced_share": "0.164384455",
+   "stale_share": "0.0936660185",
+   "spend_all": "27480785.1",
+   "left_out_share": "0.116864578"
+  },
+  {
+   "week": "2026-04-06",
+   "spend_shown": "27021754.4",
+   "unpriced_share": "0.0449251208",
+   "stale_share": "0.15066094",
+   "spend_all": "31163534.2",
+   "left_out_share": "0.13290469"
+  },
+  {
+   "week": "2026-04-13",
+   "spend_shown": "31199231.5",
+   "unpriced_share": "0.0927112042",
+   "stale_share": "0.18519814",
+   "spend_all": "35065368.2",
+   "left_out_share": "0.110255129"
+  },
+  {
+   "week": "2026-04-20",
+   "spend_shown": "35434241.1",
+   "unpriced_share": "0.032111571",
+   "stale_share": "0.222127356",
+   "spend_all": "38949585.4",
+   "left_out_share": "0.0902537029"
+  },
+  {
+   "week": "2026-04-27",
+   "spend_shown": "32813070.3",
+   "unpriced_share": "0.00573053403",
+   "stale_share": "0.212745799",
+   "spend_all": "36162238.5",
+   "left_out_share": "0.0926150694"
+  },
+  {
+   "week": "2026-05-04",
+   "spend_shown": "37271603.2",
+   "unpriced_share": "0.00334940067",
+   "stale_share": "0.275710722",
+   "spend_all": "40628562.2",
+   "left_out_share": "0.0826255906"
+  },
+  {
+   "week": "2026-05-11",
+   "spend_shown": "41132598.7",
+   "unpriced_share": "0.00264964513",
+   "stale_share": "0.420629807",
+   "spend_all": "44871747.6",
+   "left_out_share": "0.0833296922"
+  },
+  {
+   "week": "2026-05-18",
+   "spend_shown": "46151445.3",
+   "unpriced_share": "0.0",
+   "stale_share": "0.473021143",
+   "spend_all": "50877246.8",
+   "left_out_share": "0.092886345"
+  },
+  {
+   "week": "2026-05-25",
+   "spend_shown": "55101828.0",
+   "unpriced_share": "0.00664254757",
+   "stale_share": "0.385547388",
+   "spend_all": "59605118.0",
+   "left_out_share": "0.0755520679"
+  },
+  {
+   "week": "2026-06-01",
+   "spend_shown": "53826706.8",
+   "unpriced_share": "0.0107919042",
+   "stale_share": "0.484301571",
+   "spend_all": "58235554.9",
+   "left_out_share": "0.0757071533"
+  },
+  {
+   "week": "2026-06-08",
+   "spend_shown": "71586678.7",
+   "unpriced_share": "0.00815201646",
+   "stale_share": "0.514358479",
+   "spend_all": "76137260.5",
+   "left_out_share": "0.0597681322"
+  },
+  {
+   "week": "2026-06-15",
+   "spend_shown": "78891532.5",
+   "unpriced_share": "0.00301076384",
+   "stale_share": "0.510050057",
+   "spend_all": "82845938.8",
+   "left_out_share": "0.047732047"
+  },
+  {
+   "week": "2026-06-22",
+   "spend_shown": "79136817.2",
+   "unpriced_share": "0.0017586205",
+   "stale_share": "0.336680806",
+   "spend_all": "83192101.0",
+   "left_out_share": "0.0487460203"
+  },
+  {
+   "week": "2026-06-29",
+   "spend_shown": "85729000.5",
+   "unpriced_share": "0.00188845205",
+   "stale_share": "0.334810297",
+   "spend_all": "90104007.1",
+   "left_out_share": "0.0485550717"
+  },
+  {
+   "week": "2026-07-06",
+   "spend_shown": "87441382.3",
+   "unpriced_share": "0.00247580419",
+   "stale_share": "0.230733487",
+   "spend_all": "91673511.7",
+   "left_out_share": "0.0461652372"
+  },
+  {
+   "week": "2026-07-13",
+   "spend_shown": "96845662.2",
+   "unpriced_share": "0.000962581386",
+   "stale_share": "0.180368539",
+   "spend_all": "101564394.0",
+   "left_out_share": "0.0464604919"
+  },
+  {
+   "week": "2026-07-20",
+   "spend_shown": "79557103.3",
+   "unpriced_share": "0.00573717867",
+   "stale_share": "0.281843012",
+   "spend_all": "85747261.5",
+   "left_out_share": "0.0721907388"
+  },
+  {
+   "week": "2026-07-27",
+   "spend_shown": "66304372.4",
+   "unpriced_share": "0.00628555875",
+   "stale_share": "0.33753755",
+   "spend_all": "71782863.9",
+   "left_out_share": "0.0763203254"
+  },
+  {
+   "week": "2026-08-03",
+   "spend_shown": "72764841.6",
+   "unpriced_share": "0.00436866083",
+   "stale_share": "0.482604906",
+   "spend_all": "82861545.4",
+   "left_out_share": "0.121850296"
+  },
+  {
+   "week": "2026-08-10",
+   "spend_shown": "92635151.3",
+   "unpriced_share": "0.00214625272",
+   "stale_share": "0.535404285",
+   "spend_all": "103320872.0",
+   "left_out_share": "0.103422674"
+  },
+  {
+   "week": "2026-08-17",
+   "spend_shown": "89145883.5",
+   "unpriced_share": "0.0",
+   "stale_share": "0.463658213",
+   "spend_all": "98283217.1",
+   "left_out_share": "0.0929694196"
+  },
+  {
+   "week": "2026-08-24",
+   "spend_shown": "91130170.2",
+   "unpriced_share": "0.0",
+   "stale_share": "0.448084472",
+   "spend_all": "100718982.0",
+   "left_out_share": "0.0952036193"
+  },
+  {
+   "week": "2026-08-31",
+   "spend_shown": "114422090.0",
+   "unpriced_share": "0.0",
+   "stale_share": "0.324960957",
+   "spend_all": "122117471.0",
+   "left_out_share": "0.0630162199"
+  },
+  {
+   "week": "2026-09-07",
+   "spend_shown": "110568202.0",
+   "unpriced_share": "0.0",
+   "stale_share": "0.246954839",
+   "spend_all": "118915025.0",
+   "left_out_share": "0.0701914907"
+  },
+  {
+   "week": "2026-09-14",
+   "spend_shown": "118920491.0",
+   "unpriced_share": "0.0",
+   "stale_share": "0.100801339",
+   "spend_all": "126134879.0",
+   "left_out_share": "0.0571958207"
+  },
+  {
+   "week": "2026-09-21",
+   "spend_shown": "108938464.0",
+   "unpriced_share": "0.0",
+   "stale_share": "0.0",
+   "spend_all": "116391315.0",
+   "left_out_share": "0.0640327097"
+  },
+  {
+   "week": "2026-09-28",
+   "spend_shown": "115846240.0",
+   "unpriced_share": "0.00145344185",
+   "stale_share": "0.0",
+   "spend_all": "122122426.0",
+   "left_out_share": "0.0513925781"
+  }
+ ],
+ "wide": [
+  {
+   "week": "2025-01-06",
+   "OpenAI": "30420.5812",
+   "Chinese labs": "6622.69168",
+   "Anthropic": "1273189.85"
+  },
+  {
+   "week": "2025-01-13",
+   "OpenAI": "32561.8845",
+   "Chinese labs": "4684.95723",
+   "Anthropic": "1337708.2"
+  },
+  {
+   "week": "2025-01-20",
+   "OpenAI": "30183.5541",
+   "Chinese labs": "13387.3534",
+   "Anthropic": "1352989.19"
+  },
+  {
+   "week": "2025-01-27",
+   "OpenAI": "44106.3624",
+   "Chinese labs": "19865.8636",
+   "Anthropic": "1676343.04"
+  },
+  {
+   "week": "2025-02-03",
+   "OpenAI": "54043.5111",
+   "Chinese labs": "18196.6862",
+   "Anthropic": "1923972.24"
+  },
+  {
+   "week": "2025-02-10",
+   "OpenAI": "55504.2379",
+   "Chinese labs": "16740.6712",
+   "Anthropic": "1857940.27"
+  },
+  {
+   "week": "2025-02-17",
+   "OpenAI": "85955.9405",
+   "Chinese labs": "19585.6492",
+   "Anthropic": "1597007.89"
+  },
+  {
+   "week": "2025-02-24",
+   "OpenAI": "65193.1082",
+   "Chinese labs": "18563.2311",
+   "Anthropic": "2118121.63"
+  },
+  {
+   "week": "2025-03-03",
+   "OpenAI": "62157.7789",
+   "Chinese labs": "20514.2574",
+   "Anthropic": "2367503.9"
+  },
+  {
+   "week": "2025-03-10",
+   "OpenAI": "57792.2223",
+   "Chinese labs": "25728.131",
+   "Anthropic": "2857819.24"
+  },
+  {
+   "week": "2025-03-17",
+   "OpenAI": "57482.6873",
+   "Chinese labs": "31547.8853",
+   "Anthropic": "2941364.61"
+  },
+  {
+   "week": "2025-03-24",
+   "OpenAI": "68873.4399",
+   "Chinese labs": "32172.2622",
+   "Anthropic": "2707823.15"
+  },
+  {
+   "week": "2025-03-31",
+   "OpenAI": "107235.246",
+   "Chinese labs": "40777.4097",
+   "Anthropic": "2574097.8"
+  },
+  {
+   "week": "2025-04-07",
+   "OpenAI": "109750.265",
+   "Chinese labs": "31847.7879",
+   "Anthropic": "2680184.36"
+  },
+  {
+   "week": "2025-04-14",
+   "OpenAI": "216483.114",
+   "Chinese labs": "22182.8866",
+   "Anthropic": "2760760.58"
+  },
+  {
+   "week": "2025-04-21",
+   "OpenAI": "175531.413",
+   "Chinese labs": "23268.5164",
+   "Anthropic": "2423124.92"
+  },
+  {
+   "week": "2025-04-28",
+   "OpenAI": "178714.258",
+   "Chinese labs": "36808.9587",
+   "Anthropic": "2258604.01"
+  },
+  {
+   "week": "2025-05-05",
+   "OpenAI": "266223.317",
+   "Chinese labs": "53396.682",
+   "Anthropic": "2180159.55"
+  },
+  {
+   "week": "2025-05-12",
+   "OpenAI": "302248.8",
+   "Chinese labs": "37185.3325",
+   "Anthropic": "2264768.36"
+  },
+  {
+   "week": "2025-05-19",
+   "OpenAI": "337996.422",
+   "Chinese labs": "38021.2333",
+   "Anthropic": "2966617.65"
+  },
+  {
+   "week": "2025-05-26",
+   "OpenAI": "347256.319",
+   "Chinese labs": "40641.6401",
+   "Anthropic": "3310631.22"
+  },
+  {
+   "week": "2025-06-02",
+   "OpenAI": "288883.54",
+   "Chinese labs": "42857.3676",
+   "Anthropic": "3057091.79"
+  },
+  {
+   "week": "2025-06-09",
+   "OpenAI": "208710.075",
+   "Chinese labs": "35582.0407",
+   "Anthropic": "2545800.17"
+  },
+  {
+   "week": "2025-06-16",
+   "OpenAI": "203788.668",
+   "Chinese labs": "45937.1934",
+   "Anthropic": "3288480.61"
+  },
+  {
+   "week": "2025-06-23",
+   "OpenAI": "207404.548",
+   "Chinese labs": "46193.7775",
+   "Anthropic": "3009219.33"
+  },
+  {
+   "week": "2025-06-30",
+   "OpenAI": "190739.855",
+   "Chinese labs": "49861.8563",
+   "Anthropic": "2748148.27"
+  },
+  {
+   "week": "2025-07-07",
+   "OpenAI": "190590.311",
+   "Chinese labs": "55125.0696",
+   "Anthropic": "2979045.89"
+  },
+  {
+   "week": "2025-07-14",
+   "OpenAI": "179143.936",
+   "Chinese labs": "92683.8186",
+   "Anthropic": "3197949.62"
+  },
+  {
+   "week": "2025-07-21",
+   "OpenAI": "253003.355",
+   "Chinese labs": "163128.531",
+   "Anthropic": "4739191.36"
+  },
+  {
+   "week": "2025-07-28",
+   "OpenAI": "227733.302",
+   "Chinese labs": "319027.829",
+   "Anthropic": "5154792.6"
+  },
+  {
+   "week": "2025-08-04",
+   "OpenAI": "363457.542",
+   "Chinese labs": "442336.882",
+   "Anthropic": "4847777.64"
+  },
+  {
+   "week": "2025-08-11",
+   "OpenAI": "414455.553",
+   "Chinese labs": "461323.563",
+   "Anthropic": "4714629.85"
+  },
+  {
+   "week": "2025-08-18",
+   "OpenAI": "428416.268",
+   "Chinese labs": "448229.802",
+   "Anthropic": "4425175.55"
+  },
+  {
+   "week": "2025-08-25",
+   "OpenAI": "528780.925",
+   "Chinese labs": "365496.961",
+   "Anthropic": "4275814.03"
+  },
+  {
+   "week": "2025-09-01",
+   "OpenAI": "580100.64",
+   "Chinese labs": "287065.024",
+   "Anthropic": "4112531.72"
+  },
+  {
+   "week": "2025-09-08",
+   "OpenAI": "599716.928",
+   "Chinese labs": "269022.119",
+   "Anthropic": "4160565.36"
+  },
+  {
+   "week": "2025-09-15",
+   "OpenAI": "721732.937",
+   "Chinese labs": "215093.039",
+   "Anthropic": "4311679.0"
+  },
+  {
+   "week": "2025-09-22",
+   "OpenAI": "805531.688",
+   "Chinese labs": "215119.674",
+   "Anthropic": "4080734.9"
+  },
+  {
+   "week": "2025-09-29",
+   "OpenAI": "617367.423",
+   "Chinese labs": "236082.604",
+   "Anthropic": "3935793.45"
+  },
+  {
+   "week": "2025-10-06",
+   "OpenAI": "586233.18",
+   "Chinese labs": "273418.4",
+   "Anthropic": "4453830.87"
+  },
+  {
+   "week": "2025-10-13",
+   "OpenAI": "537030.35",
+   "Chinese labs": "252072.922",
+   "Anthropic": "4102690.27"
+  },
+  {
+   "week": "2025-10-20",
+   "OpenAI": "466621.614",
+   "Chinese labs": "290628.503",
+   "Anthropic": "4171974.29"
+  },
+  {
+   "week": "2025-10-27",
+   "OpenAI": "510420.813",
+   "Chinese labs": "291332.292",
+   "Anthropic": "4653493.23"
+  },
+  {
+   "week": "2025-11-03",
+   "OpenAI": "520628.558",
+   "Chinese labs": "354824.666",
+   "Anthropic": "4697554.95"
+  },
+  {
+   "week": "2025-11-10",
+   "OpenAI": "563485.67",
+   "Chinese labs": "358774.117",
+   "Anthropic": "4324477.48"
+  },
+  {
+   "week": "2025-11-17",
+   "OpenAI": "643974.106",
+   "Chinese labs": "323434.187",
+   "Anthropic": "3594098.21"
+  },
+  {
+   "week": "2025-11-24",
+   "OpenAI": "615255.104",
+   "Chinese labs": "322880.608",
+   "Anthropic": "4140622.22"
+  },
+  {
+   "week": "2025-12-01",
+   "OpenAI": "596001.739",
+   "Chinese labs": "284172.49",
+   "Anthropic": "5054598.33"
+  },
+  {
+   "week": "2025-12-08",
+   "OpenAI": "810125.82",
+   "Chinese labs": "302641.098",
+   "Anthropic": "5067910.88"
+  },
+  {
+   "week": "2025-12-15",
+   "OpenAI": "1088701.58",
+   "Chinese labs": "298242.471",
+   "Anthropic": "4832096.85"
+  },
+  {
+   "week": "2025-12-22",
+   "OpenAI": "654801.238",
+   "Chinese labs": "360914.769",
+   "Anthropic": "4175375.28"
+  },
+  {
+   "week": "2025-12-29",
+   "OpenAI": "530442.703",
+   "Chinese labs": "419185.7",
+   "Anthropic": "4048191.26"
+  },
+  {
+   "week": "2026-01-05",
+   "OpenAI": "825321.13",
+   "Chinese labs": "453477.392",
+   "Anthropic": "6786203.83"
+  },
+  {
+   "week": "2026-01-12",
+   "OpenAI": "973221.893",
+   "Chinese labs": "407257.509",
+   "Anthropic": "9566943.66"
+  },
+  {
+   "week": "2026-01-19",
+   "OpenAI": "1013486.58",
+   "Chinese labs": "431940.137",
+   "Anthropic": "7671540.21"
+  },
+  {
+   "week": "2026-01-26",
+   "OpenAI": "1474581.97",
+   "Chinese labs": "952438.785",
+   "Anthropic": "8245057.14"
+  },
+  {
+   "week": "2026-02-02",
+   "OpenAI": "1361531.35",
+   "Chinese labs": "1910586.06",
+   "Anthropic": "9105615.11"
+  },
+  {
+   "week": "2026-02-09",
+   "OpenAI": "1469740.82",
+   "Chinese labs": "3393543.77",
+   "Anthropic": "10781621.7"
+  },
+  {
+   "week": "2026-02-16",
+   "OpenAI": "1427494.48",
+   "Chinese labs": "3652812.14",
+   "Anthropic": "12297987.4"
+  },
+  {
+   "week": "2026-02-23",
+   "OpenAI": "1689844.51",
+   "Chinese labs": "2673628.77",
+   "Anthropic": "13703851.3"
+  },
+  {
+   "week": "2026-03-02",
+   "OpenAI": "2408034.44",
+   "Chinese labs": "2573860.46",
+   "Anthropic": "14799572.6"
+  },
+  {
+   "week": "2026-03-09",
+   "OpenAI": "2764268.56",
+   "Chinese labs": "2366854.46",
+   "Anthropic": "15961121.9"
+  },
+  {
+   "week": "2026-03-16",
+   "OpenAI": "2862341.72",
+   "Chinese labs": "4035397.2",
+   "Anthropic": "17788737.1"
+  },
+  {
+   "week": "2026-03-23",
+   "OpenAI": "3457321.76",
+   "Chinese labs": "4278096.6",
+   "Anthropic": "17875848.1"
+  },
+  {
+   "week": "2026-03-30",
+   "OpenAI": "2962273.32",
+   "Chinese labs": "3831303.73",
+   "Anthropic": "17475677.7"
+  },
+  {
+   "week": "2026-04-06",
+   "OpenAI": "3817800.98",
+   "Chinese labs": "3974143.69",
+   "Anthropic": "19229809.7"
+  },
+  {
+   "week": "2026-04-13",
+   "OpenAI": "3970806.41",
+   "Chinese labs": "3813412.09",
+   "Anthropic": "23415013.0"
+  },
+  {
+   "week": "2026-04-20",
+   "OpenAI": "3974676.58",
+   "Chinese labs": "5727131.58",
+   "Anthropic": "25732432.9"
+  },
+  {
+   "week": "2026-04-27",
+   "OpenAI": "5036810.27",
+   "Chinese labs": "5978540.77",
+   "Anthropic": "21797719.3"
+  },
+  {
+   "week": "2026-05-04",
+   "OpenAI": "6147580.6",
+   "Chinese labs": "6086932.18",
+   "Anthropic": "25037090.5"
+  },
+  {
+   "week": "2026-05-11",
+   "OpenAI": "6660053.47",
+   "Chinese labs": "5956261.86",
+   "Anthropic": "28516283.4"
+  },
+  {
+   "week": "2026-05-18",
+   "OpenAI": "7586047.5",
+   "Chinese labs": "5505893.45",
+   "Anthropic": "33059504.3"
+  },
+  {
+   "week": "2026-05-25",
+   "OpenAI": "7142336.93",
+   "Chinese labs": "8012862.73",
+   "Anthropic": "39946628.4"
+  },
+  {
+   "week": "2026-06-01",
+   "OpenAI": "6920205.48",
+   "Chinese labs": "8988396.44",
+   "Anthropic": "37918104.9"
+  },
+  {
+   "week": "2026-06-08",
+   "OpenAI": "7416094.38",
+   "Chinese labs": "11723350.4",
+   "Anthropic": "52447233.8"
+  },
+  {
+   "week": "2026-06-15",
+   "OpenAI": "13214582.7",
+   "Chinese labs": "15502244.7",
+   "Anthropic": "50174705.2"
+  },
+  {
+   "week": "2026-06-22",
+   "OpenAI": "13476077.4",
+   "Chinese labs": "16126107.9",
+   "Anthropic": "49534632.0"
+  },
+  {
+   "week": "2026-06-29",
+   "OpenAI": "13904658.8",
+   "Chinese labs": "16943899.5",
+   "Anthropic": "54880442.3"
+  },
+  {
+   "week": "2026-07-06",
+   "OpenAI": "12340255.7",
+   "Chinese labs": "18803766.2",
+   "Anthropic": "56297360.4"
+  },
+  {
+   "week": "2026-07-13",
+   "OpenAI": "15648895.5",
+   "Chinese labs": "23374712.6",
+   "Anthropic": "57822054.2"
+  },
+  {
+   "week": "2026-07-20",
+   "OpenAI": "13231581.2",
+   "Chinese labs": "28030127.1",
+   "Anthropic": "38295395.0"
+  },
+  {
+   "week": "2026-07-27",
+   "OpenAI": "11176166.8",
+   "Chinese labs": "24733899.8",
+   "Anthropic": "30394305.7"
+  },
+  {
+   "week": "2026-08-03",
+   "OpenAI": "13713235.0",
+   "Chinese labs": "25571179.4",
+   "Anthropic": "33480427.2"
+  },
+  {
+   "week": "2026-08-10",
+   "OpenAI": "16759419.4",
+   "Chinese labs": "27751105.0",
+   "Anthropic": "48124626.9"
+  },
+  {
+   "week": "2026-08-17",
+   "OpenAI": "22192848.5",
+   "Chinese labs": "33314672.9",
+   "Anthropic": "33638362.1"
+  },
+  {
+   "week": "2026-08-24",
+   "OpenAI": "18752763.0",
+   "Chinese labs": "41939170.6",
+   "Anthropic": "30438236.6"
+  },
+  {
+   "week": "2026-08-31",
+   "OpenAI": "23712415.4",
+   "Chinese labs": "53042751.4",
+   "Anthropic": "37666923.1"
+  },
+  {
+   "week": "2026-09-07",
+   "OpenAI": "32433293.9",
+   "Chinese labs": "46912754.4",
+   "Anthropic": "31222154.0"
+  },
+  {
+   "week": "2026-09-14",
+   "OpenAI": "45432336.8",
+   "Chinese labs": "42523153.6",
+   "Anthropic": "30965000.5"
+  },
+  {
+   "week": "2026-09-21",
+   "OpenAI": "33447982.5",
+   "Chinese labs": "41171271.0",
+   "Anthropic": "34319210.2"
+  },
+  {
+   "week": "2026-09-28",
+   "OpenAI": "40729224.2",
+   "Chinese labs": "38312399.5",
+   "Anthropic": "36804616.0"
+  }
+ ]
+}

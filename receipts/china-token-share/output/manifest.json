@@ -1,0 +1,39 @@
+{
+  "as_of": "2026-10-07",
+  "cache_register_version": "0.0.1",
+  "data_hash": "dc92dffa467d418dbf0b4deae428729c7a517e996e50bd1f1abf84613b5ba5fe",
+  "folder": "receipts/china-token-share",
+  "git_dirty": true,
+  "git_sha": "8dba1243cc53b6b18c348e9af98b334824d29bf0",
+  "inputs_hash": "b5f695aa870d28d59925f3b5fb62d908e6dcfbcb29955773736640439a90d329",
+  "kind": "receipt",
+  "outputs": {
+    "data.json": "8b2211ad4d67a78bb020a9c879b5bf50f4b4c995a2b70366966b0c0ecaf3bb5a",
+    "push-bars.linkedin_video.mp4": "5868f3ba4e88a9f686cb8671f3591db0e1e83216afa88884dc1477b6629a2722",
+    "push-bars.x_video.mp4": "1ee464522826e46051aa4efb645ce5f7e63285eba4d4278d3d0f0134f319e8fb",
+    "push.linkedin_video.mp4": "789f0d377971c3bd4ef28b61ea1fe271321577a0c009ee123eb0df6ac0cc7996",
+    "push.x_video.mp4": "70466298a0627743b835e2603c39641fe4b561274fcb408344b178142b936386",
+    "stack-bars.linkedin_png.png": "8ff7b878986b85f2ad08be6c2a8a28309047d1a04a2968ceb8ef716bb6e35a0a",
+    "stack-bars.x_png.png": "80efcb6449c0511799a0577528324375e2dddea32db1d6e8c707860d3e78e2d1",
+    "stack.linkedin_png.png": "b417ea840458a7d3af8f942cb24de612b161b3cdb4ea0c7f1a5abddf67a1a955",
+    "stack.x_png.png": "f47a27be5a8d4170e29ee1f66f549f8e1b1fa69f6c4495c8bfedd8aa4bce9ba8"
+  },
+  "sources": {
+    "openrouter_rankings": {
+      "class": "Latest-only",
+      "content_sha256": "7bef256a5d7397e4070818a22f4582cdf0829370ae8c5fe68cbcd40386fbd736",
+      "fetch_date": "2026-10-07",
+      "vintage": {
+        "kind": "api_as_of",
+        "value": "2026-10-07T14:02:39.223Z",
+        "window": [
+          "2026-09-02",
+          "2026-10-06"
+        ]
+      },
+      "vintage_after_as_of": false
+    }
+  },
+  "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "withheld": {}
+}

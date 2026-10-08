@@ -1,0 +1,50 @@
+{
+  "as_of": "2026-10-07",
+  "cache_register_version": "0.0.1",
+  "data_hash": "3b745744a3c183c2a54de460bc5cd08e27572dff993bd7ee80555c809e2f62a9",
+  "folder": "receipts/china-spend-share",
+  "git_dirty": true,
+  "git_sha": "8dba1243cc53b6b18c348e9af98b334824d29bf0",
+  "inputs_hash": "10629dfc2a0e8a883bba1c682b13d7c29713a8bcab13e67f7e906561928ac17d",
+  "kind": "receipt",
+  "outputs": {
+    "data.json": "1ee416c5c4cdf40e79599dec497268e3037cbd08a778b9f17ec846e6aa13acc9",
+    "push-bars.linkedin_video.mp4": "ea28492fba7484a8773801d938a56484e64c8d8b2da6cf246fd3b03f5138756c",
+    "push-bars.x_video.mp4": "16005b635c8ee6eb486c6c3283b3c77b6a7806a9fdd272d7abd80b3fc0d7a6f2",
+    "push.linkedin_video.mp4": "19072553abca0cd398d878c5149909a7870079985df29afb3d2559c81f787ea8",
+    "push.x_video.mp4": "e1f49945dc0cd661632475850b20f1fa4cadb69016dc43acdc60ff68c4c026ba",
+    "stack-bars.linkedin_png.png": "a90e4eac5142664cd91d976f230ab930f7f471f0a0314b955665c3ccb84d00a9",
+    "stack-bars.x_png.png": "bc70a14758c5e90a8cbb44015760202b16f9bd1a6331a88cb57d245b7934dc74",
+    "stack.linkedin_png.png": "482863db491b41be242ace29f43d33b4ec41974a70323b5aad2bbd4ffac4f579",
+    "stack.x_png.png": "5530c5640a8be8ed22412642c008c182e85fb6b29388da3b3d0facea55f29425"
+  },
+  "sources": {
+    "litellm_prices": {
+      "class": "Exact",
+      "content_sha256": "2306671e502ba7dad2b86cedfd9e48746abb94e9317ea3d78da015869fab3895",
+      "revision_date": "2026-10-06",
+      "vintage": {
+        "date": "2026-10-06",
+        "kind": "git_commit",
+        "value": "cb76270bd974873ca214331aebf76950ad5ca382"
+      },
+      "vintage_after_as_of": false
+    },
+    "openrouter_rankings": {
+      "class": "Latest-only",
+      "content_sha256": "7bef256a5d7397e4070818a22f4582cdf0829370ae8c5fe68cbcd40386fbd736",
+      "fetch_date": "2026-10-07",
+      "vintage": {
+        "kind": "api_as_of",
+        "value": "2026-10-07T14:02:39.223Z",
+        "window": [
+          "2026-09-02",
+          "2026-10-06"
+        ]
+      },
+      "vintage_after_as_of": false
+    }
+  },
+  "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "withheld": {}
+}
