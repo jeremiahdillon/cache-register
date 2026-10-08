@@ -1,0 +1,13 @@
+# Exploration config (same schema as receipt.yaml; no short link — explorations never get one).
+# Analysis (c): docs/plans/2026-10-08-two-lenses-adoption.md. No blog_html: Ramp's redistribution is
+# unknown, so nothing inlines its data.
+title: Two lenses on adoption
+sources: [ramp_ai_index, census_btos]
+config:
+  headline_month: latest   # or YYYY-MM: a month both lenses cover in full
+  trend_start: 2023-01-01  # first month drawn in the trends chart
+  ramp: true               # false = BTOS-only fallback: also set sources: [census_btos], visuals trends and sizes
+visuals:
+  - {name: sectors, chart: sectors, targets: [x_png, linkedin_png]}
+  - {name: trends, chart: trends, targets: [x_png, linkedin_png]}
+  - {name: sizes, chart: sizes, targets: [x_png, linkedin_png]}

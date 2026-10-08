@@ -1,6 +1,15 @@
 # Plan: analysis (c) "Two lenses on adoption" (exploration)
 
-Status: PLANNED · 2026-10-08 (decisions taken; adversarial review converged in 2 rounds; nothing built)
+Status: EXPLORATION BUILT · 2026-10-08
+
+Outcome: `explore/2026-10-08-two-lenses-adoption/` renders `sectors`, `trends` and `sizes` as `x_png` and
+`linkedin_png`; every figure below reproduces from its frames. Plan reviewed adversarially before building
+(2 rounds, converged, 13 findings accepted). Found while building: one Story carried one headline for all
+visuals, so `Story.by_visual` (title, subtitle, notes per visual name; `render` rejects names not in the
+folder's yaml) was added to core with two tests; and `render` writes every exploration's frames to the
+gitignored `outputs/…/story_frames.json`, so Ramp's aggregated figures do exist locally (never published).
+Charts are fitted to the frame's plot box by measuring the rendered spec, since the frame resizes plots to
+the box exactly.
 
 ## Question
 
@@ -151,8 +160,8 @@ automatically).
 ## Licence
 
 Ramp's `redistribution` is `unknown` → the receipt gate would withhold `blog_html` and `data.json`.
-Explorations do not run the gate, so `blog_html` is simply **not declared** (nothing inlines Ramp data,
-even locally). PNGs are allowed (Ramp `derived_charts: allowed-with-attribution`; BTOS public domain);
+Explorations do not run the gate, so `blog_html` is simply **not declared** (no target inlines Ramp
+data; the gitignored `story_frames.json` that `render` writes for every exploration does hold the frames). PNGs are allowed (Ramp `derived_charts: allowed-with-attribution`; BTOS public domain);
 the footer credits both from `SOURCE.md`.
 
 **Fallback without Ramp imports** (`cachereg build --sources census_btos`, PLAN §10): mart `072` and
