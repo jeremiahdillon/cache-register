@@ -517,3 +517,63 @@ def test_git_dirty_ignores_the_output_folder_being_written(tmp_path, monkeypatch
     assert render_mod._git_sha()[1] is True
     (repo / "a.txt").write_text("edited")
     assert render_mod._git_sha(out)[1] is True
+
+
+def test_story_for_visual_overrides_headline_and_keeps_frames():
+    from cachereg.story.model import Story
+
+    s = Story(
+        title="Shared",
+        subtitle="Shared sub",
+        frames={"f": pl.DataFrame({"a": [1]})},
+        sources=["x"],
+        as_of=date(2026, 8, 31),
+        method="m",
+        notes=["n"],
+        by_visual={"one": {"title": "One", "notes": []}},
+    )
+    one = s.for_visual("one")
+    assert (one.title, one.subtitle, one.notes) == ("One", "Shared sub", [])
+    assert one.frames is s.frames
+    assert s.for_visual("other") is s
+    s.by_visual["bad"] = {"method": "no"}
+    with pytest.raises(ValueError, match="unknown keys"):
+        s.for_visual("bad")
+
+
+def test_exploration_renders_each_visual_with_its_own_headline(synthetic_raw, tmp_path, monkeypatch):
+    import shutil
+
+    import cachereg.render as render_mod
+
+    monkeypatch.setenv("CACHEREG_OUTPUTS_DIR", str(tmp_path / "outputs"))
+    build(date(2026, 8, 31), SLICE)
+    ex = tmp_path / "explore" / "2026-08-01-test"
+    ex.mkdir(parents=True)
+    for name in ("analysis.py", "charts.py"):
+        shutil.copy(WALLET / name, ex / name)
+    analysis = ex / "analysis.py"
+    assert "    return Story(\n" in analysis.read_text()
+    analysis.write_text(
+        analysis.read_text().replace(
+            "    return Story(\n", '    return Story(\n        by_visual={"b": {"title": "B claim"}},\n'
+        )
+    )
+    (ex / "explore.yaml").write_text(
+        "sources: [openrouter_rankings, litellm_prices]\n"
+        "config: {weeks: 13, unpriced_flag: 0.03, race_top_n: 8}\n"
+        "visuals:\n  - {name: a, chart: line_chart, targets: [x_png]}\n"
+        "  - {name: b, chart: line_chart, targets: [x_png]}\n"
+    )
+    seen = {}
+
+    def fake_static(story, chart, target, rec, out):
+        seen[out.name] = story.title
+        out.write_bytes(b"png")
+
+    monkeypatch.setattr(render_mod, "render_static", fake_static)
+    render_mod.render(ex, date(2026, 8, 31))
+    assert seen["b.x_png.png"] == "B claim" and seen["a.x_png.png"] != "B claim"
+    (ex / "explore.yaml").write_text((ex / "explore.yaml").read_text().replace("name: b,", "name: c,"))
+    with pytest.raises(ValueError, match="not in explore.yaml"):
+        render_mod.render(ex, date(2026, 8, 31))

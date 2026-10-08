@@ -271,6 +271,9 @@ def render(
             f"{cfg.file.name} sources {sorted(cfg.sources)} differ from the analysis's Story.sources "
             f"{sorted(story.sources)}; the licence gate and credits need them to match"
         )
+    stray = set(story.by_visual) - {v.name for v in cfg.visuals}
+    if stray:
+        raise ValueError(f"Story.by_visual names visuals not in {cfg.file.name}: {sorted(stray)}")
     source_ids = list(cfg.sources) if cfg.sources else list(story.sources)
     d_hash, i_hash = data_hash(story.frames), inputs_hash(cfg.path)
     story.frames = round_frames(story.frames)
@@ -313,12 +316,13 @@ def render(
                 result.withheld[out.name] = blocked
                 continue
             chart = _chart_fn(charts, visual.chart, target.kind)
+            vstory = story.for_visual(visual.name)
             if target.kind == "static":
-                render_static(story, chart, target, rec, out)
+                render_static(vstory, chart, target, rec, out)
             elif target.kind == "video":
-                render_video(story, chart, target, rec, out, cfg.config)
+                render_video(vstory, chart, target, rec, out, cfg.config)
             else:
-                render_html(story, analysis, chart, target, rec, out)
+                render_html(vstory, analysis, chart, target, rec, out)
             result.outputs[out.name] = _sha256(out)
 
     frames_json = json.dumps(

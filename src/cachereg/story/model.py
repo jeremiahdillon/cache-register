@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date
 
 import polars as pl
@@ -24,6 +24,21 @@ class Story:
         return self.notes_by_kind.get(kind, self.notes)
 
     extra: dict = field(default_factory=dict)
+    # Per-visual headline overrides, keyed by the visual's name in receipt.yaml / explore.yaml: when the
+    # visuals of one analysis make different claims. Keys: title, subtitle, notes. Frames stay shared.
+    by_visual: dict[str, dict] = field(default_factory=dict)
+
+    def for_visual(self, name: str) -> Story:
+        over = self.by_visual.get(name)
+        if not over:
+            return self
+        unknown = set(over) - VISUAL_OVERRIDES
+        if unknown:
+            raise ValueError(f"Story.by_visual[{name!r}]: unknown keys {sorted(unknown)}")
+        return replace(self, **over)
+
+
+VISUAL_OVERRIDES = {"title", "subtitle", "notes"}
 
 
 @dataclass(frozen=True)
