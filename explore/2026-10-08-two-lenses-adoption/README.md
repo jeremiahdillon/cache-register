@@ -10,7 +10,7 @@ business function in the last two weeks), overall, by Ramp's seven sectors and, 
 
 ## Findings (Ramp import of 2026-10-07; BTOS through cycle 202619; headline month August 2026)
 - **The two lenses rank the sectors almost the same way, and have for three years.** Spearman ρ across
-  Ramp's seven sectors is 0.89 in August 2026 and 0.79–0.89 in every month from August 2023, each month
+  Ramp's seven sectors is 0.89 in August 2026 and 0.79–0.89 in every complete month from September 2023, each month
   computed within one BTOS wording. Technology and media (taken as Information) and finance are always the
   top two. Accommodation and construction are the bottom two in every month but March 2026, when Ramp's
   health care was 0.02 pp below construction. The persistent differences: **health care** ranks higher on
@@ -34,7 +34,7 @@ business function in the last two weeks), overall, by Ramp's seven sectors and, 
   which grew faster. Sector growth agrees only weakly: accommodation +8.0 pp on Ramp but +0.6 on BTOS; retail
   +11.7 vs +2.9.
 - **BTOS expected vs current use.** Expected use runs about 4 pp above current use (27.0 vs 23.1%
-  nationally). Six months later, current use lands close to what was expected: national mean +0.03 pp over 4
+  nationally; both in `levels`). Six months later, current use lands close to what was expected: national mean +0.03 pp over 4
   complete current-wording pairs, −0.88 pp over 19 original-wording pairs. Too few pairs for a chart.
 
 ## Visuals
@@ -76,8 +76,10 @@ unchanged.
 | Technology and media* | 250+ | 83.1 (9.3; 98.4) | 80.9 | no |
 
 **Checks** (frame `checks`): `btos_ramp_census_check` agrees in 35 of 35 months; `btos_revision_check`
-is empty (weak evidence so far: only one workbook has a second stored version); none of the BTOS series
-used has a suppressed cycle in the window (national, the seven sectors, 54, the seven size classes).
+is empty (weak evidence so far: only one workbook has a second stored version);
+`btos_months_with_suppression` is 0: no BTOS monthly value drawn or ranked (national and the sector
+series over the whole window, the size classes at the headline month) averages over a suppressed cycle.
+The sector × size cells in the size-bound table are the exception, flagged there.
 
 ## Method
 - **Ramp:** `ramp_adoption` / `adoption_two_lenses` (mart 060/072), the latest import of each adoption

@@ -45,24 +45,64 @@ def _size(v, default: float) -> float:
 def _fit(make, width, height):
     """Build ``make(w, h)`` so its rendered outer size (axes and titles included) is width × height.
 
-    The frame resizes the plot to its box exactly, so an overshoot would stretch the chart: render once,
-    measure, and rebuild with the inner size corrected (twice, since axis widths can shift slightly).
+    The frame resizes the plot to its box exactly, so any mismatch would stretch the chart. Render, measure
+    and correct the inner size until the outer size is within half a pixel (the PNG size is the rounded
+    SVG size). A chart that cannot shrink to the box (a floor set by titles or labels) is an
+    error, never a silent stretch.
     """
     if not isinstance(width, int | float) or not isinstance(height, int | float):
         return make(_size(width, 900), _size(height, 520))
-    w, h = float(width), float(height)
-    for _ in range(2):
+
+    def measure(w: float, h: float) -> tuple[float, float]:
         svg = vlc.vegalite_to_svg(vl_spec=json.dumps(make(w, h).to_dict()))
-        rw, rh = (float(re.search(rf'{k}="([\d.]+)"', svg).group(1)) for k in ("width", "height"))
-        w, h = w - (rw - width), h - (rh - height)
-    return make(w, h)
+        return tuple(float(re.search(rf'{k}="([\d.]+)"', svg).group(1)) for k in ("width", "height"))
+
+    def ok(r: float, target: float) -> bool:
+        return abs(r - target) < 0.45
+
+    # Per dimension: step by the measured overshoot, then bisect once the target is bracketed (outer sizes
+    # move in steps, e.g. when an axis label's width changes, so plain steps can oscillate).
+    size, bounds = [float(width), float(height)], [[None, None], [None, None]]
+    for _ in range(12):
+        rw, rh = measure(*size)
+        if ok(rw, width) and ok(rh, height):
+            return make(*size)
+        for i, (r, target) in enumerate(((rw, width), (rh, height))):
+            if ok(r, target):
+                continue
+            lo, hi = bounds[i]
+            if r > target:
+                hi = size[i] if hi is None else min(hi, size[i])
+            else:
+                lo = size[i] if lo is None else max(lo, size[i])
+            bounds[i] = [lo, hi]
+            size[i] = (lo + hi) / 2 if lo is not None and hi is not None else size[i] - (r - target)
+        if min(size) < 1:
+            break
+    raise ValueError(
+        f"chart cannot fit its {width:.0f}×{height:.0f} box (renders {rw:.0f}×{rh:.0f}): shorten its titles or labels"
+    )
 
 
-def _title(text: str, sub: str, fs: float) -> alt.TitleParams:
+def _wrap(sub: str, fs: float, max_px: float | None) -> str | list[str]:
+    """The panel subtitle as one line, or as lines no wider than max_px (Vega widens a panel to its title)."""
+    px = (LABEL_PX - 3) * fs * 0.56  # rough Inter advance per character
+    if max_px is None or len(sub) * px <= max_px:
+        return sub
+    lines: list[str] = []
+    for word in sub.replace(" · ", " ·\u00a0").split(" "):
+        if lines and len(lines[-1]) + 1 + len(word) <= max_px / px:
+            lines[-1] += " " + word
+        else:
+            lines.append(word)
+    return [ln.replace("\u00a0", " ") for ln in lines]
+
+
+def _title(text: str, sub: str, fs: float, max_px: float | None = None) -> alt.TitleParams:
     fonts = brand()["fonts"]
     return alt.TitleParams(
         text=text,
-        subtitle=sub,
+        subtitle=_wrap(sub, fs, max_px),
         anchor="start",
         font=fonts["body"],
         fontSize=LABEL_PX * fs,
@@ -159,9 +199,9 @@ def _sectors(story: Story, width: float, height: float, font_scale: float) -> al
             .encode(x=alt.X("text_x:Q", scale=x_scale, axis=axis), y=y, text="text:N"),
         ]
         if lens == CUR:
-            t = _title("Census BTOS: used AI", "U.S. employer businesses, last two weeks · 90% interval", fs)
+            t = _title("Census BTOS: used AI", "U.S. employer businesses, last two weeks · 90% interval", fs, panel_w)
         else:
-            t = _title("Ramp: paid for AI", "Businesses on Ramp, AI spend in the month", fs)
+            t = _title("Ramp: paid for AI", "Businesses on Ramp, AI spend in the month", fs, panel_w + label_px)
         return alt.layer(*layers).properties(width=panel_w, height=panel_h, title=t)
 
     left, right = panel(RAMP, True), panel(CUR, False)
@@ -317,7 +357,9 @@ def _trends(story: Story, width: float, height: float, font_scale: float) -> alt
                 text="name:N",
             )
         )
-        brk = alt.Data(values=[{"t": _ms(date(2025, 10, 16)), "label": "new wording: a new Census series"}])
+    if orig.height and story.extra.get("wording_break"):
+        brk_day = date.fromisoformat(story.extra["wording_break"])
+        brk = alt.Data(values=[{"t": _ms(brk_day), "label": "new wording: a new Census series"}])
         b_layers += [
             alt.Chart(brk)
             .mark_rule(color=color("text_secondary"), strokeDash=[4 * fs, 4 * fs], strokeWidth=1.3 * fs)
@@ -453,7 +495,9 @@ def _sizes(story: Story, width: float, height: float, font_scale: float) -> alt.
     left = alt.layer(*band(btos.height, y_left), *bars(btos, DARK, "Employees", y_left, True), note_mark).properties(
         width=step * btos.height,
         height=panel_h,
-        title=_title("Census BTOS: used AI", "U.S. employer businesses, by employees · 90% interval", fs),
+        title=_title(
+            "Census BTOS: used AI", "U.S. employer businesses, by employees · 90% interval", fs, step * btos.height
+        ),
     )
     if not ramp.height:
         return left.configure(**vl_config(fs))
@@ -461,6 +505,6 @@ def _sizes(story: Story, width: float, height: float, font_scale: float) -> alt.
     right = alt.layer(*band(ramp.height, y_right), *bars(ramp, accent, "Ramp size band", y_right, False)).properties(
         width=step * ramp.height,
         height=panel_h,
-        title=_title("Ramp: paid for AI", "Businesses on Ramp, by size band", fs),
+        title=_title("Ramp: paid for AI", "Businesses on Ramp, by size band", fs, step * ramp.height),
     )
     return alt.hconcat(left, right, spacing=spacing).configure(**vl_config(fs))

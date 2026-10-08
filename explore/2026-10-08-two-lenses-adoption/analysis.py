@@ -102,7 +102,12 @@ def _ranked(df: pl.DataFrame) -> pl.DataFrame:
 
 def rank_agreement(lenses: pl.DataFrame) -> pl.DataFrame:
     """Spearman ρ between the two lenses' ranks of Ramp's sectors, per month (one BTOS wording per month)."""
-    s = lenses.filter((pl.col("scope") == "sector") & (pl.col("role") == "matched") & pl.col("lens").is_in([RAMP, CUR]))
+    s = lenses.filter(
+        (pl.col("scope") == "sector")
+        & (pl.col("role") == "matched")
+        & pl.col("lens").is_in([RAMP, CUR])
+        & ~pl.col("partial").fill_null(False)  # BTOS stub months (under half covered) are not ranked
+    )
     wording = s.filter(pl.col("lens") == CUR).group_by("month").agg(wording=pl.col("wording").unique())
     if (wording["wording"].list.len() > 1).any():
         raise ValueError("a month holds both BTOS wordings; they must never be ranked together")
@@ -135,12 +140,15 @@ def rank_agreement(lenses: pl.DataFrame) -> pl.DataFrame:
 
 
 def levels(lenses: pl.DataFrame, month: date) -> pl.DataFrame:
-    """Both lenses at the headline month: overall, the matched sectors (ranked), and BTOS 54 (sensitivity)."""
-    at = lenses.filter((pl.col("month") == month) & pl.col("lens").is_in([RAMP, CUR]))
-    ranked = _ranked(at.filter((pl.col("scope") == "sector") & (pl.col("role") == "matched")))
-    rest = at.filter((pl.col("scope") == "overall") | (pl.col("role") != "matched")).with_columns(
-        rank=pl.lit(None, pl.Float64)
-    )
+    """Both lenses at the headline month: overall, the matched sectors (ranked), and BTOS 54 (sensitivity).
+
+    BTOS expected use rides along unranked (README: expected vs current at the headline month).
+    """
+    at = lenses.filter((pl.col("month") == month) & pl.col("lens").is_in([RAMP, CUR, EXP]))
+    ranked = _ranked(at.filter((pl.col("scope") == "sector") & (pl.col("role") == "matched") & (pl.col("lens") != EXP)))
+    rest = at.filter(
+        (pl.col("scope") == "overall") | (pl.col("role") != "matched") | (pl.col("lens") == EXP)
+    ).with_columns(rank=pl.lit(None, pl.Float64))
     out = pl.concat([ranked, rest]).select(
         "month", "scope", "naics", "label", "naics_assumed", "role", "lens", "wording", "pct", "low90", "high90", "rank"
     )
@@ -312,6 +320,18 @@ def changes(tr: pl.DataFrame, base: date, month: date) -> pl.DataFrame:
     return w.with_columns(change_pp=pl.col("pct") - pl.col("base_pct"), base_month=pl.lit(base), month=pl.lit(month))
 
 
+def wording_break(con) -> date | None:
+    """Midpoint between the last original-wording and first current-wording reference days (mart 070)."""
+    b = query(
+        con,
+        "SELECT last_reference_day, first_reference_day FROM btos_series_breaks WHERE kind = 'wording_change'",
+    )
+    if b.is_empty():
+        return None
+    last, first = b.row(0)
+    return last + (first - last) / 2
+
+
 def checks(con, with_ramp: bool) -> pl.DataFrame:
     row = {
         "btos_revision_rows": query(con, "SELECT count(*) AS n FROM btos_revision_check")["n"][0],
@@ -343,7 +363,22 @@ def build(con, as_of: date, cfg: dict) -> Story:
     tr = trend(lenses, national)
     sz = sizes(con, size, month, with_ramp)
     sb = size_bound(con, lenses, national, size, month)
-    frames = {"trend": tr, "sizes": sz, "size_bound": sb, "checks": checks(con, with_ramp)}
+    used = pl.concat(
+        [
+            tr.filter(pl.col("lens") == CUR, ~pl.col("partial").fill_null(False)).select("has_suppression"),
+            sz.filter(pl.col("lens") == CUR).select("has_suppression"),
+        ]
+    )
+    frames = {
+        "trend": tr,
+        "sizes": sz,
+        "size_bound": sb,
+        # Monthly BTOS values drawn or ranked that average over a suppressed cycle (they lean high).
+        "checks": checks(con, with_ramp).with_columns(
+            btos_months_with_suppression=pl.lit(used["has_suppression"].fill_null(False).sum())
+        ),
+    }
+    brk = wording_break(con)
     nat_monthly = national.with_columns(
         lens=pl.when(pl.col("question") == "ai_current").then(pl.lit(CUR)).otherwise(pl.lit(EXP)),
         label=pl.lit("All businesses"),
@@ -359,6 +394,12 @@ def build(con, as_of: date, cfg: dict) -> Story:
         }
     else:
         frames |= {"expectations": expectations(nat_monthly), "changes": changes(tr, base, month)}
+
+    ch = frames["changes"].filter(pl.col("label") == "All businesses")
+
+    def rose(lens: str) -> bool:
+        c = ch.filter(pl.col("lens") == lens)["change_pp"]
+        return c.len() == 1 and c[0] is not None and c[0] > 0
 
     mon = f"{month:%B %Y}"
     nat_sb = sb.row(0, named=True)
@@ -382,7 +423,11 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "BTOS 54 (professional services) shown in the README."
         ]
         by_visual["trends"] = {
-            "title": "Both measures of business AI adoption have risen since the Census question changed",
+            "title": (
+                "Both measures of business AI adoption have risen since the Census question changed"
+                if rose(RAMP) and rose(CUR)
+                else "Two measures of business AI adoption, monthly"
+            ),
             "subtitle": (
                 "Monthly, each panel its own measure (not comparable across panels). The Census question's new "
                 "wording (November 2025) started a new series, so the two wordings are drawn apart."
@@ -412,6 +457,18 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "title": f"Businesses with {nat_sb['max_class']} employees report the most AI use ({mon})",
             "notes": [],
         }
+        by_visual["trends"] = {
+            "title": (
+                "U.S. businesses' self-reported AI use has risen since the Census question changed"
+                if rose(CUR)
+                else "U.S. businesses' self-reported AI use, monthly"
+            ),
+            "subtitle": (
+                f"Monthly, through {mon}. {btos_def[0].upper() + btos_def[1:]}. The new wording (November 2025) "
+                "started a new series, so the two wordings are drawn apart."
+            ),
+            "notes": ["Oct 2025: no BTOS data (government shutdown). Shaded: since the new wording."],
+        }
 
     sources = ["ramp_ai_index", "census_btos"] if with_ramp else ["census_btos"]
     return Story(
@@ -438,6 +495,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "base_month": str(base),
             "ramp": with_ramp,
             "trend_start": str(cfg.get("trend_start", "2023-01-01")),
+            "wording_break": str(brk) if brk else None,
         },
         by_visual=by_visual,
     )

@@ -577,7 +577,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 - **Analysis (c) "two lenses on adoption": exploration built** 2026-10-08
   (`explore/2026-10-08-two-lenses-adoption/`, `docs/plans/2026-10-08-two-lenses-adoption.md`): Ramp's
   paid adoption beside BTOS current use. The lenses rank Ramp's seven sectors alike (ρ 0.79–0.89 every
-  month since Aug 2023; health care and manufacturing differ); every Ramp size band sits above BTOS's
+  complete month since Sep 2023; health care and manufacturing differ); every Ramp size band sits above BTOS's
   largest size class. PNGs only (Ramp licence unknown). Not promoted. Its figures move with each Ramp
   import and BTOS release; re-render after both.
 - **Analysis (b) "capex vs price collapse": exploration built** 2026-10-06

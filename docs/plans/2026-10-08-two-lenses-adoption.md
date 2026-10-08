@@ -47,7 +47,7 @@ Latest month both lenses cover in full: **August 2026** (Ramp ends there; BTOS S
    different questions (paid vs used), populations (Ramp's customers vs all employer firms), windows
    (calendar month vs two weeks) and weights (Ramp's sample vs business counts).
 2. **The sector ranking agrees, and has for three years.** Spearman ρ across the seven sectors is
-   0.79–0.89 in every month from Aug 2023 to Aug 2026, computed per month within one wording (no month
+   0.79–0.89 in every complete month from Sep 2023 to Aug 2026, computed per month within one wording (no month
    holds both). Information and finance are always the top two; accommodation and construction are the
    bottom two in every month but one (Mar 2026, when Ramp's health care sits 0.02 pp below construction).
    The persistent disagreement is **health care** (BTOS 3rd, Ramp 5th–6th) and **manufacturing** (Ramp
