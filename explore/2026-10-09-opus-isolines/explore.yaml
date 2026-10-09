@@ -1,0 +1,12 @@
+# Exploration config (same schema as receipt.yaml; no short link — explorations never get one).
+# Follows explore/2026-10-06-cost-of-intelligence: same price definition, levels set by Claude Opus models.
+title: Opus isolines
+sources: [epoch_benchmarks, litellm_prices]
+config:
+  anchors:                 # Epoch display names; each line's level is that model's ECI
+    - Claude Opus 4
+    - Claude Opus 4.5
+    - Claude Opus 4.6
+    - Claude Opus 4.8
+visuals:
+  - {name: isolines, chart: isolines, targets: [x_png, linkedin_png, blog_html]}
