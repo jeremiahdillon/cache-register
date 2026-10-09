@@ -6,7 +6,7 @@
 `https://raw.githubusercontent.com/BerriAI/litellm/<sha>/model_prices_and_context_window.json` (file at each commit)
 **Licence:** MIT — [LICENSE](https://github.com/BerriAI/litellm/blob/main/LICENSE): MIT for everything
 outside `enterprise/`; the price file is at the repository root. Copyright (c) 2023 Berri AI.
-**Attribution:** "LiteLLM model prices (github.com/BerriAI/litellm, MIT)"
+**Attribution:** "LiteLLM model prices (github.com/BerriAI/litellm), MIT"
 **Auth:** none. **Requires:** `git` on PATH.
 **Last verified:** 2026-10-04
 

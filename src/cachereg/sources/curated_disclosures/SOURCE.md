@@ -7,8 +7,8 @@ cited to the page it came from with a short verbatim quote. Design:
 **Files:** `config/curated/disclosures.csv` (the rows) and `config/curated/metrics.yaml` (the
 controlled vocabulary: each metric's unit, definition and the scope it may carry).
 **Auth / network:** none; `fetch` validates the committed files and copies them into raw.
-**License:** CC BY 4.0 (ours). Credit: "Cache Register curated disclosures (CC BY 4.0), from the cited
-company statements, as of {as_of}". A chart showing a row also names the company source in its notes.
+**License:** CC BY 4.0 (ours). Credit: "Cache Register curated disclosures, from the cited company statements,
+CC BY 4.0, as of {as_of}". A chart showing a row also names the company source in its notes.
 The quotes are short factual excerpts (≤ 25 words, PLAN §7) and are never inlined in HTML.
 **Seeded:** 2026-10-09 (50 rows recorded that day).
 
