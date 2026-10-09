@@ -38,6 +38,10 @@ capability that starts at an Opus's own launch price.
   ties the current low gets no label. The step down on the Opus 4.6 line in August 2026 is such a cut
   (GPT-5.6 Luna, $2 to $0.40), which is why that line shares a segment with the Opus 4.5 line.
 - **10× point:** the first day the line is at or below a tenth of the Opus's launch price.
+- **Video** (`isolines-motion`: `x_video`, `linkedin_video`): the lines draw one after another at the same pace
+  in days per second, so a longer history takes longer; labels fade in as each new low is reached, finished
+  lines dim while the next draws, and the last frame is the static chart. Label positions are computed once on
+  the full chart, so nothing moves between frames.
 - Anchors are set in `explore.yaml`. `story.frames`: `daily` (each line by day), `events` (labelled points),
   `summary`, `sensitivity`.
 

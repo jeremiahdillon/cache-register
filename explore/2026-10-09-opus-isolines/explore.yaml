@@ -10,3 +10,4 @@ config:
     - Claude Opus 4.8
 visuals:
   - {name: isolines, chart: isolines, targets: [x_png, linkedin_png, blog_html]}
+  - {name: isolines-motion, chart: isolines, targets: [x_video, linkedin_video]}

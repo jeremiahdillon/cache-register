@@ -180,19 +180,13 @@ def build(con, as_of: date, cfg: dict) -> Story:
     sens = sensitivity(prices, anchors)
 
     reached = summ.filter(pl.col("months_to_10x").is_not_null())
-    pending = summ.filter(pl.col("months_to_10x").is_null())
     worst = math.ceil(reached["months_to_10x"].max())
     short = [a.removeprefix("Claude ") for a in reached["anchor"]]
     names = ", ".join(short[:-1]) + f" and {short[-1]}" if len(short) > 1 else short[0]
     title = f"{names} were each matched at a tenth of their price within {worst} months"
-    tail = "; ".join(
-        f"{r['anchor'].removeprefix('Claude ')} ({r['start']:%b %Y}): {r['fold']:.1f}× cheaper so far"
-        for r in pending.iter_rows(named=True)
-    )
     subtitle = (
-        "Lowest list price per million tokens for a model released on or after each Claude Opus that scores at "
-        "least as high on the Epoch Capabilities Index. Dots mark each new model that set a new low."
-        + (f" {tail}." if tail else "")
+        "Cheapest list price for a later model that scores at least as high as each Claude Opus "
+        "on the Epoch Capabilities Index"
     )
     last_day = lines["day"].max()
     return Story(
