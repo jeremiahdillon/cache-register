@@ -28,6 +28,8 @@ from cachereg.viz.theme import vl_config
 # One hue (the brand accent), light to dark by capability: the lines are ordered levels, not categories.
 RAMP = ["#FFD9C9", "#FF9E78", "#FF6A3D", "#C7401A"]
 LABEL_PX, START_PX, AXIS_PX = 14, 16, 15
+CHAR_W = 0.52  # Inter: average glyph width per px of font size (digits run wide)
+LINE_HEIGHT = 1.2  # multi-line labels, in font sizes
 # Motion (video targets): seconds, frames and the opacity finished lines dim to.
 FPS = 30
 # DRAW_S is shared by all lines in proportion to their drawn length (one speed along the path).
@@ -66,38 +68,51 @@ def _smooth(u: float) -> float:
     return u * u * (3 - 2 * u)
 
 
-def _place(points: list[dict], obstacles: list[tuple], plot_w: float, plot_h: float, fs: float) -> list[dict]:
-    """Greedy label placement in pixel space: try positions around each dot, keep the first that fits.
+def _text_box(text: str, size: float, fs: float) -> tuple[float, float]:
+    """Estimated (width, height) in pixels of a label, one line per "\n"."""
+    lines = text.split("\n")
+    return max(len(t) for t in lines) * CHAR_W * size + 4 * fs, len(lines) * size * LINE_HEIGHT
 
-    Each point has x, y (pixels), text and size; `obstacles` are thin boxes along the step lines, which labels
-    should not sit on. Returns the chosen offset (dx, dy) and alignment per point.
+
+def _place(points: list[dict], obstacles: list[tuple], plot_w: float, plot_h: float, fs: float) -> list[dict]:
+    """Greedy label placement in pixel space: try positions around each dot, nearest first, keep the first that fits.
+
+    Each point has x, y (pixels), text, size and kind; `obstacles` are thin boxes along the lines, which labels
+    should not sit on. Start labels ("anchor") sit just above their dot, as the line's title; the last label
+    on each line ("end") sits to the right of its dot, where the line ends. Returns alignment and dy per point.
     """
-    char_w = 0.52  # Inter, average glyph width per px of font size (digits run wide)
     boxes = [(p["x"] - 6 * fs, p["y"] - 6 * fs, p["x"] + 6 * fs, p["y"] + 6 * fs) for p in points]  # the dots
-    line = 1.25
-    # Offsets in label heights from the dot, nearest first; negative = above.
-    cands = [(side, v * (1.0 + k * line)) for k in (0, 1, 2, 3) for side in ("right", "left") for v in (-1, 1)]
     out = []
     for p in points:
-        w, h = len(p["text"]) * char_w * p["size"] + 4 * fs, p["size"] * 1.15
+        w, h = _text_box(p["text"], p["size"], fs)
+        gap, step = 0.15 * p["size"], 0.95 * p["size"]  # from the dot to the label's edge; per extra tier
+        tiers = (0, 1) if p["kind"] == "anchor" else (0, 1, 2, 3)
+        sides = ("right",) if p["kind"] == "end" else ("right", "left")
+        above = (-1,) if p["kind"] == "anchor" else (-1, 1)
         best, best_cost = None, math.inf
-        # A line's start label always sits above its dot, so it reads as the line's title.
-        mine = [c for c in cands if c[1] < 0] if p["kind"] == "anchor" else cands
-        for side, lines in mine:
-            dx = 9 * fs if side == "right" else -9 * fs
-            cy = p["y"] + lines * p["size"] * 0.75
-            x0 = p["x"] + dx if side == "right" else p["x"] + dx - w
-            box = (x0, cy - h / 2, x0 + w, cy + h / 2)
-            off = max(0, -box[0]) + max(0, box[2] - plot_w) + max(0, -box[1]) + max(0, box[3] - plot_h)
-            hits = sum(_overlap(box, b) for b in boxes) + 25 * sum(_overlap(box, b) for b in obstacles)
-            cost = hits + 50 * off + 0.01 * abs(lines)
-            if cost < best_cost:
-                best, best_cost = (side, dx, cy - p["y"], box), cost
-            if hits == 0 and off == 0:
+        for k in tiers:
+            for side in sides:
+                for v in above:
+                    dx = 9 * fs if side == "right" else -9 * fs
+                    cy = p["y"] + v * (h / 2 + gap + k * step)
+                    x0 = p["x"] + dx if side == "right" else p["x"] + dx - w
+                    box = (x0, cy - h / 2, x0 + w, cy + h / 2)
+                    off = max(0, -box[0]) + max(0, box[2] - plot_w) + max(0, -box[1]) + max(0, box[3] - plot_h)
+                    hits = sum(_overlap(box, b) for b in boxes) + 25 * sum(_overlap(box, b) for b in obstacles)
+                    cost = hits + 50 * off + k
+                    if cost < best_cost:
+                        best, best_cost = (side, cy - p["y"], box), cost
+                    if hits == 0 and off == 0:
+                        break
+                else:
+                    continue
                 break
-        side, dx, dy, box = best
+            else:
+                continue
+            break
+        side, dy, box = best
         boxes.append(box)
-        out.append({"align": "left" if side == "right" else "right", "dx": dx, "dy": dy})
+        out.append({"align": "left" if side == "right" else "right", "dy": dy})
     return out
 
 
@@ -141,11 +156,30 @@ def _build_geometry(story: Story, width, height, fs: float) -> Geometry:
 
     px_w = width if isinstance(width, int | float) else 900
     px_h = height if isinstance(height, int | float) else 520
-    pad_days = (last - first).days * 0.16  # room on the right for the last labels
-    x0, x1 = first - timedelta(days=10), last + timedelta(days=pad_days)
     lo, hi = d["usd_per_mtok"].min() * 0.4, d["usd_per_mtok"].max() * 2.0
     plot_w, plot_h = px_w, px_h  # Altair width/height are the plot area; axes sit outside it
-    t0, t1 = _ms(x0), _ms(x1)
+
+    # Label text and kind: the Opus start (name; ECI and launch price), each new model (name), and the last
+    # new model on each line ("end": name and today's price).
+    last_event = ev.group_by("anchor").agg(pl.col("day").max().alias("last_day"))
+    ev = ev.join(last_event, on="anchor").sort("anchor", "day")
+    texts = []
+    for r in ev.iter_rows(named=True):
+        if r["kind"] == "anchor":
+            texts.append(("anchor", f"{_short(r['anchor'])}\nECI {r['anchor_eci']:.0f} · {fmt_usd(r['usd_per_mtok'])}"))
+        elif r["day"] == r["last_day"]:
+            texts.append(("end", f"{_short(r['display_name'])} {fmt_usd(r['usd_per_mtok'])}"))
+        else:
+            texts.append(("new model", _short(r["display_name"])))
+
+    # x domain: a little room on the left; on the right, enough that every end label fits right of its dot.
+    t0 = _ms(first - timedelta(days=10))
+    t1 = _ms(last + timedelta(days=(last - first).days * 0.03))
+    for (kind, text), r in zip(texts, ev.iter_rows(named=True), strict=True):
+        if kind == "end":
+            need = 9 * fs + _text_box(text, LABEL_PX * fs, fs)[0] + 4 * fs
+            t = _ms(r["day"])
+            t1 = max(t1, t0 + (t - t0) * plot_w / max(plot_w - need, 1.0))
 
     x_scale = alt.Scale(type="utc", domain=[t0, t1])
     quarters = [q for y in (2025, 2026) for m in (1, 4, 7, 10) if first <= (q := date(y, m, 1)) <= last]
@@ -196,26 +230,17 @@ def _build_geometry(story: Story, width, height, fs: float) -> Geometry:
             prev = xy
         paths[a] = path
 
-    # Labels: the Opus start (name, ECI, launch price), each new model (name), and today's price on the last.
-    last_event = ev.group_by("anchor").agg(pl.col("day").max().alias("last_day"))
-    ev = ev.join(last_event, on="anchor").sort("anchor", "day")
     pts = []
-    for r in ev.iter_rows(named=True):
+    for (kind, text), r in zip(texts, ev.iter_rows(named=True), strict=True):
         t = _ms(r["day"])
         x, y = to_px(t, r["usd_per_mtok"])
-        if r["kind"] == "anchor":
-            text = f"{_short(r['anchor'])} · ECI {r['anchor_eci']:.0f} · {fmt_usd(r['usd_per_mtok'])}"
-            size = START_PX * fs
-        else:
-            text = _short(r["display_name"])
-            if r["day"] == r["last_day"]:
-                text += f" {fmt_usd(r['usd_per_mtok'])}"
-            size = LABEL_PX * fs
+        size = (START_PX if kind == "anchor" else LABEL_PX) * fs
         # The dot is reached when the line arrives at this price on this day (after any drop into it).
         s_at = next(p[2] for p in paths[r["anchor"]] if p[0] == t and p[1] == r["usd_per_mtok"])
-        pts.append({**r, "x": x, "y": y, "text": text, "size": size, "t": t, "s": s_at})
-    # Starts first so they get the best spots, then left to right.
-    order = sorted(range(len(pts)), key=lambda i: (pts[i]["kind"] != "anchor", pts[i]["x"]))
+        pts.append({**r, "kind": kind, "x": x, "y": y, "text": text, "size": size, "t": t, "s": s_at})
+    # Starts first so they get the best spots, then the ends, then the rest left to right.
+    rank = {"anchor": 0, "end": 1, "new model": 2}
+    order = sorted(range(len(pts)), key=lambda i: (rank[pts[i]["kind"]], pts[i]["x"]))
     # Thin boxes along every line (horizontal runs and the vertical drops between them).
     segs, half = [], 2 * fs
     for path in paths.values():
@@ -227,8 +252,9 @@ def _build_geometry(story: Story, width, height, fs: float) -> Geometry:
     lab = []
     for i, pl_ in zip(order, placed, strict=True):
         p = pts[i]
-        # Convert the pixel offset back to a price so the label rides with the scale.
-        y_px = p["y"] + pl_["dy"]
+        # Convert the pixel offset back to a price so the label rides with the scale. Vega anchors a multi-line
+        # label at its first line, so move that line up by half the block's extra height to centre the block.
+        y_px = p["y"] + pl_["dy"] - (p["text"].count("\n") * p["size"] * LINE_HEIGHT) / 2
         ly = 10 ** (math.log10(hi) - y_px / plot_h * (math.log10(hi) - math.log10(lo)))
         lab.append(
             {
@@ -311,7 +337,9 @@ def _chart(story: Story, width, height, fs: float, interactive: bool = False, st
             color=g.color,
             opacity=opacity,
             size=alt.Size(
-                "kind:N", scale=alt.Scale(domain=["anchor", "new model"], range=[150 * fs**2, 70 * fs**2]), legend=None
+                "kind:N",
+                scale=alt.Scale(domain=["anchor", "end", "new model"], range=[150 * fs**2, 70 * fs**2, 70 * fs**2]),
+                legend=None,
             ),
         )
     )
@@ -335,8 +363,10 @@ def _chart(story: Story, width, height, fs: float, interactive: bool = False, st
             .encode(x=xenc(), y=yenc(), color=g.color)
         )
     for align in ("left", "right"):
+        # Start and end labels bold in primary ink; the models in between regular, in secondary ink.
         for kind, size, ink_name, weight in (
             ("anchor", START_PX, "text", 600),
+            ("end", LABEL_PX, "text", 600),
             ("new model", LABEL_PX, "text_secondary", 400),
         ):
             sub = lab.filter((pl.col("align") == align) & (pl.col("kind") == kind))
@@ -346,6 +376,8 @@ def _chart(story: Story, width, height, fs: float, interactive: bool = False, st
                 .mark_text(
                     align=align,
                     baseline="middle",
+                    lineBreak="\n",
+                    lineHeight=size * fs * LINE_HEIGHT,
                     dx=dx,
                     fontSize=size * fs,
                     fontWeight=weight,

@@ -180,10 +180,9 @@ def build(con, as_of: date, cfg: dict) -> Story:
     sens = sensitivity(prices, anchors)
 
     reached = summ.filter(pl.col("months_to_10x").is_not_null())
-    worst = math.ceil(reached["months_to_10x"].max())
-    short = [a.removeprefix("Claude ") for a in reached["anchor"]]
-    names = ", ".join(short[:-1]) + f" and {short[-1]}" if len(short) > 1 else short[0]
-    title = f"{names} were each matched at a tenth of their price within {worst} months"
+    # Average over the Opus models whose line has reached 10x; those still short of it are left out (README).
+    avg = reached["months_to_10x"].mean()
+    title = f"Frontier Opus models are matched in capability at one tenth the price in an average of {avg:.0f} months"
     subtitle = (
         "Cheapest list price for a later model that scores at least as high as each Claude Opus "
         "on the Epoch Capabilities Index"
@@ -209,7 +208,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "for older Opus models a cheaper match was sometimes already on sale (see README).",
             "Models that are unmapped or listed late in LiteLLM make each line an upper bound.",
         ],
-        extra={"anchors": anchors, "last_day": str(last_day)},
+        extra={"anchors": anchors, "last_day": str(last_day), "avg_months_to_10x": avg},
     )
 
 

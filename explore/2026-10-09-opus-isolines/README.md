@@ -9,8 +9,10 @@ capability, and which models set each new low? The original exploration uses rou
 capability that starts at an Opus's own launch price.
 
 ## Finding (Epoch vintage of 2026-10-06, prices to 2026-10-05)
-- **Opus 4, Opus 4.5 and Opus 4.6 were each matched at a tenth of their list price within 9 months** by a
-  model released after them. The 10× point came after 2.5 months for Opus 4 (GPT-5 mini, $0.60 against $27),
+- **Opus 4, Opus 4.5 and Opus 4.6 were each matched in capability at a tenth of their list price after 5.8
+  months on average** (the chart title rounds to 6), all within 9 months, by a model released after them.
+  The average leaves out Opus 4.8, which has not reached 10× yet (2.5× after 4.3 months); counting it once it
+  does can only raise the average if it takes longer than 5.8 months. The 10× point came after 2.5 months for Opus 4 (GPT-5 mini, $0.60 against $27),
   8.6 months for Opus 4.5 (GPT-5.6 Luna, $0.40 against $9) and 6.2 months for Opus 4.6 (GPT-5.6 Luna's price
   cut, $2 to $0.40 over Aug 13–14, 2026, against $9; GPT-6 Luna later reached $0.18).
 - **Today:** Opus 4-level capability costs $0.05 (Qwen3.7 Flash, 540× below Opus 4's $27), Opus 4.5-level
@@ -33,13 +35,16 @@ capability that starts at an Opus's own launch price.
   excluded by design (see the sensitivity table for what that changes). At these levels the running minimum
   never sat above the day's cheapest listed price (`summary.days_above_record` = 0), so the line is also the
   cheapest price on offer each day.
-- **Labels:** a dot and label mark the Opus itself (name, ECI, launch price) and each day a *different* model
-  sets a strictly lower price (name only, shortened; the last one on each line also gives today's price).
+- **Labels:** a dot and label mark the Opus itself (name, then ECI and launch price, above the dot) and each
+  day a *different* model sets a strictly lower price (name only, shortened). The last new model on each line
+  sits to the right of its dot with today's price. Start and end labels are bold in white; the models in
+  between are regular weight in grey.
   Price cuts by the model already holding the low move the line without a label; a model that only ties the
   current low gets no label. The step down on the Opus 4.6 line in August 2026 is such a cut (GPT-5.6 Luna,
   $2 to $0.40), which is why that line shares a segment with the Opus 4.5 line. Every labelled point, with
   Epoch's full model name and its price, is in the table below.
-- **10× point:** the first day the line is at or below a tenth of the Opus's launch price.
+- **10× point:** the first day the line is at or below a tenth of the Opus's launch price. The title's average
+  is the mean of the 10× points of the Opus models that have one (`story.extra["avg_months_to_10x"]`).
 - **Video** (`isolines-motion`: `x_video`, `linkedin_video`): the lines draw one after another at one speed
   along the drawn path, so a drop in price takes as long to draw as a stretch of time of the same on-screen
   length, and each line eases in and out. Labels fade in as the line reaches them. Each finished line dims and
@@ -90,6 +95,9 @@ One change at a time (`story.frames["sensitivity"]`). Fold = Opus launch price �
 | Later models; candidate's ECI *lower* CI bound must clear the Opus | 307×, 2.5 mo | 102×, 8.6 mo | 6.7×, not yet | 2.5×, not yet |
 | Any model, incl. released before the Opus (line starts at the cheapest match on day one) | 35× from $1.76, 9.6 mo | 45× from $4.00, 8.6 mo | 50×, 6.2 mo | 2.5×, not yet |
 
+- **The title's average (5.8 months) by variant:** 5.6 months under the lower-CI rule (Opus 4 and 4.5 only, as
+  Opus 4.6 drops out) and 8.1 months counting any model (9.6, 8.6 and 6.2 months, measured from the cheapest
+  match on each Opus's first day rather than the Opus's own price), which round to 6 and 8 months.
 - **Opus 4.6's 10× depends on the point estimate.** If a model must clear Opus 4.6's ECI with its lower
   confidence bound, the cheapest match is Gemini 3.7 Flash at $1.35 (6.7×): the Luna models score 156.3–156.4
   against Opus 4.6's 155.2, inside each other's intervals. Opus 4 and 4.5 hold under either rule.
