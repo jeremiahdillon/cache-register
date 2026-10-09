@@ -19,6 +19,14 @@ VENDORS = {  # permaslug -> (prompt $/token, completion $/token); None = not in 
 }
 
 
+@pytest.fixture(autouse=True)
+def plain_cli_output(monkeypatch):
+    # Typer forces a colour terminal when GITHUB_ACTIONS is set; ANSI codes then split CLI messages.
+    import typer.rich_utils
+
+    monkeypatch.setattr(typer.rich_utils, "FORCE_TERMINAL", False)
+
+
 @pytest.fixture
 def data_env(tmp_path, monkeypatch):
     monkeypatch.setenv("CACHEREG_DATA_DIR", str(tmp_path / "data"))
