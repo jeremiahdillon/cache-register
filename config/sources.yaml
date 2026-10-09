@@ -134,3 +134,16 @@ sources:
     cadence: weekly
     requires: []
     enabled: true
+
+  # Vercel AI Gateway leaderboards (verified 2026-10-08, SOURCE.md): public export, no key, CC BY 4.0.
+  # Daily shares (never volumes) by lab and model; past days may be revised, so Latest-only until two
+  # months of vintages show them unchanged.
+  - id: vercel_ai_gateway
+    history: native
+    revisions: revised
+    redistribution: allowed-with-attribution
+    derived_charts: allowed-with-attribution
+    attribution: "© 2026 Vercel, \"AI Gateway Leaderboard Data\", CC BY 4.0 (vercel.com/ai-gateway/leaderboards), as of {as_of}"
+    cadence: daily
+    requires: []
+    enabled: true

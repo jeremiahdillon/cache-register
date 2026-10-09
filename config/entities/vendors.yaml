@@ -1,34 +1,35 @@
 # Canonical vendors (PLAN §4.3). `aliases` lists the author prefixes each source uses
-# (`ramp`: the lab names in the Ramp AI Index views).
+# (`ramp`: the lab names in the Ramp AI Index views; `vercel`: the lab slugs of Vercel's AI Gateway
+# leaderboards, where xAI's models are listed as `spacexai`).
 # `hq` is the country of the developer's headquarters (ISO 3166 alpha-2).
 # Ids starting with "_" are not model makers (anonymous pre-release models, routers).
 # `cachereg entities check` (Phase 3) reports prefixes that are not mapped here.
 vendors:
-  openai:           {name: OpenAI,                  open_weights: false, hq: US, aliases: {openrouter: [openai], ramp: [OpenAI]}}
-  anthropic:        {name: Anthropic,               open_weights: false, hq: US, aliases: {openrouter: [anthropic], ramp: [Anthropic]}}
-  google:           {name: Google,                  open_weights: false, hq: US, aliases: {openrouter: [google], ramp: [Google]}}
-  xai:              {name: xAI,                     open_weights: false, hq: US, aliases: {openrouter: [x-ai], ramp: [xAI]}}
-  meta:             {name: Meta,                    open_weights: true,  hq: US, aliases: {openrouter: [meta-llama, meta], ramp: [Meta]}}
-  nvidia:           {name: NVIDIA,                  open_weights: true,  hq: US, aliases: {openrouter: [nvidia], ramp: [NVIDIA]}}
+  openai:           {name: OpenAI,                  open_weights: false, hq: US, aliases: {openrouter: [openai], ramp: [OpenAI], vercel: [openai]}}
+  anthropic:        {name: Anthropic,               open_weights: false, hq: US, aliases: {openrouter: [anthropic], ramp: [Anthropic], vercel: [anthropic]}}
+  google:           {name: Google,                  open_weights: false, hq: US, aliases: {openrouter: [google], ramp: [Google], vercel: [google]}}
+  xai:              {name: xAI,                     open_weights: false, hq: US, aliases: {openrouter: [x-ai], ramp: [xAI], vercel: [spacexai]}}
+  meta:             {name: Meta,                    open_weights: true,  hq: US, aliases: {openrouter: [meta-llama, meta], ramp: [Meta], vercel: [meta]}}
+  nvidia:           {name: NVIDIA,                  open_weights: true,  hq: US, aliases: {openrouter: [nvidia], ramp: [NVIDIA], vercel: [nvidia]}}
   microsoft:        {name: Microsoft,               open_weights: true,  hq: US, aliases: {openrouter: [microsoft]}}
-  amazon:           {name: Amazon,                  open_weights: false, hq: US, aliases: {openrouter: [amazon], ramp: [Amazon]}}
-  poolside:         {name: Poolside,                open_weights: false, hq: US, aliases: {openrouter: [poolside]}}
-  arcee:            {name: Arcee AI,                open_weights: true,  hq: US, aliases: {openrouter: [arcee-ai]}}
-  perplexity:       {name: Perplexity,              open_weights: false, hq: US, aliases: {openrouter: [perplexity]}}
-  thinkingmachines: {name: Thinking Machines,       open_weights: false, hq: US, aliases: {openrouter: [thinkingmachines]}}
-  mistral:          {name: Mistral,                 open_weights: true,  hq: FR, aliases: {openrouter: [mistralai], ramp: [Mistral AI, Mistral]}}
-  cohere:           {name: Cohere,                  open_weights: true,  hq: CA, aliases: {openrouter: [cohere]}}
+  amazon:           {name: Amazon,                  open_weights: false, hq: US, aliases: {openrouter: [amazon], ramp: [Amazon], vercel: [amazon]}}
+  poolside:         {name: Poolside,                open_weights: false, hq: US, aliases: {openrouter: [poolside], vercel: [poolside]}}
+  arcee:            {name: Arcee AI,                open_weights: true,  hq: US, aliases: {openrouter: [arcee-ai], vercel: [arcee-ai]}}
+  perplexity:       {name: Perplexity,              open_weights: false, hq: US, aliases: {openrouter: [perplexity], vercel: [perplexity]}}
+  thinkingmachines: {name: Thinking Machines,       open_weights: false, hq: US, aliases: {openrouter: [thinkingmachines], vercel: [thinkingmachines]}}
+  mistral:          {name: Mistral,                 open_weights: true,  hq: FR, aliases: {openrouter: [mistralai], ramp: [Mistral AI, Mistral], vercel: [mistral]}}
+  cohere:           {name: Cohere,                  open_weights: true,  hq: CA, aliases: {openrouter: [cohere], vercel: [cohere]}}
   upstage:          {name: Upstage,                 open_weights: true,  hq: KR, aliases: {openrouter: [upstage]}}
-  deepseek:         {name: DeepSeek,                open_weights: true,  hq: CN, aliases: {openrouter: [deepseek], ramp: [DeepSeek]}}
-  alibaba:          {name: Alibaba (Qwen),          open_weights: true,  hq: CN, aliases: {openrouter: [qwen, alibaba], ramp: [Alibaba]}}
-  moonshot:         {name: Moonshot AI,             open_weights: true,  hq: CN, aliases: {openrouter: [moonshotai], ramp: [Moonshot]}}
-  zai:              {name: Z.ai,                    open_weights: true,  hq: CN, aliases: {openrouter: [z-ai, thudm], ramp: [Z.ai]}}
-  minimax:          {name: MiniMax,                 open_weights: true,  hq: CN, aliases: {openrouter: [minimax], ramp: [MiniMax]}}
-  xiaomi:           {name: Xiaomi,                  open_weights: true,  hq: CN, aliases: {openrouter: [xiaomi]}}
-  tencent:          {name: Tencent,                 open_weights: true,  hq: CN, aliases: {openrouter: [tencent]}}
-  stepfun:          {name: StepFun,                 open_weights: true,  hq: CN, aliases: {openrouter: [stepfun]}}
-  ant:              {name: Ant Group (inclusionAI), open_weights: true,  hq: CN, aliases: {openrouter: [inclusionai]}}
-  bytedance:        {name: ByteDance Seed,          open_weights: false, hq: CN, aliases: {openrouter: [bytedance-seed]}}
+  deepseek:         {name: DeepSeek,                open_weights: true,  hq: CN, aliases: {openrouter: [deepseek], ramp: [DeepSeek], vercel: [deepseek]}}
+  alibaba:          {name: Alibaba (Qwen),          open_weights: true,  hq: CN, aliases: {openrouter: [qwen, alibaba], ramp: [Alibaba], vercel: [alibaba]}}
+  moonshot:         {name: Moonshot AI,             open_weights: true,  hq: CN, aliases: {openrouter: [moonshotai], ramp: [Moonshot], vercel: [moonshotai]}}
+  zai:              {name: Z.ai,                    open_weights: true,  hq: CN, aliases: {openrouter: [z-ai, thudm], ramp: [Z.ai], vercel: [zai]}}
+  minimax:          {name: MiniMax,                 open_weights: true,  hq: CN, aliases: {openrouter: [minimax], ramp: [MiniMax], vercel: [minimax]}}
+  xiaomi:           {name: Xiaomi,                  open_weights: true,  hq: CN, aliases: {openrouter: [xiaomi], vercel: [xiaomi]}}
+  tencent:          {name: Tencent,                 open_weights: true,  hq: CN, aliases: {openrouter: [tencent], vercel: [tencent]}}
+  stepfun:          {name: StepFun,                 open_weights: true,  hq: CN, aliases: {openrouter: [stepfun], vercel: [stepfun]}}
+  ant:              {name: Ant Group (inclusionAI), open_weights: true,  hq: CN, aliases: {openrouter: [inclusionai], vercel: [inclusionai]}}
+  bytedance:        {name: ByteDance Seed,          open_weights: false, hq: CN, aliases: {openrouter: [bytedance-seed], vercel: [bytedance]}}
   cursor:           {name: Cursor (Anysphere),      open_weights: false, hq: US, aliases: {ramp: [Cursor]}}
-  _stealth:         {name: Stealth (unannounced),   open_weights: false, hq: null, aliases: {openrouter: [stealth]}}
+  _stealth:         {name: Stealth (unannounced),   open_weights: false, hq: null, aliases: {openrouter: [stealth], vercel: [stealth]}}
   _router:          {name: OpenRouter routers,      open_weights: false, hq: null, aliases: {openrouter: [openrouter]}}

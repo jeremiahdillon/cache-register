@@ -3,6 +3,7 @@
 # versions); `aliases.litellm` lists LiteLLM price keys in preference order: OpenRouter's own
 # listing first (`openrouter/<id>`), then the vendor's first-party key (dated before undated).
 # `aliases.epoch` lists Epoch model groups (the ECI `Model` name); one group per model.
+# `aliases.vercel` lists Vercel AI Gateway leaderboard display names (mapped by hand).
 # Bootstrapped with `cachereg entities suggest --source openrouter|epoch`, then reviewed;
 # hand-added entries are marked `# manual` with the reason. An alias may appear under one model only.
 models:
@@ -65,6 +66,8 @@ models:
       - openrouter/anthropic/claude-3-haiku
       epoch:  # manual: Anthropic's dated id claude-3-haiku-20240307
       - Claude 3 Haiku
+      vercel:
+      - Claude 3 Haiku
   anthropic/claude-3-opus:
     aliases:
       openrouter:
@@ -109,6 +112,8 @@ models:
       - claude-fable-5
       epoch:
       - Claude Fable 5
+      vercel:
+      - Claude Fable 5
   anthropic/claude-fable-5.1:
     aliases:
       openrouter:
@@ -127,6 +132,8 @@ models:
       - claude-haiku-4-5-20251001
       - claude-haiku-4-5
       epoch:
+      - Claude Haiku 4.5
+      vercel:
       - Claude Haiku 4.5
   anthropic/claude-opus-4:  # manual: Anthropic's dated keys for the same release (OpenRouter's permaslug date differs)
     aliases:
@@ -156,6 +163,8 @@ models:
       - claude-opus-4-5
       epoch:  # manual: Anthropic's dated id claude-opus-4-5-20251101
       - Claude Opus 4.5
+      vercel:
+      - Claude Opus 4.5
   anthropic/claude-opus-4.6:
     aliases:
       openrouter:
@@ -165,6 +174,8 @@ models:
       - claude-opus-4-6-20260205
       - claude-opus-4-6
       epoch:
+      - Claude Opus 4.6
+      vercel:
       - Claude Opus 4.6
   anthropic/claude-opus-4.7:
     aliases:
@@ -176,6 +187,8 @@ models:
       - claude-opus-4-7
       epoch:
       - Claude Opus 4.7
+      vercel:
+      - Claude Opus 4.7
   anthropic/claude-opus-4.8:
     aliases:
       openrouter:
@@ -184,6 +197,8 @@ models:
       - openrouter/anthropic/claude-opus-4.8
       - claude-opus-4-8
       epoch:
+      - Claude Opus 4.8
+      vercel:
       - Claude Opus 4.8
   anthropic/claude-opus-5:
     aliases:
@@ -194,6 +209,8 @@ models:
       - claude-opus-5
       epoch:
       - Claude Opus 5
+      vercel:
+      - Claude Opus 5
   anthropic/claude-opus-5.5:
     aliases:
       openrouter:
@@ -203,6 +220,8 @@ models:
       - claude-opus-5-5
       epoch:
       - Claude Opus 5.5
+      vercel:
+      - Claude Opus 5.5
   anthropic/claude-sonnet-4:
     aliases:
       openrouter:
@@ -210,6 +229,8 @@ models:
       litellm:
       - openrouter/anthropic/claude-sonnet-4
       epoch:  # manual: Anthropic's dated id claude-sonnet-4-20250514
+      - Claude Sonnet 4
+      vercel:
       - Claude Sonnet 4
   anthropic/claude-sonnet-4.5:
     aliases:
@@ -221,6 +242,8 @@ models:
       - claude-sonnet-4-5
       epoch:
       - Claude Sonnet 4.5
+      vercel:
+      - Claude Sonnet 4.5
   anthropic/claude-sonnet-4.6:
     aliases:
       openrouter:
@@ -229,6 +252,8 @@ models:
       - openrouter/anthropic/claude-sonnet-4.6
       - claude-sonnet-4-6
       epoch:
+      - Claude Sonnet 4.6
+      vercel:
       - Claude Sonnet 4.6
   anthropic/claude-sonnet-5:
     aliases:
@@ -239,6 +264,8 @@ models:
       - claude-sonnet-5
       epoch:
       - Claude Sonnet 5
+      vercel:
+      - Claude Sonnet 5
   anthropic/claude-sonnet-5.5:
     aliases:
       openrouter:
@@ -247,6 +274,8 @@ models:
       - openrouter/anthropic/claude-sonnet-5.5
       - claude-sonnet-5-5
       epoch:
+      - Claude Sonnet 5.5
+      vercel:
       - Claude Sonnet 5.5
   arcee-ai/trinity-large-thinking:
     aliases:
@@ -350,6 +379,8 @@ models:
       - deepseek/deepseek-v3.2
       epoch:  # manual: ambiguous with deepseek/deepseek-chat, a moving alias
       - DeepSeek-V3.2
+      vercel:
+      - DeepSeek V3.2
   deepseek/deepseek-v3.2-exp:
     aliases:
       openrouter:
@@ -367,6 +398,8 @@ models:
       - deepseek/deepseek-v4-flash
       epoch:
       - DeepSeek-V4-Flash
+      vercel:
+      - DeepSeek V4 Flash
   deepseek/deepseek-v4-flash-0731:
     aliases:
       openrouter:
@@ -374,6 +407,8 @@ models:
       litellm:
       - openrouter/deepseek/deepseek-v4-flash-0731
       epoch:
+      - DeepSeek V4 Flash 0731
+      vercel:
       - DeepSeek V4 Flash 0731
   deepseek/deepseek-v4-flash-vision-exp:
     aliases:
@@ -391,6 +426,8 @@ models:
       - deepseek/deepseek-v4-pro
       epoch:
       - DeepSeek-V4-Pro
+      vercel:
+      - DeepSeek V4 Pro
   deepseek/deepseek-v4-pro-0813:
     aliases:
       openrouter:
@@ -406,6 +443,8 @@ models:
       litellm:
       - openrouter/deepseek/deepseek-v4.1-flash
       epoch:
+      - DeepSeek V4.1 Flash
+      vercel:
       - DeepSeek V4.1 Flash
   google/gemini-1.5-flash-002:  # manual: Epoch-only model (price keys, no OpenRouter rankings alias)
     aliases:
@@ -443,6 +482,8 @@ models:
       - gemini/gemini-2.5-flash
       epoch:
       - Gemini 2.5 Flash (Jun 2025)
+      vercel:
+      - Gemini 2.5 Flash
   google/gemini-2.5-flash-lite:
     aliases:
       openrouter:
@@ -450,6 +491,8 @@ models:
       litellm:
       - openrouter/google/gemini-2.5-flash-lite
       - gemini/gemini-2.5-flash-lite
+      vercel:
+      - Gemini 2.5 Flash Lite
   google/gemini-2.5-flash-lite-preview-06-17:
     aliases:
       openrouter:
@@ -497,6 +540,8 @@ models:
       - gemini/gemini-2.5-pro
       epoch:  # manual: the GA release; ambiguous with -preview
       - Gemini 2.5 Pro (Jun 2025)
+      vercel:
+      - Gemini 2.5 Pro
   google/gemini-2.5-pro-exp-03-25:
     aliases:
       openrouter:
@@ -527,6 +572,8 @@ models:
       - gemini/gemini-3-flash-preview
       epoch:
       - Gemini 3 Flash
+      vercel:
+      - Gemini 3 Flash
   google/gemini-3-pro-preview:
     aliases:
       openrouter:
@@ -545,6 +592,8 @@ models:
       - gemini/gemini-3.1-flash-lite
       epoch:
       - Gemini 3.1 Flash-Lite
+      vercel:
+      - Gemini 3.1 Flash Lite
   google/gemini-3.1-flash-lite-preview:
     aliases:
       openrouter:
@@ -561,6 +610,8 @@ models:
       - gemini/gemini-3.1-pro-preview
       epoch:  # manual: ambiguous with the -customtools variant
       - Gemini 3.1 Pro
+      vercel:
+      - Gemini 3.1 Pro Preview
   google/gemini-3.1-pro-preview-customtools:
     aliases:
       openrouter:
@@ -577,6 +628,8 @@ models:
       - gemini/gemini-3.5-flash
       epoch:
       - Gemini 3.5 Flash
+      vercel:
+      - Gemini 3.5 Flash
   google/gemini-3.5-flash-lite:
     aliases:
       openrouter:
@@ -586,6 +639,8 @@ models:
       - gemini/gemini-3.5-flash-lite
       epoch:
       - Gemini 3.5 Flash-Lite
+      vercel:
+      - Gemini 3.5 Flash Lite
   google/gemini-3.6-flash:
     aliases:
       openrouter:
@@ -604,6 +659,8 @@ models:
       - gemini/gemini-3.7-flash
       epoch:
       - Gemini 3.7 Flash
+      vercel:
+      - Gemini 3.7 Flash
   google/gemini-3.8-flash:
     aliases:
       openrouter:
@@ -612,6 +669,8 @@ models:
       - openrouter/google/gemini-3.8-flash
       - gemini/gemini-3.8-flash
       epoch:
+      - Gemini 3.8 Flash
+      vercel:
       - Gemini 3.8 Flash
   google/gemini-embedding-001:
     aliases:
@@ -813,12 +872,16 @@ models:
       - minimax/minimax-m2
       litellm:
       - openrouter/minimax/minimax-m2
+      vercel:
+      - MiniMax M2
   minimax/minimax-m2.1:
     aliases:
       openrouter:
       - minimax/minimax-m2.1
       litellm:
       - openrouter/minimax/minimax-m2.1
+      vercel:
+      - MiniMax M2.1
   minimax/minimax-m2.5:
     aliases:
       openrouter:
@@ -827,6 +890,8 @@ models:
       - openrouter/minimax/minimax-m2.5
       epoch:
       - MiniMax-M2.5
+      vercel:
+      - MiniMax M2.5
   minimax/minimax-m2.7:
     aliases:
       openrouter:
@@ -835,6 +900,8 @@ models:
       - openrouter/minimax/minimax-m2.7
       epoch:
       - MiniMax-M2.7
+      vercel:
+      - MiniMax M2.7
   minimax/minimax-m3:
     aliases:
       openrouter:
@@ -843,6 +910,8 @@ models:
       - openrouter/minimax/minimax-m3
       epoch:
       - MiniMax-M3
+      vercel:
+      - MiniMax M3
   mistralai/codestral-2508:
     aliases:
       openrouter:
@@ -1010,6 +1079,8 @@ models:
       - moonshot/kimi-k2.5
       epoch:
       - Kimi K2.5
+      vercel:
+      - Kimi K2.5
   moonshotai/kimi-k2.6:
     aliases:
       openrouter:
@@ -1018,6 +1089,8 @@ models:
       - openrouter/moonshotai/kimi-k2.6
       - moonshot/kimi-k2.6
       epoch:
+      - Kimi K2.6
+      vercel:
       - Kimi K2.6
   moonshotai/kimi-k2.7-code:
     aliases:
@@ -1036,6 +1109,8 @@ models:
       - openrouter/moonshotai/kimi-k3
       - moonshot/kimi-k3
       epoch:
+      - Kimi K3
+      vercel:
       - Kimi K3
   nousresearch/hermes-3-llama-3.1-405b:
     aliases:
@@ -1100,6 +1175,8 @@ models:
       - gpt-4.1-mini
       epoch:
       - GPT-4.1 mini
+      vercel:
+      - GPT-4.1 mini
   openai/gpt-4.1-nano:
     aliases:
       openrouter:
@@ -1125,6 +1202,8 @@ models:
       litellm:
       - openrouter/openai/gpt-4o
       - gpt-4o
+      vercel:
+      - GPT-4o
   openai/gpt-4o-2024-08-06:
     aliases:
       openrouter:
@@ -1150,6 +1229,8 @@ models:
       litellm:
       - openrouter/openai/gpt-4o-mini
       - gpt-4o-mini
+      vercel:
+      - GPT-4o mini
   openai/gpt-4o-mini-2024-07-18:
     aliases:
       openrouter:
@@ -1169,6 +1250,8 @@ models:
       - gpt-5
       epoch:  # manual: ambiguous with openai/gpt-5-chat; Epoch's version gpt-5-2025-08-07 is the reasoning model
       - GPT-5
+      vercel:
+      - GPT-5
   openai/gpt-5-chat:
     aliases:
       openrouter:
@@ -1183,6 +1266,8 @@ models:
       litellm:
       - openrouter/openai/gpt-5-codex
       - gpt-5-codex
+      vercel:
+      - GPT-5-Codex
   openai/gpt-5-mini:
     aliases:
       openrouter:
@@ -1193,6 +1278,8 @@ models:
       - gpt-5-mini
       epoch:
       - GPT-5 mini
+      vercel:
+      - GPT-5 mini
   openai/gpt-5-nano:
     aliases:
       openrouter:
@@ -1202,6 +1289,8 @@ models:
       - gpt-5-nano-2025-08-07
       - gpt-5-nano
       epoch:
+      - GPT-5 nano
+      vercel:
       - GPT-5 nano
   openai/gpt-5.1:
     aliases:
@@ -1228,6 +1317,8 @@ models:
       - gpt-5.2
       epoch:  # manual: Epoch's dated API id gpt-5.2-2025-12-11
       - GPT-5.2
+      vercel:
+      - GPT 5.2
   openai/gpt-5.2-codex:
     aliases:
       openrouter:
@@ -1261,6 +1352,8 @@ models:
       - gpt-5.4
       epoch:  # manual: Epoch's dated API id gpt-5.4-2026-03-05
       - GPT-5.4
+      vercel:
+      - GPT 5.4
   openai/gpt-5.4-mini:
     aliases:
       openrouter:
@@ -1270,6 +1363,8 @@ models:
       - gpt-5.4-mini
       epoch:  # manual: Epoch's dated API id
       - GPT-5.4 Mini
+      vercel:
+      - GPT 5.4 Mini
   openai/gpt-5.4-nano:
     aliases:
       openrouter:
@@ -1279,6 +1374,8 @@ models:
       - gpt-5.4-nano
       epoch:  # manual: Epoch's dated API id
       - GPT-5.4 Nano
+      vercel:
+      - GPT 5.4 Nano
   openai/gpt-5.4-pro:  # manual: in Epoch's top 50 but not in OpenRouter's rankings, so `suggest` never proposes it
     aliases:
       litellm:
@@ -1296,6 +1393,8 @@ models:
       - gpt-5.5
       epoch:
       - GPT-5.5
+      vercel:
+      - GPT 5.5
   openai/gpt-5.6-luna:
     aliases:
       openrouter:
@@ -1305,6 +1404,8 @@ models:
       - gpt-5.6-luna
       epoch:
       - GPT-5.6 Luna
+      vercel:
+      - GPT 5.6 Luna
   openai/gpt-5.6-luna-pro:
     aliases:
       openrouter:
@@ -1320,6 +1421,8 @@ models:
       - gpt-5.6-sol
       epoch:
       - GPT-5.6 Sol
+      vercel:
+      - GPT 5.6 Sol
   openai/gpt-5.6-sol-pro:
     aliases:
       openrouter:
@@ -1344,6 +1447,8 @@ models:
       - gpt-6-astra
       epoch:
       - GPT-6 Astra
+      vercel:
+      - GPT-6 Astra
   openai/gpt-6-luna:
     aliases:
       openrouter:
@@ -1352,6 +1457,8 @@ models:
       - openrouter/openai/gpt-6-luna
       - gpt-6-luna
       epoch:
+      - GPT-6 Luna
+      vercel:
       - GPT-6 Luna
   openai/gpt-6-luna-pro:
     aliases:
@@ -1368,6 +1475,8 @@ models:
       - gpt-6-sol
       epoch:
       - GPT-6 Sol
+      vercel:
+      - GPT-6 Sol
   openai/gpt-6.1-sol:
     aliases:
       openrouter:
@@ -1377,6 +1486,8 @@ models:
       - gpt-6.1-sol
       epoch:
       - GPT-6.1 Sol
+      vercel:
+      - GPT-6.1 Sol
   openai/gpt-oss-120b:
     aliases:
       openrouter:
@@ -1385,6 +1496,8 @@ models:
       - openrouter/openai/gpt-oss-120b
       epoch:
       - gpt-oss-120b
+      vercel:
+      - GPT OSS 120B
   openai/gpt-oss-20b:
     aliases:
       openrouter:
@@ -1636,6 +1749,8 @@ models:
       litellm:
       - openrouter/qwen/qwen3-next-80b-a3b-instruct
       - dashscope/qwen3-next-80b-a3b-instruct
+      vercel:
+      - Qwen3 Next 80B A3B Instruct
   qwen/qwen3-next-80b-a3b-thinking:
     aliases:
       openrouter:
@@ -1828,6 +1943,8 @@ models:
       - stepfun/step-3.7-flash-20260528
       litellm:
       - openrouter/stepfun/step-3.7-flash
+      vercel:
+      - Step 3.7 Flash
   tencent/hy3:
     aliases:
       openrouter:
@@ -1917,6 +2034,9 @@ models:
       - x-ai/grok-4.1-fast
       litellm:
       - xai/grok-4-1-fast
+      vercel:
+      - Grok 4.1 Fast Non-Reasoning
+      - Grok 4.1 Fast Reasoning
   x-ai/grok-4.20:
     aliases:
       openrouter:
@@ -2076,6 +2196,8 @@ models:
       - zai/glm-5.2
       epoch:
       - GLM-5.2
+      vercel:
+      - GLM 5.2
   z-ai/glm-5.3:
     aliases:
       openrouter:
@@ -2085,6 +2207,8 @@ models:
       - zai/glm-5.3
       epoch:
       - GLM-5.3
+      vercel:
+      - GLM 5.3
   z-ai/glm-5.3-flash:
     aliases:
       openrouter:
@@ -2094,6 +2218,8 @@ models:
       - zai/glm-5.3-flash
       epoch:
       - GLM-5.3-Flash
+      vercel:
+      - GLM 5.3 Flash
   z-ai/glm-5.3-flashx:
     aliases:
       openrouter:
