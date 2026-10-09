@@ -1,0 +1,57 @@
+# Controlled vocabulary for config/curated/disclosures.csv (docs/plans/2026-10-08-curated-disclosures.md).
+# One metric is one comparable series: a figure whose scope differs materially (all surfaces vs API
+# only; users vs seats; run-rate vs revenue per month) gets a different metric, never the same one
+# with a note. Wording drift within a series is kept in each row's `scope`; one metric is used only
+# when the company itself compares the figures. `scope` below says what the metric may carry.
+# Values are in `unit`, never converted between metrics (tokens per minute are not tokens per month).
+metrics:
+  tokens_processed_monthly:
+    unit: tokens_per_month
+    definition: Tokens processed per month across all of a company's products and APIs, as the company states it.
+    scope: All surfaces of one company ("across our products and APIs", "across our surfaces"; OpenRouter
+      its whole platform). Never a segment (one customer group, one API).
+  api_tokens_per_minute:
+    unit: tokens_per_minute
+    definition: Tokens per minute processed by a company's model APIs (direct API use by customers).
+    scope: The company's own model APIs only, not its consumer apps.
+  revenue_run_rate:
+    unit: usd_per_year
+    definition: Company revenue run-rate or annual recurring revenue (ARR), annualised as the company states it.
+    scope: The whole company. Annualised from a recent period the company picks; not recognised revenue.
+  revenue_monthly:
+    unit: usd_per_month
+    definition: Company revenue in one month, as stated. Never converted to a run-rate here.
+    scope: The whole company.
+  ai_revenue_run_rate:
+    unit: usd_per_year
+    definition: Annual revenue run-rate of a company's AI business line, as the company defines that line.
+    scope: One business line of a larger company (e.g. Microsoft's "AI business").
+  chatgpt_weekly_active_users:
+    unit: users
+    definition: Weekly active users of ChatGPT.
+    scope: ChatGPT only. Figures for "our products" or "our collective" users go to
+      openai_products_weekly_active_users.
+  openai_products_weekly_active_users:
+    unit: users
+    definition: Weekly active users across OpenAI's products, as stated ("our products", "our collective").
+    scope: All OpenAI products; not comparable with the ChatGPT-only series.
+  gemini_app_monthly_active_users:
+    unit: users
+    definition: Monthly active users of the Gemini app.
+    scope: The Gemini app only (not AI Overviews or other Google surfaces).
+  meta_ai_monthly_active_users:
+    unit: users
+    definition: Monthly active users of Meta AI.
+    scope: Meta AI across Meta's apps.
+  paying_business_users:
+    unit: users
+    definition: People using a company's paid business products (e.g. ChatGPT Enterprise, Team, Edu).
+    scope: People, not seats.
+  chatgpt_business_seats:
+    unit: seats
+    definition: Paid seats of ChatGPT's business plans ("ChatGPT for Work seats").
+    scope: Seats, not people.
+  business_customers:
+    unit: organisations
+    definition: Organisations that are customers of a company, as the company counts them.
+    scope: Organisations, not people or seats.

@@ -11,6 +11,8 @@ while read -r local_ref local_sha remote_ref remote_sha; do
   else
     python3 scripts/guard.py --range "$remote_sha..$local_sha"
     scripts/gitleaks.sh git --redact --no-banner --exit-code 1 --log-opts="$remote_sha..$local_sha" .
+    # Curated disclosures are append-only: no published row edited or removed (skipped if the base lacks the file).
+    uv run --frozen --quiet python -m cachereg.sources.curated_disclosures.dataset --base "$remote_sha" --head "$local_sha"
   fi
 done
 uv run --frozen --quiet ruff check --quiet

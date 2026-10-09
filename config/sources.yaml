@@ -147,3 +147,15 @@ sources:
     cadence: daily
     requires: []
     enabled: true
+
+  # Curated disclosures (ours, CC BY 4.0; SOURCE.md): config/curated/disclosures.csv, append-only rows
+  # with `supersedes`, each cited to the company statement it quotes. Exact by `recorded_on`.
+  - id: curated_disclosures
+    history: curated
+    revisions: append-only
+    redistribution: allowed-with-attribution
+    derived_charts: allowed-with-attribution
+    attribution: "Cache Register curated disclosures (CC BY 4.0), from the cited company statements, as of {as_of}"
+    cadence: weekly
+    requires: []
+    enabled: true

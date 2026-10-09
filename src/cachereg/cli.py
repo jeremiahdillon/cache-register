@@ -94,6 +94,10 @@ def fetch(
             continue
         try:
             raw = known[sid].module("fetch").fetch(full=full)
+            if raw is None:  # the source found nothing new to store (e.g. an unchanged committed file)
+                _outcome(sid)
+                typer.echo(f"  same  {sid:<22} unchanged since the latest stored copy")
+                continue
             out = raw.write()
             _outcome(sid)
             typer.echo(f"  ok    {sid:<22} {len(raw.files)} file(s) -> {repo_relative(out)}")

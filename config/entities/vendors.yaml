@@ -2,7 +2,7 @@
 # (`ramp`: the lab names in the Ramp AI Index views; `vercel`: the lab slugs of Vercel's AI Gateway
 # leaderboards, where xAI's models are listed as `spacexai`).
 # `hq` is the country of the developer's headquarters (ISO 3166 alpha-2).
-# Ids starting with "_" are not model makers (anonymous pre-release models, routers).
+# Ids starting with "_" are not model makers (anonymous pre-release models, routers, platforms).
 # `cachereg entities check` (Phase 3) reports prefixes that are not mapped here.
 vendors:
   openai:           {name: OpenAI,                  open_weights: false, hq: US, aliases: {openrouter: [openai], ramp: [OpenAI], vercel: [openai]}}
@@ -33,3 +33,4 @@ vendors:
   cursor:           {name: Cursor (Anysphere),      open_weights: false, hq: US, aliases: {ramp: [Cursor]}}
   _stealth:         {name: Stealth (unannounced),   open_weights: false, hq: null, aliases: {openrouter: [stealth], vercel: [stealth]}}
   _router:          {name: OpenRouter routers,      open_weights: false, hq: null, aliases: {openrouter: [openrouter]}}
+  _openrouter:      {name: OpenRouter (platform),  open_weights: false, hq: US, aliases: {}}  # the company, for curated disclosures

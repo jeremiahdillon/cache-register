@@ -80,7 +80,9 @@ def reproduce(folder: Path, *, latest: bool = False, no_fetch: bool = False) -> 
         sources = load_sources()
         for sid in cfg.sources:
             try:
-                sources[sid].module("fetch").fetch().write()
+                raw = sources[sid].module("fetch").fetch()
+                if raw is not None:  # None: nothing new to store
+                    raw.write()
             except Exception as e:  # noqa: BLE001 (report which source failed and why, then stop)
                 return ReproduceResult("fetch-failed", as_of, [f"fetch failed for {sid}: {type(e).__name__}: {e}"])
 

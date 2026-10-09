@@ -31,3 +31,9 @@ jobs:
           uv run ruff check
           uv run ruff format --check
           uv run pytest -q
+      - name: Curated disclosures are append-only
+        # The pushed head is checked out; compare with the commit before the push (skipped when that is
+        # all zeros or lacks the file).
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: uv run python -m cachereg.sources.curated_disclosures.dataset --base "$BEFORE"
