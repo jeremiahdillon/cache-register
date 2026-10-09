@@ -33,17 +33,52 @@ capability that starts at an Opus's own launch price.
   excluded by design (see the sensitivity table for what that changes). At these levels the running minimum
   never sat above the day's cheapest listed price (`summary.days_above_record` = 0), so the line is also the
   cheapest price on offer each day.
-- **Labels:** a dot and label mark the Opus itself and each day a *different* model sets a strictly lower
-  price. Price cuts by the model already holding the low move the line without a label; a model that only
-  ties the current low gets no label. The step down on the Opus 4.6 line in August 2026 is such a cut
-  (GPT-5.6 Luna, $2 to $0.40), which is why that line shares a segment with the Opus 4.5 line.
+- **Labels:** a dot and label mark the Opus itself (name, ECI, launch price) and each day a *different* model
+  sets a strictly lower price (name only, shortened; the last one on each line also gives today's price).
+  Price cuts by the model already holding the low move the line without a label; a model that only ties the
+  current low gets no label. The step down on the Opus 4.6 line in August 2026 is such a cut (GPT-5.6 Luna,
+  $2 to $0.40), which is why that line shares a segment with the Opus 4.5 line. Every labelled point, with
+  Epoch's full model name and its price, is in the table below.
 - **10× point:** the first day the line is at or below a tenth of the Opus's launch price.
-- **Video** (`isolines-motion`: `x_video`, `linkedin_video`): the lines draw one after another at the same pace
-  in days per second, so a longer history takes longer; labels fade in as each new low is reached, finished
-  lines dim while the next draws, and the last frame is the static chart. Label positions are computed once on
-  the full chart, so nothing moves between frames.
+- **Video** (`isolines-motion`: `x_video`, `linkedin_video`): the lines draw one after another at one speed
+  along the drawn path, so a drop in price takes as long to draw as a stretch of time of the same on-screen
+  length, and each line eases in and out. Labels fade in as the line reaches them. Each finished line dims and
+  stays dim until the last line is drawn; then all return together, on a frame identical to the static chart.
+  Label positions are computed once on the full chart, so nothing moves between frames.
 - Anchors are set in `explore.yaml`. `story.frames`: `daily` (each line by day), `events` (labelled points),
   `summary`, `sensitivity`.
+
+### Who set each low
+`story.frames["events"]`. Fold = the Opus's launch price ÷ this price.
+
+| Line | Date | Model (Epoch name) | ECI | Price | Fold |
+|---|---|---|---|---|---|
+| Opus 4 | May 22, 2025 | Claude Opus 4 | 142.7 | $27 | 1× |
+| Opus 4 | Jun 18, 2025 | Gemini 2.5 Pro (Jun 2025) | 145.3 | $3 | 9× |
+| Opus 4 | Aug 7, 2025 | GPT-5 mini | 145.5 | $0.60 | 45× |
+| Opus 4 | Sep 23, 2025 | Grok 4 Fast | 144.2 | $0.26 | 104× |
+| Opus 4 | Nov 12, 2025 | DeepSeek-V3.2-Exp | 145.0 | $0.24 | 113× |
+| Opus 4 | Feb 5, 2026 | Qwen3-235B-A22B-Thinking (Jul 2025) | 143.8 | $0.21 | 130× |
+| Opus 4 | Mar 11, 2026 | Qwen 3.5 Flash (hosted 35B-A3B) | 144.0 | $0.16 | 169× |
+| Opus 4 | Sep 5, 2026 | Qwen3.7 Flash | 144.6 | $0.05 | 540× |
+| Opus 4.5 | Nov 26, 2025 | Claude Opus 4.5 | 150.1 | $9 | 1× |
+| Opus 4.5 | Dec 11, 2025 | GPT-5.2 | 153.4 | $4.20 | 2.1× |
+| Opus 4.5 | Dec 17, 2025 | Gemini 3 Flash | 151.8 | $1 | 9× |
+| Opus 4.5 | Aug 14, 2026 | GPT-5.6 Luna | 156.4 | $0.40 | 22.5× |
+| Opus 4.5 | Aug 30, 2026 | GLM-5.3-Flash | 151.9 | $0.22 | 41× |
+| Opus 4.5 | Sep 5, 2026 | DeepSeek V4 Flash 0731 | 154.5 | $0.088 | 102× |
+| Opus 4.6 | Feb 5, 2026 | Claude Opus 4.6 | 155.2 | $9 | 1× |
+| Opus 4.6 | Feb 24, 2026 | GPT-5.3 Codex | 156.8 | $4.20 | 2.1× |
+| Opus 4.6 | Jul 6, 2026 | Claude Sonnet 5 | 156.2 | $3.60 | 2.5× |
+| Opus 4.6 | Jul 9, 2026 | GPT-5.6 Luna | 156.4 | $2 | 4.5× |
+| Opus 4.6 | Sep 22, 2026 | GPT-6 Luna | 156.3 | $0.18 | 50× |
+| Opus 4.8 | May 29, 2026 | Claude Opus 4.8 | 158.2 | $9 | 1× |
+| Opus 4.8 | Jul 9, 2026 | GPT-5.6 Terra | 159.6 | $5 | 1.8× |
+| Opus 4.8 | Sep 22, 2026 | GPT-6 Sol | 162.7 | $3.60 | 2.5× |
+
+Prices are the trailing 28-day median of each model's cheapest listing, so a newly listed model's price can
+take a few weeks to settle (the Opus 4.6 line's GPT-5.6 Luna step from $2 to $0.40 on Aug 13–14, 2026 is that
+median catching up with a price cut).
 
 ### Sensitivity
 One change at a time (`story.frames["sensitivity"]`). Fold = Opus launch price ÷ today's line; months to
