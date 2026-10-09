@@ -17,8 +17,8 @@
 --     (a vendor absent on a day counts 0) unless the lens says volume-weighted. `days` and
 --     `period_days` show partial months.
 --   * OpenRouter's denominator is everything ranked that day, incl. its `other` row (`_other`) and
---     free variants; spend shares are of priced spend. `coverage_pct` (est. spend lens) is the mean
---     daily share of non-free tokens that are priced.
+--     free variants; spend shares are of priced spend, averaged over the days with any priced spend.
+--     `coverage_pct` (est. spend lens) is the mean daily share of non-free tokens that are priced.
 --   * `vendor_rank` ranks named vendors (ids without a leading `_`) per lens and month.
 
 CREATE OR REPLACE TABLE gateway_lenses AS
@@ -40,6 +40,7 @@ WITH or_day AS (
     SELECT
         CAST(date_trunc('month', date) AS DATE) AS month,
         count(*) AS days,
+        count(*) FILTER (WHERE spend > 0) AS spend_days,
         sum(tokens) AS tokens,
         100 * avg(priced) AS coverage_pct
     FROM or_total
@@ -64,9 +65,9 @@ WITH or_day AS (
         CASE l.lens
             WHEN 'openrouter_tokens' THEN o.tokens_pct_sum / m.days
             WHEN 'openrouter_tokens_volume_weighted' THEN 100.0 * o.tokens / m.tokens
-            ELSE coalesce(o.spend_pct_sum, 0) / m.days
+            ELSE coalesce(o.spend_pct_sum, 0) / nullif(m.spend_days, 0)
         END,
-        m.days,
+        CASE WHEN l.lens = 'openrouter_est_spend' THEN m.spend_days ELSE m.days END,  -- the days averaged
         datediff('day', o.month, o.month + INTERVAL 1 MONTH),
         CASE WHEN l.lens = 'openrouter_est_spend' THEN m.coverage_pct END
     FROM openrouter o

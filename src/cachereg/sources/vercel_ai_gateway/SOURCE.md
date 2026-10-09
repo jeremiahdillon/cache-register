@@ -54,8 +54,8 @@ modality and window, have dates in the window, known metric and group, finite sh
 `vendors.yaml` `aliases.vercel` maps 24 lab slugs (`spacexai` → `xai`, `inclusionai` → `ant`,
 `moonshotai` → `moonshot`, `arcee-ai` → `arcee`, `stealth` → `_stealth`). Every lab with ≥ 1% of tokens
 or spend on any day maps to an existing vendor, so no vendor was added; the rest (peak < 0.4%) are
-reported in `vercel_label_coverage`. `models.yaml` `aliases.vercel` maps display names by hand (64 of
-70 names seen to 2026-10-08). `Gemini 3 Flash` → `google/gemini-3-flash-preview` (the only Gemini 3
+reported in `vercel_label_coverage`. `models.yaml` `aliases.vercel` maps display names by hand (63 of
+the 69 named models seen to 2026-10-08, besides `Other`). `Gemini 3 Flash` → `google/gemini-3-flash-preview` (the only Gemini 3
 Flash in our entities; Epoch's group of the same name maps there too); both `Grok 4.1 Fast` variants
 (reasoning on/off) → `x-ai/grok-4.1-fast`. Left unmapped as ambiguous or absent from our entities: the image models `Nano Banana` and
 `Nano Banana Pro`, `MiMo M2.5`, `Nova Lite`, `Ministral 3B` and `GPT 5.1 Thinking`.

@@ -271,12 +271,28 @@ def test_the_newest_fetch_on_or_before_the_cutoff_wins_per_day(api, entities):
 # --- mart 091: the lenses side by side -----------------------------------------------------------
 
 
-def test_gateway_lenses_are_rows_and_reproduce_openrouter_estimated_spend(synthetic_raw, entities):
+GAP_DAY, GAP_SLUG = "2026-07-10", "moonshotai/kimi-9"  # Kimi drops out of the OpenRouter top list that day
+
+
+def test_gateway_lenses_are_rows_and_reproduce_openrouter_estimated_spend(data_env, entities):
     import polars as pl
 
     from cachereg.core.store import RawFetch
+    from tests.conftest import synthetic_models, synthetic_rankings, write_synthetic_litellm
     from tests.test_ramp_ai_index import import_all
 
+    fetched = datetime(2026, 8, 31, 12, tzinfo=UTC)
+    rankings = synthetic_rankings(date(2026, 6, 1), 91)
+    rankings["data"] = [r for r in rankings["data"] if (r["date"], r["model_permaslug"]) != (GAP_DAY, GAP_SLUG)]
+    for sid, name, payload, vintage in (
+        ("openrouter_rankings", "rankings.json", rankings, {"kind": "api_as_of", "value": "2026-08-31T02:00:00Z"}),
+        ("openrouter_models", "models.json", synthetic_models(), {"kind": "snapshot", "value": "2026-08-31"}),
+    ):
+        r = RawFetch(sid, "1", fetched_at=fetched)
+        r.add(name, json.dumps(payload).encode(), "https://example.test", 200)
+        r.vintage = vintage
+        r.write()
+    write_synthetic_litellm(fetched, date(2026, 8, 30))
     v = RawFetch("vercel_ai_gateway", "1", fetched_at=datetime(2026, 8, 31, 12, tzinfo=UTC))
     v.add("labs.json", json.dumps(body("labs", "2026-07-01", "2026-07-31")).encode(), "https://example.test", 200)
     v.write()
@@ -294,15 +310,36 @@ def test_gateway_lenses_are_rows_and_reproduce_openrouter_estimated_spend(synthe
         "openrouter_est_spend",
     }  # fmt: skip
     assert set(lenses["lens"]) >= {"ramp_paying"}
-    # Estimated spend share, recomputed here from the daily rows: mean over days of vendor / day total.
+    # Shares recomputed here from the daily rows: the sum of a vendor's daily shares over ALL 31 July days
+    # (a day it is absent counts 0), so Moonshot's gap day pulls its mean down.
     d = daily.with_columns(pl.col("est_spend_usd").fill_null(0)).filter(pl.col("date").dt.month() == 7)
-    per_day = d.group_by("date", "vendor_id").agg(pl.col("est_spend_usd").sum())
-    per_day = per_day.join(d.group_by("date").agg(pl.col("est_spend_usd").sum().alias("total")), on="date")
-    expected = per_day.filter(pl.col("vendor_id") == "anthropic").select(
-        (100 * pl.col("est_spend_usd") / pl.col("total")).mean()
+    assert d["date"].n_unique() == 31
+    per_day = d.group_by("date", "vendor_id").agg(pl.col("est_spend_usd").sum(), pl.col("total_tokens").sum())
+    totals = d.group_by("date").agg(
+        pl.col("est_spend_usd").sum().alias("spend"), pl.col("total_tokens").sum().alias("tok")
     )
-    got = july.filter((pl.col("lens") == "openrouter_est_spend") & (pl.col("vendor_id") == "anthropic"))
-    assert got["value_pct"][0] == pytest.approx(expected.item())
+    per_day = per_day.join(totals, on="date")
+
+    def expected(vendor: str, col: str, total: str) -> float:
+        rows = per_day.filter(pl.col("vendor_id") == vendor)
+        return (100 * rows[col] / rows[total]).sum() / 31
+
+    def got(lens: str, vendor: str) -> float:
+        return july.filter((pl.col("lens") == lens) & (pl.col("vendor_id") == vendor))["value_pct"][0]
+
+    assert per_day.filter(pl.col("vendor_id") == "moonshot").height == 30  # absent on the gap day
+    for vendor in ("anthropic", "moonshot"):
+        assert got("openrouter_est_spend", vendor) == pytest.approx(expected(vendor, "est_spend_usd", "spend"))
+        assert got("openrouter_tokens", vendor) == pytest.approx(expected(vendor, "total_tokens", "tok"))
+    m = per_day.filter(pl.col("vendor_id") == "moonshot")
+    assert got("openrouter_tokens_volume_weighted", "moonshot") == pytest.approx(
+        100 * m["total_tokens"].sum() / d["total_tokens"].sum()
+    )
+    # coverage: mean daily share of non-free tokens that are priced (the x-ai model and `other` are unpriced)
+    paid = query_daily_coverage()
+    assert july.filter(pl.col("lens") == "openrouter_est_spend")["coverage_pct"].unique().to_list() == [
+        pytest.approx(paid)
+    ]
     for lens in ("openrouter_tokens", "openrouter_tokens_volume_weighted", "openrouter_est_spend", "vercel_tokens"):
         assert july.filter(pl.col("lens") == lens)["value_pct"].sum() == pytest.approx(100.0)
     # Anthropic's OpenRouter share shrinks while volumes grow: the two weightings differ.
@@ -321,3 +358,17 @@ def test_gateway_lenses_are_rows_and_reproduce_openrouter_estimated_spend(synthe
     assert set(zip(ramp["vendor_id"], ramp["label"], strict=True)) == {
         ("openai", "OpenAI"), ("anthropic", "Anthropic"), ("_unmapped", "Acme Labs")}  # fmt: skip
     assert lenses.group_by("month", "lens", "vendor_id", "label").len()["len"].max() == 1
+
+
+def query_daily_coverage() -> float:
+    """Mean over July days of priced non-free tokens / non-free tokens, from or_model_daily."""
+    con = connect()
+    try:
+        return query(
+            con,
+            "SELECT 100 * avg(p) AS c FROM (SELECT date, sum(total_tokens) FILTER (WHERE NOT is_free AND price_matched)"
+            " / sum(total_tokens) FILTER (WHERE NOT is_free) AS p FROM or_model_daily"
+            " WHERE month(date) = 7 GROUP BY date)",
+        )["c"][0]
+    finally:
+        con.close()

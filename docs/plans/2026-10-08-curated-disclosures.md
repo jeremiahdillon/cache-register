@@ -8,7 +8,7 @@ checks every older copy); an unchanged file stores nothing (`fetch` returns None
 `disclosure_series` is ordered by the period measured, not by statement date, so a retrospective figure
 sits where it belongs (Anthropic's "$9B at the end of 2025", stated in April 2026, precedes February's
 $14B). A new entity `_openrouter` (the platform, no aliases) carries OpenRouter's figure. Seed: 50 rows
-(45 primary). Beyond the plan's exclusions, CNBC's $13B OpenAI ARR (attribution unconfirmed) and
+(43 primary). Beyond the plan's exclusions, CNBC's $13B OpenAI ARR (attribution unconfirmed) and
 TechCrunch's "300 million users in December 2024" (not stated as weekly; original not found) are left out;
 the OpenRouter row is the stated 100 trillion tokens per month (the candidate's 25 trillion per week was
 TechCrunch's arithmetic, which the validator caught); Meta's Q3 2024 row quotes the Q&A as planned.

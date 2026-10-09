@@ -592,11 +592,11 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   reads the registry each time; `curated_disclosures` weekly, a no-op while the file is unchanged). First real fetch 2026-10-09 reproduced the
   plan's September 2026 first look exactly. Compare two months of vintages (are days older than the
   trailing window ever revised?) and record it in its SOURCE.md before switching to `append-only`.
-  `models.yaml` maps 64 of 70 Vercel model names by hand; check `vercel_label_coverage` for new unmapped
+  `models.yaml` maps 63 of the 69 named Vercel models by hand; check `vercel_label_coverage` for new unmapped
   labs or models after each month (`entities suggest --source vercel` is backlog). Lab slugs with ≥ 1% of
   tokens or spend on any day all map to existing vendors. Mart `091` reads Vercel, OpenRouter rankings,
   LiteLLM and Ramp, so a bare `cachereg build` needs all four.
-- **Curated disclosures (built 2026-10-09):** 50 seed rows (45 primary) recorded 2026-10-09; the evidence
+- **Curated disclosures (built 2026-10-09):** 50 seed rows (43 primary) recorded 2026-10-09; the evidence
   (candidate rows, page texts, transcripts) stays local in `data/research/2026-10-08-disclosures-vercel/`.
   Add rows by the routine in its SOURCE.md (`recorded_on` = the day added; corrections supersede, never
   edit). The pre-push hook and CI refuse an edited or removed row. Left out on purpose (SOURCE.md lists
