@@ -27,7 +27,10 @@ from cachereg.viz.theme import vl_config
 
 # One hue (the brand accent), light to dark by capability: the lines are ordered levels, not categories.
 RAMP = ["#FFD9C9", "#FF9E78", "#FF6A3D", "#C7401A"]
-LABEL_PX, START_PX, AXIS_PX = 14, 16, 15
+# Start and end labels are sized to stay legible when the LinkedIn image is shown at phone width (~1/3 size).
+LABEL_PX, END_PX, START_PX, AXIS_PX = 16, 21, 22, 15
+LINE_W, DOT_START, DOT, DOT_RING = 3.4, 280, 120, 2.5  # line width (px), dot areas (px^2), ring around dots
+LABEL_GAP = 12  # px from a dot to its label
 CHAR_W = 0.52  # Inter: average glyph width per px of font size (digits run wide)
 LINE_HEIGHT = 1.2  # multi-line labels, in font sizes
 # Motion (video targets): seconds, frames and the opacity finished lines dim to.
@@ -78,41 +81,39 @@ def _place(points: list[dict], obstacles: list[tuple], plot_w: float, plot_h: fl
     """Greedy label placement in pixel space: try positions around each dot, nearest first, keep the first that fits.
 
     Each point has x, y (pixels), text, size and kind; `obstacles` are thin boxes along the lines, which labels
-    should not sit on. Start labels ("anchor") sit just above their dot, as the line's title; the last label
-    on each line ("end") sits to the right of its dot, where the line ends. Returns alignment and dy per point.
+    should not sit on. Start labels ("anchor") sit just above their dot, as the line's title, preferably flush
+    with the dot's left edge; the last label on each line ("end") sits to the right of its dot, where the line
+    ends. Returns per point the text alignment and the text anchor's offset (dx, dy) from the dot in pixels.
     """
-    boxes = [(p["x"] - 6 * fs, p["y"] - 6 * fs, p["x"] + 6 * fs, p["y"] + 6 * fs) for p in points]  # the dots
+    r = math.sqrt(DOT_START / math.pi) * fs + DOT_RING * fs  # keep-out radius around each dot
+    boxes = [(p["x"] - r, p["y"] - r, p["x"] + r, p["y"] + r) for p in points]  # the dots
+    gap_x = LABEL_GAP * fs
     out = []
     for p in points:
         w, h = _text_box(p["text"], p["size"], fs)
-        gap, step = 0.15 * p["size"], 0.95 * p["size"]  # from the dot to the label's edge; per extra tier
-        tiers = (0, 1) if p["kind"] == "anchor" else (0, 1, 2, 3)
-        sides = ("right",) if p["kind"] == "end" else ("right", "left")
-        above = (-1,) if p["kind"] == "anchor" else (-1, 1)
+        gap, step = 0.15 * p["size"], 0.8 * h  # from the dot to the label's edge; per extra tier
+        if p["kind"] == "anchor":  # (align, dx) pairs: flush over the dot, then beside it
+            sides, above, tiers = (("left", -r), ("left", gap_x), ("right", -gap_x)), (-1,), (0, 1)
+        elif p["kind"] == "end":
+            sides, above, tiers = (("left", gap_x),), (-1, 1), (0, 1, 2, 3)
+        else:
+            sides, above, tiers = (("left", gap_x), ("right", -gap_x)), (-1, 1), (0, 1, 2, 3)
+        cands = [(k, a, dx, v) for k in tiers for a, dx in sides for v in above]
         best, best_cost = None, math.inf
-        for k in tiers:
-            for side in sides:
-                for v in above:
-                    dx = 9 * fs if side == "right" else -9 * fs
-                    cy = p["y"] + v * (h / 2 + gap + k * step)
-                    x0 = p["x"] + dx if side == "right" else p["x"] + dx - w
-                    box = (x0, cy - h / 2, x0 + w, cy + h / 2)
-                    off = max(0, -box[0]) + max(0, box[2] - plot_w) + max(0, -box[1]) + max(0, box[3] - plot_h)
-                    hits = sum(_overlap(box, b) for b in boxes) + 25 * sum(_overlap(box, b) for b in obstacles)
-                    cost = hits + 50 * off + k
-                    if cost < best_cost:
-                        best, best_cost = (side, cy - p["y"], box), cost
-                    if hits == 0 and off == 0:
-                        break
-                else:
-                    continue
+        for k, align, dx, v in cands:
+            cy = p["y"] + v * (h / 2 + gap + k * step)
+            x0 = p["x"] + dx if align == "left" else p["x"] + dx - w
+            box = (x0, cy - h / 2, x0 + w, cy + h / 2)
+            off = max(0, -box[0]) + max(0, box[2] - plot_w) + max(0, -box[1]) + max(0, box[3] - plot_h)
+            hits = sum(_overlap(box, b) for b in boxes) + 25 * sum(_overlap(box, b) for b in obstacles)
+            cost = hits + 50 * off + k
+            if cost < best_cost:
+                best, best_cost = ({"align": align, "dx": dx, "dy": cy - p["y"]}, box), cost
+            if hits == 0 and off == 0:
                 break
-            else:
-                continue
-            break
-        side, dy, box = best
+        placed, box = best
         boxes.append(box)
-        out.append({"align": "left" if side == "right" else "right", "dy": dy})
+        out.append(placed)
     return out
 
 
@@ -177,7 +178,7 @@ def _build_geometry(story: Story, width, height, fs: float) -> Geometry:
     t1 = _ms(last + timedelta(days=(last - first).days * 0.03))
     for (kind, text), r in zip(texts, ev.iter_rows(named=True), strict=True):
         if kind == "end":
-            need = 9 * fs + _text_box(text, LABEL_PX * fs, fs)[0] + 4 * fs
+            need = LABEL_GAP * fs + _text_box(text, END_PX * fs, fs)[0] + 4 * fs
             t = _ms(r["day"])
             t1 = max(t1, t0 + (t - t0) * plot_w / max(plot_w - need, 1.0))
 
@@ -234,7 +235,7 @@ def _build_geometry(story: Story, width, height, fs: float) -> Geometry:
     for (kind, text), r in zip(texts, ev.iter_rows(named=True), strict=True):
         t = _ms(r["day"])
         x, y = to_px(t, r["usd_per_mtok"])
-        size = (START_PX if kind == "anchor" else LABEL_PX) * fs
+        size = {"anchor": START_PX, "end": END_PX}.get(kind, LABEL_PX) * fs
         # The dot is reached when the line arrives at this price on this day (after any drop into it).
         s_at = next(p[2] for p in paths[r["anchor"]] if p[0] == t and p[1] == r["usd_per_mtok"])
         pts.append({**r, "kind": kind, "x": x, "y": y, "text": text, "size": size, "t": t, "s": s_at})
@@ -242,7 +243,7 @@ def _build_geometry(story: Story, width, height, fs: float) -> Geometry:
     rank = {"anchor": 0, "end": 1, "new model": 2}
     order = sorted(range(len(pts)), key=lambda i: (rank[pts[i]["kind"]], pts[i]["x"]))
     # Thin boxes along every line (horizontal runs and the vertical drops between them).
-    segs, half = [], 2 * fs
+    segs, half = [], (LINE_W / 2 + 1) * fs
     for path in paths.values():
         xy = [to_px(t, v) for t, v, _ in path]
         for (xa, ya), (xb, yb) in zip(xy, xy[1:], strict=False):
@@ -255,6 +256,7 @@ def _build_geometry(story: Story, width, height, fs: float) -> Geometry:
         # Convert the pixel offset back to a price so the label rides with the scale. Vega anchors a multi-line
         # label at its first line, so move that line up by half the block's extra height to centre the block.
         y_px = p["y"] + pl_["dy"] - (p["text"].count("\n") * p["size"] * LINE_HEIGHT) / 2
+        label_t = p["t"] + pl_["dx"] / plot_w * (t1 - t0)
         ly = 10 ** (math.log10(hi) - y_px / plot_h * (math.log10(hi) - math.log10(lo)))
         lab.append(
             {
@@ -264,6 +266,7 @@ def _build_geometry(story: Story, width, height, fs: float) -> Geometry:
                 "anchor": p["anchor"],
                 "usd_per_mtok": p["usd_per_mtok"],
                 "label_y": ly,
+                "label_t": label_t,
                 "text": p["text"],
                 "kind": p["kind"],
                 "align": pl_["align"],
@@ -305,7 +308,7 @@ def _chart(story: Story, width, height, fs: float, interactive: bool = False, st
     if state is None:
         rows = g.rows.drop("day").with_columns(op=pl.lit(1.0)).to_dicts()
         lab = g.labels.with_columns(op=pl.lit(1.0))
-        line = alt.Chart(alt.Data(values=rows)).mark_line(interpolate="step-after", strokeWidth=2.4 * fs)
+        line = alt.Chart(alt.Data(values=rows)).mark_line(interpolate="step-after", strokeWidth=LINE_W * fs)
     else:
         rows = [
             {"t": t, "usd_per_mtok": v, "anchor": a, "op": op, "i": i}
@@ -316,7 +319,7 @@ def _chart(story: Story, width, height, fs: float, interactive: bool = False, st
         lab = g.labels.filter(pl.col("key").is_in(list(ops))).with_columns(
             op=pl.col("key").replace_strict(ops, return_dtype=pl.Float64)
         )
-        line = alt.Chart(alt.Data(values=rows)).mark_line(strokeWidth=2.4 * fs).encode(order="i:Q")
+        line = alt.Chart(alt.Data(values=rows)).mark_line(strokeWidth=LINE_W * fs).encode(order="i:Q")
     line = line.encode(x=xenc(), y=yenc(), color=g.color, detail="anchor:N", opacity=opacity)
     if interactive:
         line = line.encode(
@@ -330,7 +333,7 @@ def _chart(story: Story, width, height, fs: float, interactive: bool = False, st
 
     dots = (
         alt.Chart(alt.Data(values=lab.to_dicts()))
-        .mark_circle(stroke=color("canvas"), strokeWidth=2)
+        .mark_circle(stroke=color("canvas"), strokeWidth=DOT_RING * fs)
         .encode(
             x=xenc(),
             y=yenc(),
@@ -338,7 +341,9 @@ def _chart(story: Story, width, height, fs: float, interactive: bool = False, st
             opacity=opacity,
             size=alt.Size(
                 "kind:N",
-                scale=alt.Scale(domain=["anchor", "end", "new model"], range=[150 * fs**2, 70 * fs**2, 70 * fs**2]),
+                scale=alt.Scale(
+                    domain=["anchor", "end", "new model"], range=[DOT_START * fs**2, DOT * fs**2, DOT * fs**2]
+                ),
                 legend=None,
             ),
         )
@@ -359,18 +364,17 @@ def _chart(story: Story, width, height, fs: float, interactive: bool = False, st
         t, v = _partial(g.paths[head], state["lines"][head][0])[-1]
         layers.append(
             alt.Chart(alt.Data(values=[{"t": t, "usd_per_mtok": v, "anchor": head}]))
-            .mark_circle(size=60 * fs**2, opacity=1)
+            .mark_circle(size=DOT * fs**2, opacity=1)
             .encode(x=xenc(), y=yenc(), color=g.color)
         )
     for align in ("left", "right"):
         # Start and end labels bold in primary ink; the models in between regular, in secondary ink.
         for kind, size, ink_name, weight in (
             ("anchor", START_PX, "text", 600),
-            ("end", LABEL_PX, "text", 600),
+            ("end", END_PX, "text", 600),
             ("new model", LABEL_PX, "text_secondary", 400),
         ):
             sub = lab.filter((pl.col("align") == align) & (pl.col("kind") == kind))
-            dx = 9 * fs if align == "left" else -9 * fs
             layers.append(
                 alt.Chart(alt.Data(values=sub.to_dicts()))
                 .mark_text(
@@ -378,13 +382,12 @@ def _chart(story: Story, width, height, fs: float, interactive: bool = False, st
                     baseline="middle",
                     lineBreak="\n",
                     lineHeight=size * fs * LINE_HEIGHT,
-                    dx=dx,
                     fontSize=size * fs,
                     fontWeight=weight,
                     font=fonts["body"],
                     color=color(ink_name),
                 )
-                .encode(x=xenc(), y=yenc("label_y"), text="text:N", opacity=opacity)
+                .encode(x=xenc("label_t"), y=yenc("label_y"), text="text:N", opacity=opacity)
             )
 
     chart = alt.layer(*layers).properties(width=width, height=height)
