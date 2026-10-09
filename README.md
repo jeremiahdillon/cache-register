@@ -4,13 +4,17 @@
 usage, model prices, benchmarks, business adoption and the capital behind it — turned into
 charts and videos. Every published visual links back to the exact code that made it.
 
-> **Status:** early. Two source families (OpenRouter, LiteLLM prices) and two receipts. The plan is
-> in [`docs/PLAN.md`](docs/PLAN.md).
+> **Status:** early. Twelve sources across eight families (OpenRouter, LiteLLM prices, Epoch AI, SEC
+> EDGAR, Census BTOS, Ramp AI Index, Vercel AI Gateway, curated disclosures) and five receipts. The plan
+> is in [`docs/PLAN.md`](docs/PLAN.md).
 >
 > | Receipt | Short link | Finding |
 > |---|---|---|
-> | [`openrouter-wallet-share`](receipts/openrouter-wallet-share/) | [cacheregister.dev/openrouter-wallet-share](https://cacheregister.dev/openrouter-wallet-share) | Who gets paid on OpenRouter: weekly share of estimated spend by model developer. |
+> | [`openrouter-wallet-share`](receipts/openrouter-wallet-share/) | [cacheregister.dev/openrouter-wallet-share](https://cacheregister.dev/openrouter-wallet-share) | Who gets paid on OpenRouter: Anthropic's share of estimated weekly spend fell from 93% (week of Jan 6, 2025) to 29% (week of Sep 21, 2026) as Chinese labs and OpenAI rose. |
 > | [`open-middle`](receipts/open-middle/) | [cacheregister.dev/open-middle](https://cacheregister.dev/open-middle) | Mid-size open-weight models (100B–1T parameters) accounted for 74% of OpenRouter's token growth from Mar 30 to Oct 4, 2026. |
+> | [`china-spend-share`](receipts/china-spend-share/) | [cacheregister.dev/china-spend-share](https://cacheregister.dev/china-spend-share) | Among Anthropic, OpenAI and Chinese labs, estimated OpenRouter spend was level in the week of Sep 28, 2026: OpenAI 35%, Chinese labs 33%, Anthropic 32%. |
+> | [`china-token-share`](receipts/china-token-share/) | [cacheregister.dev/china-token-share](https://cacheregister.dev/china-token-share) | Chinese labs served 78% of those three groups' OpenRouter tokens in the week of Sep 28, 2026, up from 10% in the week of Jan 6, 2025. |
+> | [`opus-tenth-life`](receipts/opus-tenth-life/) | [cacheregister.dev/opus-tenth-life](https://cacheregister.dev/opus-tenth-life) | Claude Opus 4, 4.5 and 4.6 were each matched in capability (Epoch ECI) at a tenth of their list price after 5.8 months on average. |
 
 ## How it works
 
