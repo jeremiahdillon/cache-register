@@ -59,6 +59,7 @@ Every source gets classified on the fields below, recorded in its `SOURCE.md` an
 | 8b | **Ramp Rate API** — base `https://api.ramp.com/v1/public/ramp-rate`: categories, category vendor leaderboards, vendor profiles, vendor compare | Software vendor adoption, growth, new-adopter and **switch rates** within categories (trailing 12 months), incl. AI vendors | Same Ramp Data key | snapshot (trailing-12-month window) | as #8 |
 | 9 | **US Census BTOS** (Business Trends & Outlook Survey) (verified 2026-10-07) | Share of U.S. employer businesses using AI in the last two weeks and expecting to in six months, biweekly from Sep 2023, national / sector / size class / sector × size (also state, MSA), with standard errors; **new series from 17 Nov 2025** (wording change, same question IDs) | Public Excel downloads (`census.gov/hfp/btos/downloads/`), no key; api.census.gov has no BTOS. **Built 2026-10-08** (source `census_btos`, `docs/plans/2026-10-07-census-btos.md`): 5 workbooks, stdlib Excel reader | native (files replaced in place → Latest-only until vintages show no revisions) | allowed (public domain, 17 U.S.C. §105); credit "U.S. Census Bureau, Business Trends and Outlook Survey" |
 | 10 | **Anthropic Economic Index** | Claude usage by task/occupation (O*NET), automation vs augmentation, over releases | HF dataset | native (release-over-release) | CC-BY |
+| 12 | **Vercel AI Gateway leaderboards** (verified 2026-10-08) — `GET vercel.com/api/ai/leaderboard-export` (`dataset=labs\|models`, `modality`, `from`/`to`) | Daily **share** by lab and model of requests, tokens and **spend** on Vercel's AI Gateway (shares only, never volumes; labs complete, models top-few + `Other`) | Public, no key; history from **2025-10-01**. **Planned** (`docs/plans/2026-10-08-vercel-ai-gateway.md`): a second developer-gateway lens beside OpenRouter, with Vercel's *measured* spend share | native (Latest-only until revisions are ruled out) | **CC BY 4.0** — required notice: © 2026 Vercel. "AI Gateway Leaderboard Data" is licensed under CC BY 4.0 |
 | 11 | **SEC EDGAR XBRL `companyfacts` / `frames` APIs** | Structured quarterly financials: capex (`PaymentsToAcquirePropertyPlantAndEquipment`), revenue, etc. for MSFT, GOOGL, AMZN, META, ORCL, NVDA, … | Public JSON; requires a descriptive `User-Agent` with contact email (kept in local env, never committed) | native | public domain |
 
 **EDGAR scope limit (per author):** only standardized XBRL tags from `companyfacts`. Segment-level
@@ -579,7 +580,23 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   paid adoption beside BTOS current use. The lenses rank Ramp's seven sectors alike (ρ 0.79–0.89 every
   complete month since Sep 2023; health care and manufacturing differ); every Ramp size band sits above BTOS's
   largest size class. PNGs only (Ramp licence unknown). Not promoted. Its figures move with each Ramp
-  import and BTOS release; re-render after both.
+  import and BTOS release; re-render after both. Plan and build each passed an adversarial review.
+- **Next build (planned and reviewed 2026-10-09; build in a fresh session):** the curated disclosures dataset
+  (`docs/plans/2026-10-08-curated-disclosures.md`) and source `vercel_ai_gateway`
+  (`docs/plans/2026-10-08-vercel-ai-gateway.md`); both plans passed an adversarial review (3 rounds,
+  converged) and carry the author's decisions. Suggested order: Vercel source + vendor aliases → mart 090;
+  curated source, `metrics.yaml`, validation and `check_append_only` (pre-push hook + CI) → mart 080 →
+  seed rows; then mart 091 (needs Vercel, OpenRouter, LiteLLM and Ramp). Seed evidence (candidate rows,
+  page texts, transcripts) and the Vercel research bodies are local only, in
+  `data/research/2026-10-08-disclosures-vercel/`. Rows whose pages were read in the author's browser
+  (openai.com blocks automated fetches) are kept: the author approved reading pages via the browser when
+  needed (2026-10-09).
+- **Chart fit (found 2026-10-08):** `Frame.compose` resizes a chart's PNG to the plot box exactly, so a chart
+  whose outer size (axes, titles) differs from the box is stretched or squeezed (the two-lenses LinkedIn
+  sectors chart was ~10% compressed before the fix; Vega widens a concat panel to its title). The
+  two-lenses `charts._fit` renders, measures and corrects to a sub-pixel fit, or raises. The other
+  explorations and receipts have not been measured; check them (PNG size vs `page().plot_box`) before
+  promoting any, and move `_fit` into `cachereg.viz` on its second use. `open-middle` must not change.
 - **Analysis (b) "capex vs price collapse": exploration built** 2026-10-06
   (`explore/2026-10-06-capex-vs-price/`, `docs/plans/2026-10-06-capex-vs-price.md`): quarterly
   hyperscaler capex (`030_capex`) beside the cheapest price per ECI level (`040_eci_model_prices`,
@@ -634,7 +651,7 @@ Phase 1 only where marked):
 | (b) **Capex vs price collapse** | EDGAR hyperscaler capex × (a) | No | — |
 | (c) **Two lenses on adoption** | BTOS AI use × Ramp AI Index (by sector & size), mart `072` | No (both built; Ramp is a manual import, no key) | BTOS-only (`--sources census_btos` with config `ramp: false`) if a replicator has no Ramp imports |
 | (d) **Does quality win usage?** | Benchmarks × OpenRouter `rankings-daily` | No (verified) | — |
-| (e) **Developer wallet vs enterprise wallet** — three *separately labelled* lenses on the same vendors, never put on one axis or converted into each other: (1) share of estimated $ on OpenRouter, (2) share of US businesses paying (Ramp), (3) reported revenue run-rates. Output: vendor **rank/share comparison** across lenses (small multiples or slope chart) plus where they disagree | OpenRouter est. spend; Ramp AI Index vendor breakdown; curated disclosures | No | If lenses aren't comparable enough for a claim, publish as "three views" without a ranking claim |
+| (e) **Developer wallet vs enterprise wallet** — three *separately labelled* lenses on the same vendors, never put on one axis or converted into each other: (1) developer gateways: share of estimated $ on OpenRouter and Vercel AI Gateway's measured spend share (#12, planned 2026-10-08), (2) share of US businesses paying (Ramp), (3) reported revenue run-rates (curated disclosures, planned 2026-10-08). Output: vendor **rank/share comparison** across lenses (small multiples or slope chart) plus where they disagree | OpenRouter est. spend; Ramp AI Index vendor breakdown; curated disclosures | No | If lenses aren't comparable enough for a claim, publish as "three views" without a ranking claim |
 
 **v1 scope vs backlog** (to keep the first weeks lean):
 - v1 render targets: `blog_html`, `x_png`, `linkedin_png`, `x_video` (MP4 16:9),
