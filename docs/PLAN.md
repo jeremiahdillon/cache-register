@@ -59,7 +59,7 @@ Every source gets classified on the fields below, recorded in its `SOURCE.md` an
 | 8b | **Ramp Rate API** — base `https://api.ramp.com/v1/public/ramp-rate`: categories, category vendor leaderboards, vendor profiles, vendor compare | Software vendor adoption, growth, new-adopter and **switch rates** within categories (trailing 12 months), incl. AI vendors | Same Ramp Data key | snapshot (trailing-12-month window) | as #8 |
 | 9 | **US Census BTOS** (Business Trends & Outlook Survey) (verified 2026-10-07) | Share of U.S. employer businesses using AI in the last two weeks and expecting to in six months, biweekly from Sep 2023, national / sector / size class / sector × size (also state, MSA), with standard errors; **new series from 17 Nov 2025** (wording change, same question IDs) | Public Excel downloads (`census.gov/hfp/btos/downloads/`), no key; api.census.gov has no BTOS. **Built 2026-10-08** (source `census_btos`, `docs/plans/2026-10-07-census-btos.md`): 5 workbooks, stdlib Excel reader | native (files replaced in place → Latest-only until vintages show no revisions) | allowed (public domain, 17 U.S.C. §105); credit "U.S. Census Bureau, Business Trends and Outlook Survey" |
 | 10 | **Anthropic Economic Index** | Claude usage by task/occupation (O*NET), automation vs augmentation, over releases | HF dataset | native (release-over-release) | CC-BY |
-| 12 | **Vercel AI Gateway leaderboards** (verified 2026-10-08) — `GET vercel.com/api/ai/leaderboard-export` (`dataset=labs\|models`, `modality`, `from`/`to`) | Daily **share** by lab and model of requests, tokens and **spend** on Vercel's AI Gateway (shares only, never volumes; labs complete, models top-few + `Other`) | Public, no key; history from **2025-10-01**. **Planned** (`docs/plans/2026-10-08-vercel-ai-gateway.md`): a second developer-gateway lens beside OpenRouter, with Vercel's *measured* spend share | native (Latest-only until revisions are ruled out) | **CC BY 4.0** — required notice: © 2026 Vercel. "AI Gateway Leaderboard Data" is licensed under CC BY 4.0 |
+| 12 | **Vercel AI Gateway leaderboards** (verified 2026-10-08) — `GET vercel.com/api/ai/leaderboard-export` (`dataset=labs\|models`, `modality`, `from`/`to`) | Daily **share** by lab and model of requests, tokens and **spend** on Vercel's AI Gateway (shares only, never volumes; labs complete, models top-few + `Other`) | Public, no key; history from **2025-10-01**. **Built 2026-10-09** (source `vercel_ai_gateway`, `docs/plans/2026-10-08-vercel-ai-gateway.md`): labs (one request) and models (one request per calendar month, since the listed models depend on the window), text modality; marts `090_vercel_shares` and `091_gateway_lenses`. A second developer-gateway lens beside OpenRouter, with Vercel's *measured* spend share | native (Latest-only until revisions are ruled out) | **CC BY 4.0** — required notice: © 2026 Vercel. "AI Gateway Leaderboard Data" is licensed under CC BY 4.0 |
 | 11 | **SEC EDGAR XBRL `companyfacts` / `frames` APIs** | Structured quarterly financials: capex (`PaymentsToAcquirePropertyPlantAndEquipment`), revenue, etc. for MSFT, GOOGL, AMZN, META, ORCL, NVDA, … | Public JSON; requires a descriptive `User-Agent` with contact email (kept in local env, never committed) | native | public domain |
 
 **EDGAR scope limit (per author):** only standardized XBRL tags from `companyfacts`. Segment-level
@@ -74,8 +74,9 @@ ranked by value-to-effort:
 
 | Source | What | Verdict |
 |---|---|---|
-| **Curated disclosures dataset** (ours, §2.3) | Hyperscaler/lab statements: Google monthly tokens processed (I/O and earnings calls), Microsoft tokens processed (earnings), OpenAI/Anthropic revenue run-rates, weekly active users, API tokens/minute | **Tier 1.** Highest-signal public numbers on market-wide token volume and spend; small, hand-maintained, each row cited. This becomes *our* licensable dataset |
+| **Curated disclosures dataset** (ours, §2.3) | Hyperscaler/lab statements: Google monthly tokens processed (I/O and earnings calls), OpenAI/Anthropic revenue run-rates, Microsoft AI run-rate, weekly and monthly active users, API tokens/minute (Microsoft's token totals change unit and scope every time: no series) | **Tier 1, built 2026-10-09** (50 seed rows). Highest-signal public numbers on market-wide token volume and spend; small, hand-maintained, each row cited. This becomes *our* licensable dataset |
 | OpenRouter `rankings-daily` / `app-rankings` (#3) | Token volume & share by model, vendor, app — daily since 2025-01-01 | **Tier 1, verified, CC BY 4.0** |
+| Vercel AI Gateway leaderboards (#12) | Daily share of requests, tokens and *measured* spend by lab and model on Vercel's gateway | **Tier 1, built 2026-10-09, CC BY 4.0**: the second developer-gateway lens (shares only, never volumes) |
 | OpenRouter `session-cost` (#3) | Actual median USD per session by harness × model — the only *published dollar* usage figure found | **Tier 1, verified** |
 | Ramp AI Index + Ramp Rate (#8, #8b) | Spend *adoption* (share of businesses paying) by vendor/sector/size; vendor switch rates | **Tier 1, verified** (key via partner program) |
 | Stock prices ("ticker trends") | Daily OHLC for AI-exposed tickers (NVDA, MSFT, GOOGL, AMD, AVGO, TSM, CRWV, …) | **Tier 2.** Licensing is the issue: Yahoo/yfinance ToS forbids this use; options are Alpha Vantage / Tiingo (free keys, non-redistributable) or Stooq CSVs. Use for overlays (e.g. "price-per-intelligence vs NVDA") |
@@ -105,9 +106,15 @@ documents its assumptions in its mart.
 
 ### 2.3 "Our" datasets (author-owned, shareable)
 
-1. **Curated disclosures** — `config/curated/disclosures.csv`, committed, **CC-BY 4.0**.
-   Columns: `date, entity, metric, value, unit, period, source_url, source_quote, retrieved_at,
-   notes`. Validated by schema test (URL present, units from controlled vocabulary).
+1. **Curated disclosures** — `config/curated/disclosures.csv`, committed, **CC-BY 4.0**; source
+   `curated_disclosures`, mart `080_disclosures` (built 2026-10-09,
+   `docs/plans/2026-10-08-curated-disclosures.md`). One row per stated figure. Columns: `id,
+   statement_date, entity, metric, value_as_stated, value, unit, qualifier, period_start, period_end,
+   scope, source_url, source_kind, source_quote, recorded_on, supersedes, notes`; metrics and units
+   from the controlled vocabulary `config/curated/metrics.yaml`. Validated on every fetch and in tests
+   (the quote must contain `value_as_stated`, which must parse exactly to `value`). **Append-only**:
+   corrections are new rows with `supersedes`, enforced by fetch, stage, the pre-push hook and CI; as-of
+   by `recorded_on` (Exact).
 2. **Raw archive** — accumulated raw pulls of `snapshot` sources **and of native sources that
    are revised in place** (Latest-only class). Can be published
    (e.g. separate HF dataset / Zenodo / GitHub release) **only for sources whose
@@ -146,7 +153,7 @@ cache-register/
 │   │   ├── models.yaml           # canonical model IDs ↔ per-source aliases
 │   │   ├── vendors.yaml          # canonical vendors, open/closed weights, HQ country
 │   │   └── tickers.yaml          # vendor ↔ ticker/CIK (for EDGAR & prices)
-│   ├── curated/disclosures.csv   # §2.3, committed
+│   ├── curated/                  # §2.3, committed: disclosures.csv + metrics.yaml (vocabulary)
 │   └── brand/                    # brand.yaml, fonts (OFL), logo SVG
 ├── src/cachereg/
 │   ├── core/                     # http, snapshot store, settings/secrets, lineage, logging
@@ -261,8 +268,8 @@ sources with `input: manual` in the registry are imported by the author with `ca
 
   | Class (selection key) | Sources (expected) | Author can regenerate a past figure | A replicator can |
   |---|---|---|---|
-  | **Exact** (source revision date) | LiteLLM (pinned commit SHAs), EDGAR (facts carry filing accession; restatements are new facts), versioned HF datasets (Economic Index, possibly LMArena) | yes | yes, same values |
-  | **Latest-only** (fetch date, fallback to earliest vintage) | BTOS (until `btos_revision_check` shows no revisions; then Exact by each cycle's publication date), Epoch, Ramp AI Index, OpenRouter rankings-daily and app-rankings until their revision behavior is confirmed (revised/replaced in place) | yes, from local raw vintages | gets current values; differences explained by the vintage recorded in the public manifest — **unless the published archive (§2.3) is used, which makes them Exact (OpenRouter datasets first)** |
+  | **Exact** (source revision date) | LiteLLM (pinned commit SHAs), EDGAR (facts carry filing accession; restatements are new facts), curated disclosures (append-only rows selected by `recorded_on`, corrections by `supersedes`), versioned HF datasets (Economic Index, possibly LMArena) | yes | yes, same values |
+  | **Latest-only** (fetch date, fallback to earliest vintage) | BTOS (until `btos_revision_check` shows no revisions; then Exact by each cycle's publication date), Epoch, Ramp AI Index, OpenRouter rankings-daily and app-rankings, Vercel AI Gateway leaderboards, until their revision behavior is confirmed (revised/replaced in place) | yes, from local raw vintages | gets current values; differences explained by the vintage recorded in the public manifest — **unless the published archive (§2.3) is used, which makes them Exact (OpenRouter datasets first)** |
   | **Author-only** (fetch date, no fallback) | Snapshot sources (OpenRouter models, OpenRouter session-cost, Artificial Analysis, HF downloads, Ramp Rate) | yes, from local raw archive | only from their own first snapshot onward, unless the archive is publishable (§2.3) |
 
 - "Anyone can reproduce" therefore means: identical code, identical method, identical results
@@ -520,7 +527,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 
 ## 10. Build phases
 
-### Status (2026-10-08)
+### Status (2026-10-09)
 
 | Phase | State |
 |---|---|
@@ -528,7 +535,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | 0.5 Vertical slice | **Done** — OpenRouter rankings + model prices, marts, first receipt `receipts/openrouter-wallet-share`; motion renderer A chosen (§6.3) |
 | Layout | **Done** — explorations vs receipts, scoped build, `reproduce` (`docs/plans/2026-10-03-explore-and-receipts.md`) |
 | 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), derived charts publishable (author policy); the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
-| 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. `epoch_benchmarks` + `epoch_models` done 2026-10-06 (`docs/plans/2026-10-06-epoch.md`; CC BY 4.0, Latest-only, weekly): marts `020_epoch_capabilities` (ECI, scores, alias coverage) and `021_epoch_models`. `sec_edgar` done 2026-10-06 (`docs/plans/2026-10-06-sec-edgar.md`; XBRL companyfacts for `config/entities/tickers.yaml`, Exact by filing date): mart `030_capex` (quarterly cash capex per company and group, calendar quarters by midpoint, completeness flags). `openrouter_session_cost` + `openrouter_apps` done 2026-10-07 (`docs/plans/2026-10-07-openrouter-apps-session-cost.md`; CC BY 4.0; weekly): session-cost is a weekly 30-day snapshot (Author-only, history from our first fetch 2026-10-07), mart `055_openrouter_session_cost`; app-rankings weekly top 200 since 2025-01-06 plus current category tags (Latest-only), marts `050_openrouter_apps` and `051_openrouter_app_share`; harnesses map to apps via `config/entities/apps.yaml`. `ramp_ai_index` done 2026-10-07 (`docs/plans/2026-10-07-ramp-ai-index.md`; manual import of 13 views, monthly, Latest-only, redistribution unknown): marts `060_ramp_adoption` (per-cut coverage, adoption overall/labs/sectors/sizes), `061_ramp_spend`, `062_ramp_tokens` (token shares by lab, prices, swap checks); sectors map to NAICS via `config/entities/sectors.yaml`. `census_btos` done 2026-10-08 (`docs/plans/2026-10-07-census-btos.md`; public-domain Excel downloads, no key, weekly, Latest-only): marts `070_btos_ai_use` (per cycle, with breaks, coverage and a revision check), `071_btos_ai_monthly` (reference days → calendar months) and `072_adoption_two_lenses` (Ramp beside BTOS by NAICS, plus a check that reproduces Ramp's Census series). Analysis (c) exploration built 2026-10-08 |
+| 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. `epoch_benchmarks` + `epoch_models` done 2026-10-06 (`docs/plans/2026-10-06-epoch.md`; CC BY 4.0, Latest-only, weekly): marts `020_epoch_capabilities` (ECI, scores, alias coverage) and `021_epoch_models`. `sec_edgar` done 2026-10-06 (`docs/plans/2026-10-06-sec-edgar.md`; XBRL companyfacts for `config/entities/tickers.yaml`, Exact by filing date): mart `030_capex` (quarterly cash capex per company and group, calendar quarters by midpoint, completeness flags). `openrouter_session_cost` + `openrouter_apps` done 2026-10-07 (`docs/plans/2026-10-07-openrouter-apps-session-cost.md`; CC BY 4.0; weekly): session-cost is a weekly 30-day snapshot (Author-only, history from our first fetch 2026-10-07), mart `055_openrouter_session_cost`; app-rankings weekly top 200 since 2025-01-06 plus current category tags (Latest-only), marts `050_openrouter_apps` and `051_openrouter_app_share`; harnesses map to apps via `config/entities/apps.yaml`. `ramp_ai_index` done 2026-10-07 (`docs/plans/2026-10-07-ramp-ai-index.md`; manual import of 13 views, monthly, Latest-only, redistribution unknown): marts `060_ramp_adoption` (per-cut coverage, adoption overall/labs/sectors/sizes), `061_ramp_spend`, `062_ramp_tokens` (token shares by lab, prices, swap checks); sectors map to NAICS via `config/entities/sectors.yaml`. `census_btos` done 2026-10-08 (`docs/plans/2026-10-07-census-btos.md`; public-domain Excel downloads, no key, weekly, Latest-only): marts `070_btos_ai_use` (per cycle, with breaks, coverage and a revision check), `071_btos_ai_monthly` (reference days → calendar months) and `072_adoption_two_lenses` (Ramp beside BTOS by NAICS, plus a check that reproduces Ramp's Census series). Analysis (c) exploration built 2026-10-08. `vercel_ai_gateway` done 2026-10-09 (`docs/plans/2026-10-08-vercel-ai-gateway.md`; CC BY 4.0, no key, daily, Latest-only): marts `090_vercel_shares` (daily lab and model shares, weekly/monthly means of daily shares, label coverage) and `091_gateway_lenses` (analysis (e)'s lenses by vendor and month: Vercel tokens and spend, OpenRouter tokens and estimated spend, Ramp paying). Curated disclosures done 2026-10-09 (`docs/plans/2026-10-08-curated-disclosures.md`; ours, CC BY 4.0, Exact by `recorded_on`): source `curated_disclosures`, mart `080_disclosures`, 50 seed rows |
 | 3. Entities & marts | **Started** 2026-10-06 — `cachereg entities suggest --source openrouter\|epoch` (replaces the bootstrap script); `aliases.epoch` maps 173 of 274 ECI models, 49 of the top 50 (98%; target 95% met — Muse Spark has no LiteLLM key); 17 cheap models near ECI 130–150 and GPT-5.2/5.4 Pro mapped by hand |
 | 4–5, 7 | Not started (Phase 5: explorations for analyses (a), (b) and (d) built 2026-10-06) |
 | 6. Scheduling & ops | **Started** 2026-10-06 — `cachereg fetch --due`, launchd template and `make install-schedule` (§4.5); the author loads the agent by hand (loaded 2026-10-07; first run fetched the daily sources). 2026-10-07: `status` shows cadence, last fetch, next due and last error per source. Next: a week unattended with no gaps |
@@ -581,16 +588,22 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   complete month since Sep 2023; health care and manufacturing differ); every Ramp size band sits above BTOS's
   largest size class. PNGs only (Ramp licence unknown). Not promoted. Its figures move with each Ramp
   import and BTOS release; re-render after both. Plan and build each passed an adversarial review.
-- **Next build (planned and reviewed 2026-10-09; build in a fresh session):** the curated disclosures dataset
-  (`docs/plans/2026-10-08-curated-disclosures.md`) and source `vercel_ai_gateway`
-  (`docs/plans/2026-10-08-vercel-ai-gateway.md`); both plans passed an adversarial review (3 rounds,
-  converged) and carry the author's decisions. Suggested order: Vercel source + vendor aliases → mart 090;
-  curated source, `metrics.yaml`, validation and `check_append_only` (pre-push hook + CI) → mart 080 →
-  seed rows; then mart 091 (needs Vercel, OpenRouter, LiteLLM and Ramp). Seed evidence (candidate rows,
-  page texts, transcripts) and the Vercel research bodies are local only, in
-  `data/research/2026-10-08-disclosures-vercel/`. Rows whose pages were read in the author's browser
-  (openai.com blocks automated fetches) are kept: the author approved reading pages via the browser when
-  needed (2026-10-09).
+- **Vercel AI Gateway (built 2026-10-09):** fetched daily by the launchd agent from its next run (`fetch --due`
+  reads the registry each time; `curated_disclosures` weekly, a no-op while the file is unchanged). First real fetch 2026-10-09 reproduced the
+  plan's September 2026 first look exactly. Compare two months of vintages (are days older than the
+  trailing window ever revised?) and record it in its SOURCE.md before switching to `append-only`.
+  `models.yaml` maps 64 of 70 Vercel model names by hand; check `vercel_label_coverage` for new unmapped
+  labs or models after each month (`entities suggest --source vercel` is backlog). Lab slugs with ≥ 1% of
+  tokens or spend on any day all map to existing vendors. Mart `091` reads Vercel, OpenRouter rankings,
+  LiteLLM and Ramp, so a bare `cachereg build` needs all four.
+- **Curated disclosures (built 2026-10-09):** 50 seed rows (45 primary) recorded 2026-10-09; the evidence
+  (candidate rows, page texts, transcripts) stays local in `data/research/2026-10-08-disclosures-vercel/`.
+  Add rows by the routine in its SOURCE.md (`recorded_on` = the day added; corrections supersede, never
+  edit). The pre-push hook and CI refuse an edited or removed row. Left out on purpose (SOURCE.md lists
+  why): forecasts, investor or anonymous-source figures, CNBC's $13B OpenAI ARR, TechCrunch's "300 million
+  users", the Amazon quote, Microsoft's token totals, Google's retail-segment tokens; Claude Code's
+  run-rate and Microsoft's Foundry customers need a metric first. `fetch` may now return None
+  (nothing new to store); the CLI prints `same`.
 - **Chart fit (found 2026-10-08):** `Frame.compose` resizes a chart's PNG to the plot box exactly, so a chart
   whose outer size (axes, titles) differs from the box is stretched or squeezed (the two-lenses LinkedIn
   sectors chart was ~10% compressed before the fix; Vega widens a concat panel to its title). The
@@ -651,7 +664,7 @@ Phase 1 only where marked):
 | (b) **Capex vs price collapse** | EDGAR hyperscaler capex × (a) | No | — |
 | (c) **Two lenses on adoption** | BTOS AI use × Ramp AI Index (by sector & size), mart `072` | No (both built; Ramp is a manual import, no key) | BTOS-only (`--sources census_btos` with config `ramp: false`) if a replicator has no Ramp imports |
 | (d) **Does quality win usage?** | Benchmarks × OpenRouter `rankings-daily` | No (verified) | — |
-| (e) **Developer wallet vs enterprise wallet** — three *separately labelled* lenses on the same vendors, never put on one axis or converted into each other: (1) developer gateways: share of estimated $ on OpenRouter and Vercel AI Gateway's measured spend share (#12, planned 2026-10-08), (2) share of US businesses paying (Ramp), (3) reported revenue run-rates (curated disclosures, planned 2026-10-08). Output: vendor **rank/share comparison** across lenses (small multiples or slope chart) plus where they disagree | OpenRouter est. spend; Ramp AI Index vendor breakdown; curated disclosures | No | If lenses aren't comparable enough for a claim, publish as "three views" without a ranking claim |
+| (e) **Developer wallet vs enterprise wallet** — three *separately labelled* lenses on the same vendors, never put on one axis or converted into each other: (1) developer gateways: share of estimated $ on OpenRouter and Vercel AI Gateway's measured spend share (#12), (2) share of US businesses paying (Ramp), (3) reported revenue run-rates (curated disclosures). Lenses (1) and (2) side by side in mart `091_gateway_lenses`; lens (3) in `080_disclosures` (built 2026-10-09). Output: vendor **rank/share comparison** across lenses (small multiples or slope chart) plus where they disagree | OpenRouter est. spend; Ramp AI Index vendor breakdown; curated disclosures | No | If lenses aren't comparable enough for a claim, publish as "three views" without a ranking claim |
 
 **v1 scope vs backlog** (to keep the first weeks lean):
 - v1 render targets: `blog_html`, `x_png`, `linkedin_png`, `x_video` (MP4 16:9),

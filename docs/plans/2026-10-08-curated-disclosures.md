@@ -1,6 +1,17 @@
 # Plan: the curated disclosures dataset (Tier-1 "our" dataset; lens 3 of analysis (e))
 
-Status: PLANNED · 2026-10-08 (decisions taken; adversarial review converged 2026-10-09; nothing built)
+Status: BUILT · 2026-10-09 (planned 2026-10-08; adversarial review converged 2026-10-09)
+
+**As built (differences from the design below):** a second figure from one statement takes the id suffix
+`-2`, `-3` …; `fetch` also refuses a copy that edits or drops a row of the newest stored copy (stage still
+checks every older copy); an unchanged file stores nothing (`fetch` returns None, the CLI prints `same`).
+`disclosure_series` is ordered by the period measured, not by statement date, so a retrospective figure
+sits where it belongs (Anthropic's "$9B at the end of 2025", stated in April 2026, precedes February's
+$14B). A new entity `_openrouter` (the platform, no aliases) carries OpenRouter's figure. Seed: 50 rows
+(45 primary). Beyond the plan's exclusions, CNBC's $13B OpenAI ARR (attribution unconfirmed) and
+TechCrunch's "300 million users in December 2024" (not stated as weekly; original not found) are left out;
+the OpenRouter row is the stated 100 trillion tokens per month (the candidate's 25 trillion per week was
+TechCrunch's arithmetic, which the validator caught); Meta's Q3 2024 row quotes the Q&A as planned.
 
 ## Goal
 

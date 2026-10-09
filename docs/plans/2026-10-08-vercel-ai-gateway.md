@@ -1,6 +1,16 @@
 # Plan: Vercel AI Gateway leaderboards as a source (Phase 2 source; the gateway lens (1) of analysis (e))
 
-Status: PLANNED · 2026-10-08 (decisions taken; adversarial review converged 2026-10-09; nothing built)
+Status: BUILT · 2026-10-09 (planned 2026-10-08; adversarial review converged 2026-10-09)
+
+**As built (differences from the design below):** days run through *yesterday* (UTC), as the research
+requests did (today's rollup is incomplete). Stage keeps every vintage and mart 090 picks, per day (models:
+per month window and day), the newest fetch on or before the cutoff, as the other Latest-only marts do; the
+period means are their own table, `vercel_lab_share_period` (week and month, with `days` and
+`period_days`). Fetching models per month surfaces 70 display names to 2026-10-08, not the 21 of the
+full-year request; `models.yaml` maps 64 of them by hand (SOURCE.md lists the six left out). No vendor was
+added: every lab with ≥ 1% maps to an existing one. Mart 091 names the volume-weighted OpenRouter token
+share as its own lens (`openrouter_tokens_volume_weighted`), keeps Ramp's label for unmapped vendors, and
+gives the estimated-spend lens a `coverage_pct` (priced share of non-free tokens).
 
 ## Goal
 
