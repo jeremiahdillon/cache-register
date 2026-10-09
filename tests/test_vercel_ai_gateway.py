@@ -266,3 +266,58 @@ def test_the_newest_fetch_on_or_before_the_cutoff_wins_per_day(api, entities):
     assert newest(old_day)[0]["share_pct"] == 20.0  # outside the refresh window: first fetch
     older = marts(date(2025, 11, 2))
     assert older(day)[0]["share_pct"] == 40.0  # the cutoff for 11-02 is the first fetch
+
+
+# --- mart 091: the lenses side by side -----------------------------------------------------------
+
+
+def test_gateway_lenses_are_rows_and_reproduce_openrouter_estimated_spend(synthetic_raw, entities):
+    import polars as pl
+
+    from cachereg.core.store import RawFetch
+    from tests.test_ramp_ai_index import import_all
+
+    v = RawFetch("vercel_ai_gateway", "1", fetched_at=datetime(2026, 8, 31, 12, tzinfo=UTC))
+    v.add("labs.json", json.dumps(body("labs", "2026-07-01", "2026-07-31")).encode(), "https://example.test", 200)
+    v.write()
+    import_all()  # Ramp: Jan–Mar 2026, OpenAI, Anthropic and an unmapped "Acme Labs"
+    build(date(2026, 8, 30), ["vercel_ai_gateway", "openrouter_rankings", "litellm_prices", "ramp_ai_index"])
+    con = connect()
+    try:
+        lenses = query(con, "SELECT * FROM gateway_lenses")
+        daily = query(con, "SELECT date, vendor_id, est_spend_usd, total_tokens FROM or_model_daily")
+    finally:
+        con.close()
+    july = lenses.filter(pl.col("month") == date(2026, 7, 1))
+    assert set(july["lens"]) == {
+        "vercel_tokens", "vercel_spend", "openrouter_tokens", "openrouter_tokens_volume_weighted",
+        "openrouter_est_spend",
+    }  # fmt: skip
+    assert set(lenses["lens"]) >= {"ramp_paying"}
+    # Estimated spend share, recomputed here from the daily rows: mean over days of vendor / day total.
+    d = daily.with_columns(pl.col("est_spend_usd").fill_null(0)).filter(pl.col("date").dt.month() == 7)
+    per_day = d.group_by("date", "vendor_id").agg(pl.col("est_spend_usd").sum())
+    per_day = per_day.join(d.group_by("date").agg(pl.col("est_spend_usd").sum().alias("total")), on="date")
+    expected = per_day.filter(pl.col("vendor_id") == "anthropic").select(
+        (100 * pl.col("est_spend_usd") / pl.col("total")).mean()
+    )
+    got = july.filter((pl.col("lens") == "openrouter_est_spend") & (pl.col("vendor_id") == "anthropic"))
+    assert got["value_pct"][0] == pytest.approx(expected.item())
+    for lens in ("openrouter_tokens", "openrouter_tokens_volume_weighted", "openrouter_est_spend", "vercel_tokens"):
+        assert july.filter(pl.col("lens") == lens)["value_pct"].sum() == pytest.approx(100.0)
+    # Anthropic's OpenRouter share shrinks while volumes grow: the two weightings differ.
+    a = july.filter(pl.col("vendor_id") == "anthropic")
+    mean, weighted = (
+        a.filter(pl.col("lens") == x)["value_pct"][0]
+        for x in ("openrouter_tokens", "openrouter_tokens_volume_weighted")
+    )
+    assert mean != pytest.approx(weighted)
+    # Vercel: xAI via `spacexai`; ranks skip ids that are not vendors.
+    vt = july.filter(pl.col("lens") == "vercel_tokens")
+    assert vt.filter(pl.col("vendor_id") == "xai")["value_pct"][0] == pytest.approx(20.0)
+    assert vt.filter(pl.col("vendor_id") == "_unmapped")["vendor_rank"][0] is None
+    # Ramp: adoption rows, unmapped labels kept with their label.
+    ramp = lenses.filter((pl.col("lens") == "ramp_paying") & (pl.col("month") == date(2026, 3, 1)))
+    assert set(zip(ramp["vendor_id"], ramp["label"], strict=True)) == {
+        ("openai", "OpenAI"), ("anthropic", "Anthropic"), ("_unmapped", "Acme Labs")}  # fmt: skip
+    assert lenses.group_by("month", "lens", "vendor_id", "label").len()["len"].max() == 1
