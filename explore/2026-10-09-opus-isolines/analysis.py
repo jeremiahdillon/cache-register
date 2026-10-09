@@ -184,7 +184,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
     avg = reached["months_to_10x"].mean()
     title = f"Frontier Opus models are matched in capability at one tenth the price in an average of {avg:.0f} months"
     subtitle = (
-        "Cheapest list price for a later model that scores at least as high as each Claude Opus "
+        "Cheapest list price for a later model that scores at least as high as each Claude Opus release "
         "on the Epoch Capabilities Index"
     )
     last_day = lines["day"].max()

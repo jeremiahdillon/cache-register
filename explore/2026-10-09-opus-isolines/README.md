@@ -1,6 +1,7 @@
 # Opus isolines
 
-*Exploration · started 2026-10-09 · follows [`2026-10-06-cost-of-intelligence`](../2026-10-06-cost-of-intelligence/README.md)*
+*Exploration · started 2026-10-09 · follows [`2026-10-06-cost-of-intelligence`](../2026-10-06-cost-of-intelligence/README.md) ·
+**promoted to [`receipts/opus-tenth-life`](../../receipts/opus-tenth-life/)***
 
 ## Question
 Take each Claude Opus model as a fixed level of capability. How cheaply could a later model buy the same

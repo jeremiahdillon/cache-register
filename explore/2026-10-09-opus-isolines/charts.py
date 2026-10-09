@@ -293,7 +293,8 @@ def _chart(story: Story, width, height, fs: float, interactive: bool = False, st
     """The chart, fully drawn (state=None) or as one animation frame.
 
     state: {"lines": {anchor: (distance drawn along its path, opacity)}, "labels": {label key: opacity},
-    "head": anchor whose tip gets a moving dot, or None}. Anchors and labels not listed are not drawn.
+    "head": anchor whose tip gets a moving dot, or None}. Lines not listed are not drawn; labels not listed are
+    drawn at opacity 0.
     """
     g = _geometry(story, width, height, fs)
     fonts = brand()["fonts"]
@@ -315,10 +316,10 @@ def _chart(story: Story, width, height, fs: float, interactive: bool = False, st
             for a, (s, op) in state["lines"].items()
             for i, (t, v) in enumerate(_partial(g.paths[a], s))
         ]
+        # Every label and dot is in every frame (not yet shown = opacity 0): labels can extend past the plot
+        # area, and the canvas must keep the same bounds in every frame or the whole chart shifts.
         ops = state["labels"]
-        lab = g.labels.filter(pl.col("key").is_in(list(ops))).with_columns(
-            op=pl.col("key").replace_strict(ops, return_dtype=pl.Float64)
-        )
+        lab = g.labels.with_columns(op=pl.col("key").replace_strict(ops, default=0.0, return_dtype=pl.Float64))
         line = alt.Chart(alt.Data(values=rows)).mark_line(strokeWidth=LINE_W * fs).encode(order="i:Q")
     line = line.encode(x=xenc(), y=yenc(), color=g.color, detail="anchor:N", opacity=opacity)
     if interactive:
