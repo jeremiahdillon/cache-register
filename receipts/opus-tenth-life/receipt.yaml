@@ -1,0 +1,15 @@
+# Receipt: cacheregister.dev/opus-tenth-life (the folder name is the short link — never rename
+# without adding an alias in config/link-aliases.yaml).
+title: Opus tenth-life
+sources: [epoch_benchmarks, litellm_prices]
+as_of: 2026-10-09
+promoted_from: explore/2026-10-09-opus-isolines
+config:
+  anchors:                 # Epoch display names; each line's level is that model's ECI
+    - Claude Opus 4
+    - Claude Opus 4.5
+    - Claude Opus 4.6
+    - Claude Opus 4.8
+visuals:
+  - {name: isolines, chart: isolines, targets: [x_png, linkedin_png, blog_html]}
+  - {name: isolines-motion, chart: isolines, targets: [x_video, linkedin_video]}

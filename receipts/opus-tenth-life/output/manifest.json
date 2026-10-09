@@ -1,0 +1,43 @@
+{
+  "as_of": "2026-10-09",
+  "cache_register_version": "0.0.1",
+  "data_hash": "d38dfae7b911a58838172eca2d7a8eed8a14fe2ce597320999cc0fae5e8cdf63",
+  "folder": "receipts/opus-tenth-life",
+  "git_dirty": true,
+  "git_sha": "7c02e9cf9d578d89b6185f1a5e0b89774b522f5f",
+  "inputs_hash": "1d05b3aab1bed5b9869fced1ffa290fb07cf2a380c6ff42bc7618d3ae35d23c5",
+  "kind": "receipt",
+  "outputs": {
+    "data.json": "279fb00ae017230d43559dd3ab8a27773aa45054e84098c2ce8807b35a6be40e",
+    "isolines-motion.linkedin_video.mp4": "51ada106f896028fb7f98e87ba6dc61b025d66c5198484e93bf6681a260e3f73",
+    "isolines-motion.x_video.mp4": "a5d1a1c69d9b947d73a89076dd7026683675a1c2486555aad77130f4e28e8d47",
+    "isolines.blog_html.html": "5820c903f64a9677fc9cfa78cbfd5eb02821af19444acaf53c3e791d1eaa9ddd",
+    "isolines.linkedin_png.png": "cc8374052274e8c38a299d202c321e064ebd89cadf81ba680b6e38c72dbce6b1",
+    "isolines.x_png.png": "b76fc6214e68f440bce70c4edec3514af0e41324ec2a4f02c2b12d3930964c4d"
+  },
+  "sources": {
+    "epoch_benchmarks": {
+      "class": "Latest-only",
+      "content_sha256": "7e68904138a3f5b47e5a6b424f37355ab2759f8581eca7944b8c3a1167aae0c8",
+      "fetch_date": "2026-10-06",
+      "vintage": {
+        "kind": "content_sha256",
+        "value": "a16e78d6864724d8e3b68bcb092c25438aa74ec804be1a30384beca17bcbaefa"
+      },
+      "vintage_after_as_of": false
+    },
+    "litellm_prices": {
+      "class": "Exact",
+      "content_sha256": "547e1ff3d4abe76b1ed8f44fb8e28cb6df745806eed403d36aebaa497dd1746d",
+      "revision_date": "2026-10-08",
+      "vintage": {
+        "date": "2026-10-08",
+        "kind": "git_commit",
+        "value": "6b8dcec64e805472792e4a7ab4c02d0ce8f72a90"
+      },
+      "vintage_after_as_of": false
+    }
+  },
+  "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "withheld": {}
+}
