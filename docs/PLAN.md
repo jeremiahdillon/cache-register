@@ -543,10 +543,12 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   - Categorical neons: cyan `#00E5FF`, hot magenta `#FF2BD6`, signal orange `#FF6A3D`,
     ultraviolet `#9D7BFF`, laser yellow `#FFE14D`
   - Context/greys: `#5B6070`, `#8A90A2`; text `#F2F4F8`
-  - Default rule: highlight what the takeaway is about in neon, put the rest in grey. Up to 6
-    neon categories when a comparison needs it (e.g. vendors). Vendor colours are **fixed
-    across all charts** (`brand.yaml: vendor_colors`) so OpenAI/Anthropic/Google/etc. stay
-    recognizable from post to post.
+  - Default rule: highlight what the takeaway is about in neon, put the rest in grey. The single
+    highlighted series is the primary lime (`brand.yaml: accent`, the site's accent; orange until
+    2026-10-10), so receipts match cacheregister.dev. Up to 6 neon categories when a
+    comparison needs it (e.g. vendors). Vendor colours are **fixed across all charts**
+    (`brand.yaml: vendor_colors`) so OpenAI/Anthropic/Google/etc. stay recognizable from post
+    to post.
   - Validated for contrast on the dark canvas and colour-vision deficiency in Phase 0.5/4 (dataviz
     palette validator); hues adjusted if they fail, with direct labels (not legends) as backup.
 - **Type**: *Space Grotesk* (headlines, big numbers) + *Inter* (labels) + *JetBrains Mono*

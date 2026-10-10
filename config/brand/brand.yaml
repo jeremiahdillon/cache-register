@@ -15,8 +15,9 @@ colors:
   text: "#F2F4F8"
   text_secondary: "#B4BAC8"
   muted: "#5B6070"             # axes, grid, "everyone else"
-  signal: "#C8FF2E"            # electric lime: headline number / glyph only — never a series
-  accent: "#FF6A3D"            # signal orange: the one highlighted series in an otherwise grey chart
+  signal: "#C8FF2E"            # electric lime: the site accent, headline number and wordmark glyph
+  accent: "#C8FF2E"            # the one highlighted series in an otherwise grey chart: the site's lime, so
+                               # charts match cacheregister.dev (was signal orange #FF6A3D until 2026-10-10)
   # Categorical slots, fixed order. Validated 2026-10-02 with the dataviz validator on the
   # canvas (dark mode): lightness band PASS, chroma PASS, worst adjacent CVD ΔE 18.4,
   # normal-vision ΔE 24.2, contrast ≥ 3:1. Re-run the validator if any value changes.
