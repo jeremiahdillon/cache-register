@@ -43,8 +43,8 @@ stories about the whole (author's framing). The subtitle gives each chart's valu
 the chart's face (upper right), with how to read dots and lines. Each line ends at the latest week all three
 sources cover (the subtitle's week); colours are fixed per
 source and close to each source's brand, tuned for the dark canvas and legibility: Ramp yellow-green
-(`#C4D00A`, from its `#E4F222`), OpenRouter purple (`#8855FE`, its Grape `#7624F4` lifted), Vercel sky blue
-(`#3B9CE5`; Vercel's brand is black and white). None is Anthropic's orange, since every line is Anthropic.
+(`#C4D00A`, from its `#E4F222`), OpenRouter purple (`#9C6BFF`, its Grape `#7624F4` brightened), Vercel sky blue
+(`#0AA3D6`; Vercel's brand is black and white). Lines are 3.4 px and end labels 20 px (scaled), for small screens. None is Anthropic's orange, since every line is Anthropic.
 **Video** (`tokens-with-free` only, for feedback first; `x_video`, `linkedin_video`, `web_video`, 17.3 s at 30
 fps): the weekly dots sweep in bright from left to right; each line then draws in turn, Ramp, OpenRouter,
 Vercel, at one calendar speed (so Vercel's shorter history draws faster), its dots dimming as it starts and its

@@ -31,8 +31,12 @@ NAMES = {"ramp": "Ramp", "vercel": "Vercel", "openrouter": "OpenRouter"}
 # contrast 3.1 -> 4.5:1). Ramp: its yellow-green #E4F222 (site CSS), darkened to L 0.82 so it does not outshine
 # the others; it stays above the dark-mode lightness band on purpose (inside it the hue turns olive). Vercel has
 # no colour brand (black and white; near-white would rival the text), so a sky blue clear of both hues and of
-# Anthropic's orange. Validator (dark, all pairs): CVD worst ΔE 10.6, normal 18.6, contrast >= 3:1 for all.
-SOURCE_COLOR = {"ramp": "#C4D00A", "openrouter": "#8855FE", "vercel": "#3B9CE5"}
+# Anthropic's orange. OpenRouter brightened to L 0.65 (contrast 5.6:1) with its hue nudged 4° toward violet and
+# Vercel's toward cyan, which keeps the two apart. Validator (dark, all pairs): CVD worst ΔE 9.2, normal 19.7,
+# contrast >= 3:1 for all.
+SOURCE_COLOR = {"ramp": "#C4D00A", "openrouter": "#9C6BFF", "vercel": "#0AA3D6"}
+LINE_PX = 3.4  # 4-week lines (scaled by font_scale); heavier for small screens
+END_LABEL_PX = 20  # line-end labels, sized for small screens
 LINE_ORDER = ["ramp", "openrouter", "vercel"]  # the video draws the lines in this order (author)
 DOT_SIZE, DOT_OP = 16, 0.35  # weekly dots as in the static chart (dim)
 DOT_SIZE_BRIGHT, DOT_OP_BRIGHT = 30, 0.9  # as they sweep in
@@ -180,7 +184,7 @@ def _share(story: Story, width: float, height: float, fs: float, visual: str, st
     end = date.fromisoformat(story.extra["visuals"][visual]["week"])
     w = _series(story, visual)
     first, last = w["week"].min(), w["week"].max()
-    label_px = (len("OpenRouter 100%") * 0.55 * (LABEL_PX - 1) + 24) * fs
+    label_px = (len("OpenRouter 100%") * 0.55 * END_LABEL_PX + 28) * fs
     plot_w = max(width - 60 * fs, 1.0)  # first guess; fit corrects for the axes
     plot_h = max(height - 40 * fs, 1.0)
     span = _ms(last) - _ms(first)
@@ -243,14 +247,14 @@ def _share(story: Story, width: float, height: float, fs: float, visual: str, st
             .mark_circle(size=dot_size * fs**2, color=c)
             .encode(x=x, y=alt.Y("share_pct:Q", scale=y_scale, axis=y_axis), opacity=alt.Opacity("op:Q", scale=None)),
             alt.Chart(alt.Data(values=line))
-            .mark_line(color=c, strokeWidth=2.6 * fs)
+            .mark_line(color=c, strokeWidth=LINE_PX * fs)
             .encode(x=x, y=alt.Y("v:Q", scale=y_scale, axis=y_axis)),
         ]
         e = s.drop_nulls("rolling4_pct").row(-1, named=True)
         ends.append({"t": e["t"], "v": e["rolling4_pct"], "src": src, "name": f"{NAMES[src]} {e['rolling4_pct']:.0f}%"})
 
     # end labels, nudged apart in pixels so close lines stay legible
-    gap = (LABEL_PX - 1) * fs * 1.25 / plot_h * 100
+    gap = END_LABEL_PX * fs * 1.25 / plot_h * 100
     placed: list[float] = []
     for e in sorted(ends, key=lambda r: r["v"], reverse=True):
         y = e["v"] if not placed else min(e["v"], placed[-1] - gap)
@@ -265,14 +269,14 @@ def _share(story: Story, width: float, height: float, fs: float, visual: str, st
         op = 1.0 if state is None else state["label"][e["src"]]  # drawn at opacity 0 until shown
         layers += [
             alt.Chart(d)
-            .mark_circle(size=70 * fs**2, opacity=op, color=c, stroke=color("canvas"), strokeWidth=2, strokeOpacity=op)
+            .mark_circle(size=100 * fs**2, opacity=op, color=c, stroke=color("canvas"), strokeWidth=2, strokeOpacity=op)
             .encode(x=x, y=alt.Y("v:Q", scale=y_scale, axis=y_axis)),
             alt.Chart(d)
             .mark_text(
                 align="left",
                 baseline="middle",
                 dx=10 * fs,
-                fontSize=(LABEL_PX - 1) * fs,
+                fontSize=END_LABEL_PX * fs,
                 font=fonts["body"],
                 fontWeight="bold",
                 color=c,

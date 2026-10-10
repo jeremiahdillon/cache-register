@@ -33,7 +33,9 @@ frame byte-identical to the static chart.
 `#E4F222`, darkened), OpenRouter `#8855FE` (its Grape `#7624F4`, lifted to label contrast 4.5:1), Vercel
 `#3B9CE5` (a sky blue; Vercel's brand is black and white and near-white would rival the text). Validator on the
 dark canvas: CVD and normal-vision separation, chroma and contrast pass; Ramp stays above the lightness band
-on purpose (inside it the hue turns olive).
+on purpose (inside it the hue turns olive). Then (author): OpenRouter brightened to `#9C6BFF` (contrast 5.6:1)
+and Vercel nudged to `#0AA3D6` to keep them apart (CVD ΔE 9.2, normal 19.7); lines 2.6 → 3.4 px and end labels
+16 → 20 px for small screens.
 
 ## Question
 
