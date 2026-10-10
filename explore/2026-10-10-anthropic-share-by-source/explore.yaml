@@ -5,7 +5,8 @@ title: Anthropic's share of AI spend and tokens, by data source
 sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings, litellm_prices]
 link: source-matters   # reserved short link (cacheregister.dev/source-matters), stamped on the visuals
 config:
-  start: null   # null = each source from its first full week; or YYYY-MM-DD to start every line there
+  start: null   # null = each source from its first week; or YYYY-MM-DD to start every line there
+  min_days: 6    # a gateway week needs this many days of data (OpenRouter misses 2025-06-15 and 2025-07-15)
 visuals:
   - {name: spend, chart: spend, targets: [x_png, linkedin_png]}
   # token views use no prices, so they credit no LiteLLM

@@ -17,7 +17,11 @@ tell different stories about the AI economy"); subtitles in one pattern giving e
 the latest common week; the measure stamped in the chart's upper right with a dots/lines key (the population
 note dropped from the footer; the README keeps it); quarterly ticks through October; per-visual `sources`
 (core change; token visuals credit no LiteLLM); the reserved link `source-matters` (core change: an
-exploration may reserve its future short link).
+exploration may reserve its future short link). Second round of feedback: the stamp is one larger line
+just below the 100% gridline; OpenRouter's free-model scope moved into the footer note; the dots/lines key
+dropped (the subtitle says 4-week averages); a gateway week needs ≥ 6 days (`min_days`), so OpenRouter's two
+6-day weeks (missing 2025-06-15 and 2025-07-15) no longer break its line; the brand wordmark is back to the
+lime square and text colour of the first receipt (brand.yaml, every visual).
 
 ## Question
 

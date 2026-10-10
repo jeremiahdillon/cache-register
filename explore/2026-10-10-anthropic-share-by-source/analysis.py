@@ -101,9 +101,10 @@ def ramp_weeks(con) -> pl.DataFrame:
     )
 
 
-def weekly(orw: pl.DataFrame, vw: pl.DataFrame, rw: pl.DataFrame) -> pl.DataFrame:
-    """Long frame: week × source × measure × variant, full weeks only, with a trailing 4-week mean."""
-    o = orw.filter(pl.col("days") == 7)
+def weekly(orw: pl.DataFrame, vw: pl.DataFrame, rw: pl.DataFrame, min_days: int) -> pl.DataFrame:
+    """Long frame: week × source × measure × variant, weeks with at least `min_days` days of data (gateways;
+    Ramp's weeks are whole), with a trailing 4-week mean. `days` shows the 6-day weeks."""
+    o = orw.filter(pl.col("days") >= min_days)
     parts = [
         rw.select(
             "week",
@@ -113,7 +114,7 @@ def weekly(orw: pl.DataFrame, vw: pl.DataFrame, rw: pl.DataFrame) -> pl.DataFram
             share_pct="share_pct",
             days=pl.lit(7),
         ),
-        vw.filter(pl.col("days") == 7).select(
+        vw.filter(pl.col("days") >= min_days).select(
             "week",
             source=pl.lit("vercel"),
             measure="metric",
@@ -207,11 +208,11 @@ def ramp_checks(con) -> pl.DataFrame:
 # ---- OpenRouter spend bound ------------------------------------------------------------------
 
 
-def or_bound(orw: pl.DataFrame) -> pl.DataFrame:
-    """Per full week: computed share (upper bound while Anthropic is fully priced), the sensitivity with
+def or_bound(orw: pl.DataFrame, min_days: int) -> pl.DataFrame:
+    """Per week drawn (≥ min_days): computed share (upper bound while Anthropic is fully priced), the sensitivity with
     unpriced paid tokens at the week's mean priced price, and the lower bound with them at the dearest
     priced model's price (assumes no unpriced model is dearer)."""
-    o = orw.filter(pl.col("days") == 7)
+    o = orw.filter(pl.col("days") >= min_days)
     mean_price = pl.col("spend") / pl.col("priced_tokens")
     b = o.select(
         "week",
@@ -225,9 +226,9 @@ def or_bound(orw: pl.DataFrame) -> pl.DataFrame:
     return rolling(b, "sensitivity_pct", "sensitivity_r4")
 
 
-def check_lab_priced(orw: pl.DataFrame) -> None:
-    """Author decision 4b: stop when a full week has unpriced Anthropic tokens (a model not yet mapped)."""
-    bad = orw.filter((pl.col("days") == 7) & (pl.col("lab_unpriced_tokens") > 0))
+def check_lab_priced(orw: pl.DataFrame, min_days: int) -> None:
+    """Author decision 4b: stop when a week drawn has unpriced Anthropic tokens (a model not yet mapped)."""
+    bad = orw.filter((pl.col("days") >= min_days) & (pl.col("lab_unpriced_tokens") > 0))
     if bad.height:
         r = bad.row(0, named=True)
         raise ValueError(
@@ -259,12 +260,9 @@ def series(w: pl.DataFrame, measure: str, variant: str | None) -> pl.DataFrame:
 TITLE = "Different data sources tell different stories about the AI economy"
 # The measure, stamped on the chart's face (charts.py), one per visual.
 STAMP = {
-    "spend": ["Anthropic's share of total spend in each data source"],
-    "tokens": ["Anthropic's share of total tokens in each data source", "OpenRouter: paid models only"],
-    "tokens-with-free": [
-        "Anthropic's share of total tokens in each data source",
-        "OpenRouter: free models included",
-    ],
+    "spend": "Anthropic's share of total spend in each data source",
+    "tokens": "Anthropic's share of total tokens in each data source",
+    "tokens-with-free": "Anthropic's share of total tokens in each data source",
 }
 
 
@@ -286,11 +284,12 @@ def _subtitle(kind: str, week: date, vals: dict[str, float]) -> str:
 
 def build(con, as_of: date, cfg: dict) -> Story:
     orw, vw, rw = openrouter_weeks(con), vercel_weeks(con), ramp_weeks(con)
-    check_lab_priced(orw)
-    w = weekly(orw, vw, rw)
+    min_days = int(cfg.get("min_days", 6))  # a gateway week with one day missing still gives its share
+    check_lab_priced(orw, min_days)
+    w = weekly(orw, vw, rw, min_days)
     if cfg.get("start"):
         w = w.filter(pl.col("week") >= _sunday(date.fromisoformat(str(cfg["start"]))))
-    bound = or_bound(orw).filter(pl.col("week") >= w["week"].min())
+    bound = or_bound(orw, min_days).filter(pl.col("week") >= w["week"].min())
 
     by_visual, extra = {}, {}
     for name, (measure, variant) in VISUALS.items():
@@ -303,10 +302,11 @@ def build(con, as_of: date, cfg: dict) -> Story:
                 "at the week's average price."
             ]
         else:
-            notes = ["Tokens are counted by each provider's tokenizer."]
+            scope = "includes free models" if variant == "all" else "excludes free models"
+            notes = [f"OpenRouter {scope}. Tokens are counted by each provider's tokenizer."]
         by_visual[name] = {"title": TITLE, "subtitle": _subtitle(kind, wk, vals), "notes": notes}
 
-    lw = orw.filter(pl.col("days") == 7)
+    lw = orw.filter(pl.col("days") >= min_days)
     coverage = (
         lw.select(
             "week",
@@ -325,8 +325,8 @@ def build(con, as_of: date, cfg: dict) -> Story:
     first_last = w.group_by("source").agg(first=pl.col("week").min(), last=pl.col("week").max()).sort("source")
     dropped = pl.concat(
         [
-            orw.filter(pl.col("days") < 7).select("week", source=pl.lit("openrouter"), days="days"),
-            vw.filter(pl.col("days") < 7).select("week", source=pl.lit("vercel"), days="days").unique(),
+            orw.filter(pl.col("days") < min_days).select("week", source=pl.lit("openrouter"), days="days"),
+            vw.filter(pl.col("days") < min_days).select("week", source=pl.lit("vercel"), days="days").unique(),
         ]
     ).sort("source", "week")
     q = bound.with_columns(
@@ -355,7 +355,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "coverage": coverage,
             "first_last": first_last,
             "partial_weeks_dropped": dropped,
-            # presence: Anthropic's lowest weekly spend share per source over its full weeks (> 0 = present
+            # presence: Anthropic's lowest weekly spend share per source over its weeks drawn (> 0 = present
             # every week; a Vercel day without an Anthropic row would count 0)
             "checks": ramp_checks(con).with_columns(
                 anthropic_full_weeks_min_spend_share=pl.lit(
@@ -372,7 +372,9 @@ def build(con, as_of: date, cfg: dict) -> Story:
         },
         sources=["ramp_ai_index", "vercel_ai_gateway", "openrouter_rankings", "litellm_prices"],
         as_of=as_of,
-        method="Anthropic's share of each source's reported total per Mon–Sun week; full weeks only",
+        method=(
+            f"Anthropic's share of each source's reported total per Mon–Sun week; weeks with ≥ {min_days} days of data"
+        ),
         notes=first["notes"],
         caveats=[
             "Three populations: Ramp customers who connected their AI providers; Vercel AI Gateway users; "

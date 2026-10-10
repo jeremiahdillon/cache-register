@@ -51,13 +51,13 @@ OpenRouter (they use no prices); `spend` also credits LiteLLM. Rendered as `x_pn
 
 ## Tables
 
-**Quarterly means of weekly values (%)** (frame `weekly`; each source on its own full weeks):
+**Quarterly means of weekly values (%)** (frame `weekly`; each source on its own weeks with ≥ 6 days):
 
 | Quarter | Ramp spend | OpenRouter est. spend | Vercel spend | Ramp tokens | OpenRouter tokens, paid | OpenRouter tokens, all | Vercel tokens |
 |---|---|---|---|---|---|---|---|
 | 2025 Q1 | 38.0 | 92.7 | — | 18.2 | 45.0 | 41.7 | — |
-| 2025 Q2 | 44.4 | 78.1 | — | 23.2 | 26.0 | 22.8 | — |
-| 2025 Q3 | 43.8 | 69.5 | — | 25.7 | 22.1 | 19.3 | — |
+| 2025 Q2 | 44.4 | 77.7 | — | 23.2 | 26.0 | 22.8 | — |
+| 2025 Q3 | 43.8 | 69.8 | — | 25.7 | 22.6 | 19.6 | — |
 | 2025 Q4 | 55.0 | 62.1 | 76.8 | 33.1 | 15.7 | 14.3 | 52.2 |
 | 2026 Q1 | 62.0 | 63.8 | 77.4 | 43.6 | 16.4 | 14.9 | 44.0 |
 | 2026 Q2 | 64.9 | 63.8 | 64.0 | 52.5 | 16.1 | 14.6 | 30.8 |
@@ -69,8 +69,8 @@ OpenRouter (they use no prices); `spend` also credits LiteLLM. Rendered as `x_pn
 | Quarter | Computed (upper bound) | Sensitivity (unpriced at mean price) | Lower bound (unpriced at dearest price) | Unpriced share of paid tokens |
 |---|---|---|---|---|
 | 2025 Q1 | 92.7 | 87.4 | 70.8 | 5.7 |
-| 2025 Q2 | 78.1 | 70.8 | 50.6 | 9.2 |
-| 2025 Q3 | 69.5 | 63.4 | 32.3 | 8.7 |
+| 2025 Q2 | 77.7 | 70.5 | 49.4 | 9.1 |
+| 2025 Q3 | 69.8 | 63.8 | 33.1 | 8.5 |
 | 2025 Q4 | 62.1 | 56.4 | 35.9 | 9.3 |
 | 2026 Q1 | 63.8 | 56.3 | 40.1 | 11.8 |
 | 2026 Q2 | 63.8 | 54.0 | 34.2 | 15.4 |
@@ -80,18 +80,20 @@ Even the lower bound puts OpenRouter's 2025 Q1 share (70.8%) above Ramp's (38.0%
 OpenRouter's 2025 fall (87 → 56%) against Ramp's rise.
 
 **Checks** (frames `first_last`, `partial_weeks_dropped`, `coverage`, `checks`): Ramp's maker shares sum to 100% every
-week; Anthropic is present in every full week of each source (lowest weekly spend share: Ramp 31.2% over 90
-weeks, OpenRouter 24.5% over 89, Vercel 37.3% over 52).
+week; Anthropic is present in every week drawn for each source (lowest weekly spend share: Ramp 31.2% over 90
+weeks, OpenRouter 24.5% over 91, Vercel 37.3% over 52).
  Ramp and OpenRouter from the week
 ending 2025-01-12, Vercel from 2025-10-12; Ramp's last week ends 2026-09-27, the gateways' 2026-10-04 (not
-drawn). Partial weeks dropped: OpenRouter's weeks ending 2025-01-05, 2025-06-15 and 2025-07-20 (a day
-missing in each; its line breaks there for four weeks) and the current week; Vercel's first week
-(2025-10-05) and the current week. No full week has unpriced Anthropic tokens on OpenRouter (Claude Haiku 5.5,
-unmapped since 2026-10-08, falls in the current partial week; the analysis stops once a full week has any).
+drawn). OpenRouter's rankings miss two days (2025-06-15 and 2025-07-15), so its weeks ending 2025-06-15 and
+2025-07-20 have 6 days and are kept (config `min_days: 6`; flagged by `days` in frame `weekly`). Dropped as
+partial: the first weeks (OpenRouter 2025-01-05, Vercel 2025-10-05, 5 days each) and the current week. No
+week drawn has unpriced Anthropic tokens on OpenRouter (Claude Haiku 5.5, unmapped since 2026-10-08, falls
+in the current partial week; the analysis stops once a week drawn has any).
 
 ## Method
-- **Weeks:** Monday–Sunday, dated by the Sunday (Ramp's convention); full weeks only (7 days of data for the
-  gateways).
+- **Weeks:** Monday–Sunday, dated by the Sunday (Ramp's convention); a gateway week needs at least 6 of its 7
+  days (`min_days`): a share over six days is a fair estimate of the week's (OpenRouter's is volume-weighted
+  over the days present, Vercel's the mean of the daily shares present).
 - **Ramp:** `ramp_token_share` (mart 062): Anthropic's share of the week's token spend (`spend`) or token
   volume (`volume`) over every maker Ramp reports (3 in January 2025, up to 14 by mid-2026; shares sum to
   100% every week; makers added from August to November 2025 held ≤ 0.1% of spend in their first week:
@@ -108,7 +110,7 @@ unmapped since 2026-10-08, falls in the current partial week; the analysis stops
   paid tokens at the week's dearest priced blended price (assumes no unpriced model is dearer);
   **sensitivity** = unpriced paid tokens at the week's mean priced price. The chart shades
   [sensitivity, computed] (author decision 4).
-- **Smoothing:** trailing mean over 4 consecutive full weeks; a missing week breaks the line for four weeks.
+- **Smoothing:** trailing mean over 4 consecutive weeks; a missing week would break the line for four weeks.
 - **Headline:** each chart's values are the 4-week means at the latest week all three sources cover.
 
 ## Licence

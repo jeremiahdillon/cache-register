@@ -140,19 +140,17 @@ def _share(story: Story, width: float, height: float, fs: float, visual: str) ->
             )
             .encode(x=x, y=alt.Y("ly:Q", scale=y_scale, axis=y_axis), text="name:N"),
         ]
-    # the measure, stamped on the chart's face (upper right): what every line is, then how to read it
-    stamp = story.extra["stamp"][visual]
-    lines = [(t, LABEL_PX, "bold", color("text")) for t in stamp[:1]]
-    lines += [(t, LABEL_PX - 2, "normal", color("text_secondary")) for t in stamp[1:]]
-    lines += [("Dots: weekly · lines: 4-week average", LABEL_PX - 2, "normal", color("text_secondary"))]
-    y_px = 0.0
-    for text, size, weight, c in lines:
-        layers.append(
-            alt.Chart(alt.Data(values=[{"s": text}]))
-            .mark_text(
-                align="right", baseline="top", fontSize=size * fs, fontWeight=weight, font=fonts["body"], color=c
-            )
-            .encode(x=alt.value(plot_w), y=alt.value(y_px), text="s:N")
+    # the measure, stamped on the chart's face (upper right), just below the 100% gridline
+    layers.append(
+        alt.Chart(alt.Data(values=[{"s": story.extra["stamp"][visual]}]))
+        .mark_text(
+            align="right",
+            baseline="top",
+            fontSize=(LABEL_PX + 3) * fs,
+            fontWeight="bold",
+            font=fonts["body"],
+            color=color("text"),
         )
-        y_px += size * fs * 1.35
+        .encode(x=alt.value(plot_w), y=alt.value(10 * fs), text="s:N")
+    )
     return alt.layer(*layers).properties(width=plot_w, height=plot_h).configure(**vl_config(fs))
