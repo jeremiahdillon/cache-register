@@ -1,0 +1,147 @@
+# Plan: Anthropic's share of spend and tokens, by data source (exploration)
+
+Status: PLANNED · 2026-10-10 (author's decisions taken in conversation; adversarial review to follow)
+
+## Question
+
+Do the datasets that measure AI spend tell the same story about one lab? The author's thesis: each
+source sees a different segment of the market, so none is fully representative of a lab's true position.
+Taking each source's figures as accurate for its own population, Anthropic's share of spend (and of
+tokens) moving at different levels and in different directions across sources shows that they capture
+different segments. This exploration charts Anthropic's share of **all reported spend** and of **all
+reported tokens** in three sources, on a like-for-like basis, on one axis per chart.
+
+Exploration `explore/2026-10-10-anthropic-share-by-source/`; follows analysis (e) (`2026-10-09-wallet-lenses`)
+but is separate from it. (e)'s rule "never on one axis" was about lenses measuring *different* things
+(spend share vs share of businesses paying); here every line is the *same* measure, a lab's share of its
+source's total, so one axis is the point of the chart (author decision, 2026-10-10). Ramp's
+paying-businesses lens is not used.
+
+## The three sources (all in existing marts; no source or mart change)
+
+| Source | Population | Spend | Tokens | Grain | From | Mart |
+|---|---|---|---|---|---|---|
+| **Ramp** AI Token Spend Management | Ramp customers who connected their AI providers (Ramp: "not representative of total AI spend, though directionally similar") | realised spend by model maker | token volume by model maker | week (Mon–Sun, dated by its Sunday) | week ending 2025-01-12 | `062` `ramp_token_share` (`measure` = `spend` / `volume`) |
+| **Vercel** AI Gateway | developers routing through Vercel's gateway | Vercel's measure of what customers paid | tokens | day | 2025-10-01 | `090` `vercel_lab_share` (`metric` = `spend` / `tokens`) |
+| **OpenRouter** | developers routing through OpenRouter | **our estimate**: tokens × list price (0.8 × input + 0.2 × output), caching ignored | tokens, with or without free variants | day | 2025-01-01 | `010` `or_model_daily` |
+
+"All reported" in each: Ramp's shares are of the makers Ramp reports (3 until August 2025, 14 since; the
+shares sum to exactly 100% every week; makers added in Aug–Oct 2025 held 0.0–0.1% of spend when they
+appeared, so the expansion does not break Anthropic's series). Vercel: every lab on the gateway (shares sum
+to 100 daily). OpenRouter: the top 50 models per day plus its `other` row (the long tail), stealth and
+router models; for spend, tokens with no price (`price_matched` false) count as no spend.
+
+## What was measured (2026-10-10; Ramp import of 2026-10-07; gateways to 2026-10-08)
+
+Anthropic's share, quarterly mean of weekly values (%; weeks dated by their Sunday; full weeks only):
+
+| Quarter | Ramp spend | OpenRouter est. spend | Vercel spend | Ramp tokens | OpenRouter tokens, paid | OpenRouter tokens, all | Vercel tokens |
+|---|---|---|---|---|---|---|---|
+| 2025 Q1 | 38.0 | 92.7 | — | 18.2 | 45.1 | 41.8 | — |
+| 2025 Q2 | 44.2 | 78.0 | — | 23.0 | 26.0 | 22.8 | — |
+| 2025 Q3 | 44.2 | 69.3 | — | 26.1 | 22.0 | 19.2 | — |
+| 2025 Q4 | 55.0 | 61.9 | 76.3 | 33.1 | 15.6 | 14.3 | 51.7 |
+| 2026 Q1 | 62.0 | 63.5 | 77.4 | 43.5 | 16.3 | 14.8 | 44.0 |
+| 2026 Q2 | 64.9 | 63.5 | 64.0 | 52.5 | 16.0 | 14.5 | 30.8 |
+| 2026 Q3 | 58.6 | 40.3 | 59.4 | 45.7 | 8.1 | 7.2 | 21.7 |
+
+(OpenRouter here is the mean of daily shares; the build uses volume-weighted weeks, decision 3.)
+
+1. **Spend, 2025: opposite directions.** Ramp rose (38 → 55% from Q1 to Q4) while OpenRouter fell (93 → 62%).
+2. **Spend, 2026: same direction, different levels.** From Q2 to Q3 2026 all three fell (Ramp 65 → 59,
+   Vercel 64 → 59, OpenRouter 64 → 40). In the three weeks ending 13–27 September 2026 (Ramp's latest):
+   Ramp 48.6–53.7%, Vercel 37.3–51.3%, OpenRouter 25.2–29.4%.
+3. **Tokens: opposite directions for 18 months.** Ramp's token share rose from 18% (2025 Q1) to 53% (2026 Q2)
+   while OpenRouter's fell from 45% to 16% (paid) and Vercel's from 52% (2025 Q4) to 31%. In 2026 Q2 the
+   three sources put Anthropic at 53%, 31% and 16% of tokens.
+4. **Free variants matter little to Anthropic's OpenRouter token share** (0.9–3.3 pp lower per quarter with them; Anthropic
+   has no free models, so including free tokens only enlarges the denominator).
+5. Week-to-week noise (mean absolute weekly change): Ramp ~2 pp, OpenRouter ~2–2.5 pp, Vercel ~4.3 pp.
+
+Coverage of the OpenRouter estimate: priced share of paid tokens 85–95% per quarter; 10–30% of paid tokens
+are priced from a model's nearest LiteLLM listing (`price_date_stale`); free variants are 6–13% of all
+tokens.
+
+## Design
+
+### Weekly series (frame `weekly`)
+- **Weeks:** Monday–Sunday, dated by the Sunday (Ramp's convention). Only full weeks: 7 days of data for
+  Vercel and OpenRouter (a partial week, e.g. the current one, is dropped).
+- **Ramp:** `ramp_token_share.share` for `anthropic` (week total ÷ week total over makers, i.e.
+  volume-weighted by construction).
+- **OpenRouter:** per week, Anthropic's tokens (or estimated spend) ÷ all tokens (or all estimated spend)
+  in the week, **volume-weighted** like Ramp (decision 3). Tokens in two variants: paid only (`NOT
+  is_free`, both numerator and denominator) and all.
+- **Vercel:** the mean of the week's daily shares (Vercel publishes no volumes, so it cannot be
+  volume-weighted; stated in the footnote).
+- **Smoothing (decision 2):** weekly points drawn faint, a trailing 4-week mean drawn as the line (needs
+  4 full weeks; the first three weeks of each source have points but no line).
+- Columns: `week`, `source` (`ramp`, `vercel`, `openrouter`), `measure` (`spend`, `tokens`), `variant`
+  (`paid`, `all`; OpenRouter tokens only), `share_pct`, `days`, `rolling4_pct`.
+
+### Bound on OpenRouter's spend estimate (frame `or_bound`)
+PLAN rule: spend figures are estimates with bounds. Per week, the share as computed (unpriced paid tokens
+cost nothing) is an upper bound for Anthropic, whose tokens are all priced; a lower bound prices the
+week's unpriced paid tokens at the week's mean price per priced paid token. Drawn as a faint band around
+OpenRouter's spend line. Caching cannot be bounded from these data; it is a footnote.
+
+### Frames
+`weekly`, `or_bound`, `coverage` (per week: OpenRouter priced and stale share of paid tokens, free share of
+all tokens; Ramp makers with data; Vercel days), `checks` (one row: first and last week per source, weeks
+dropped as partial, Ramp share sums = 100, Anthropic present every week in each source).
+
+### Visuals (each `x_png`, `linkedin_png`; identical formatting)
+1. **`spend`**: Anthropic's share of all reported spend; three lines (Ramp, Vercel, OpenRouter) on one 0–100%
+   axis, weekly from the week ending 2025-01-12; faint weekly points, 4-week line, OpenRouter's bound band;
+   direct labels at line ends with the last 4-week value, plus a legend. Headline states the finding
+   plainly from the data (today, e.g.: "Anthropic's share of AI spend depends on whose data you read: about
+   half on Ramp, a third on OpenRouter").
+2. **`tokens`**: the same for tokens, OpenRouter paid tokens only.
+3. **`tokens-with-free`**: the same as `tokens`, OpenRouter including free variants (author decision 1).
+Colours: three categorical slots for the three sources (not Anthropic's brand orange, since every line is
+Anthropic); the same source keeps the same colour in every chart. Notes (footer): the OpenRouter estimate
+and its band; Vercel's mean of daily shares; Ramp's population. Charts build through `cachereg.viz.fit`,
+and every visual × target is measured (PNG == plot box).
+
+### Licence and attribution
+Sources: `ramp_ai_index`, `vercel_ai_gateway`, `openrouter_rankings`, `litellm_prices`. Ramp's
+redistribution is unknown, so PNG targets only (no `blog_html`, no `data.json`); frames go only to the
+gitignored `outputs/…/story_frames.json`.
+
+## Caveats (README; the first two as on-image notes)
+- **Three populations.** Ramp: businesses on Ramp that connected their AI provider accounts (a subset of
+  Ramp's customers; Ramp says not representative of its total AI spend). Vercel and OpenRouter: developers
+  who route through that gateway; first-party API traffic is invisible to both. None of the three is the
+  market.
+- **Spend is measured three ways.** Ramp: realised spend (cached-token discounts included, apparently, as
+  Ramp's blended prices run below input prices). Vercel: Vercel's measure (whether BYOK, discounts or
+  caching are included is not stated). OpenRouter: our list-price estimate with caching ignored, which likely
+  overstates labs whose users cache heavily (Anthropic's coding-agent traffic), so some of the gap between
+  OpenRouter and the others may be method, not segment.
+- **Weighting:** Ramp and OpenRouter weeks are volume-weighted; Vercel's is a mean of daily shares.
+- **Denominators:** each source's own reported total: Ramp's 3–14 makers, Vercel's labs, OpenRouter's top 50
+  plus its tail; OpenRouter's unpriced tokens count as no spend (bounded).
+- **Tokens** are counted by each provider's tokenizer, so token shares compare labs only roughly.
+- Ramp and Vercel are Latest-only (revised); OpenRouter's rankings are Latest-only; figures move with each
+  fetch and import. Vercel's history starts 2025-10-01.
+- What the chart can and cannot show: different levels and directions in the same measure show the
+  sources see different segments (or measure spend differently); they do not show which is closest to the
+  market, and they do not size any segment.
+
+## Code
+`explore/2026-10-10-anthropic-share-by-source/` (`analysis.py`, `charts.py`, `explore.yaml`, `README.md`).
+Reads marts `010`, `062`, `090` only. No core change expected; one chart function serves all three visuals
+(the visual name selects measure and variant). If a core change is needed, stop and ask.
+
+## Decisions
+Taken by the author in conversation (2026-10-10):
+1. Tokens in both versions: OpenRouter with and without free variants (two visuals, same formatting).
+2. Weekly points with a trailing 4-week line.
+
+Open:
+3. **OpenRouter weekly weighting:** volume-weighted, matching Ramp (recommended), or the mean of daily shares,
+   matching Vercel (the measured table above; differences are small).
+4. **OpenRouter spend bound:** the band described above (recommended), or a footnote with the weekly
+   priced coverage only.
+5. **Start:** each source from its first full week (recommended: Ramp and OpenRouter from January 2025,
+   Vercel from October 2025), or all three from October 2025 only.
