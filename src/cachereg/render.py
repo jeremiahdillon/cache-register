@@ -297,8 +297,9 @@ def render(
             folder_config.set_as_of(cfg, as_of)
             i_hash = inputs_hash(cfg.path)
 
-    charts_reason, data_reason = licence_gate(source_ids) if is_receipt else (None, None)
-    rec = receipt(source_ids, _data_as_of(story), story.method, rel, cfg.link)
+    # Inlined data (HTML, data.json) holds every frame, so it is gated on all the folder's sources; images
+    # and their footers use each visual's own sources (`sources:` on the visual, default the folder's).
+    _, data_reason = licence_gate(source_ids) if is_receipt else (None, None)
     out_dir.mkdir(parents=True, exist_ok=True)
     if committing:
         for old in out_dir.iterdir():  # outputs are regenerated as a set; no stale files survive
@@ -311,6 +312,9 @@ def render(
                 continue
             target = TARGETS[name]
             out = out_dir / f"{visual.name}.{name}.{target.fmt}"
+            v_sources = list(cfg.visual_sources(visual)) if cfg.sources else source_ids
+            charts_reason = licence_gate(v_sources)[0] if is_receipt else None
+            rec = receipt(v_sources, _data_as_of(story), story.method, rel, cfg.link)
             blocked = data_reason if target.kind == "html" else charts_reason
             if blocked:
                 result.withheld[out.name] = blocked
@@ -351,5 +355,8 @@ def render(
         "outputs": dict(sorted(result.outputs.items())),
         "withheld": dict(sorted(result.withheld.items())),
     }
+    own = {v.name: list(v.sources) for v in cfg.visuals if v.sources is not None}
+    if own:  # only when a visual declares its own sources, so existing manifests are unchanged
+        result.manifest["visual_sources"] = own
     (out_dir / MANIFEST).write_text(json.dumps(result.manifest, indent=2, sort_keys=True) + "\n")
     return result

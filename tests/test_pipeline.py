@@ -577,3 +577,54 @@ def test_exploration_renders_each_visual_with_its_own_headline(synthetic_raw, tm
     (ex / "explore.yaml").write_text((ex / "explore.yaml").read_text().replace("name: b,", "name: c,"))
     with pytest.raises(ValueError, match="not in explore.yaml"):
         render_mod.render(ex, date(2026, 8, 31))
+
+
+def test_visual_sources_set_its_footer_and_must_be_a_subset(synthetic_raw, tmp_path, monkeypatch):
+    import shutil
+
+    import cachereg.render as render_mod
+    from cachereg.story import config as folder_config
+
+    monkeypatch.setenv("CACHEREG_OUTPUTS_DIR", str(tmp_path / "outputs"))
+    build(date(2026, 8, 31), SLICE)
+    ex = tmp_path / "explore" / "2026-08-01-test"
+    ex.mkdir(parents=True)
+    for name in ("analysis.py", "charts.py"):
+        shutil.copy(WALLET / name, ex / name)
+    (ex / "explore.yaml").write_text(
+        "sources: [openrouter_rankings, litellm_prices]\n"
+        "link: a-reserved-link\n"
+        "config: {weeks: 13, unpriced_flag: 0.03, race_top_n: 8}\n"
+        "visuals:\n  - {name: a, chart: line_chart, targets: [x_png]}\n"
+        "  - {name: b, chart: line_chart, targets: [x_png], sources: [openrouter_rankings]}\n"
+    )
+    seen = {}
+
+    def fake_static(story, chart, target, rec, out):
+        seen[out.name] = rec
+        out.write_bytes(b"png")
+
+    monkeypatch.setattr(render_mod, "render_static", fake_static)
+    result = render_mod.render(ex, date(2026, 8, 31))
+    assert "LiteLLM" in seen["a.x_png.png"].source and "OpenRouter" in seen["a.x_png.png"].source
+    assert "LiteLLM" not in seen["b.x_png.png"].source and "OpenRouter" in seen["b.x_png.png"].source
+    assert seen["a.x_png.png"].link.endswith("/a-reserved-link")  # the reserved link is stamped
+    assert result.manifest["visual_sources"] == {"b": ["openrouter_rankings"]}
+    (ex / "explore.yaml").write_text(
+        (ex / "explore.yaml").read_text().replace("sources: [openrouter_rankings]}", "sources: [census_btos]}")
+    )
+    with pytest.raises(ValueError, match="subset of the folder's sources"):
+        folder_config.load(ex)
+
+
+def test_receipt_cannot_reserve_a_link(tmp_path):
+    from cachereg.story import config as folder_config
+
+    d = tmp_path / "receipts" / "t"
+    d.mkdir(parents=True)
+    (d / "receipt.yaml").write_text(
+        "sources: [openrouter_rankings]\nas_of: 2026-08-31\nlink: other\n"
+        "visuals:\n  - {name: a, chart: c, targets: [x_png]}\n"
+    )
+    with pytest.raises(ValueError, match="link is its folder name"):
+        folder_config.load(d)

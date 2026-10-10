@@ -163,7 +163,7 @@ cache-register/
 │   ├── story/                    # Story model, render targets, renderers (§6)
 │   ├── viz/                      # theme, chart helpers, stamp, motion
 │   └── cli.py                    # `cachereg …`
-├── explore/                      # dated explorations, no short links: 2026-10-02-<slug>/
+├── explore/                      # dated explorations (may reserve a short link): 2026-10-02-<slug>/
 ├── receipts/                     # promoted topics; folder name = short link; committed output/
 ├── docs/
 │   ├── PLAN.md
@@ -315,7 +315,8 @@ sources with `input: manual` in the registry are imported by the author with `ca
 *Decided 2026-10-03; full design in `docs/plans/2026-10-03-explore-and-receipts.md`.*
 
 - `explore/YYYY-MM-DD-<slug>/` — explorations: dated by start, cheap, free-form, may be
-  abandoned. No short link; renders go to gitignored `outputs/`; CI only checks they compile.
+  abandoned. No short link unless one is reserved (`link:` in `explore.yaml`, below); renders go to
+  gitignored `outputs/`; CI only checks they compile.
 - `receipts/<topic>/` — topics promoted as post-worthy. **The folder name is the short link**
   (`cacheregister.dev/<topic>`); one link per topic, carried on every visual's footer. A receipt
   has one analysis and one or more visuals, and commits its rendered visuals + manifest in
@@ -341,7 +342,11 @@ renders into a temp folder and compares a canonical data hash with the committed
 (identical / differs with reason / cannot reproduce exactly).
 
 **Short links:** `cachereg site` builds a static redirect site from `receipts/*/` that a Pages
-workflow publishes; renamed/retired topics stay alive via `config/link-aliases.yaml`. The root
+workflow publishes; renamed/retired topics stay alive via `config/link-aliases.yaml`. An exploration may
+reserve its future topic (`link:` in `explore.yaml`, decided 2026-10-10): its visuals carry the short
+link and the site redirects it to the exploration until a receipt of that name with `promoted_from`
+pointing at the exploration takes it over; any other clash fails the build. A reserved link is as
+permanent as a receipt's once posted. The root
 (and 404) is a branded splash page from `assets/templates/site.html`, open to search and AI crawlers
 (`robots.txt` allows all, `sitemap.xml` lists the root).
 
@@ -436,9 +441,12 @@ plus `run_manifest.json`.
 ### 6.4 Stamp / footer (every output)
 
 Auto-generated receipt lines: `SOURCE` (attributions + data as-of), `METHOD`, and `RECEIPTS` —
-`cacheregister.dev/<topic>` for receipts, the long GitHub URL for explorations — plus the brand
-wordmark. Attribution text comes from
-`SOURCE.md`, so license-required credits can't be forgotten. Video: footer persists all frames.
+`cacheregister.dev/<topic>` for receipts and explorations that reserve a link, the long GitHub URL for
+other explorations — plus the brand wordmark. Attribution text comes from
+`SOURCE.md`, so license-required credits can't be forgotten. `SOURCE` lists the visual's own sources when
+the visual declares them (`sources:` on a visual in receipt.yaml / explore.yaml, a subset of the folder's;
+decided 2026-10-10), else the folder's; the image licence gate follows the same list, while inlined data
+(`blog_html`, `data.json`) stays gated on all the folder's sources. Video: footer persists all frames.
 
 ---
 
@@ -596,7 +604,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   same three labs on top (Anthropic, OpenAI, Google); 11 of 15 pairs agree, xAI vs DeepSeek disagrees,
   OpenAI vs Google is unsettled on Vercel; gateways have put Anthropic first in spend since October 2025,
   Ramp only since May 2026. PNGs only (Ramp licence unknown); the footer credits all five sources on every
-  visual (per-visual sources: at promotion). Not promoted. Re-render after each Ramp import (September 2026
+  visual (per-visual sources now exist; adopt them at promotion). Not promoted. Re-render after each Ramp import (September 2026
   due ~2026-11-07). Plan and build each passed an adversarial review.
 - **Exploration "Anthropic's share by data source" built** 2026-10-10
   (`explore/2026-10-10-anthropic-share-by-source/`, `docs/plans/2026-10-10-anthropic-share-by-source.md`):
@@ -607,7 +615,11 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   apart. OpenRouter's spend carries a sensitivity band and a hard lower bound. The analysis stops when a
   full week has unpriced Anthropic tokens on OpenRouter: **map Claude Haiku 5.5** (in the top 50 since
   2026-10-08) in `models.yaml` before the next render. PNGs only (Ramp licence unknown). Not promoted. Plan
-  and build each passed an adversarial review.
+  and build each passed an adversarial review. Revised 2026-10-10 on author feedback: one headline for all
+  three visuals ("Different data sources tell different stories about the AI economy"), the measure
+  stamped on the chart, the token visuals credit no LiteLLM (first use of per-visual `sources`), and the
+  exploration reserves `cacheregister.dev/source-matters` (first reserved link; redirects to the
+  exploration until promoted).
 - **Vercel AI Gateway (built 2026-10-09):** fetched daily by the launchd agent from its next run (`fetch --due`
   reads the registry each time; `curated_disclosures` weekly, a no-op while the file is unchanged). First real fetch 2026-10-09 reproduced the
   plan's September 2026 first look exactly. Compare two months of vintages (are days older than the

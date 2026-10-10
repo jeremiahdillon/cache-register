@@ -31,6 +31,8 @@ The plan of record is `docs/PLAN.md`. Read the relevant section before changing 
   `output/`; re-render with `cachereg render receipts/<topic>`. The repo does not track posts.
 - **No branches or PRs.** Commit in small logical steps and push straight to `main`; the
   pre-push hook runs the guard, gitleaks, lint and tests.
-- **Short links** belong to receipts only: the receipt folder name (lowercase-hyphenated, ≤ 32
-  chars) is `cacheregister.dev/<topic>`. Never reuse or rename a posted topic; if you must, add the
-  old name to `config/link-aliases.yaml`.
+- **Short links** belong to receipts: the receipt folder name (lowercase-hyphenated, ≤ 32
+  chars) is `cacheregister.dev/<topic>`. An exploration may reserve its future topic with `link:` in
+  `explore.yaml` (it redirects to the exploration until a receipt of that name, `promoted_from` it,
+  takes over). Never reuse or rename a posted topic; if you must, add the old name to
+  `config/link-aliases.yaml`.

@@ -1,7 +1,9 @@
 """`cachereg site`: the static short-link site published to GitHub Pages (cacheregister.dev).
 
-Only receipts get short links: the folder name *is* the link, so `receipts/<topic>/` is
-`cacheregister.dev/<topic>`, which redirects to that folder on GitHub. Explorations never get one.
+Receipts get short links: the folder name *is* the link, so `receipts/<topic>/` is
+`cacheregister.dev/<topic>`, which redirects to that folder on GitHub. An exploration may reserve one with
+`link:` in its explore.yaml (so its visuals can carry the link before promotion); it redirects to the
+exploration until a receipt promoted from it (`promoted_from`) takes the same name over.
 Retired or renamed links live on in config/link-aliases.yaml so URLs on posted images never break.
 The root is a splash page (assets/templates/site.html, also the 404) open to search and AI crawlers.
 """
@@ -54,17 +56,39 @@ def _title(folder: Path) -> str:
 
 
 def collect_links(root: Path = REPO_ROOT) -> list[Link]:
-    """Every receipt (folder name = link) plus aliases, validated: well-formed and pointing at real receipts."""
+    """Every receipt (folder name = link), every link an exploration reserves, plus aliases, validated:
+    well-formed, unique, and pointing at real folders."""
     links: dict[str, Link] = {}
+    promoted: dict[str, str] = {}  # receipt slug -> the exploration it was promoted from
     for spec in sorted((root / "receipts").glob("*/receipt.yaml")):
         folder = spec.parent
-        _check_slug(folder.name, folder)
+        check_slug(folder.name, folder)
         rel = folder.relative_to(root).as_posix()
         links[folder.name] = Link(folder.name, rel, _title(folder))
+        src = (yaml.safe_load(spec.read_text()) or {}).get("promoted_from")
+        if src:
+            promoted[folder.name] = str(src).rstrip("/")
+    reserved: dict[str, str] = {}
+    for spec in sorted((root / "explore").glob("*/explore.yaml")):
+        cfg = yaml.safe_load(spec.read_text()) or {}
+        slug = cfg.get("link")
+        if slug is None:
+            continue
+        slug, folder = str(slug), spec.parent
+        check_slug(slug, spec)
+        rel = folder.relative_to(root).as_posix()
+        if slug in reserved:
+            raise ValueError(f"link {slug!r} is reserved by both {reserved[slug]} and {rel}")
+        reserved[slug] = rel
+        if slug in links:
+            if promoted.get(slug) == rel:
+                continue  # promoted: the receipt now owns the link
+            raise ValueError(f"link {slug!r} reserved by {rel} is already a receipt not promoted from it")
+        links[slug] = Link(slug, rel, str(cfg.get("title") or folder.name))
     aliases_file = root / "config" / "link-aliases.yaml"
     aliases = (yaml.safe_load(aliases_file.read_text()) or {}).get("aliases") or {} if aliases_file.is_file() else {}
     for slug, target in aliases.items():
-        _check_slug(slug, aliases_file)
+        check_slug(slug, aliases_file)
         if slug in links:
             raise ValueError(f"alias {slug!r} collides with a live link")
         if target not in links:
@@ -73,7 +97,7 @@ def collect_links(root: Path = REPO_ROOT) -> list[Link]:
     return sorted(links.values(), key=lambda link: link.slug)
 
 
-def _check_slug(slug: str, where: Path) -> None:
+def check_slug(slug: str, where: Path) -> None:
     if not SLUG_RE.match(slug) or len(slug) > MAX_SLUG or slug in RESERVED:
         raise ValueError(f"bad link {slug!r} in {where}: lowercase words joined by '-', ≤ {MAX_SLUG} chars")
 

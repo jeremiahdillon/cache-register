@@ -14,19 +14,20 @@ def make_receipt(root: Path, topic: str) -> None:
     (d / "receipt.yaml").write_text(f"title: Title of {topic}\n")
 
 
-def make_exploration(root: Path, folder: str) -> None:
+def make_exploration(root: Path, folder: str, link: str | None = None) -> None:
     d = root / "explore" / folder
     d.mkdir(parents=True)
-    (d / "explore.yaml").write_text("title: scratch\n")
+    (d / "explore.yaml").write_text("title: scratch\n" + (f"link: {link}\n" if link else ""))
 
 
-def test_repo_links_come_from_receipts():
+def test_repo_links_come_from_receipts_and_reserving_explorations():
     links = {link.slug: link for link in collect_links()}  # the real repo
     assert links["openrouter-wallet-share"].analysis == "receipts/openrouter-wallet-share"
-    assert not any(link.analysis.startswith("explore/") for link in links.values())
+    explored = {link.slug for link in links.values() if link.analysis.startswith("explore/")}
+    assert explored <= {"source-matters"}  # only explorations that reserve a link
 
 
-def test_explorations_never_get_links(tmp_path):
+def test_explorations_without_a_reserved_link_get_none(tmp_path):
     make_exploration(tmp_path, "2026-01-01-some-idea")
     make_receipt(tmp_path, "a-topic")
     assert [link.slug for link in collect_links(tmp_path)] == ["a-topic"]
@@ -115,3 +116,31 @@ def test_splash_and_404_read_brand_and_keep_redirects(tmp_path):
         text = (TEMPLATES / name).read_text(encoding="utf-8")
         assert not any(hex_ in text for hex_ in b["colors"].values() if isinstance(hex_, str))
         assert b["name"] not in text
+
+
+def test_exploration_reserves_a_link_until_promoted(tmp_path):
+    make_exploration(tmp_path, "2026-01-01-idea", link="an-idea")
+    out = tmp_path / "_site"
+    links = {link.slug: link for link in build_site(out, tmp_path)}
+    assert links["an-idea"].analysis == "explore/2026-01-01-idea"
+    assert "/tree/main/explore/2026-01-01-idea" in (out / "an-idea" / "index.html").read_text()
+    receipt = tmp_path / "receipts" / "an-idea"
+    receipt.mkdir(parents=True)
+    (receipt / "receipt.yaml").write_text("title: Promoted\npromoted_from: explore/2026-01-01-idea\n")
+    assert {link.slug: link for link in collect_links(tmp_path)}["an-idea"].analysis == "receipts/an-idea"
+
+
+def test_reserved_link_clashes_are_rejected(tmp_path):
+    make_receipt(tmp_path, "taken")
+    make_exploration(tmp_path, "2026-01-01-a", link="taken")
+    with pytest.raises(ValueError, match="already a receipt"):
+        collect_links(tmp_path)
+    other = tmp_path / "other"
+    make_exploration(other, "2026-01-01-a", link="same")
+    make_exploration(other, "2026-01-02-b", link="same")
+    with pytest.raises(ValueError, match="reserved by both"):
+        collect_links(other)
+    bad = tmp_path / "bad"
+    make_exploration(bad, "2026-01-01-a", link="Not_A_Slug")
+    with pytest.raises(ValueError, match="bad link"):
+        collect_links(bad)
