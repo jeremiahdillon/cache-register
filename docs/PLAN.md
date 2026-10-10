@@ -616,8 +616,8 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   chart (author decision: same measure). Four weeks to 27 Sep 2026: spend 53% Ramp, 47% Vercel, 28%
   OpenRouter; tokens 42 / 11 / 4%. In 2025 Ramp rose while OpenRouter fell; in 2026 all fall but stay
   apart. OpenRouter's spend carries a sensitivity band and a hard lower bound. The analysis stops when a
-  full week has unpriced Anthropic tokens on OpenRouter: **map Claude Haiku 5.5** (in the top 50 since
-  2026-10-08) in `models.yaml` before the next render. PNGs only (Ramp licence unknown). Not promoted. Plan
+  week drawn has unpriced Anthropic tokens on OpenRouter (Claude Haiku 5.5, in the top 50 since
+  2026-10-08, mapped 2026-10-10). PNGs only (Ramp licence unknown). Not promoted. Plan
   and build each passed an adversarial review. Revised 2026-10-10 on author feedback: one headline for all
   three visuals ("Different data sources tell different stories about the AI economy"), the measure
   stamped on the chart, the token visuals credit no LiteLLM (first use of per-visual `sources`), and the
@@ -681,7 +681,16 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   service was unavailable on 2026-10-06, also on a retry). The Epoch work added no dependencies.
 - After new models enter the OpenRouter top 50 or Epoch's index, run `cachereg entities suggest
   --source openrouter` / `--source epoch` and review the proposals before `--write` (new models are
-  appended; aliases are inserted without rewriting reviewed lines).
+  appended; aliases are inserted without rewriting reviewed lines). The OpenRouter share floor
+  (`--min-share`, default 0.01%) is measured over all history, so a model new to the top 50 shows only
+  with `--min-share 0`; `--write` writes every proposal, so write a subset with `entities.write_models`.
+- OpenRouter entities, 2026-10-10: Claude Haiku 5.5 and Solar Mini 4 mapped (both priced Exact).
+  Left unmapped: Ling 3.1 Flash (LiteLLM's only key is priced $0/$0 and it is not in OpenRouter's
+  snapshot; re-check when LiteLLM shows a price) and Step 5 Preview (no LiteLLM key; 2.6T tokens on
+  2026-10-09, most of that day's unpriced paid tokens). LiteLLM's 2026-10-09 revision drops all 494
+  `openrouter/` keys: mapped models fall back to their vendor-direct key, or else to the last
+  `openrouter/` price (`after_removal`, flagged stale). Check whether the keys return before relying on
+  OpenRouter spend after 2026-10-08.
 
 | Phase | Deliverable | Done when |
 |---|---|---|
