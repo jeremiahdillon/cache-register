@@ -3,20 +3,20 @@
   "cache_register_version": "0.0.1",
   "data_hash": "dc92dffa467d418dbf0b4deae428729c7a517e996e50bd1f1abf84613b5ba5fe",
   "folder": "receipts/china-token-share",
-  "git_dirty": true,
-  "git_sha": "8dba1243cc53b6b18c348e9af98b334824d29bf0",
-  "inputs_hash": "b5f695aa870d28d59925f3b5fb62d908e6dcfbcb29955773736640439a90d329",
+  "git_dirty": false,
+  "git_sha": "f36ed9d62203b53f484643425dd8cea32af15392",
+  "inputs_hash": "eb75ae367713e1627886826815709b9801a62e5b5aa3687cf20832855fa79725",
   "kind": "receipt",
   "outputs": {
     "data.json": "8b2211ad4d67a78bb020a9c879b5bf50f4b4c995a2b70366966b0c0ecaf3bb5a",
-    "push-bars.linkedin_video.mp4": "5868f3ba4e88a9f686cb8671f3591db0e1e83216afa88884dc1477b6629a2722",
-    "push-bars.x_video.mp4": "1ee464522826e46051aa4efb645ce5f7e63285eba4d4278d3d0f0134f319e8fb",
-    "push.linkedin_video.mp4": "789f0d377971c3bd4ef28b61ea1fe271321577a0c009ee123eb0df6ac0cc7996",
-    "push.x_video.mp4": "70466298a0627743b835e2603c39641fe4b561274fcb408344b178142b936386",
-    "stack-bars.linkedin_png.png": "8ff7b878986b85f2ad08be6c2a8a28309047d1a04a2968ceb8ef716bb6e35a0a",
-    "stack-bars.x_png.png": "80efcb6449c0511799a0577528324375e2dddea32db1d6e8c707860d3e78e2d1",
-    "stack.linkedin_png.png": "b417ea840458a7d3af8f942cb24de612b161b3cdb4ea0c7f1a5abddf67a1a955",
-    "stack.x_png.png": "f47a27be5a8d4170e29ee1f66f549f8e1b1fa69f6c4495c8bfedd8aa4bce9ba8"
+    "push-bars.linkedin_video.mp4": "bae8264b0f3556872667abd4808df22f6802c4208468943af7e5bc36b141bee3",
+    "push-bars.x_video.mp4": "2c26343cb37ca8a2ad30059d59d69c6a86d5ffc431e1b20113e84ce01f43ecdf",
+    "push.linkedin_video.mp4": "01b728c36a3f5234f3195113c49c8496ec6cbdf650624817d695a16353b81809",
+    "push.x_video.mp4": "f4103b2eccbfd7c754bf38c55068983e5452d30a591d5d41853269a971220bf7",
+    "stack-bars.linkedin_png.png": "7875d8113fc620c883e752b10c25a6553a411ed77c358e6c77244191a8c10ba1",
+    "stack-bars.x_png.png": "d53b4cdec3acbf8b404784a5323a52a2de6725401f5eda3cd451b8e51c7b9d43",
+    "stack.linkedin_png.png": "f2e4a926a9d76c23b9c36515fa94959f27d28ed10d8920ee14a8cfbe7d3ff01a",
+    "stack.x_png.png": "a6b15cccfe501b0fa391abfc0cdf22d9a66b98e9ec7123a984e757fa9c1f1423"
   },
   "sources": {
     "openrouter_rankings": {
