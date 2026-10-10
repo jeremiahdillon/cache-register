@@ -1,0 +1,16 @@
+# Exploration config (same schema as receipt.yaml; no short link — explorations never get one).
+# Analysis (e): docs/plans/2026-10-09-wallet-lenses.md. No blog_html: Ramp's redistribution is unknown, so
+# nothing inlines its data (and disclosure quotes are never inlined anyway).
+title: Developer wallet vs enterprise wallet
+sources: [vercel_ai_gateway, openrouter_rankings, litellm_prices, ramp_ai_index, curated_disclosures]
+config:
+  headline_month: latest     # or YYYY-MM: a month Vercel spend, OpenRouter est. spend and Ramp all cover in full
+  settle_months: 3           # an order counts only if it holds in each of these months, ending at the headline month
+  floor_pct: 1.0             # two labs both under this share in a month are not ranked against each other
+  not_reported_min_pct: 3.0  # gateway labs Ramp does not report, shown when ≥ this share on either gateway
+  start: 2025-10-01          # first month (Vercel's history starts here)
+visuals:
+  - {name: ranks, chart: ranks, targets: [x_png, linkedin_png]}
+  - {name: leaders, chart: leaders, targets: [x_png, linkedin_png]}
+  - {name: tokens-spend, chart: tokens_spend, targets: [x_png, linkedin_png]}
+  - {name: run-rates, chart: run_rates, targets: [x_png, linkedin_png]}
