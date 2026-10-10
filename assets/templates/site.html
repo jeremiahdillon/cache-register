@@ -5,7 +5,7 @@
 <meta name="description" content="$description">
 <meta name="theme-color" content="$canvas">
 <meta name="color-scheme" content="dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src 'self'; img-src 'self'; media-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 $index_meta
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
@@ -66,16 +66,57 @@ footer{position:relative;padding:0 16px 24px;font:12px/1.6 'JetBrains Mono',ui-m
 .tear{max-width:720px;margin:0 auto 14px;font-size:15px;display:flex;align-items:center;gap:10px}
 .tear::after{content:"";flex:1;border-top:1px dashed var(--muted)}
 .line{max-width:720px;margin:0 auto;display:flex;gap:10px;align-items:baseline}
-.line .dots{flex:1;border-bottom:1px dotted color-mix(in srgb,var(--muted) 60%,transparent);transform:translateY(-4px)}
 footer a{color:var(--ink2);text-decoration:none}
 footer a:hover,footer a:focus-visible{color:var(--signal)}
-</style></head><body>
+/* Reel (root page only): one receipt per screen below the splash. The splash and each slide are
+   snap points; proximity, not mandatory, so short screens can still reach the list and footer.
+   The still (<picture>, shaped by orientation) is the no-JS / reduced-motion view; reel.js lays the
+   video over it and reveals it only once it is playing. */
+html{scroll-snap-type:y proximity}
+main,.slide{scroll-snap-align:start}
+.reel main{min-height:100svh}
+.hint{position:absolute;left:0;right:0;bottom:20px;margin:0;font:11px/1 'JetBrains Mono',ui-monospace,monospace;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.hint::after{content:"";display:block;margin:10px auto 0;width:1px;height:28px;background:linear-gradient(var(--muted),transparent)}
+.slide{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;padding:32px 16px;--w:min(100%,calc((100svh - 128px) * 16 / 9))}
+.media{position:relative;width:var(--w);aspect-ratio:16/9;background:var(--panel);
+  border:1px solid color-mix(in srgb,var(--muted) 35%,transparent)}
+.media picture{display:contents}
+.media img,.media video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+.media video{opacity:0;transition:opacity .4s}
+.media video.playing{opacity:1}
+@media (orientation:portrait){.slide{--w:min(100%,calc((100svh - 128px) * 4 / 5))}.media{aspect-ratio:4/5}}
+.meta{width:var(--w);display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;font:12px/1.5 'JetBrains Mono',ui-monospace,monospace;
+  color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.meta a{color:var(--ink2);text-decoration:none;text-transform:none;letter-spacing:0;white-space:nowrap}
+.meta a:hover,.meta a:focus-visible{color:var(--signal)}
+.dots{flex:1;border-bottom:1px dotted color-mix(in srgb,var(--muted) 60%,transparent);transform:translateY(-4px)}
+.motion{background:none;border:1px solid var(--muted);color:var(--ink2);font:inherit;text-transform:inherit;
+  letter-spacing:inherit;padding:2px 8px;cursor:pointer;white-space:nowrap}
+.motion[aria-pressed=true],.motion:hover,.motion:focus-visible{background:var(--signal);border-color:var(--signal);
+  color:var(--canvas);outline:none}
+.older{position:relative;max-width:720px;margin:0 auto;padding:48px 16px;font:13px/1.6 'JetBrains Mono',ui-monospace,monospace}
+.older .label{margin:0 0 12px;color:var(--muted);text-transform:uppercase;letter-spacing:.2em;font-size:12px}
+.older ul{list-style:none;margin:0;padding:0}
+.older li{display:flex;gap:10px;align-items:baseline;color:var(--ink2)}
+.older a{color:var(--ink);text-decoration:none}
+.older a:hover,.older a:focus-visible{color:var(--signal)}
+.pips{position:fixed;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;
+  opacity:0;transition:opacity .3s;pointer-events:none}
+.pips.on{opacity:1}
+.pips i{width:6px;height:6px;border:1px solid var(--muted)}
+.pips i.on{background:var(--signal);border-color:var(--signal)}
+@media (max-width:480px){.meta{font-size:11px;letter-spacing:.04em}.pips{display:none}}
+</style></head><body class="$body_class">
 <main>
   <p class="kicker reveal">$kicker</p>
   <h1 aria-label="$heading">$heading_typed<span class="cursor" aria-hidden="true"></span></h1>
   <p class="lede reveal">$lede</p>
   <a class="cta reveal" href="$repo_url"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>$repo_label</a>
+  $scroll_hint
 </main>
+$reel
 <footer class="reveal">
   <div class="tear" aria-hidden="true">&#9986;</div>
   <div class="line"><span>$name</span><span class="dots" aria-hidden="true"></span><a href="$author_url">$author_label</a></div>

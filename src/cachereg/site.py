@@ -6,6 +6,9 @@ Receipts get short links: the folder name *is* the link, so `receipts/<topic>/` 
 exploration until a receipt promoted from it (`promoted_from`) takes the same name over.
 Retired or renamed links live on in config/link-aliases.yaml so URLs on posted images never break.
 The root is a splash page (assets/templates/site.html, also the 404) open to search and AI crawlers.
+Below the splash, the root shows a scroll-snapped reel of the newest receipts, built from their
+committed output/: one slide each, in the shape that fits the viewport (portrait → linkedin_*,
+landscape → x_*), with the motion visual played by assets/site/reel.js while on screen.
 """
 
 from __future__ import annotations
@@ -15,18 +18,23 @@ import json
 import re
 import shutil
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 from string import Template
 
 import yaml
 
 from cachereg.core.paths import REPO_ROOT
+from cachereg.story.model import TARGETS
 from cachereg.viz.brand import FONT_FILES, brand, color, font_path, register_fonts
 
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 MAX_SLUG = 32
-RESERVED = {"index", "404", "assets", "about", "api", "static"}
+RESERVED = {"index", "404", "assets", "about", "api", "static", "media"}
 TEMPLATES = REPO_ROOT / "assets" / "templates"
+SITE_SCRIPTS = REPO_ROOT / "assets" / "site"
+REEL_SIZE = 6  # newest receipts that get a full slide; older ones are listed as text
+SHAPES = {"portrait": "linkedin", "landscape": "x"}  # viewport orientation → render target prefix
 SPLASH_FONTS = ("display", "body", "mono")  # the faces site.html declares
 # Splash intro timing (ms): cursor alone, then one keystroke per letter (a fixed, slightly uneven
 # rhythm so it reads as typed), a pause, then the rest of the page fades in.
@@ -97,7 +105,99 @@ def collect_links(root: Path = REPO_ROOT) -> list[Link]:
     return sorted(links.values(), key=lambda link: link.slug)
 
 
+@dataclass(frozen=True)
+class ReelItem:
+    slug: str
+    title: str
+    as_of: date
+    still: dict[str, Path]  # shape → file in output/; both shapes always present (fallback: the other)
+    video: dict[str, Path] | None
+
+
+def _pick(folder: Path, visuals: list[dict], kind: str) -> dict[str, Path] | None:
+    """The first visual rendered to a `kind` ("png" | "video") target, as shape → existing file."""
+    for visual in visuals:
+        files = {}
+        for shape, prefix in SHAPES.items():
+            target = f"{prefix}_{kind}"
+            path = folder / "output" / f"{visual['name']}.{target}.{TARGETS[target].fmt}"
+            if target in (visual.get("targets") or []) and path.is_file():
+                files[shape] = path
+        if files:
+            return {shape: files.get(shape) or next(iter(files.values())) for shape in SHAPES}
+    return None
+
+
+def collect_reel(root: Path = REPO_ROOT) -> list[ReelItem]:
+    """Every receipt with a rendered still, newest as_of first. Aliases never get slides."""
+    items = []
+    for spec in sorted((root / "receipts").glob("*/receipt.yaml")):
+        folder = spec.parent
+        check_slug(folder.name, folder)
+        cfg = yaml.safe_load(spec.read_text()) or {}
+        visuals = cfg.get("visuals") or []
+        still = _pick(folder, visuals, "png")
+        if still is None:
+            continue
+        as_of = date.fromisoformat(str(cfg["as_of"]))
+        items.append(ReelItem(folder.name, _title(folder), as_of, still, _pick(folder, visuals, "video")))
+    return sorted(items, key=lambda item: (-item.as_of.toordinal(), item.slug))
+
+
+def _attr(text: object) -> str:
+    """Escape for markup built here: `_template` passes `raw` fields through as-is."""
+    return html.escape(str(text), quote=True)
+
+
+def _media_urls(item: ReelItem, files: dict[str, Path]) -> dict[str, str]:
+    return {shape: _attr(f"/media/{item.slug}/{path.name}") for shape, path in files.items()}
+
+
+def _reel_markup(items: list[ReelItem]) -> str:
+    """Slides for the newest REEL_SIZE receipts, a text list of the rest, and the player script."""
+    if not items:
+        return ""
+    host = brand()["short_link_host"]
+    slides = []
+    for i, item in enumerate(items[:REEL_SIZE]):
+        still, video = _media_urls(item, item.still), ""
+        if item.video:
+            src = _media_urls(item, item.video)
+            video = (
+                f'<video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"'
+                f' data-portrait="{src["portrait"]}" data-landscape="{src["landscape"]}"></video>'
+            )
+        slides.append(
+            f'<section class="slide" aria-label="{_attr(item.title)}"><div class="media">'
+            f'<picture><source media="(orientation: portrait)" srcset="{still["portrait"]}">'
+            f'<img src="{still["landscape"]}" alt="{_attr(item.title)}"'
+            f' loading="lazy" decoding="async"></picture>{video}</div>'
+            f'<div class="meta"><span>#{len(items) - i:03d} · As of {item.as_of.isoformat()}</span>'
+            f'<span class="dots" aria-hidden="true"></span>'
+            f'<a href="/{_attr(item.slug)}">{_attr(host)}/{_attr(item.slug)} →</a></div></section>'
+        )
+    older = ""
+    if len(items) > REEL_SIZE:
+        rows = "".join(
+            f'<li><a href="/{_attr(item.slug)}">{_attr(item.slug)}</a><span class="dots" aria-hidden="true"></span>'
+            f"<span>{_attr(item.title)}</span></li>"
+            for item in items[REEL_SIZE:]
+        )
+        older = f'<section class="older"><p class="label">Older receipts</p><ul>{rows}</ul></section>'
+    return "\n".join(slides) + older + '\n<script src="/assets/reel.js" defer></script>'
+
+
+def _copy_media(out: Path, items: list[ReelItem]) -> None:
+    """Only the files the slides use, under /media/<slug>/ (a reserved slug)."""
+    for item in items[:REEL_SIZE]:
+        dest = out / "media" / item.slug
+        dest.mkdir(parents=True, exist_ok=True)
+        for path in {*item.still.values(), *(item.video or {}).values()}:
+            shutil.copyfile(path, dest / path.name)
+
+
 def check_slug(slug: str, where: Path) -> None:
+
     if not SLUG_RE.match(slug) or len(slug) > MAX_SLUG or slug in RESERVED:
         raise ValueError(f"bad link {slug!r} in {where}: lowercase words joined by '-', ≤ {MAX_SLUG} chars")
 
@@ -142,7 +242,7 @@ def _typed(text: str) -> tuple[str, int]:
     return "".join(spans), t
 
 
-def _splash_page(kicker: str, heading: str, lede: str, page_title: str, indexable: bool = True) -> str:
+def _splash_page(kicker: str, heading: str, lede: str, page_title: str, indexable: bool = True, reel: str = "") -> str:
     b = brand()
     home = html.escape(b["site_url"].rstrip("/") + "/", quote=True)
     index_meta = f'<link rel="canonical" href="{home}">' if indexable else '<meta name="robots" content="noindex">'
@@ -155,6 +255,9 @@ def _splash_page(kicker: str, heading: str, lede: str, page_title: str, indexabl
             "type_start_ms": str(TYPE_START),
             "typing_ms": str(typing_ms),
             "reveal_ms": str(TYPE_START + typing_ms + REVEAL_PAUSE),
+            "reel": reel,
+            "body_class": "reel" if reel else "",
+            "scroll_hint": '<p class="hint reveal" aria-hidden="true">Latest receipts</p>' if reel else "",
         },
         kicker=kicker,
         heading=heading,
@@ -178,6 +281,7 @@ def _write_assets(out: Path) -> None:
     (assets / "fonts").mkdir(parents=True)
     for role in SPLASH_FONTS:
         shutil.copyfile(font_path(role), assets / "fonts" / FONT_FILES[role])
+    shutil.copyfile(SITE_SCRIPTS / "reel.js", assets / "reel.js")
     favicon = _template("favicon.svg")
     (assets / "favicon.svg").write_text(favicon, encoding="utf-8")
     register_fonts()
@@ -202,12 +306,15 @@ def build_site(out: Path, root: Path = REPO_ROOT) -> list[Link]:
     b = brand()
     repo = b["repo_url"].rstrip("/")
     links = collect_links(root)
+    reel = collect_reel(root)
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
     host = b["short_link_host"]
     (out / "index.html").write_text(
-        _splash_page(kicker=host, heading=b["name"], lede=f"{b['tagline']}.", page_title=b["name"]),
+        _splash_page(
+            kicker=host, heading=b["name"], lede=f"{b['tagline']}.", page_title=b["name"], reel=_reel_markup(reel)
+        ),
         encoding="utf-8",
     )
     (out / "404.html").write_text(
@@ -221,6 +328,7 @@ def build_site(out: Path, root: Path = REPO_ROOT) -> list[Link]:
         encoding="utf-8",
     )
     _write_assets(out)
+    _copy_media(out, reel)
     _crawler_files(out)
     for link in links:
         page = out / link.slug / "index.html"

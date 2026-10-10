@@ -1,17 +1,32 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
 import pytest
 
-from cachereg.site import build_site, collect_links, short_url
+from cachereg.site import REEL_SIZE, build_site, collect_links, collect_reel, short_url
+
+FULL = {"chart": ["x_png", "linkedin_png"], "chart-motion": ["x_video", "linkedin_video"]}
+EXT = {"png": "png", "video": "mp4"}
 
 
-def make_receipt(root: Path, topic: str) -> None:
+def make_receipt(root: Path, topic: str, as_of: str | None = None, visuals: dict | None = None, title: str = ""):
+    """A receipt folder; `visuals` maps visual name → targets, each written as a placeholder output file."""
     d = root / "receipts" / topic
     d.mkdir(parents=True)
-    (d / "receipt.yaml").write_text(f"title: Title of {topic}\n")
+    lines = [f"title: {json.dumps(title or f'Title of {topic}')}"]
+    if as_of:
+        lines.append(f"as_of: {as_of}")
+    if visuals:
+        lines.append("visuals:")
+        (d / "output").mkdir()
+        for name, targets in visuals.items():
+            lines.append(f"  - {{name: {name}, chart: c, targets: [{', '.join(targets)}]}}")
+            for target in targets:
+                (d / "output" / f"{name}.{target}.{EXT[target.split('_')[-1]]}").write_bytes(b"synthetic")
+    (d / "receipt.yaml").write_text("\n".join(lines) + "\n")
 
 
 def make_exploration(root: Path, folder: str, link: str | None = None) -> None:
@@ -144,3 +159,78 @@ def test_reserved_link_clashes_are_rejected(tmp_path):
     make_exploration(bad, "2026-01-01-a", link="Not_A_Slug")
     with pytest.raises(ValueError, match="bad link"):
         collect_links(bad)
+
+
+def test_reel_newest_first_with_both_shapes(tmp_path):
+    make_receipt(tmp_path, "older", "2026-01-01", FULL)
+    make_receipt(tmp_path, "newer", "2026-02-01", FULL)
+    make_receipt(tmp_path, "also-newer", "2026-02-01", FULL)
+    reel = collect_reel(tmp_path)
+    assert [item.slug for item in reel] == ["also-newer", "newer", "older"]  # as_of desc, then slug
+    item = reel[0]
+    assert {p.name for p in item.still.values()} == {"chart.x_png.png", "chart.linkedin_png.png"}
+    assert item.video["portrait"].name == "chart-motion.linkedin_video.mp4"
+    assert item.video["landscape"].name == "chart-motion.x_video.mp4"
+
+
+def test_reel_shape_fallback_and_stills_only(tmp_path):
+    make_receipt(tmp_path, "landscape-only", "2026-01-02", {"chart": ["x_png"], "motion": ["x_video"]})
+    make_receipt(tmp_path, "stills-only", "2026-01-01", {"chart": ["x_png", "linkedin_png"]})
+    make_receipt(tmp_path, "no-outputs", "2026-01-03")
+    reel = {item.slug: item for item in collect_reel(tmp_path)}
+    assert set(reel) == {"landscape-only", "stills-only"}  # nothing rendered → no slide
+    fallback = reel["landscape-only"]
+    assert set(fallback.still) == set(fallback.video) == {"portrait", "landscape"}
+    assert fallback.still["portrait"] == fallback.still["landscape"]
+    assert reel["stills-only"].video is None
+
+
+def test_reel_on_index_only_with_media_for_slides(tmp_path):
+    for i in range(REEL_SIZE + 2):
+        make_receipt(tmp_path, f"topic-{i}", f"2026-01-{i + 1:02d}", FULL)
+    (tmp_path / "config").mkdir()
+    (tmp_path / "config" / "link-aliases.yaml").write_text("aliases:\n  old-name: topic-0\n")
+    out = tmp_path / "_site"
+    build_site(out, tmp_path)
+    index = (out / "index.html").read_text(encoding="utf-8")
+
+    slides = re.findall(r'<section class="slide" aria-label="([^"]+)"', index)
+    assert slides == [f"Title of topic-{i}" for i in range(REEL_SIZE + 1, 1, -1)]  # aliases never get slides
+    older = re.search(r'<section class="older">(.*?)</section>', index).group(1)
+    assert re.findall(r'<a href="/([^"]+)">', older) == ["topic-1", "topic-0"]
+    assert '<script src="/assets/reel.js" defer></script>' in index and (out / "assets" / "reel.js").is_file()
+    assert 'data-portrait="/media/topic-7/chart-motion.linkedin_video.mp4"' in index
+    assert "#008 · As of 2026-01-08" in index and "cacheregister.dev/topic-7 →" in index
+    csp = re.search(r'Content-Security-Policy" content="([^"]+)"', index).group(1)
+    assert "media-src 'self'" in csp and "script-src 'self'" in csp and "unsafe-inline" not in csp.split("style-src")[0]
+
+    copied = {p.parent.name for p in (out / "media").glob("*/*")}
+    assert copied == {f"topic-{i}" for i in range(2, REEL_SIZE + 2)}  # text-list receipts get no media
+    assert len(list((out / "media" / "topic-7").iterdir())) == 4
+
+    not_found = (out / "404.html").read_text(encoding="utf-8")
+    for markup in ('class="slide"', 'src="/assets/reel.js"', 'class="hint', 'body class="reel"'):
+        assert markup not in not_found
+    assert '<div class="tear"' in not_found  # the footer stays
+
+
+def test_reel_without_older_receipts_has_no_list(tmp_path):
+    make_receipt(tmp_path, "only", "2026-01-01", FULL)
+    out = tmp_path / "_site"
+    build_site(out, tmp_path)
+    index = (out / "index.html").read_text(encoding="utf-8")
+    assert index.count('class="slide"') == 1 and 'class="older"' not in index
+
+
+def test_reel_escapes_titles(tmp_path):
+    make_receipt(tmp_path, "tricky", "2026-01-01", FULL, title='A & B <i>"quoted"</i>')
+    out = tmp_path / "_site"
+    build_site(out, tmp_path)
+    index = (out / "index.html").read_text(encoding="utf-8")
+    assert 'aria-label="A &amp; B &lt;i&gt;&quot;quoted&quot;&lt;/i&gt;"' in index and "<i>" not in index
+
+
+def test_media_is_a_reserved_slug(tmp_path):
+    make_receipt(tmp_path, "media")
+    with pytest.raises(ValueError, match="bad link"):
+        collect_links(tmp_path)
