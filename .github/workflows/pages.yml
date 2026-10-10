@@ -1,12 +1,13 @@
 name: pages
 
-# Publishes the short-link site (cacheregister.dev/<link> → analysis folder). No data involved.
+# Publishes the short-link site (cacheregister.dev/<link> → analysis folder) and the root page's reel
+# of committed receipt visuals. No data involved.
 on:
   push:
     branches: [main]
-    paths: ["receipts/*/receipt.yaml", "receipts/*/README.md", "config/**", "src/cachereg/site.py",
-            "src/cachereg/viz/brand.py", "assets/templates/**", "assets/fonts/**",
-            ".github/workflows/pages.yml"]
+    paths: ["receipts/*/receipt.yaml", "receipts/*/README.md", "receipts/*/output/**", "config/**",
+            "src/cachereg/site.py", "src/cachereg/viz/brand.py", "src/cachereg/story/model.py",
+            "assets/templates/**", "assets/fonts/**", "assets/site/**", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
