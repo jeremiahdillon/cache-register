@@ -1,0 +1,88 @@
+{
+  "as_of": "2026-10-10",
+  "cache_register_version": "0.0.1",
+  "data_hash": "e9bfb3a0060bb33112aba500ce1e6537f2ec313c74065ad93115419e80bab40e",
+  "folder": "receipts/source-matters",
+  "git_dirty": true,
+  "git_sha": "7e3a70ecb89ff56b340738c64d9c5e52c130ca55",
+  "inputs_hash": "7cc134c12b8f525d0a4cad27792fbacf9526e9fa77cc9ff9720d657ede132449",
+  "kind": "receipt",
+  "outputs": {
+    "spend.linkedin_png.png": "bab49739c540740023da37d19b72288b614e57781ba4560b6f8b81eb64e3c61c",
+    "spend.linkedin_video.mp4": "45a41abc24debc7187fd72089076f014e244d48729e561b19d7a6eb8323ddcfa",
+    "spend.web_video.webm": "9b4c613821bdba8c8c8ebe2b0eddb70d399c621e6e7220a8f04edea98c073e8c",
+    "spend.x_png.png": "acb5e8ea1d789cc359e2aa841937b7196114fd47eab669d70a59ef9401c1366f",
+    "spend.x_video.mp4": "f76587e21fa546b7fa21656eb26e7f1501d235c641bb1d1aa66eb66b6d03cf82",
+    "tokens-with-free.linkedin_png.png": "436aa933b7e497a9b6a02f0875dfadfd16dd075c9a1e7cbdac5b287c9693b19b",
+    "tokens-with-free.linkedin_video.mp4": "afed348b2c2ff65a9b95efc0db68d66a2b800a6232e5ee977dac2c287eff39a7",
+    "tokens-with-free.web_video.webm": "294916b16941b8a9fc9d572cf10b101f9cd1d6ad58d88713e475022a9f362982",
+    "tokens-with-free.x_png.png": "d9ed91f91905e742be15dca157b85f74be4b1e8555d900f5385b2eccc98aacde",
+    "tokens-with-free.x_video.mp4": "a8b24403eb68020216bd6ae3f319d2fa0f481431707f4e45c4eedd025e61027e"
+  },
+  "sources": {
+    "litellm_prices": {
+      "class": "Exact",
+      "content_sha256": "a28e96fb66e275b28e29837d29c7533fba590e0777c3085fdb72a9bec62022d8",
+      "revision_date": "2026-10-09",
+      "vintage": {
+        "date": "2026-10-09",
+        "kind": "git_commit",
+        "value": "141dba23721c85996119a23267003ca4e1872feb"
+      },
+      "vintage_after_as_of": false
+    },
+    "openrouter_rankings": {
+      "class": "Latest-only",
+      "content_sha256": "e177861defca611a2b5c75d1bfbacedb71f0940d5bf87b669a723c1620c6e72c",
+      "fetch_date": "2026-10-10",
+      "vintage": {
+        "kind": "api_as_of",
+        "value": "2026-10-10T12:47:01.896Z",
+        "window": [
+          "2026-09-05",
+          "2026-10-09"
+        ]
+      },
+      "vintage_after_as_of": false
+    },
+    "ramp_ai_index": {
+      "class": "Latest-only",
+      "content_sha256": "85c9b9baf2628b4349e91f15adc804247bb1d6520941d91903c0505b792ef132",
+      "fetch_date": "2026-10-07",
+      "vintage": {
+        "cut": "token_price/output",
+        "first_period": "2025-01-07",
+        "kind": "content",
+        "last_period": "2026-09-29",
+        "value": "867dced435f3a9ba6dda9ed5608f03284e8ef7f038bd4bd707370c9ee739c76f"
+      },
+      "vintage_after_as_of": false
+    },
+    "vercel_ai_gateway": {
+      "class": "Latest-only",
+      "content_sha256": "fa3dcf216943f7902e039dddafd2e29317e52b31d069158b823bd70f8a8b608a",
+      "fetch_date": "2026-10-10",
+      "vintage": {
+        "earliest_available_date": "2025-10-01",
+        "kind": "content",
+        "value": "314dbab1d4c62206aa0d71c1aeb837b961cd32b9561a5dfae553ea20c2a2e014",
+        "window": [
+          "2026-09-01",
+          "2026-10-09"
+        ]
+      },
+      "vintage_after_as_of": false
+    }
+  },
+  "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "visual_sources": {
+    "tokens-with-free": [
+      "ramp_ai_index",
+      "vercel_ai_gateway",
+      "openrouter_rankings"
+    ]
+  },
+  "withheld": {
+    "data.json": "redistribution not allowed for: ramp_ai_index"
+  }
+}
