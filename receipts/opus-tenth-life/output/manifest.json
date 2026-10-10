@@ -1,19 +1,19 @@
 {
   "as_of": "2026-10-09",
   "cache_register_version": "0.0.1",
-  "data_hash": "d38dfae7b911a58838172eca2d7a8eed8a14fe2ce597320999cc0fae5e8cdf63",
+  "data_hash": "8bd4dc8ed95ed213b83b45026fc501e6f0188c62c21a8d1bf95d817bab06a017",
   "folder": "receipts/opus-tenth-life",
-  "git_dirty": true,
-  "git_sha": "7c02e9cf9d578d89b6185f1a5e0b89774b522f5f",
-  "inputs_hash": "1d05b3aab1bed5b9869fced1ffa290fb07cf2a380c6ff42bc7618d3ae35d23c5",
+  "git_dirty": false,
+  "git_sha": "1aa7153e352769f8ceded538ca468191f99bf5a4",
+  "inputs_hash": "dc0683c16a092754ea4ea0083a8ab1b71de776e2e509df8aa823705eb31782b6",
   "kind": "receipt",
   "outputs": {
-    "data.json": "279fb00ae017230d43559dd3ab8a27773aa45054e84098c2ce8807b35a6be40e",
-    "isolines-motion.linkedin_video.mp4": "51ada106f896028fb7f98e87ba6dc61b025d66c5198484e93bf6681a260e3f73",
-    "isolines-motion.x_video.mp4": "a5d1a1c69d9b947d73a89076dd7026683675a1c2486555aad77130f4e28e8d47",
-    "isolines.blog_html.html": "5820c903f64a9677fc9cfa78cbfd5eb02821af19444acaf53c3e791d1eaa9ddd",
-    "isolines.linkedin_png.png": "cc8374052274e8c38a299d202c321e064ebd89cadf81ba680b6e38c72dbce6b1",
-    "isolines.x_png.png": "b76fc6214e68f440bce70c4edec3514af0e41324ec2a4f02c2b12d3930964c4d"
+    "data.json": "dfbcff358b826356c71fb0ea030e183b23e7dc6304a2db509c6320b8c0489d60",
+    "isolines-motion.linkedin_video.mp4": "93389ee884aee73ea33fc6b39eb0b85559ea8a606c343283dd7de9a0bf52ea8d",
+    "isolines-motion.x_video.mp4": "11857acaa0249db2cd1822dcbdeb5f723c117c699a621110eeaa97fe5fe504f2",
+    "isolines.blog_html.html": "3439ff790f3c6436d0572273353c36c5ca259bc4c86eed7618aa40c21fb4a003",
+    "isolines.linkedin_png.png": "0787e002a9c43f99ae0f66889c58e1bb86e18179cffeb4df7b7a8453ee12d7a2",
+    "isolines.x_png.png": "8943aca71a102c40b30bc2d8ca417f45193973ee878fa86ae9545240c8a57f42"
   },
   "sources": {
     "epoch_benchmarks": {
@@ -28,12 +28,12 @@
     },
     "litellm_prices": {
       "class": "Exact",
-      "content_sha256": "547e1ff3d4abe76b1ed8f44fb8e28cb6df745806eed403d36aebaa497dd1746d",
-      "revision_date": "2026-10-08",
+      "content_sha256": "a28e96fb66e275b28e29837d29c7533fba590e0777c3085fdb72a9bec62022d8",
+      "revision_date": "2026-10-09",
       "vintage": {
-        "date": "2026-10-08",
+        "date": "2026-10-09",
         "kind": "git_commit",
-        "value": "6b8dcec64e805472792e4a7ab4c02d0ce8f72a90"
+        "value": "141dba23721c85996119a23267003ca4e1872feb"
       },
       "vintage_after_as_of": false
     }

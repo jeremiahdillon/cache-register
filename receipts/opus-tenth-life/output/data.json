@@ -5556,6 +5556,17 @@
    "setter_release": "2026-07-27"
   },
   {
+   "anchor": "Claude Opus 4",
+   "anchor_eci": "142.67",
+   "day": "2026-10-09",
+   "usd_per_mtok": "0.05",
+   "cheapest_today": "0.10164",
+   "model_group": "Qwen3.7 Flash",
+   "display_name": "Qwen3.7 Flash",
+   "setter_eci": "144.64",
+   "setter_release": "2026-07-27"
+  },
+  {
    "anchor": "Claude Opus 4.5",
    "anchor_eci": "150.09",
    "day": "2025-11-26",
@@ -9043,6 +9054,17 @@
    "setter_release": "2026-07-31"
   },
   {
+   "anchor": "Claude Opus 4.5",
+   "anchor_eci": "150.09",
+   "day": "2026-10-09",
+   "usd_per_mtok": "0.088",
+   "cheapest_today": "0.18",
+   "model_group": "DeepSeek V4 Flash 0731",
+   "display_name": "DeepSeek V4 Flash 0731",
+   "setter_eci": "154.49",
+   "setter_release": "2026-07-31"
+  },
+  {
    "anchor": "Claude Opus 4.6",
    "anchor_eci": "155.24",
    "day": "2026-02-05",
@@ -11749,6 +11771,17 @@
    "setter_release": "2026-09-22"
   },
   {
+   "anchor": "Claude Opus 4.6",
+   "anchor_eci": "155.24",
+   "day": "2026-10-09",
+   "usd_per_mtok": "0.18",
+   "cheapest_today": "0.18",
+   "model_group": "GPT-6 Luna",
+   "display_name": "GPT-6 Luna",
+   "setter_eci": "156.28",
+   "setter_release": "2026-09-22"
+  },
+  {
    "anchor": "Claude Opus 4.8",
    "anchor_eci": "158.21",
    "day": "2026-05-29",
@@ -13210,6 +13243,17 @@
    "display_name": "GPT-6 Sol",
    "setter_eci": "162.72",
    "setter_release": "2026-09-22"
+  },
+  {
+   "anchor": "Claude Opus 4.8",
+   "anchor_eci": "158.21",
+   "day": "2026-10-09",
+   "usd_per_mtok": "3.6",
+   "cheapest_today": "3.6",
+   "model_group": "GPT-6 Sol",
+   "display_name": "GPT-6 Sol",
+   "setter_eci": "162.72",
+   "setter_release": "2026-09-22"
   }
  ],
  "events": [
@@ -13576,9 +13620,9 @@
    "now_model": "Qwen3.7 Flash",
    "fold": "540.0",
    "months_to_10x": "2.52956636",
-   "months": "16.5571616",
+   "months": "16.5900131",
    "new_models": "7",
-   "days_above_record": "0"
+   "days_above_record": "1"
   },
   {
    "anchor": "Claude Opus 4.5",
@@ -13589,9 +13633,9 @@
    "now_model": "DeepSeek V4 Flash 0731",
    "fold": "102.272727",
    "months_to_10x": "8.57424442",
-   "months": "10.3810775",
+   "months": "10.413929",
    "new_models": "5",
-   "days_above_record": "0"
+   "days_above_record": "1"
   },
   {
    "anchor": "Claude Opus 4.6",
@@ -13602,7 +13646,7 @@
    "now_model": "GPT-6 Luna",
    "fold": "50.0",
    "months_to_10x": "6.24178712",
-   "months": "8.04862024",
+   "months": "8.08147175",
    "new_models": "4",
    "days_above_record": "0"
   },
@@ -13615,7 +13659,7 @@
    "now_model": "GPT-6 Sol",
    "fold": "2.5",
    "months_to_10x": null,
-   "months": "4.33639947",
+   "months": "4.36925099",
    "new_models": "2",
    "days_above_record": "0"
   }
