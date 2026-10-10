@@ -14,17 +14,15 @@ stretched. BTOS's two question wordings are separate layers, so no line can cros
 
 from __future__ import annotations
 
-import json
 import math
-import re
 from datetime import UTC, date, datetime
 
 import altair as alt
 import polars as pl
-import vl_convert as vlc
 
 from cachereg.story.model import Story
 from cachereg.viz.brand import brand, color
+from cachereg.viz.fit import fit
 from cachereg.viz.theme import vl_config
 
 RAMP, CUR = "ramp_paid", "btos_use_current"
@@ -36,52 +34,6 @@ OVERALL = "All businesses"
 
 def _ms(d: date) -> int:
     return int(datetime(d.year, d.month, d.day, tzinfo=UTC).timestamp() * 1000)
-
-
-def _size(v, default: float) -> float:
-    return v if isinstance(v, int | float) else default
-
-
-def _fit(make, width, height):
-    """Build ``make(w, h)`` so its rendered outer size (axes and titles included) is width × height.
-
-    The frame resizes the plot to its box exactly, so any mismatch would stretch the chart. Render, measure
-    and correct the inner size until the outer size is within half a pixel (the PNG size is the rounded
-    SVG size). A chart that cannot shrink to the box (a floor set by titles or labels) is an
-    error, never a silent stretch.
-    """
-    if not isinstance(width, int | float) or not isinstance(height, int | float):
-        return make(_size(width, 900), _size(height, 520))
-
-    def measure(w: float, h: float) -> tuple[float, float]:
-        svg = vlc.vegalite_to_svg(vl_spec=json.dumps(make(w, h).to_dict()))
-        return tuple(float(re.search(rf'{k}="([\d.]+)"', svg).group(1)) for k in ("width", "height"))
-
-    def ok(r: float, target: float) -> bool:
-        return abs(r - target) < 0.45
-
-    # Per dimension: step by the measured overshoot, then bisect once the target is bracketed (outer sizes
-    # move in steps, e.g. when an axis label's width changes, so plain steps can oscillate).
-    size, bounds = [float(width), float(height)], [[None, None], [None, None]]
-    for _ in range(12):
-        rw, rh = measure(*size)
-        if ok(rw, width) and ok(rh, height):
-            return make(*size)
-        for i, (r, target) in enumerate(((rw, width), (rh, height))):
-            if ok(r, target):
-                continue
-            lo, hi = bounds[i]
-            if r > target:
-                hi = size[i] if hi is None else min(hi, size[i])
-            else:
-                lo = size[i] if lo is None else max(lo, size[i])
-            bounds[i] = [lo, hi]
-            size[i] = (lo + hi) / 2 if lo is not None and hi is not None else size[i] - (r - target)
-        if min(size) < 1:
-            break
-    raise ValueError(
-        f"chart cannot fit its {width:.0f}×{height:.0f} box (renders {rw:.0f}×{rh:.0f}): shorten its titles or labels"
-    )
 
 
 def _wrap(sub: str, fs: float, max_px: float | None) -> str | list[str]:
@@ -132,7 +84,7 @@ def _pct_axis(
 
 
 def sectors(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.HConcatChart:
-    return _fit(lambda w, h: _sectors(story, w, h, font_scale), width, height)
+    return fit(lambda w, h: _sectors(story, w, h, font_scale), width, height)
 
 
 def _sectors(story: Story, width: float, height: float, font_scale: float) -> alt.HConcatChart:
@@ -153,7 +105,7 @@ def _sectors(story: Story, width: float, height: float, font_scale: float) -> al
     label_px = (max(len(x) for x in domain) * 0.55 * AXIS_PX + 18) * fs
     spacing = 36 * fs
     panel_w = max((width - label_px - spacing) / 2, 1.0)
-    panel_h = max(height - 90 * fs, 1.0)  # first guess; _fit corrects for the titles and axis
+    panel_h = max(height - 90 * fs, 1.0)  # first guess; fit corrects for the titles and axis
     x_scale = alt.Scale(domain=[0, 118], nice=False)  # 0–100% axis; the margin holds the value labels
     axis = _pct_axis(fs, sparse=panel_w < 300 * fs)
     clr = alt.Color("c:N", scale=None, legend=None)
@@ -214,7 +166,7 @@ def _sectors(story: Story, width: float, height: float, font_scale: float) -> al
 def trends(
     story: Story, width, height, font_scale: float = 1.0, interactive: bool = False
 ) -> alt.VConcatChart | alt.LayerChart:
-    return _fit(lambda w, h: _trends(story, w, h, font_scale), width, height)
+    return fit(lambda w, h: _trends(story, w, h, font_scale), width, height)
 
 
 def _trends(story: Story, width: float, height: float, font_scale: float) -> alt.VConcatChart | alt.LayerChart:
@@ -229,7 +181,7 @@ def _trends(story: Story, width: float, height: float, font_scale: float) -> alt
     first, last = tr["month"].min(), tr["month"].max()
 
     label_px = (16 + 12 * 0.55 * LABEL_PX + 12) * fs
-    plot_px = max(width - 60 * fs, 1.0)  # first guess; _fit corrects for the y-axis
+    plot_px = max(width - 60 * fs, 1.0)  # first guess; fit corrects for the y-axis
     pad = (last - first) * (label_px / max(plot_px - label_px, 1.0))
     x0 = date(first.year, first.month, 1)
     x_scale = alt.Scale(type="utc", domain=[_ms(x0), _ms(last + pad)])
@@ -407,7 +359,7 @@ def _trends(story: Story, width: float, height: float, font_scale: float) -> alt
 def sizes(
     story: Story, width, height, font_scale: float = 1.0, interactive: bool = False
 ) -> alt.HConcatChart | alt.LayerChart:
-    return _fit(lambda w, h: _sizes(story, w, h, font_scale), width, height)
+    return fit(lambda w, h: _sizes(story, w, h, font_scale), width, height)
 
 
 def _sizes(story: Story, width: float, height: float, font_scale: float) -> alt.HConcatChart | alt.LayerChart:
