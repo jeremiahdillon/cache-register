@@ -37,8 +37,8 @@ colors:
     xai: "#36B102"
 
 wordmark:                      # brand name at the top of every image / video / page
-  color: "#4A4F5C"             # recessive: a step above the canvas, below the muted grey
-  glyph: false                 # the lime square before the name (off for now)
+  color: "#F2F4F8"             # the text colour, as in the first receipt (author, 2026-10-10)
+  glyph: true                  # the lime square before the name
 
 fonts:                         # SIL OFL, vendored in assets/fonts for reproducible renders
   display: Space Grotesk
