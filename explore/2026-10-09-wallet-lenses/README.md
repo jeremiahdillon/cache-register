@@ -99,7 +99,7 @@ Rendered as `x_png` and `linkedin_png` only (see Licence). Every chart's PNG equ
 (they sit in `_other` 55%, `_stealth` 30%, `_router` 12%), so pricing them would rescale the six together,
 not reorder them; the analysis stops if a lab of the six ever holds over 1%. OpenRouter's priced share of
 non-free tokens is 86.5–92.2% in the window. Unmapped labs hold 0.04% of Vercel's spend in August and none
-of OpenRouter's. October 2026 (8 days) is dropped from the gateway lenses as partial.
+of OpenRouter's. October 2026 (9 days) is dropped from the gateway lenses as partial.
 
 ## Method
 - **Lenses** from mart `091_gateway_lenses`: calendar months; Vercel and OpenRouter shares are unweighted

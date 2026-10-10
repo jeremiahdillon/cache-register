@@ -11,7 +11,7 @@ Management), Vercel AI Gateway and OpenRouter. Every line is the same measure, a
 source's reported total, so the sources share one axis (author decision; analysis (e)'s "never on one axis"
 rule concerned different measures).
 
-## Findings (Ramp import of 2026-10-07; gateways to 2026-10-08; latest common week ending 27 September 2026)
+## Findings (Ramp import of 2026-10-07; gateways to 2026-10-09; latest common week ending 27 September 2026)
 - **The sources disagree on the level.** Anthropic's share of spend over the four weeks to 27 September 2026:
   **53% on Ramp, 47% on Vercel, 28% on OpenRouter** (frame `weekly`, `rolling4_pct`). Of tokens: **42% on
   Ramp, 11% on Vercel, 4% on OpenRouter** (3% with OpenRouter's free models included).
@@ -95,8 +95,8 @@ ending 2025-01-12, Vercel from 2025-10-12; Ramp's last week ends 2026-09-27, the
 drawn). OpenRouter's rankings miss two days (2025-06-15 and 2025-07-15), so its weeks ending 2025-06-15 and
 2025-07-20 have 6 days and are kept (config `min_days: 6`; flagged by `days` in frame `weekly`). Dropped as
 partial: the first weeks (OpenRouter 2025-01-05, Vercel 2025-10-05, 5 days each) and the current week. No
-week drawn has unpriced Anthropic tokens on OpenRouter (Claude Haiku 5.5, unmapped since 2026-10-08, falls
-in the current partial week; the analysis stops once a week drawn has any).
+week drawn has unpriced Anthropic tokens on OpenRouter (Claude Haiku 5.5, in the top 50 since 2026-10-08, is
+mapped and priced; the analysis stops once a week drawn has any).
 
 ## Method
 - **Weeks:** Monday–Sunday, dated by the Sunday (Ramp's convention); a gateway week needs at least 6 of its 7
