@@ -8,7 +8,7 @@ import pytest
 import vl_convert as vlc
 from PIL import Image
 
-from cachereg.viz.fit import TOLERANCE_PX, fit, outer_size, split
+from cachereg.viz.fit import TOLERANCE_PX, fit, fit_size, outer_size, split
 
 DATA = alt.Data(values=[{"x": "a", "y": 1}, {"x": "b", "y": 3}])
 
@@ -65,3 +65,8 @@ def test_fit_reaches_a_box_three_equal_panels_would_skip():
     for box in (601, 602, 603):
         rw, _ = outer_size(fit(three, box, 300))
         assert box <= rw < box + TOLERANCE_PX
+
+
+def test_fit_size_gives_the_arguments_fit_uses():
+    w, h = fit_size(_panels, 800, 450)
+    assert outer_size(_panels(w, h)) == outer_size(fit(_panels, 800, 450))

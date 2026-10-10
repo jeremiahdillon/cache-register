@@ -36,17 +36,24 @@ def split(total: float, n: int) -> list[float]:
 
 
 def fit(make: Callable[[float, float], alt.TopLevelMixin], width, height, *, default=(900, 520)):
-    """Build ``make(w, h)`` so its rendered outer size (axes and titles included) is width × height.
+    """Build ``make(w, h)`` so its rendered outer size (axes and titles included) is width × height."""
+    if not isinstance(width, int | float) or not isinstance(height, int | float):
+        return make(size_or(width, default[0]), size_or(height, default[1]))
+    return make(*fit_size(make, width, height))
+
+
+def fit_size(make: Callable[[float, float], alt.TopLevelMixin], width: float, height: float) -> tuple[float, float]:
+    """The arguments (w, h) for which ``make(w, h)`` renders at exactly width × height (see ``fit``).
+
+    Videos fit their final frame once and build every frame with these arguments, so the canvas never moves
+    (every frame must then keep the same outer size, e.g. by drawing not-yet-visible marks at opacity 0).
 
     Render, measure and correct the inner size until the outer size is in [box, box + 1): the PNG is the SVG
     size truncated to whole pixels (measured 2026-10-09), so that is exactly the box. Vega rounds each concat
     panel's size to whole pixels, so charts with n equal panels should give the remainder to one panel
     (``split``) or their outer size moves in n-pixel steps and may skip the box. A chart that
     cannot shrink to the box (a floor set by titles or labels) is an error, never a silent stretch.
-    Non-numeric sizes (HTML) skip fitting and use ``default``.
     """
-    if not isinstance(width, int | float) or not isinstance(height, int | float):
-        return make(size_or(width, default[0]), size_or(height, default[1]))
 
     def ok(r: float, target: float) -> bool:
         return target <= r < target + TOLERANCE_PX
@@ -57,7 +64,7 @@ def fit(make: Callable[[float, float], alt.TopLevelMixin], width, height, *, def
     for _ in range(12):
         rw, rh = outer_size(make(*size))
         if ok(rw, width) and ok(rh, height):
-            return make(*size)
+            return size[0], size[1]
         for i, (r, target) in enumerate(((rw, width), (rh, height))):
             if ok(r, target):
                 continue
