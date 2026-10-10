@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from datetime import UTC, date, datetime, timedelta
 
 import pytest
@@ -25,6 +26,14 @@ def plain_cli_output(monkeypatch):
     import typer.rich_utils
 
     monkeypatch.setattr(typer.rich_utils, "FORCE_TERMINAL", False)
+
+
+@pytest.fixture(autouse=True)
+def isolated_git(monkeypatch):
+    # Git exports GIT_DIR and friends to hooks (an absolute path in a worktree), so under the pre-push
+    # hook a test's throwaway `git init` / `config` / `commit` would hit the real repo, not its tmp_path.
+    for name in [k for k in os.environ if k.startswith("GIT_")]:
+        monkeypatch.delenv(name)
 
 
 @pytest.fixture
