@@ -22,7 +22,7 @@ days AS (
     SELECT CAST(d AS DATE) AS day
     FROM lim, generate_series(DATE '2025-01-01', lim.last_day, INTERVAL 1 DAY) g(d)
 ),
-intervals AS (  -- as known on as_of (same rule as lp_price_intervals in 010)
+intervals AS (  -- as known on as_of (same rule as lp_price_intervals in 008)
     SELECT key, valid_from,
         CASE WHEN valid_to > getvariable('as_of') THEN NULL ELSE valid_to END AS valid_to,
         0.8 * input_usd_per_token + 0.2 * output_usd_per_token AS usd_per_token

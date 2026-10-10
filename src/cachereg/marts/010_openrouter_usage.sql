@@ -13,21 +13,8 @@
 --     that ended after as_of is treated as still listed.
 --   * `:free` variants priced at 0 and reported separately.
 
--- Reads or_rankings_daily from 005_openrouter_tokens (runs first; its only input is a subset of ours).
-
--- LiteLLM price intervals as known on as_of (only entries with both an input and output price).
-CREATE OR REPLACE TABLE lp_price_intervals AS
-SELECT
-    key,
-    input_usd_per_token,
-    output_usd_per_token,
-    valid_from,
-    CASE WHEN valid_to > getvariable('as_of') THEN NULL ELSE valid_to END AS valid_to,
-    commit_sha
-FROM stg_litellm_prices_prices
-WHERE valid_from <= getvariable('as_of')
-  AND input_usd_per_token IS NOT NULL
-  AND output_usd_per_token IS NOT NULL;
+-- Reads or_rankings_daily from 005_openrouter_tokens and lp_price_intervals from 008_litellm_prices
+-- (both run first; each one's only input is a subset of ours).
 
 -- One price per (date, permaslug): the best candidate among the model's LiteLLM keys.
 CREATE OR REPLACE TABLE or_model_price_daily AS

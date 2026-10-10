@@ -202,14 +202,20 @@ def test_build_sources_scope(synthetic_raw):
     finally:
         con.close()
     assert "or_vendor_weekly" not in tables  # skipped mart's tables are dropped, never stale
-    with pytest.raises(RuntimeError, match="missing: openrouter_rankings"):
-        build(date(2026, 8, 31), ["litellm_prices"])
+    prices_only = build(date(2026, 8, 31), ["litellm_prices"])  # price intervals need no OpenRouter data
+    assert prices_only.marts_built == ["008_litellm_prices"]
+    con = connect()
+    try:
+        assert query(con, "SELECT count(*) AS n FROM lp_price_intervals")["n"][0] > 0
+    finally:
+        con.close()
     assert build(date(2026, 8, 31), ["openrouter_models"]).marts_skipped == every
     tokens_only = build(date(2026, 8, 31), ["openrouter_rankings"])  # token mart runs; pricing mart skipped
     assert tokens_only.marts_built == ["005_openrouter_tokens"]
     assert tokens_only.marts_skipped == [m for m in every if m != "005_openrouter_tokens"]
     assert build(date(2026, 8, 31), ["openrouter_rankings", "litellm_prices"]).marts_built == [
         "005_openrouter_tokens",
+        "008_litellm_prices",
         "010_openrouter_usage",
     ]
 
@@ -359,6 +365,21 @@ def test_reproduce_leaves_the_authors_warehouse_alone(synthetic_raw, monkeypatch
     finally:
         con.close()
     assert {"author_scratch", "or_vendor_weekly"} <= tables
+
+
+def test_price_intervals_need_only_litellm_sources(tmp_path):
+    # A receipt that prices models without OpenRouter data (opus-tenth-life) must not be asked for it.
+    from cachereg.reproduce import check_mart_coverage
+    from cachereg.story import config as folder_config
+
+    receipt = _receipt_copy(tmp_path)
+    text = (receipt / "receipt.yaml").read_text()
+    (receipt / "receipt.yaml").write_text(
+        text.replace("sources: [openrouter_rankings, litellm_prices]", "sources: [litellm_prices]")
+    )
+    (receipt / "analysis.py").write_text('SQL = "SELECT * FROM lp_price_intervals"\n')
+    (receipt / "charts.py").write_text("")
+    check_mart_coverage(folder_config.load(receipt))
 
 
 def test_reproduce_rejects_sources_that_dont_cover_the_marts(synthetic_raw, tmp_path):
