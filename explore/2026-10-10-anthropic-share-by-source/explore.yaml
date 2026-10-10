@@ -1,0 +1,11 @@
+# Exploration config (same schema as receipt.yaml; no short link — explorations never get one).
+# Design: docs/plans/2026-10-10-anthropic-share-by-source.md. No blog_html: Ramp's redistribution is unknown,
+# so nothing inlines its data.
+title: Anthropic's share of AI spend and tokens, by data source
+sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings, litellm_prices]
+config:
+  start: null   # null = each source from its first full week; or YYYY-MM-DD to start every line there
+visuals:
+  - {name: spend, chart: spend, targets: [x_png, linkedin_png]}
+  - {name: tokens, chart: tokens, targets: [x_png, linkedin_png]}
+  - {name: tokens-with-free, chart: tokens_with_free, targets: [x_png, linkedin_png]}
