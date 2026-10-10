@@ -12,6 +12,13 @@ and the subtitle explains dots (weekly) vs lines (4-week). The `checks` frame ho
 each later maker's first week and first-week share, and Anthropic's full weeks and lowest weekly share per
 source.
 
+**Revised 2026-10-10 (author feedback after the build):** one title for all visuals ("Different data sources
+tell different stories about the AI economy"); subtitles in one pattern giving each chart's 4-week values at
+the latest common week; the measure stamped in the chart's upper right with a dots/lines key (the population
+note dropped from the footer; the README keeps it); quarterly ticks through October; per-visual `sources`
+(core change; token visuals credit no LiteLLM); the reserved link `source-matters` (core change: an
+exploration may reserve its future short link).
+
 ## Question
 
 Do the datasets that measure AI spend tell the same story about one lab? The author's thesis: each

@@ -37,9 +37,16 @@ rule concerned different measures).
   4-week line per source on one 0–100% axis; OpenRouter's band is its sensitivity to unpriced tokens.
 - `tokens`: the same for tokens, OpenRouter paid models only.
 - `tokens-with-free`: the same, OpenRouter including free models (author decision 1).
-Each line ends at the latest week all three sources cover (the headline's week); colours are fixed per
+All three share one headline, "Different data sources tell different stories about the AI economy": Anthropic
+is a large part of AI spend and tokens, so if the sources disagree this much about it, they tell different
+stories about the whole (author's framing). The subtitle gives each chart's values; the measure is stamped on
+the chart's face (upper right), with how to read dots and lines. Each line ends at the latest week all three
+sources cover (the subtitle's week); colours are fixed per
 source (Ramp cyan, Vercel magenta, OpenRouter gold; not Anthropic's orange, since every line is Anthropic).
-Rendered as `x_png` and `linkedin_png` only (see Licence). Every chart's PNG equals its plot box exactly
+The visuals carry the reserved short link `cacheregister.dev/source-matters`, which redirects here until a
+receipt promoted from this exploration takes it over. The token visuals credit only Ramp, Vercel and
+OpenRouter (they use no prices); `spend` also credits LiteLLM. Rendered as `x_png` and `linkedin_png` only
+(see Licence). Every chart's PNG equals its plot box exactly
 (measured for all six visual × target pairs).
 
 ## Tables

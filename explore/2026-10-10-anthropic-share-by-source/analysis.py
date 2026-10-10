@@ -256,10 +256,32 @@ def series(w: pl.DataFrame, measure: str, variant: str | None) -> pl.DataFrame:
     return s
 
 
-def _headline(kind: str, vals: dict[str, float]) -> str:
-    order = sorted(vals, key=vals.get, reverse=True)
-    parts = ", ".join(f"{vals[s]:.0f}% on {NAMES[s]}" for s in order)
-    return f"Anthropic's share of AI {kind} depends on whose data you read: {parts}"
+TITLE = "Different data sources tell different stories about the AI economy"
+# The measure, stamped on the chart's face (charts.py), one per visual.
+STAMP = {
+    "spend": ["Anthropic's share of total spend in each data source"],
+    "tokens": ["Anthropic's share of total tokens in each data source", "OpenRouter: paid models only"],
+    "tokens-with-free": [
+        "Anthropic's share of total tokens in each data source",
+        "OpenRouter: free models included",
+    ],
+}
+
+
+def _when(week: date) -> str:
+    """'by the end of September' when the week ends in the month's last 7 days, else 'in the week to 13 September'."""
+    if (week + timedelta(days=7)).month != week.month:
+        return f"by the end of {week:%B}"
+    return f"in the week to {week:%-d %B}"
+
+
+def _subtitle(kind: str, week: date, vals: dict[str, float]) -> str:
+    parts = [f"{vals[s]:.0f}% on {NAMES[s]}" for s in SOURCES]
+    listed = ", ".join(parts[:-1]) + " and " + parts[-1]
+    return (
+        f"Anthropic's share of all {kind} varies widely between sources and over time; {_when(week)} "
+        f"{week:%Y} it stood at {listed} (4-week averages)."
+    )
 
 
 def build(con, as_of: date, cfg: dict) -> Story:
@@ -275,30 +297,14 @@ def build(con, as_of: date, cfg: dict) -> Story:
         wk, vals = latest_common(w, measure, variant)
         extra[name] = {"week": str(wk), "values": vals}
         kind = "spend" if measure == "spend" else "tokens"
-        scope = {
-            "spend": "Anthropic's share of all spend each source reports",
-            "tokens": "Anthropic's share of all tokens each source reports (OpenRouter: paid models only)",
-            "tokens-with-free": (
-                "Anthropic's share of all tokens each source reports (OpenRouter: free models included)"
-            ),
-        }[name]
-        notes = [
-            "Ramp: businesses on Ramp that connected their AI providers. Vercel and OpenRouter: developers routing "
-            "through each gateway. Weeks Mon–Sun; Vercel's are means of daily shares.",
-        ]
         if measure == "spend":
-            notes.append(
+            notes = [
                 "OpenRouter spend is Cache Register's list-price estimate (caching ignored); band: unpriced tokens "
                 "at the week's average price."
-            )
+            ]
         else:
-            notes.append("Tokens are counted by each provider's tokenizer.")
-        notes.reverse()  # the page stacks notes bottom-up, so the population note prints first
-        by_visual[name] = {
-            "title": _headline(kind, vals),
-            "subtitle": f"{scope}: weekly (dots) and 4-week average (lines). Values for the 4 weeks to {wk:%-d %B %Y}.",
-            "notes": notes,
-        }
+            notes = ["Tokens are counted by each provider's tokenizer."]
+        by_visual[name] = {"title": TITLE, "subtitle": _subtitle(kind, wk, vals), "notes": notes}
 
     lw = orw.filter(pl.col("days") == 7)
     coverage = (
@@ -374,6 +380,6 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "Spend measured three ways: Ramp realised, Vercel's measure, OpenRouter our list-price estimate (caching "
             "ignored), so part of a gap may be method, not segment.",
         ],
-        extra={"visuals": extra, "start": str(w["week"].min())},
+        extra={"visuals": extra, "stamp": STAMP, "start": str(w["week"].min())},
         by_visual=by_visual,
     )

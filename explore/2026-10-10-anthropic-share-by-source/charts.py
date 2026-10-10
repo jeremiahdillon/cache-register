@@ -62,9 +62,12 @@ def _share(story: Story, width: float, height: float, fs: float, visual: str) ->
     span = _ms(last) - _ms(first)
     x_scale = alt.Scale(type="utc", domain=[_ms(first), _ms(last) + span * label_px / max(plot_w - label_px, 1.0)])
     y_scale = alt.Scale(domain=[0, 100], nice=False)
-    ticks = [date(y, m, 1) for y in range(first.year, last.year + 1) for m in (1, 4, 7, 10)]
+    # quarterly ticks through the first month after the last week (e.g. Oct after 27 Sep), which the axis
+    # reaches because it extends past the last week for the end labels
+    after = date(last.year + last.month // 12, last.month % 12 + 1, 1)
+    ticks = [date(y, m, 1) for y in range(first.year, last.year + 2) for m in (1, 4, 7, 10)]
     x_axis = alt.Axis(
-        values=[_ms(t) for t in ticks if first <= t <= last],
+        values=[_ms(t) for t in ticks if first <= t <= after],
         labelExpr=MONTH_LABEL,
         labelFontSize=AXIS_PX * fs,
         grid=False,
@@ -137,4 +140,19 @@ def _share(story: Story, width: float, height: float, fs: float, visual: str) ->
             )
             .encode(x=x, y=alt.Y("ly:Q", scale=y_scale, axis=y_axis), text="name:N"),
         ]
+    # the measure, stamped on the chart's face (upper right): what every line is, then how to read it
+    stamp = story.extra["stamp"][visual]
+    lines = [(t, LABEL_PX, "bold", color("text")) for t in stamp[:1]]
+    lines += [(t, LABEL_PX - 2, "normal", color("text_secondary")) for t in stamp[1:]]
+    lines += [("Dots: weekly · lines: 4-week average", LABEL_PX - 2, "normal", color("text_secondary"))]
+    y_px = 0.0
+    for text, size, weight, c in lines:
+        layers.append(
+            alt.Chart(alt.Data(values=[{"s": text}]))
+            .mark_text(
+                align="right", baseline="top", fontSize=size * fs, fontWeight=weight, font=fonts["body"], color=c
+            )
+            .encode(x=alt.value(plot_w), y=alt.value(y_px), text="s:N")
+        )
+        y_px += size * fs * 1.35
     return alt.layer(*layers).properties(width=plot_w, height=plot_h).configure(**vl_config(fs))

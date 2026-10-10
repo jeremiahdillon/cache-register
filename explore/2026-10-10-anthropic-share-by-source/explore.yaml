@@ -1,11 +1,19 @@
-# Exploration config (same schema as receipt.yaml; no short link — explorations never get one).
+# Exploration config (same schema as receipt.yaml). `link:` reserves a short link before promotion (PLAN §5).
 # Design: docs/plans/2026-10-10-anthropic-share-by-source.md. No blog_html: Ramp's redistribution is unknown,
 # so nothing inlines its data.
 title: Anthropic's share of AI spend and tokens, by data source
 sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings, litellm_prices]
+link: source-matters   # reserved short link (cacheregister.dev/source-matters), stamped on the visuals
 config:
   start: null   # null = each source from its first full week; or YYYY-MM-DD to start every line there
 visuals:
   - {name: spend, chart: spend, targets: [x_png, linkedin_png]}
-  - {name: tokens, chart: tokens, targets: [x_png, linkedin_png]}
-  - {name: tokens-with-free, chart: tokens_with_free, targets: [x_png, linkedin_png]}
+  # token views use no prices, so they credit no LiteLLM
+  - name: tokens
+    chart: tokens
+    targets: [x_png, linkedin_png]
+    sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings]
+  - name: tokens-with-free
+    chart: tokens_with_free
+    targets: [x_png, linkedin_png]
+    sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings]
