@@ -5,7 +5,7 @@ usage, model prices, benchmarks, business adoption and the capital behind it —
 charts and videos. Every published visual links back to the exact code that made it.
 
 > **Status:** early. Twelve sources across eight families (OpenRouter, LiteLLM prices, Epoch AI, SEC
-> EDGAR, Census BTOS, Ramp AI Index, Vercel AI Gateway, curated disclosures) and five receipts. The plan
+> EDGAR, Census BTOS, Ramp AI Index, Vercel AI Gateway, curated disclosures) and six receipts. The plan
 > is in [`docs/PLAN.md`](docs/PLAN.md).
 >
 > | Receipt | Short link | Finding |
@@ -15,6 +15,7 @@ charts and videos. Every published visual links back to the exact code that made
 > | [`china-spend-share`](receipts/china-spend-share/) | [cacheregister.dev/china-spend-share](https://cacheregister.dev/china-spend-share) | Among Anthropic, OpenAI and Chinese labs, estimated OpenRouter spend was level in the week of Sep 28, 2026: OpenAI 35%, Chinese labs 33%, Anthropic 32%. |
 > | [`china-token-share`](receipts/china-token-share/) | [cacheregister.dev/china-token-share](https://cacheregister.dev/china-token-share) | Chinese labs served 78% of those three groups' OpenRouter tokens in the week of Sep 28, 2026, up from 10% in the week of Jan 6, 2025. |
 > | [`opus-tenth-life`](receipts/opus-tenth-life/) | [cacheregister.dev/opus-tenth-life](https://cacheregister.dev/opus-tenth-life) | Claude Opus 4, 4.5 and 4.6 were each matched in capability (Epoch ECI) at a tenth of their list price after 5.8 months on average. |
+> | [`source-matters`](receipts/source-matters/) | [cacheregister.dev/source-matters](https://cacheregister.dev/source-matters) | Anthropic's share of spend in the four weeks to Sep 27, 2026 was 53% on Ramp, 47% on Vercel AI Gateway and 28% on OpenRouter (of tokens: 42%, 11% and 4%); the sources also disagreed on its direction for most of 2025. |
 
 ## How it works
 

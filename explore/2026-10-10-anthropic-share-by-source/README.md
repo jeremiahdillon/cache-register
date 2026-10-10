@@ -1,6 +1,8 @@
 # Anthropic's share of AI spend and tokens, by data source
 
-*Exploration · started 2026-10-10 · design: [`docs/plans/2026-10-10-anthropic-share-by-source.md`](../../docs/plans/2026-10-10-anthropic-share-by-source.md)*
+*Exploration · started 2026-10-10 · design: [`docs/plans/2026-10-10-anthropic-share-by-source.md`](../../docs/plans/2026-10-10-anthropic-share-by-source.md) ·
+**promoted to [`receipts/source-matters`](../../receipts/source-matters/)**, which is the maintained version and now owns
+cacheregister.dev/source-matters*
 
 ## Question
 Do the datasets that measure AI spend tell the same story about one lab? The author's thesis: each source sees

@@ -656,6 +656,9 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   exploration reserves `cacheregister.dev/source-matters` (first reserved link; redirects to the
   exploration until promoted). A 17 s video of `tokens-with-free` (dots sweep, then the lines one by one) was
   added the same day; `cachereg.viz.fit.fit_size` lets videos fit once and keep the canvas still.
+  **Promoted 2026-10-10 to `receipts/source-matters`** (as of 2026-10-10; `spend` and `tokens-with-free`,
+  PNG and video; `data.json` withheld for Ramp), taking over the reserved link: the first receipt promoted
+  by the PLAN §5 steps, and the first link to go from a redirect to a receipt page.
 - **Vercel AI Gateway (built 2026-10-09):** fetched daily by the launchd agent from its next run (`fetch --due`
   reads the registry each time; `curated_disclosures` weekly, a no-op while the file is unchanged). First real fetch 2026-10-09 reproduced the
   plan's September 2026 first look exactly. Compare two months of vintages (are days older than the
