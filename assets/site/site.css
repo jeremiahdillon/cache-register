@@ -60,7 +60,7 @@ main,.slide{scroll-snap-align:start}
 @media (prefers-reduced-motion:no-preference){.hint::after{animation:nudge 1.6s ease-in-out infinite}}
 @keyframes nudge{50%{transform:translateY(6px) rotate(45deg)}}
 .slide{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:14px;padding:32px 16px;--w:min(100%,calc((100svh - 128px) * 16 / 9))}
+  gap:14px;padding:32px 16px;--w:min(100%,calc((100svh - var(--chrome,128px)) * 16 / 9))}
 .media{position:relative;width:var(--w);aspect-ratio:16/9;background:var(--panel);
   border:1px solid color-mix(in srgb,var(--muted) 35%,transparent)}
 .media picture{display:contents}
@@ -71,7 +71,7 @@ main,.slide{scroll-snap-align:start}
 .in-motion .media:has(video:not(.failed)){background:var(--canvas)}
 .in-motion .media:has(video:not(.failed)) img{visibility:hidden}
 .media video.playing{opacity:1}
-@media (orientation:portrait){.slide{--w:min(100%,calc((100svh - 128px) * 4 / 5))}.media{aspect-ratio:4/5}}
+@media (orientation:portrait){.slide{--w:min(100%,calc((100svh - var(--chrome,128px)) * 4 / 5))}.media{aspect-ratio:4/5}}
 .meta{width:var(--w);display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;font:12px/1.5 'JetBrains Mono',ui-monospace,monospace;
   color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 .meta a{color:var(--ink2);text-decoration:none;text-transform:none;letter-spacing:0;white-space:nowrap}
@@ -93,3 +93,25 @@ main,.slide{scroll-snap-align:start}
 .pips i{width:6px;height:6px;border:1px solid var(--muted)}
 .pips i.on{background:var(--signal);border-color:var(--signal)}
 @media (max-width:480px){.meta{font-size:11px;letter-spacing:.04em}.pips{display:none}}
+/* Receipt pages (cacheregister.dev/<topic>): a slim fixed bar (home, title, source) over the same snap
+   slides; slides and the closing screen give up the bar's height. */
+.page{padding-top:48px}
+html:has(body.page){scroll-padding-top:48px}
+.bar{position:fixed;inset:0 0 auto;z-index:5;height:48px;display:flex;align-items:center;gap:16px;padding:0 16px;
+  background:color-mix(in srgb,var(--canvas) 88%,transparent);backdrop-filter:blur(8px);
+  border-bottom:1px solid color-mix(in srgb,var(--muted) 30%,transparent);
+  font:12px/1 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.bar a{color:var(--ink2);text-decoration:none;white-space:nowrap}
+.bar a:hover,.bar a:focus-visible{color:var(--signal);outline:none}
+.bar .title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .title b{color:var(--ink);font-weight:400}
+.page .slide{--chrome:176px;min-height:calc(100svh - 48px)}
+.page .end{min-height:calc(100svh - 48px)}
+.end .back{margin:-28px 0 48px;font:12px/1 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink2);text-decoration:none}
+.end .back:hover,.end .back:focus-visible{color:var(--signal);outline:none}
+@media (max-width:560px){.bar .home{display:none}.bar{gap:12px}}
+/* Static mode (reduced motion or paused): a chart that exists only as video shows its own video, paused,
+   with native controls, rather than the borrowed still of another chart. */
+.static .slide[data-still=borrowed] video:not(.failed){opacity:1}
+.static .slide[data-still=borrowed] .media:has(video:not(.failed)) img{visibility:hidden}

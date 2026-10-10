@@ -6,9 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from cachereg.site import REEL_SIZE, build_site, collect_links, collect_reel, short_url
+from cachereg.site import REEL_SIZE, build_site, collect_links, collect_receipts, short_url
 
-FULL = {"chart": ["x_png", "linkedin_png"], "chart-motion": ["x_video", "linkedin_video"]}
+VIDEOS, STILLS = ["x_video", "linkedin_video"], ["x_png", "linkedin_png"]
+FULL = {"chart": STILLS, "chart-motion": VIDEOS}
+MIXED = {"push": VIDEOS, "stack": STILLS, "lines": STILLS, "lines-motion": VIDEOS}  # one video-only chart
 EXT = {"png": "png", "video": "mp4"}
 
 
@@ -23,7 +25,8 @@ def make_receipt(root: Path, topic: str, as_of: str | None = None, visuals: dict
         lines.append("visuals:")
         (d / "output").mkdir()
         for name, targets in visuals.items():
-            lines.append(f"  - {{name: {name}, chart: c, targets: [{', '.join(targets)}]}}")
+            chart = name.removesuffix("-motion")  # the repo's convention: x and x-motion are one chart
+            lines.append(f"  - {{name: {name}, chart: {chart}, targets: [{', '.join(targets)}]}}")
             for target in targets:
                 (d / "output" / f"{name}.{target}.{EXT[target.split('_')[-1]]}").write_bytes(b"synthetic")
     (d / "receipt.yaml").write_text("\n".join(lines) + "\n")
@@ -162,31 +165,44 @@ def test_reserved_link_clashes_are_rejected(tmp_path):
         collect_links(bad)
 
 
-def test_reel_newest_first_with_both_shapes(tmp_path):
+def test_receipts_newest_first_still_and_video_of_a_chart_share_a_slide(tmp_path):
     make_receipt(tmp_path, "older", "2026-01-01", FULL)
     make_receipt(tmp_path, "newer", "2026-02-01", FULL)
     make_receipt(tmp_path, "also-newer", "2026-02-01", FULL)
-    reel = collect_reel(tmp_path)
-    assert [item.slug for item in reel] == ["also-newer", "newer", "older"]  # as_of desc, then slug
-    item = reel[0]
-    assert {p.name for p in item.still.values()} == {"chart.x_png.png", "chart.linkedin_png.png"}
-    assert item.video["portrait"].name == "chart-motion.linkedin_video.mp4"
-    assert item.video["landscape"].name == "chart-motion.x_video.mp4"
+    receipts = collect_receipts(tmp_path)
+    assert [r.slug for r in receipts] == ["also-newer", "newer", "older"]  # as_of desc, then slug
+    [slide] = receipts[0].slides
+    assert {p.name for p in slide.still.values()} == {"chart.x_png.png", "chart.linkedin_png.png"}
+    assert slide.video["portrait"].name == "chart-motion.linkedin_video.mp4"
+    assert slide.video["landscape"].name == "chart-motion.x_video.mp4"
+    assert not slide.borrowed and receipts[0].hero is slide
 
 
-def test_reel_shape_fallback_and_stills_only(tmp_path):
-    make_receipt(tmp_path, "landscape-only", "2026-01-02", {"chart": ["x_png"], "motion": ["x_video"]})
+def test_slides_follow_yaml_order_and_video_only_charts_borrow_a_still(tmp_path):
+    make_receipt(tmp_path, "mixed", "2026-01-01", MIXED)
+    [receipt] = collect_receipts(tmp_path)
+    assert [slide.name for slide in receipt.slides] == ["push", "stack", "lines"]
+    push, stack, lines = receipt.slides
+    assert push.borrowed and push.still == stack.still and push.video  # video-only: the first still as fallback
+    assert not stack.borrowed and stack.video is None
+    assert not lines.borrowed and lines.video["landscape"].name == "lines-motion.x_video.mp4"
+    assert receipt.hero is push and receipt.card.name == "stack.x_png.png"
+
+
+def test_shape_fallback_stills_only_and_nothing_rendered(tmp_path):
+    make_receipt(tmp_path, "landscape-only", "2026-01-02", {"chart": ["x_png"], "chart-motion": ["x_video"]})
     make_receipt(tmp_path, "stills-only", "2026-01-01", {"chart": ["x_png", "linkedin_png"]})
+    make_receipt(tmp_path, "videos-only", "2026-01-04", {"push": ["x_video", "linkedin_video"]})
     make_receipt(tmp_path, "no-outputs", "2026-01-03")
-    reel = {item.slug: item for item in collect_reel(tmp_path)}
-    assert set(reel) == {"landscape-only", "stills-only"}  # nothing rendered → no slide
-    fallback = reel["landscape-only"]
+    receipts = {r.slug: r for r in collect_receipts(tmp_path)}
+    assert set(receipts) == {"landscape-only", "stills-only"}  # no still to fall back on → no page, no slide
+    [fallback] = receipts["landscape-only"].slides
     assert set(fallback.still) == set(fallback.video) == {"portrait", "landscape"}
     assert fallback.still["portrait"] == fallback.still["landscape"]
-    assert reel["stills-only"].video is None
+    assert receipts["stills-only"].slides[0].video is None
 
 
-def test_reel_on_index_only_with_media_for_slides(tmp_path):
+def test_reel_on_index_only_with_media_for_every_receipt(tmp_path):
     for i in range(REEL_SIZE + 2):
         make_receipt(tmp_path, f"topic-{i}", f"2026-01-{i + 1:02d}", FULL)
     (tmp_path / "config").mkdir()
@@ -198,15 +214,15 @@ def test_reel_on_index_only_with_media_for_slides(tmp_path):
     slides = re.findall(r'<section class="slide"(?: id="receipts")? aria-label="([^"]+)"', index)
     assert slides == [f"Title of topic-{i}" for i in range(REEL_SIZE + 1, 1, -1)]  # aliases never get slides
     older = re.search(r'<section class="older">(.*?)</section>', index).group(1)
-    assert re.findall(r'<a href="/([^"]+)">', older) == ["topic-1", "topic-0"]
+    assert re.findall(r'<a href="/([^"]+)/">', older) == ["topic-1", "topic-0"]
     assert '<script src="/assets/reel.js" defer></script>' in index and (out / "assets" / "reel.js").is_file()
     assert 'data-portrait="/media/topic-7/chart-motion.linkedin_video.mp4"' in index
-    assert "#008 · As of 2026-01-08" in index and "cacheregister.dev/topic-7 →" in index
+    assert "#008 · As of 2026-01-08" in index and '<a href="/topic-7/">cacheregister.dev/topic-7 →</a>' in index
     csp = re.search(r'Content-Security-Policy" content="([^"]+)"', index).group(1)
     assert "media-src 'self'" in csp and "script-src 'self'" in csp and "unsafe-inline" not in csp.split("style-src")[0]
 
     copied = {p.parent.name for p in (out / "media").glob("*/*")}
-    assert copied == {f"topic-{i}" for i in range(2, REEL_SIZE + 2)}  # text-list receipts get no media
+    assert copied == {f"topic-{i}" for i in range(REEL_SIZE + 2)}  # every receipt has a page that needs its media
     assert len(list((out / "media" / "topic-7").iterdir())) == 4
 
     not_found = (out / "404.html").read_text(encoding="utf-8")
@@ -221,6 +237,51 @@ def test_reel_on_index_only_with_media_for_slides(tmp_path):
     main = index.split("<main>")[1].split("</main>")[0]
     assert 'class="cta' not in main
     assert index.index('class="older"') < index.index('class="cta') < index.index("<footer")
+
+
+def test_short_links_lead_to_receipt_pages(tmp_path):
+    from cachereg.viz.brand import brand
+
+    b = brand()
+    site, repo = b["site_url"].rstrip("/"), b["repo_url"].rstrip("/")
+    make_receipt(tmp_path, "mixed", "2026-01-01", MIXED)
+    make_receipt(tmp_path, "unrendered", "2026-01-02")
+    make_exploration(tmp_path, "2026-01-03-idea", link="an-idea")
+    (tmp_path / "config").mkdir()
+    (tmp_path / "config" / "link-aliases.yaml").write_text("aliases:\n  old-mixed: mixed\n")
+    out = tmp_path / "_site"
+    build_site(out, tmp_path)
+
+    page = (out / "mixed" / "index.html").read_text(encoding="utf-8")
+    assert "$" not in page and 'http-equiv="refresh"' not in page
+    labels = re.findall(r'<section class="slide"( data-still="borrowed")? aria-label="([^"]+)"', page)
+    assert labels == [
+        (' data-still="borrowed"', "Title of mixed, chart 1 of 3"),
+        ("", "Title of mixed, chart 2 of 3"),
+        ("", "Title of mixed, chart 3 of 3"),
+    ]
+    source = f"{repo}/tree/main/receipts/mixed"
+    assert page.count(f'href="{source}"') == 2  # the bar and the closing screen
+    assert "Source on GitHub" in page and '<a class="back" href="/">' in page
+    assert f'<link rel="canonical" href="{site}/mixed/">' in page
+    assert f'property="og:image" content="{site}/media/mixed/stack.x_png.png"' in page  # first chart with a still
+    assert 'og:image:width" content="1600"' in page and 'og:image:height" content="900"' in page
+    assert '<script src="/assets/reel.js" defer></script>' in page and 'href="/assets/site.css"' in page
+    csp = re.search(r'Content-Security-Policy" content="([^"]+)"', page).group(1)
+    assert "media-src 'self'" in csp and "script-src 'self'" in csp
+    assert {p.name for p in (out / "media" / "mixed").iterdir()} == {
+        f"{v}.{t}.{'mp4' if 'video' in t else 'png'}" for v, ts in MIXED.items() for t in ts
+    }
+
+    alias = (out / "old-mixed" / "index.html").read_text()  # an alias goes on to the receipt's page
+    assert f"url={site}/mixed/" in alias
+    for slug, folder in (("unrendered", "receipts/unrendered"), ("an-idea", "explore/2026-01-03-idea")):
+        redirect = (out / slug / "index.html").read_text()  # nothing to show yet: the folder on GitHub
+        assert 'http-equiv="refresh"' in redirect and f"/tree/main/{folder}" in redirect
+
+    sitemap = (out / "sitemap.xml").read_text()
+    assert f"<loc>{site}/mixed/</loc>" in sitemap
+    assert "unrendered" not in sitemap and "old-mixed" not in sitemap and "an-idea" not in sitemap
 
 
 def test_reel_without_older_receipts_has_no_list(tmp_path):

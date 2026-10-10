@@ -1,14 +1,17 @@
-"""`cachereg site`: the static short-link site published to GitHub Pages (cacheregister.dev).
+"""`cachereg site`: the static site published to GitHub Pages (cacheregister.dev).
 
 Receipts get short links: the folder name *is* the link, so `receipts/<topic>/` is
-`cacheregister.dev/<topic>`, which redirects to that folder on GitHub. An exploration may reserve one with
-`link:` in its explore.yaml (so its visuals can carry the link before promotion); it redirects to the
-exploration until a receipt promoted from it (`promoted_from`) takes the same name over.
-Retired or renamed links live on in config/link-aliases.yaml so URLs on posted images never break.
+`cacheregister.dev/<topic>`, the receipt's page: its charts (one slide per chart, in receipt.yaml order;
+a chart's still and video share a slide) built from its committed output/, with its folder on GitHub one
+click away. A receipt with nothing rendered yet redirects to that folder instead. An exploration may
+reserve a link with `link:` in its explore.yaml (so its visuals can carry the link before promotion); it
+redirects to the exploration on GitHub until a receipt promoted from it (`promoted_from`) takes the same
+name over. Retired or renamed links live on in config/link-aliases.yaml (redirecting to the receipt's
+page) so URLs on posted images never break.
 The root is a splash page (assets/templates/site.html, also the 404) open to search and AI crawlers.
-Below the splash, the root shows a scroll-snapped reel of the newest receipts, built from their
-committed output/: one slide each, in the shape that fits the viewport (portrait → linkedin_*,
-landscape → x_*), with the motion visual played by assets/site/reel.js while on screen.
+Below the splash, a scroll-snapped reel shows the newest receipts, one slide each. Every slide is in the
+shape that fits the viewport (portrait → linkedin_*, landscape → x_*), with the motion visual played by
+assets/site/reel.js while on screen.
 """
 
 from __future__ import annotations
@@ -106,42 +109,75 @@ def collect_links(root: Path = REPO_ROOT) -> list[Link]:
 
 
 @dataclass(frozen=True)
-class ReelItem:
+class Slide:
+    """One chart of a receipt: its still and/or its motion version, each as shape → file in output/ (both
+    shapes always present; a missing one falls back to the other). A chart rendered only as video borrows
+    the receipt's first still as its no-JS / failed-video fallback (`borrowed`)."""
+
+    name: str
+    still: dict[str, Path]
+    video: dict[str, Path] | None
+    borrowed: bool = False
+
+
+@dataclass(frozen=True)
+class Receipt:
     slug: str
     title: str
     as_of: date
-    still: dict[str, Path]  # shape → file in output/; both shapes always present (fallback: the other)
-    video: dict[str, Path] | None
+    slides: list[Slide]
+
+    @property
+    def hero(self) -> Slide:
+        """The slide that stands for the receipt in the root page's reel: the first with motion, else the first."""
+        return next((slide for slide in self.slides if slide.video), self.slides[0])
+
+    @property
+    def card(self) -> Path:
+        """The share image: the landscape still of the first chart that has a still of its own."""
+        return next(slide for slide in self.slides if not slide.borrowed).still["landscape"]
 
 
-def _pick(folder: Path, visuals: list[dict], kind: str) -> dict[str, Path] | None:
-    """The first visual rendered to a `kind` ("png" | "video") target, as shape → existing file."""
+def _rendered(folder: Path, visual: dict, kind: str) -> dict[str, Path] | None:
+    """A visual's files for its `kind` ("png" | "video") targets, as shape → existing file, or None."""
+    files = {}
+    for shape, prefix in SHAPES.items():
+        target = f"{prefix}_{kind}"
+        path = folder / "output" / f"{visual['name']}.{target}.{TARGETS[target].fmt}"
+        if target in (visual.get("targets") or []) and path.is_file():
+            files[shape] = path
+    return {shape: files.get(shape) or next(iter(files.values())) for shape in SHAPES} if files else None
+
+
+def _slides(folder: Path, visuals: list[dict]) -> list[Slide]:
+    """One slide per chart, in receipt.yaml order; a chart's still and video share one slide."""
+    charts: dict[str, dict] = {}
     for visual in visuals:
-        files = {}
-        for shape, prefix in SHAPES.items():
-            target = f"{prefix}_{kind}"
-            path = folder / "output" / f"{visual['name']}.{target}.{TARGETS[target].fmt}"
-            if target in (visual.get("targets") or []) and path.is_file():
-                files[shape] = path
-        if files:
-            return {shape: files.get(shape) or next(iter(files.values())) for shape in SHAPES}
-    return None
+        chart = charts.setdefault(str(visual.get("chart") or visual["name"]), {"name": visual["name"]})
+        for kind, key in (("png", "still"), ("video", "video")):
+            if key not in chart and (files := _rendered(folder, visual, kind)):
+                chart[key] = files
+    first_still = next((chart["still"] for chart in charts.values() if "still" in chart), None)
+    if first_still is None:
+        return []  # nothing to fall back on: the link keeps redirecting to the folder on GitHub
+    return [
+        Slide(chart["name"], chart.get("still", first_still), chart.get("video"), borrowed="still" not in chart)
+        for chart in charts.values()
+        if "still" in chart or "video" in chart
+    ]
 
 
-def collect_reel(root: Path = REPO_ROOT) -> list[ReelItem]:
-    """Every receipt with a rendered still, newest as_of first. Aliases never get slides."""
-    items = []
+def collect_receipts(root: Path = REPO_ROOT) -> list[Receipt]:
+    """Every receipt with rendered visuals, newest as_of first. Aliases never get pages or slides of their own."""
+    receipts = []
     for spec in sorted((root / "receipts").glob("*/receipt.yaml")):
         folder = spec.parent
         check_slug(folder.name, folder)
         cfg = yaml.safe_load(spec.read_text()) or {}
-        visuals = cfg.get("visuals") or []
-        still = _pick(folder, visuals, "png")
-        if still is None:
-            continue
-        as_of = date.fromisoformat(str(cfg["as_of"]))
-        items.append(ReelItem(folder.name, _title(folder), as_of, still, _pick(folder, visuals, "video")))
-    return sorted(items, key=lambda item: (-item.as_of.toordinal(), item.slug))
+        slides = _slides(folder, cfg.get("visuals") or [])
+        if slides:
+            receipts.append(Receipt(folder.name, _title(folder), date.fromisoformat(str(cfg["as_of"])), slides))
+    return sorted(receipts, key=lambda receipt: (-receipt.as_of.toordinal(), receipt.slug))
 
 
 def _attr(text: object) -> str:
@@ -149,52 +185,75 @@ def _attr(text: object) -> str:
     return html.escape(str(text), quote=True)
 
 
-def _media_urls(item: ReelItem, files: dict[str, Path]) -> dict[str, str]:
-    return {shape: _attr(f"/media/{item.slug}/{path.name}") for shape, path in files.items()}
+def _media_urls(slug: str, files: dict[str, Path]) -> dict[str, str]:
+    return {shape: _attr(f"/media/{slug}/{path.name}") for shape, path in files.items()}
 
 
-def _reel_markup(items: list[ReelItem]) -> str:
-    """Slides for the newest REEL_SIZE receipts, a text list of the rest, and the player script."""
-    if not items:
+def _slide_markup(receipt: Receipt, slide: Slide, label: str, meta: str, attrs: str = "") -> str:
+    """A snap slide: the still (shaped by orientation) with the video reel.js plays over it; `meta` is markup."""
+    still, video = _media_urls(receipt.slug, slide.still), ""
+    if slide.video:
+        src = _media_urls(receipt.slug, slide.video)
+        video = (
+            f'<video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"'
+            f' data-portrait="{src["portrait"]}" data-landscape="{src["landscape"]}"></video>'
+        )
+    borrowed = ' data-still="borrowed"' if slide.borrowed else ""
+    return (
+        f'<section class="slide"{attrs}{borrowed} aria-label="{_attr(label)}"><div class="media">'
+        f'<picture><source media="(orientation: portrait)" srcset="{still["portrait"]}">'
+        f'<img src="{still["landscape"]}" alt="{_attr(receipt.title)}" loading="lazy" decoding="async"></picture>'
+        f'{video}</div><div class="meta">{meta}</div></section>'
+    )
+
+
+def _reel_markup(receipts: list[Receipt]) -> str:
+    """Root page: a slide for each of the newest REEL_SIZE receipts, a text list of the rest, the player."""
+    if not receipts:
         return ""
     host = brand()["short_link_host"]
     slides = []
-    for i, item in enumerate(items[:REEL_SIZE]):
-        still, video = _media_urls(item, item.still), ""
-        if item.video:
-            src = _media_urls(item, item.video)
-            video = (
-                f'<video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"'
-                f' data-portrait="{src["portrait"]}" data-landscape="{src["landscape"]}"></video>'
-            )
-        slides.append(
-            f'<section class="slide"{' id="receipts"' if i == 0 else ""} aria-label="{_attr(item.title)}">'
-            f'<div class="media">'
-            f'<picture><source media="(orientation: portrait)" srcset="{still["portrait"]}">'
-            f'<img src="{still["landscape"]}" alt="{_attr(item.title)}"'
-            f' loading="lazy" decoding="async"></picture>{video}</div>'
-            f'<div class="meta"><span>#{len(items) - i:03d} · As of {item.as_of.isoformat()}</span>'
-            f'<span class="dots" aria-hidden="true"></span>'
-            f'<a href="/{_attr(item.slug)}">{_attr(host)}/{_attr(item.slug)} →</a></div></section>'
+    for i, receipt in enumerate(receipts[:REEL_SIZE]):
+        slug = _attr(receipt.slug)
+        meta = (
+            f"<span>#{len(receipts) - i:03d} · As of {receipt.as_of.isoformat()}</span>"
+            f'<span class="dots" aria-hidden="true"></span><a href="/{slug}/">{_attr(host)}/{slug} →</a>'
         )
+        attrs = ' id="receipts"' if i == 0 else ""
+        slides.append(_slide_markup(receipt, receipt.hero, receipt.title, meta, attrs))
     older = ""
-    if len(items) > REEL_SIZE:
+    if len(receipts) > REEL_SIZE:
         rows = "".join(
-            f'<li><a href="/{_attr(item.slug)}">{_attr(item.slug)}</a><span class="dots" aria-hidden="true"></span>'
-            f"<span>{_attr(item.title)}</span></li>"
-            for item in items[REEL_SIZE:]
+            f'<li><a href="/{_attr(r.slug)}/">{_attr(r.slug)}</a><span class="dots" aria-hidden="true"></span>'
+            f"<span>{_attr(r.title)}</span></li>"
+            for r in receipts[REEL_SIZE:]
         )
         older = f'<section class="older"><p class="label">Older receipts</p><ul>{rows}</ul></section>'
     return "\n".join(slides) + older + '\n<script src="/assets/reel.js" defer></script>'
 
 
-def _copy_media(out: Path, items: list[ReelItem]) -> None:
-    """Only the files the slides use, under /media/<slug>/ (a reserved slug)."""
-    for item in items[:REEL_SIZE]:
-        dest = out / "media" / item.slug
+def _receipt_slides(receipt: Receipt) -> str:
+    """A receipt page: every chart, one slide each, in receipt.yaml order."""
+    n = len(receipt.slides)
+    return "\n".join(
+        _slide_markup(
+            receipt,
+            slide,
+            f"{receipt.title}, chart {i} of {n}",
+            (f"<span>{i} / {n}</span>" if n > 1 else "") + '<span class="dots" aria-hidden="true"></span>',
+        )
+        for i, slide in enumerate(receipt.slides, 1)
+    )
+
+
+def _copy_media(out: Path, receipts: list[Receipt]) -> None:
+    """The files the slides use, under /media/<slug>/ (a reserved slug)."""
+    for receipt in receipts:
+        dest = out / "media" / receipt.slug
         dest.mkdir(parents=True, exist_ok=True)
-        for path in {*item.still.values(), *(item.video or {}).values()}:
-            shutil.copyfile(path, dest / path.name)
+        for slide in receipt.slides:
+            for path in {*slide.still.values(), *(slide.video or {}).values()}:
+                shutil.copyfile(path, dest / path.name)
 
 
 def check_slug(slug: str, where: Path) -> None:
@@ -243,9 +302,26 @@ def _typed(text: str) -> tuple[str, int]:
     return "".join(spans), t
 
 
-def _splash_page(kicker: str, heading: str, lede: str, page_title: str, indexable: bool = True, reel: str = "") -> str:
+def _github_icon() -> str:
+    return (TEMPLATES / "github.svg").read_text(encoding="utf-8").strip()
+
+
+def _page_fields() -> dict[str, str]:
+    """Values every page template uses besides the brand colours."""
     b = brand()
-    home = html.escape(b["site_url"].rstrip("/") + "/", quote=True)
+    return {
+        "description": " ".join(b["description"].split()),
+        "site_url": b["site_url"].rstrip("/"),
+        "repo_url": b["repo_url"],
+        "repo_label": _bare(b["repo_url"]).removeprefix("github.com/"),
+        "author_url": b["author_url"],
+        "author_label": _bare(b["author_url"]),
+        **{f"font_{role}": FONT_FILES[role] for role in SPLASH_FONTS},
+    }
+
+
+def _splash_page(kicker: str, heading: str, lede: str, page_title: str, indexable: bool = True, reel: str = "") -> str:
+    home = html.escape(brand()["site_url"].rstrip("/") + "/", quote=True)
     index_meta = f'<link rel="canonical" href="{home}">' if indexable else '<meta name="robots" content="noindex">'
     heading_typed, typing_ms = _typed(heading)
     return _template(
@@ -259,18 +335,35 @@ def _splash_page(kicker: str, heading: str, lede: str, page_title: str, indexabl
             "reel": reel,
             "body_class": "reel" if reel else "",
             "scroll_hint": '<a class="hint reveal" href="#receipts">Latest receipts</a>' if reel else "",
+            "github_icon": _github_icon(),
         },
         kicker=kicker,
         heading=heading,
         lede=lede,
         page_title=page_title,
-        description=" ".join(b["description"].split()),
-        site_url=b["site_url"].rstrip("/"),
-        repo_url=b["repo_url"],
-        repo_label=_bare(b["repo_url"]).removeprefix("github.com/"),
-        author_url=b["author_url"],
-        author_label=_bare(b["author_url"]),
-        **{f"font_{role}": FONT_FILES[role] for role in SPLASH_FONTS},
+        **_page_fields(),
+    )
+
+
+def _receipt_page(receipt: Receipt) -> str:
+    """cacheregister.dev/<topic>: the receipt's charts in a snap scroll, with its folder on GitHub one click away."""
+    b = brand()
+    site, card = b["site_url"].rstrip("/"), receipt.card
+    card_target = TARGETS[card.name.split(".")[-2]]  # <visual>.<target>.<ext>
+    as_of = receipt.as_of.isoformat()
+    return _template(
+        "receipt.html",
+        raw={"slides": _receipt_slides(receipt), "github_icon": _github_icon()},
+        page_title=f"{receipt.title} · {b['name']}",
+        page_description=f"{receipt.title}: a {b['name']} receipt, data as of {as_of}. {b['tagline']}.",
+        title=receipt.title,
+        as_of=as_of,
+        canonical=f"{site}/{receipt.slug}/",
+        card_url=f"{site}/media/{receipt.slug}/{card.name}",
+        card_width=str(card_target.width),
+        card_height=str(card_target.height),
+        source_url=f"{b['repo_url'].rstrip('/')}/tree/main/receipts/{receipt.slug}",
+        **_page_fields(),
     )
 
 
@@ -292,15 +385,16 @@ def _write_assets(out: Path) -> None:
     (assets / "og.png").write_bytes(vlc.svg_to_png(card, scale=1))
 
 
-def _crawler_files(out: Path) -> None:
-    """Open to every crawler, search and AI alike; the sitemap lists the one real page (short links redirect)."""
-    site = brand()["site_url"].rstrip("/")
+def _crawler_files(out: Path, receipts: list[Receipt]) -> None:
+    """Open to every crawler, search and AI alike; the sitemap lists the real pages: the root and each receipt's."""
+    site = html.escape(brand()["site_url"].rstrip("/"))
+    urls = [f"{site}/", *(f"{site}/{html.escape(r.slug)}/" for r in receipts)]
     (out / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {site}/sitemap.xml\n")
     (out / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        f"  <url><loc>{html.escape(site)}/</loc></url>\n"
-        "</urlset>\n"
+        + "".join(f"  <url><loc>{url}</loc></url>\n" for url in urls)
+        + "</urlset>\n"
     )
 
 
@@ -308,14 +402,15 @@ def build_site(out: Path, root: Path = REPO_ROOT) -> list[Link]:
     b = brand()
     repo = b["repo_url"].rstrip("/")
     links = collect_links(root)
-    reel = collect_reel(root)
+    receipts = collect_receipts(root)
+    pages = {f"receipts/{receipt.slug}": receipt for receipt in receipts}
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
     host = b["short_link_host"]
     (out / "index.html").write_text(
         _splash_page(
-            kicker=host, heading=b["name"], lede=f"{b['tagline']}.", page_title=b["name"], reel=_reel_markup(reel)
+            kicker=host, heading=b["name"], lede=f"{b['tagline']}.", page_title=b["name"], reel=_reel_markup(receipts)
         ),
         encoding="utf-8",
     )
@@ -330,10 +425,17 @@ def build_site(out: Path, root: Path = REPO_ROOT) -> list[Link]:
         encoding="utf-8",
     )
     _write_assets(out)
-    _copy_media(out, reel)
-    _crawler_files(out)
+    _copy_media(out, receipts)
+    _crawler_files(out, receipts)
+    site = b["site_url"].rstrip("/")
     for link in links:
         page = out / link.slug / "index.html"
         page.parent.mkdir(parents=True)
-        page.write_text(_redirect_page(f"{repo}/tree/main/{link.analysis}", link.title))
+        receipt = pages.get(link.analysis)
+        if receipt is None:  # an exploration's reserved link, or a receipt with nothing rendered yet
+            page.write_text(_redirect_page(f"{repo}/tree/main/{link.analysis}", link.title))
+        elif link.slug == receipt.slug:
+            page.write_text(_receipt_page(receipt), encoding="utf-8")
+        else:  # an alias: on to the receipt's page
+            page.write_text(_redirect_page(f"{site}/{receipt.slug}/", link.title))
     return links

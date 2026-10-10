@@ -1,19 +1,25 @@
-// Landing reel (cacheregister.dev root): play only the receipt on screen, in the shape that fits
-// the viewport. While motion is on, slides with a video hide their still (body.in-motion), so the frame
-// stays blank until the video's first frame is ready and the animation simply starts; a video starts
-// loading as soon as its slide edges into view and plays once mostly on screen, from the beginning.
-// None loads while the splash fills the screen. Without this script, with reduced motion, after
-// "Pause motion" (page-wide, for the session; WCAG 2.2.2) or if a video fails, the stills show.
+// cacheregister.dev reel (root page and receipt pages): play only the slide on screen, in the shape
+// that fits the viewport. While motion is on (body.in-motion), slides with a video hide their still,
+// so the frame stays blank until the video's first frame is ready and the animation simply starts; a
+// video starts loading as soon as its slide edges into view and plays once mostly on screen, from the
+// beginning. None loads while the root's splash fills the screen.
+// Static mode (body.static: reduced motion, or "Pause motion", page-wide for the session; WCAG 2.2.2)
+// shows stills; a chart that exists only as video (data-still="borrowed": its still is another
+// chart's) shows its video paused, with native controls. Without this script, or if a video fails,
+// the stills show.
 (() => {
   const slides = [...document.querySelectorAll(".slide")];
   if (!slides.length) return;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const portrait = matchMedia("(orientation: portrait)");
+  const videoOf = (slide) => slide && slide.querySelector("video");
+  const borrowed = (slide) => slide.dataset.still === "borrowed";
   let active = null;
   let paused = false;
   try {
     paused = sessionStorage.getItem("reel-paused") === "1";
   } catch {}
+  const still = () => reduce || paused;
 
   const pips = document.createElement("div");
   pips.className = "pips";
@@ -28,10 +34,11 @@
 
   const buttons = [];
   for (const slide of slides) {
-    const video = slide.querySelector("video");
-    if (!video || reduce) continue;
+    const video = videoOf(slide);
+    if (!video) continue;
     video.addEventListener("playing", () => video.classList.add("playing"));
     video.addEventListener("error", () => fail(video));
+    if (reduce) continue; // nothing moves on its own, so there is nothing to pause
     const button = document.createElement("button");
     button.type = "button";
     button.className = "motion";
@@ -43,17 +50,18 @@
       } catch {}
       sync();
     });
-    slide.querySelector(".meta a").before(button);
+    const meta = slide.querySelector(".meta");
+    meta.insertBefore(button, meta.querySelector("a"));
     buttons.push(button);
   }
 
   function load(slide) {
-    const video = slide && slide.querySelector("video");
-    if (!video || reduce || paused || video.classList.contains("failed")) return null;
+    const video = videoOf(slide);
+    if (!video || video.classList.contains("failed") || (still() && !borrowed(slide))) return null;
     const src = video.dataset[portrait.matches ? "portrait" : "landscape"];
     if (video.getAttribute("src") !== src) {
       video.classList.remove("playing");
-      video.preload = "auto";
+      video.preload = still() ? "metadata" : "auto";
       video.src = src;
     }
     return video;
@@ -61,17 +69,24 @@
 
   function play(slide) {
     const video = load(slide);
-    if (video) video.play().catch((err) => err.name !== "AbortError" && fail(video));
+    if (video && !still()) video.play().catch((err) => err.name !== "AbortError" && fail(video));
   }
 
   function sync() {
-    document.body.classList.toggle("in-motion", buttons.length > 0 && !paused);
+    document.body.classList.toggle("in-motion", !still() && buttons.length > 0);
+    document.body.classList.toggle("static", still());
     for (const button of buttons) button.setAttribute("aria-pressed", String(paused));
     for (const slide of slides) {
-      const video = slide.querySelector("video");
-      if (!video || (slide === active && !paused)) continue;
+      const video = videoOf(slide);
+      if (!video) continue;
+      const controls = still() && borrowed(slide); // the only way to see this chart: let the viewer play it
+      video.controls = controls;
+      video.tabIndex = controls ? 0 : -1;
+      if (controls) video.removeAttribute("aria-hidden");
+      else video.setAttribute("aria-hidden", "true");
+      if (slide === active && !still()) continue;
       if (!video.paused) video.pause();
-      if (paused) video.classList.remove("playing");
+      if (still()) video.classList.remove("playing");
       else if (video.currentTime) video.currentTime = 0; // back to frame one: replays from the start
     }
     pips.classList.toggle("on", active !== null);
