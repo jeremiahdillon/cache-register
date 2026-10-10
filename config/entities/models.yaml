@@ -2304,3 +2304,16 @@ models:
       - openrouter/thinkingmachines/inkling-small
       epoch:
       - Inkling-Small
+  anthropic/claude-haiku-5.5:
+    aliases:
+      openrouter:
+      - anthropic/claude-haiku-5.5-20261007
+      litellm:
+      - openrouter/anthropic/claude-haiku-5.5
+      - claude-haiku-5-5
+  upstage/solar-mini4:
+    aliases:
+      openrouter:
+      - upstage/solar-mini4-20260922
+      litellm:
+      - openrouter/upstage/solar-mini4
