@@ -26,7 +26,9 @@ from cachereg.viz.brand import brand, color
 from cachereg.viz.theme import vl_config
 
 # One hue (the brand accent), light to dark by capability: the lines are ordered levels, not categories.
-RAMP = ["#FFD9C9", "#FF9E78", "#FF6A3D", "#C7401A"]
+# The lime is already near-white in lightness, so it is the lightest step and the rest darken it
+# (CIELAB L* 93 / 78 / 64 / 52; the darkest is 4.6:1 on the canvas).
+RAMP = ["#C8FF2E", "#A4D126", "#84A81E", "#688518"]
 # Start and end labels are sized to stay legible when the LinkedIn image is shown at phone width (~1/3 size).
 LABEL_PX, END_PX, START_PX, AXIS_PX = 16, 21, 22, 15
 LINE_W, DOT_START, DOT, DOT_RING = 3.4, 280, 120, 2.5  # line width (px), dot areas (px^2), ring around dots
