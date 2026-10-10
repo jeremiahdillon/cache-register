@@ -68,12 +68,14 @@ footer{position:relative;padding:0 16px 24px;font:12px/1.6 'JetBrains Mono',ui-m
 .line{max-width:720px;margin:0 auto;display:flex;gap:10px;align-items:baseline}
 footer a{color:var(--ink2);text-decoration:none}
 footer a:hover,footer a:focus-visible{color:var(--signal)}
-/* Reel (root page only): one receipt per screen below the splash. The splash and each slide are
-   snap points; proximity, not mandatory, so short screens can still reach the list and footer.
+/* Reel (root page only): one receipt per screen below the splash. Mandatory snapping always
+   settles on a screen, never between two; the splash and slides snap at their top, and the older
+   list and footer at their bottom, so the page end stays reachable on short screens.
    The still (<picture>, shaped by orientation) is the no-JS / reduced-motion view; reel.js lays the
    video over it and reveals it only once it is playing. */
-html{scroll-snap-type:y proximity}
+html{scroll-snap-type:y mandatory}
 main,.slide{scroll-snap-align:start}
+.older,footer{scroll-snap-align:end}
 .reel main{min-height:100svh}
 .hint{position:absolute;left:0;right:0;bottom:20px;margin:0;font:11px/1 'JetBrains Mono',ui-monospace,monospace;
   letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
