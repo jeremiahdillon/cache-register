@@ -16,6 +16,7 @@ assets/site/reel.js while on screen.
 
 from __future__ import annotations
 
+import hashlib
 import html
 import json
 import re
@@ -185,8 +186,14 @@ def _attr(text: object) -> str:
     return html.escape(str(text), quote=True)
 
 
+def _media_url(slug: str, path: Path) -> str:
+    """/media/<slug>/<file>?v=<content hash>: a re-render changes the URL, so browsers, the CDN and share-card
+    caches fetch the new visual instead of serving the old one under an unchanged name."""
+    return f"/media/{slug}/{path.name}?v={hashlib.sha256(path.read_bytes()).hexdigest()[:12]}"
+
+
 def _media_urls(slug: str, files: dict[str, Path]) -> dict[str, str]:
-    return {shape: _attr(f"/media/{slug}/{path.name}") for shape, path in files.items()}
+    return {shape: _attr(_media_url(slug, path)) for shape, path in files.items()}
 
 
 def _slide_markup(receipt: Receipt, slide: Slide, label: str, meta: str, attrs: str = "") -> str:
@@ -359,7 +366,7 @@ def _receipt_page(receipt: Receipt) -> str:
         title=receipt.title,
         as_of=as_of,
         canonical=f"{site}/{receipt.slug}/",
-        card_url=f"{site}/media/{receipt.slug}/{card.name}",
+        card_url=f"{site}{_media_url(receipt.slug, card)}",
         card_width=str(card_target.width),
         card_height=str(card_target.height),
         source_url=f"{b['repo_url'].rstrip('/')}/tree/main/receipts/{receipt.slug}",

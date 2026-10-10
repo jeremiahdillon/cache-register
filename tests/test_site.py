@@ -216,7 +216,7 @@ def test_reel_on_index_only_with_media_for_every_receipt(tmp_path):
     older = re.search(r'<section class="older">(.*?)</section>', index).group(1)
     assert re.findall(r'<a href="/([^"]+)/">', older) == ["topic-1", "topic-0"]
     assert '<script src="/assets/reel.js" defer></script>' in index and (out / "assets" / "reel.js").is_file()
-    assert 'data-portrait="/media/topic-7/chart-motion.linkedin_video.mp4"' in index
+    assert 'data-portrait="/media/topic-7/chart-motion.linkedin_video.mp4?v=' in index
     assert "#008 · As of 2026-01-08" in index and '<a href="/topic-7/">cacheregister.dev/topic-7 →</a>' in index
     csp = re.search(r'Content-Security-Policy" content="([^"]+)"', index).group(1)
     assert "media-src 'self'" in csp and "script-src 'self'" in csp and "unsafe-inline" not in csp.split("style-src")[0]
@@ -264,7 +264,7 @@ def test_short_links_lead_to_receipt_pages(tmp_path):
     assert page.count(f'href="{source}"') == 2  # the bar and the closing screen
     assert "Source on GitHub" in page and '<a class="back" href="/">' in page
     assert f'<link rel="canonical" href="{site}/mixed/">' in page
-    assert f'property="og:image" content="{site}/media/mixed/stack.x_png.png"' in page  # first chart with a still
+    assert f'property="og:image" content="{site}/media/mixed/stack.x_png.png?v=' in page  # first chart with a still
     assert 'og:image:width" content="1600"' in page and 'og:image:height" content="900"' in page
     assert '<script src="/assets/reel.js" defer></script>' in page and 'href="/assets/site.css"' in page
     csp = re.search(r'Content-Security-Policy" content="([^"]+)"', page).group(1)
@@ -304,3 +304,20 @@ def test_media_is_a_reserved_slug(tmp_path):
     make_receipt(tmp_path, "media")
     with pytest.raises(ValueError, match="bad link"):
         collect_links(tmp_path)
+
+
+def test_rerender_reaches_the_root_reel_and_the_receipt_page(tmp_path):
+    make_receipt(tmp_path, "topic", "2026-01-01", FULL)
+    out = tmp_path / "_site"
+
+    def urls():
+        build_site(out, tmp_path)
+        pages = [(out / "index.html").read_text(encoding="utf-8"), (out / "topic" / "index.html").read_text()]
+        return [set(re.findall(r"/media/topic/chart\.x_png\.png\?v=([0-9a-f]{12})", page)) for page in pages]
+
+    before = urls()
+    assert all(len(found) == 1 for found in before)
+    (tmp_path / "receipts" / "topic" / "output" / "chart.x_png.png").write_bytes(b"re-rendered")  # cachereg render
+    after = urls()
+    assert all(len(found) == 1 for found in after) and before[0] != after[0] and after[0] == after[1]
+    assert (out / "media" / "topic" / "chart.x_png.png").read_bytes() == b"re-rendered"
