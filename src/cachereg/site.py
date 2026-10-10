@@ -32,7 +32,7 @@ SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 MAX_SLUG = 32
 RESERVED = {"index", "404", "assets", "about", "api", "static", "media"}
 TEMPLATES = REPO_ROOT / "assets" / "templates"
-SITE_SCRIPTS = REPO_ROOT / "assets" / "site"
+SITE_STATIC = REPO_ROOT / "assets" / "site"  # served as-is under /assets: shared stylesheet, reel player
 REEL_SIZE = 6  # newest receipts that get a full slide; older ones are listed as text
 SHAPES = {"portrait": "linkedin", "landscape": "x"}  # viewport orientation → render target prefix
 SPLASH_FONTS = ("display", "body", "mono")  # the faces site.html declares
@@ -282,7 +282,8 @@ def _write_assets(out: Path) -> None:
     (assets / "fonts").mkdir(parents=True)
     for role in SPLASH_FONTS:
         shutil.copyfile(font_path(role), assets / "fonts" / FONT_FILES[role])
-    shutil.copyfile(SITE_SCRIPTS / "reel.js", assets / "reel.js")
+    for name in ("site.css", "reel.js"):
+        shutil.copyfile(SITE_STATIC / name, assets / name)
     favicon = _template("favicon.svg")
     (assets / "favicon.svg").write_text(favicon, encoding="utf-8")
     register_fonts()

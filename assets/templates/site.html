@@ -5,7 +5,7 @@
 <meta name="description" content="$description">
 <meta name="theme-color" content="$canvas">
 <meta name="color-scheme" content="dark">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src 'self'; img-src 'self'; media-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self'; media-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 $index_meta
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
@@ -21,28 +21,12 @@ $index_meta
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="$name: $tagline.">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/assets/site.css">
 <style>
 @font-face{font-family:'Space Grotesk';font-weight:700;font-display:swap;src:url(/assets/fonts/$font_display) format('truetype')}
 @font-face{font-family:Inter;font-weight:400;font-display:swap;src:url(/assets/fonts/$font_body) format('truetype')}
 @font-face{font-family:'JetBrains Mono';font-weight:400;font-display:swap;src:url(/assets/fonts/$font_mono) format('truetype')}
 :root{--canvas:$canvas;--panel:$panel;--ink:$text;--ink2:$text_secondary;--muted:$muted;--signal:$signal}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%}
-body{min-height:100svh;display:flex;flex-direction:column;background:var(--canvas);color:var(--ink);
-  font:16px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;
-  background-image:radial-gradient(color-mix(in srgb,var(--muted) 35%,transparent) 1px,transparent 1.2px);
-  background-size:24px 24px;background-position:center}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;
-  background:radial-gradient(ellipse 70% 60% at 50% 45%,transparent 0,var(--canvas) 75%)}
-main{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:64px 16px 48px}
-.kicker{font:12px/1 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 28px}
-.kicker b{color:var(--signal);font-weight:400}
-h1{font:700 clamp(52px,12vw,136px)/.92 'Space Grotesk',system-ui,sans-serif;letter-spacing:-.045em;margin:0;
-  text-wrap:balance}
-h1 .cursor{display:inline-block;width:.09em;height:.74em;margin-left:.06em;background:var(--signal);
-  vertical-align:baseline;animation:blink 1.1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
 /* Intro: the cursor blinks alone, the title types in around it (each letter collapsed from load
    until its --t, then back to its own style: no fill, so no end-of-animation rounding), then
    everything else fades in together. Reduced motion shows the finished page. */
@@ -51,82 +35,6 @@ h1 .cursor{display:inline-block;width:.09em;height:.74em;margin-left:.06em;backg
   h1 .cursor{animation:blink 1.1s steps(1) infinite,hold ${typing_ms}ms steps(1) ${type_start_ms}ms}
   .reveal{animation:reveal .8s ease-out ${reveal_ms}ms both}
 }
-@media (prefers-reduced-motion:reduce){h1 .cursor{animation:none}}
-@keyframes key{from,to{font-size:0}}
-@keyframes hold{from,to{opacity:1}}
-@keyframes reveal{from{opacity:0;transform:translateY(6px)}}
-.lede{font-size:clamp(18px,2.4vw,24px);color:var(--ink2);margin:24px 0 0;text-wrap:balance}
-.cta{display:inline-flex;gap:12px;align-items:center;padding:14px 20px;border:1px solid var(--muted);
-  color:var(--ink);text-decoration:none;font:14px/1 'JetBrains Mono',ui-monospace,monospace;white-space:nowrap;
-  transition:background .15s,color .15s,border-color .15s}
-.cta svg{flex:none}
-.cta:hover,.cta:focus-visible{background:var(--signal);border-color:var(--signal);color:var(--canvas);outline:none}
-/* The repo is the last call to action: below the reel (a closing screen of its own), above the footer. */
-.end{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:40px}
-.end .note{max-width:34em;margin:0 16px 24px;color:var(--ink2);text-wrap:balance}
-.end .cta{margin-bottom:48px}
-.end footer{align-self:stretch}
-.reel .end{min-height:100svh;scroll-snap-align:start}
-.reel .end .note{margin-top:auto}
-.reel .end footer{margin-top:auto}
-footer{position:relative;padding:0 16px 24px;font:12px/1.6 'JetBrains Mono',ui-monospace,monospace;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.08em}
-.tear{max-width:720px;margin:0 auto 14px;font-size:15px;display:flex;align-items:center;gap:10px}
-.tear::after{content:"";flex:1;border-top:1px dashed var(--muted)}
-.line{max-width:720px;margin:0 auto;display:flex;gap:10px;align-items:baseline}
-footer a{color:var(--ink2);text-decoration:none}
-footer a:hover,footer a:focus-visible{color:var(--signal)}
-/* Reel (root page only): one receipt per screen below the splash. Mandatory snapping always
-   settles on a screen, never between two; the splash and slides snap at their top, and the older
-   list and footer at their bottom, so the page end stays reachable on short screens.
-   The still (<picture>, shaped by orientation) is the no-JS / reduced-motion view; reel.js lays the
-   video over it and reveals it only once it is playing. */
-html{scroll-snap-type:y mandatory}
-main,.slide{scroll-snap-align:start}
-.older{scroll-snap-align:end}
-@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
-.reel main{min-height:100svh}
-.hint{position:absolute;left:0;right:0;bottom:28px;width:max-content;margin:0 auto;display:flex;flex-direction:column;
-  align-items:center;gap:14px;padding:8px 12px;font:13px/1 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--ink2);text-decoration:none}
-.hint::after{content:"";width:12px;height:12px;border:solid var(--signal);border-width:0 2px 2px 0;transform:rotate(45deg)}
-.hint:hover,.hint:focus-visible{color:var(--signal);outline:none}
-@media (prefers-reduced-motion:no-preference){.hint::after{animation:nudge 1.6s ease-in-out infinite}}
-@keyframes nudge{50%{transform:translateY(6px) rotate(45deg)}}
-.slide{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:14px;padding:32px 16px;--w:min(100%,calc((100svh - 128px) * 16 / 9))}
-.media{position:relative;width:var(--w);aspect-ratio:16/9;background:var(--panel);
-  border:1px solid color-mix(in srgb,var(--muted) 35%,transparent)}
-.media picture{display:contents}
-.media img,.media video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
-.media video{opacity:0;transition:opacity .25s}
-/* While motion is on (body.in-motion, set by reel.js), a slide with a working video hides its still: the
-   still is the finished chart, so showing it first would flash back to an empty chart at frame one. */
-.in-motion .media:has(video:not(.failed)){background:var(--canvas)}
-.in-motion .media:has(video:not(.failed)) img{visibility:hidden}
-.media video.playing{opacity:1}
-@media (orientation:portrait){.slide{--w:min(100%,calc((100svh - 128px) * 4 / 5))}.media{aspect-ratio:4/5}}
-.meta{width:var(--w);display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;font:12px/1.5 'JetBrains Mono',ui-monospace,monospace;
-  color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.meta a{color:var(--ink2);text-decoration:none;text-transform:none;letter-spacing:0;white-space:nowrap}
-.meta a:hover,.meta a:focus-visible{color:var(--signal)}
-.dots{flex:1;border-bottom:1px dotted color-mix(in srgb,var(--muted) 60%,transparent);transform:translateY(-4px)}
-.motion{background:none;border:1px solid var(--muted);color:var(--ink2);font:inherit;text-transform:inherit;
-  letter-spacing:inherit;padding:2px 8px;cursor:pointer;white-space:nowrap}
-.motion[aria-pressed=true],.motion:hover,.motion:focus-visible{background:var(--signal);border-color:var(--signal);
-  color:var(--canvas);outline:none}
-.older{position:relative;max-width:720px;margin:0 auto;padding:48px 16px;font:13px/1.6 'JetBrains Mono',ui-monospace,monospace}
-.older .label{margin:0 0 12px;color:var(--muted);text-transform:uppercase;letter-spacing:.2em;font-size:12px}
-.older ul{list-style:none;margin:0;padding:0}
-.older li{display:flex;gap:10px;align-items:baseline;color:var(--ink2)}
-.older a{color:var(--ink);text-decoration:none}
-.older a:hover,.older a:focus-visible{color:var(--signal)}
-.pips{position:fixed;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;
-  opacity:0;transition:opacity .3s;pointer-events:none}
-.pips.on{opacity:1}
-.pips i{width:6px;height:6px;border:1px solid var(--muted)}
-.pips i.on{background:var(--signal);border-color:var(--signal)}
-@media (max-width:480px){.meta{font-size:11px;letter-spacing:.04em}.pips{display:none}}
 </style></head><body class="$body_class">
 <main>
   <p class="kicker reveal">$kicker</p>

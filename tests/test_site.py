@@ -80,7 +80,7 @@ def test_short_url_is_short():
 
 
 def test_splash_and_404_read_brand_and_keep_redirects(tmp_path):
-    from cachereg.site import REVEAL_PAUSE, TEMPLATES
+    from cachereg.site import REVEAL_PAUSE, SITE_STATIC, TEMPLATES
     from cachereg.viz.brand import brand
 
     b = brand()
@@ -126,9 +126,10 @@ def test_splash_and_404_read_brand_and_keep_redirects(tmp_path):
     page = (out / "a-topic" / "index.html").read_text()
     assert 'http-equiv="refresh"' in page and "/tree/main/receipts/a-topic" in page
 
-    # Brand values live in brand.yaml, not the templates.
-    for name in ("site.html", "og-card.svg", "favicon.svg"):
-        text = (TEMPLATES / name).read_text(encoding="utf-8")
+    # Brand values live in brand.yaml, not the templates or the shared stylesheet.
+    assert (out / "assets" / "site.css").is_file() and 'href="/assets/site.css"' in index
+    for path in [TEMPLATES / n for n in ("site.html", "og-card.svg", "favicon.svg")] + [SITE_STATIC / "site.css"]:
+        text = path.read_text(encoding="utf-8")
         assert not any(hex_ in text for hex_ in b["colors"].values() if isinstance(hex_, str))
         assert b["name"] not in text
 
