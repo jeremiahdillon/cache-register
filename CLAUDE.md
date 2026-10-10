@@ -26,16 +26,18 @@ The plan of record is `docs/PLAN.md`. Read the relevant section before changing 
 - Check new dependencies for supply-chain risk before adding them; keep the dependency set small.
 - **Explorations** go in `explore/YYYY-MM-DD-<slug>/` (date = start date; `explore.yaml`; no short
   link; may be abandoned). **Receipts** are promoted topics in `receipts/<topic>/` (`receipt.yaml`,
-  committed `output/`); promote by copying the exploration and noting it in the exploration's
-  README. Charts follow the contract at the top of `src/cachereg/render.py`. Never hand-edit
-  `output/`; re-render with `cachereg render receipts/<topic>`. The repo does not track posts.
+  committed `output/`); promote by following the **Promotion** steps in PLAN §5 (they cover the
+  short link, `receipt.yaml` visuals order = the receipt page's slide order, rendering and checking
+  the site). Charts follow the contract at the top of `src/cachereg/render.py`. Never hand-edit
+  `output/`; re-render with `cachereg render receipts/<topic>`, which updates the root reel and the
+  receipt page once it reaches `main`. The repo does not track posts.
 - **One branch per piece of work, no PRs.** Several agents work in this repo, so never commit to `main`
   directly: start a branch from the latest `origin/main` (`claude/<topic>`), commit in small logical steps
   and push the branch as you go. When the author OKs the work, rebase it on `origin/main`, re-run the
   checks and fast-forward `main` to it (linear history; no merge commits, no PRs). The pre-push hook runs
   the guard, gitleaks, lint and tests on every push.
 - **Short links** belong to receipts: the receipt folder name (lowercase-hyphenated, ≤ 32
-  chars) is `cacheregister.dev/<topic>`. An exploration may reserve its future topic with `link:` in
+  chars) is `cacheregister.dev/<topic>`, the receipt's page on the site. An exploration may reserve its future topic with `link:` in
   `explore.yaml` (it redirects to the exploration until a receipt of that name, `promoted_from` it,
   takes over). Never reuse or rename a posted topic; if you must, add the old name to
   `config/link-aliases.yaml`.

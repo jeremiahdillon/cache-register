@@ -332,9 +332,34 @@ charts.py        # chart functions named by receipt.yaml visuals (contract in re
 output/          # committed: <visual>.<target>.<ext>, manifest.json (+ data.json if licences allow)
 ```
 
-**Promotion** (manual; `promote` command is backlog): copy the exploration's `analysis.py`,
-`charts.py` and README into `receipts/<topic>/`, write `receipt.yaml`, clean up, and add a
-"Promoted to receipts/<topic>" line to the exploration's README (the exploration stays).
+**Promotion** (manual; `promote` command is backlog), on its own `claude/<topic>` branch:
+
+1. **Name the topic.** If the exploration reserved a link (`link:` in `explore.yaml`), the receipt
+   folder must take exactly that name. Otherwise choose a new one: lowercase words joined by `-`,
+   ≤ 32 chars, never used before (not a receipt, a reserved link or an alias in
+   `config/link-aliases.yaml`).
+2. **Copy** the exploration's `analysis.py`, `charts.py` and README into `receipts/<topic>/` and clean
+   them up (README: question, findings, method, caveats; no post copy).
+3. **Write `receipt.yaml`**: `title` (the short label on the receipt page's bar and in the root reel),
+   `sources`, a pinned `as_of`, `promoted_from: explore/<folder>` (required to take over a reserved
+   link), `config`, and `visuals`. The visuals' order is the receipt page's slide order, one slide per
+   `chart`: give a chart's still and its motion version the same `chart` so they share a slide. The
+   first chart with a still is the page's share card; the first chart with motion stands for the
+   receipt in the root reel.
+4. **Render**: `cachereg render receipts/<topic>` writes the committed `output/` (licence-gated, §7).
+   The site shows only what is rendered there; until then the link redirects to the folder on GitHub.
+5. **Record it**: a "Promoted to receipts/<topic>" line in the exploration's README (the exploration
+   stays) and a row in the root README's receipts table.
+6. **Check the site**: `cachereg site --out _site`, then `python -m http.server -d _site`. The receipt
+   leads the root reel if its `as_of` is the newest, and `/<topic>/` shows every chart.
+7. **Ship**: push the branch; on the author's OK, rebase on `origin/main` and fast-forward `main`. The
+   Pages workflow redeploys on any change to `receipts/*/receipt.yaml`, `README.md` or `output/**`.
+
+**Re-rendering** a receipt (a new `as_of`, a chart fix): `cachereg render receipts/<topic>` regenerates
+the whole `output/` set; commit it and ship as above. The Pages rebuild takes every visual from
+`output/`, so the root reel and the receipt page both show the new render, and media URLs carry a
+content hash (`?v=`), so browsers and share-card caches fetch it rather than an old copy. Posted
+receipts stay as rendered unless the author asks (§10).
 
 **Standalone reproduction:** `cachereg reproduce receipts/<topic> [--latest]` fetches only the
 receipt's sources, checks vintages, builds only the marts whose inputs those sources cover,
