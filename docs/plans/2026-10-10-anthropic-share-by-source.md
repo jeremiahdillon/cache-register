@@ -22,6 +22,13 @@ just below the 100% gridline; OpenRouter's free-model scope moved into the foote
 dropped (the subtitle says 4-week averages); a gateway week needs ≥ 6 days (`min_days`), so OpenRouter's two
 6-day weeks (missing 2025-06-15 and 2025-07-15) no longer break its line; the brand wordmark is back to the
 lime square and text colour of the first receipt (brand.yaml, every visual).
+**Video (2026-10-10, author's design, no review):** `tokens-with-free` as `x_video`, `linkedin_video` and
+`web_video`: an intro (0.5 s), a bright dot sweep (2.5 s), then the lines in the order Ramp, OpenRouter, Vercel
+at one calendar speed (Ramp's line takes 3 s), each source's dots cross-fading to dim as its line starts, end
+labels fading in after each line, 0.4 s pauses, OpenRouter's band (spend only) fading in after its line, and a
+5 s final hold (longer than the house 3 s, author). Frames are built at the final frame's `fit_size` (new in
+`cachereg.viz.fit`) with hidden marks at opacity 0; every frame measured equal to the plot box and the final
+frame byte-identical to the static chart.
 
 ## Question
 

@@ -622,7 +622,8 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   three visuals ("Different data sources tell different stories about the AI economy"), the measure
   stamped on the chart, the token visuals credit no LiteLLM (first use of per-visual `sources`), and the
   exploration reserves `cacheregister.dev/source-matters` (first reserved link; redirects to the
-  exploration until promoted).
+  exploration until promoted). A 17 s video of `tokens-with-free` (dots sweep, then the lines one by one) was
+  added the same day; `cachereg.viz.fit.fit_size` lets videos fit once and keep the canvas still.
 - **Vercel AI Gateway (built 2026-10-09):** fetched daily by the launchd agent from its next run (`fetch --due`
   reads the registry each time; `curated_disclosures` weekly, a no-op while the file is unchanged). First real fetch 2026-10-09 reproduced the
   plan's September 2026 first look exactly. Compare two months of vintages (are days older than the

@@ -16,5 +16,5 @@ visuals:
     sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings]
   - name: tokens-with-free
     chart: tokens_with_free
-    targets: [x_png, linkedin_png]
+    targets: [x_png, linkedin_png, x_video, linkedin_video, web_video]
     sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings]

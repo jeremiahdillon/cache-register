@@ -43,6 +43,14 @@ stories about the whole (author's framing). The subtitle gives each chart's valu
 the chart's face (upper right), with how to read dots and lines. Each line ends at the latest week all three
 sources cover (the subtitle's week); colours are fixed per
 source (Ramp cyan, Vercel magenta, OpenRouter gold; not Anthropic's orange, since every line is Anthropic).
+**Video** (`tokens-with-free` only, for feedback first; `x_video`, `linkedin_video`, `web_video`, 17.3 s at 30
+fps): the weekly dots sweep in bright from left to right; each line then draws in turn, Ramp, OpenRouter,
+Vercel, at one calendar speed (so Vercel's shorter history draws faster), its dots dimming as it starts and its
+end label fading in once drawn; a 5-second hold on the final frame, which is byte-identical to the static
+chart. Every frame keeps the final frame's fitted size (hidden marks are drawn at opacity 0), so the canvas
+never moves. The `spend` and `tokens` videos are ready to declare (their `_specs` exist; on `spend`,
+OpenRouter's band fades in after its line).
+
 The visuals carry the reserved short link `cacheregister.dev/source-matters`, which redirects here until a
 receipt promoted from this exploration takes it over. The token visuals credit only Ramp, Vercel and
 OpenRouter (they use no prices); `spend` also credits LiteLLM. Rendered as `x_png` and `linkedin_png` only
