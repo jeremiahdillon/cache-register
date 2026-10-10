@@ -29,8 +29,11 @@ The plan of record is `docs/PLAN.md`. Read the relevant section before changing 
   committed `output/`); promote by copying the exploration and noting it in the exploration's
   README. Charts follow the contract at the top of `src/cachereg/render.py`. Never hand-edit
   `output/`; re-render with `cachereg render receipts/<topic>`. The repo does not track posts.
-- **No branches or PRs.** Commit in small logical steps and push straight to `main`; the
-  pre-push hook runs the guard, gitleaks, lint and tests.
+- **One branch per piece of work, no PRs.** Several agents work in this repo, so never commit to `main`
+  directly: start a branch from the latest `origin/main` (`claude/<topic>`), commit in small logical steps
+  and push the branch as you go. When the author OKs the work, rebase it on `origin/main`, re-run the
+  checks and fast-forward `main` to it (linear history; no merge commits, no PRs). The pre-push hook runs
+  the guard, gitleaks, lint and tests on every push.
 - **Short links** belong to receipts: the receipt folder name (lowercase-hyphenated, ≤ 32
   chars) is `cacheregister.dev/<topic>`. An exploration may reserve its future topic with `link:` in
   `explore.yaml` (it redirects to the exploration until a receipt of that name, `promoted_from` it,

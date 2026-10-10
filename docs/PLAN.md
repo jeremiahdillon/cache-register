@@ -542,7 +542,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 
 | Phase | State |
 |---|---|
-| 0. Scaffold & security | **Done** — guard + pinned gitleaks in the pre-push hook (the gate; straight-to-main workflow), CI backstop, push protection, Pages short links on cacheregister.dev, with a reel of the newest receipts on the root |
+| 0. Scaffold & security | **Done** — guard + pinned gitleaks in the pre-push hook (the gate; one branch per piece of work, fast-forwarded to main on the author's OK since 2026-10-10), CI backstop, push protection, Pages short links on cacheregister.dev, with a reel of the newest receipts on the root |
 | 0.5 Vertical slice | **Done** — OpenRouter rankings + model prices, marts, first receipt `receipts/openrouter-wallet-share`; motion renderer A chosen (§6.3) |
 | Layout | **Done** — explorations vs receipts, scoped build, `reproduce` (`docs/plans/2026-10-03-explore-and-receipts.md`) |
 | 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), derived charts publishable (author policy); the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
