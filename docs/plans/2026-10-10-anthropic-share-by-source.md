@@ -1,6 +1,16 @@
 # Plan: Anthropic's share of spend and tokens, by data source (exploration)
 
-Status: PLANNED · 2026-10-10 (author's decisions taken in conversation; adversarial review to follow)
+Status: EXPLORATION BUILT · 2026-10-10 (plan review: adversarial review converged in 3 rounds, 9 findings accepted; all decisions below taken)
+
+**As built:** `explore/2026-10-10-anthropic-share-by-source/` renders `spend`, `tokens` and `tokens-with-free`
+(`x_png`, `linkedin_png`), each PNG measured equal to its plot box. Differences from the design: every line
+ends at the latest week all three sources cover (the headline's week, today 27 September 2026), so the end
+labels equal the headline; the gateways' one later full week is in the frames but not drawn. The OpenRouter
+band breaks where its line breaks (weeks missing a day). The bound and sensitivity are also reported per
+quarter (`or_bound_quarterly`). The headline names all three sources, ordered by value. No legend: the direct end labels name each line
+and the subtitle explains dots (weekly) vs lines (4-week). The `checks` frame holds Ramp's share sums,
+each later maker's first week and first-week share, and Anthropic's full weeks and lowest weekly share per
+source.
 
 ## Question
 
@@ -25,23 +35,27 @@ paying-businesses lens is not used.
 | **Vercel** AI Gateway | developers routing through Vercel's gateway | Vercel's measure of what customers paid | tokens | day | 2025-10-01 | `090` `vercel_lab_share` (`metric` = `spend` / `tokens`) |
 | **OpenRouter** | developers routing through OpenRouter | **our estimate**: tokens × list price (0.8 × input + 0.2 × output), caching ignored | tokens, with or without free variants | day | 2025-01-01 | `010` `or_model_daily` |
 
-"All reported" in each: Ramp's shares are of the makers Ramp reports (3 until August 2025, 14 since; the
-shares sum to exactly 100% every week; makers added in Aug–Oct 2025 held 0.0–0.1% of spend when they
-appeared, so the expansion does not break Anthropic's series). Vercel: every lab on the gateway (shares sum
+"All reported" in each: Ramp's shares are of the makers Ramp reports (the roster grew from 3 makers in January
+2025 to 14 by mid-2026, gradually and fluctuating 9–14 through 2026; the shares sum to exactly 100% every
+week; makers added from August to November 2025 held ≤ 0.1% of spend in their first week (≤ 0.001% for the
+Aug–Oct entrants; Cursor 0.06% from 2025-11-02), and makers beyond Anthropic,
+OpenAI and Google hold ≤ 2.9% of weekly spend even in September 2026, so the expansion does not break
+Anthropic's series). Vercel: every lab on the gateway (shares sum
 to 100 daily). OpenRouter: the top 50 models per day plus its `other` row (the long tail), stealth and
 router models; for spend, tokens with no price (`price_matched` false) count as no spend.
 
 ## What was measured (2026-10-10; Ramp import of 2026-10-07; gateways to 2026-10-08)
 
-Anthropic's share, quarterly mean of weekly values (%; weeks dated by their Sunday; full weeks only):
+Anthropic's share, quarterly mean of weekly values (%; weeks dated by their Sunday; each source on its own
+full weeks, so Vercel's 5-day first week and OpenRouter's weeks with a missing day are left out):
 
 | Quarter | Ramp spend | OpenRouter est. spend | Vercel spend | Ramp tokens | OpenRouter tokens, paid | OpenRouter tokens, all | Vercel tokens |
 |---|---|---|---|---|---|---|---|
 | 2025 Q1 | 38.0 | 92.7 | — | 18.2 | 45.1 | 41.8 | — |
-| 2025 Q2 | 44.2 | 78.0 | — | 23.0 | 26.0 | 22.8 | — |
-| 2025 Q3 | 44.2 | 69.3 | — | 26.1 | 22.0 | 19.2 | — |
-| 2025 Q4 | 55.0 | 61.9 | 76.3 | 33.1 | 15.6 | 14.3 | 51.7 |
-| 2026 Q1 | 62.0 | 63.5 | 77.4 | 43.5 | 16.3 | 14.8 | 44.0 |
+| 2025 Q2 | 44.4 | 77.9 | — | 23.2 | 26.0 | 22.8 | — |
+| 2025 Q3 | 43.8 | 69.3 | — | 25.7 | 22.0 | 19.2 | — |
+| 2025 Q4 | 55.0 | 61.9 | 76.8 | 33.1 | 15.7 | 14.3 | 52.2 |
+| 2026 Q1 | 62.0 | 63.5 | 77.4 | 43.6 | 16.3 | 14.8 | 44.0 |
 | 2026 Q2 | 64.9 | 63.5 | 64.0 | 52.5 | 16.0 | 14.5 | 30.8 |
 | 2026 Q3 | 58.6 | 40.3 | 59.4 | 45.7 | 8.1 | 7.2 | 21.7 |
 
@@ -58,9 +72,11 @@ Anthropic's share, quarterly mean of weekly values (%; weeks dated by their Sund
    has no free models, so including free tokens only enlarges the denominator).
 5. Week-to-week noise (mean absolute weekly change): Ramp ~2 pp, OpenRouter ~2–2.5 pp, Vercel ~4.3 pp.
 
-Coverage of the OpenRouter estimate: priced share of paid tokens 85–95% per quarter; 10–30% of paid tokens
-are priced from a model's nearest LiteLLM listing (`price_date_stale`); free variants are 6–13% of all
-tokens.
+Coverage of the OpenRouter estimate, per quarter 2025 Q1 – 2026 Q3: priced share of paid tokens 85–95%;
+9–30% of paid tokens are priced from a model's nearest LiteLLM listing (`price_date_stale`); free variants
+are 8–13% of all tokens. Anthropic's own tokens are never free and are priced in every full week (one day,
+2026-10-08, left 20% unpriced: Claude Haiku 5.5, new in the top 50 and not yet in `models.yaml`; it falls
+in the current partial week, and the build checks this per week).
 
 ## Design
 
@@ -79,11 +95,22 @@ tokens.
 - Columns: `week`, `source` (`ramp`, `vercel`, `openrouter`), `measure` (`spend`, `tokens`), `variant`
   (`paid`, `all`; OpenRouter tokens only), `share_pct`, `days`, `rolling4_pct`.
 
-### Bound on OpenRouter's spend estimate (frame `or_bound`)
-PLAN rule: spend figures are estimates with bounds. Per week, the share as computed (unpriced paid tokens
-cost nothing) is an upper bound for Anthropic, whose tokens are all priced; a lower bound prices the
-week's unpriced paid tokens at the week's mean price per priced paid token. Drawn as a faint band around
-OpenRouter's spend line. Caching cannot be bounded from these data; it is a footnote.
+### Bound and sensitivity for OpenRouter's spend estimate (frame `or_bound`)
+PLAN rule: spend figures are estimates with bounds. Per week:
+- **Upper bound** = the share as computed (unpriced paid tokens cost nothing), valid while all of
+  Anthropic's tokens are priced; the analysis checks this per week and stops (or drops the week, decision
+  4) if not.
+- **Lower bound** = unpriced paid tokens priced at the week's highest blended price among priced paid
+  models. It is a bound under one stated assumption: no unpriced model is dearer than the dearest priced
+  model that week (the unpriced tail is mostly `_other`, `_stealth` and `_router`; a new flagship model
+  missing from `models.yaml` could break it, and the per-week check catches that only for Anthropic's own
+  models). It is very wide (e.g. week ending 2026-08-23: computed 34.2%, bound 8.4%,
+  with 19.8% of paid tokens unpriced), because the unpriced tail is mostly `_other`, `_stealth` and
+  `_router` traffic, unlikely to cost as much as the dearest model.
+- **Sensitivity** = unpriced paid tokens at the week's mean price per priced paid token (a central
+  estimate, not a bound; e.g. 27.5% in that week).
+The chart draws [sensitivity, computed] as a faint band labelled as a sensitivity; the README reports the
+hard lower bound per quarter (decision 4). Caching cannot be bounded from these data; it is a footnote.
 
 ### Frames
 `weekly`, `or_bound`, `coverage` (per week: OpenRouter priced and stale share of paid tokens, free share of
@@ -94,8 +121,8 @@ dropped as partial, Ramp share sums = 100, Anthropic present every week in each 
 1. **`spend`**: Anthropic's share of all reported spend; three lines (Ramp, Vercel, OpenRouter) on one 0–100%
    axis, weekly from the week ending 2025-01-12; faint weekly points, 4-week line, OpenRouter's bound band;
    direct labels at line ends with the last 4-week value, plus a legend. Headline states the finding
-   plainly from the data (today, e.g.: "Anthropic's share of AI spend depends on whose data you read: about
-   half on Ramp, a third on OpenRouter").
+   plainly from the data and names all three lines (today, e.g. from the latest 4-week values: "Anthropic's
+   share of AI spend depends on whose data you read: 53% on Ramp, 43% on Vercel, 28% on OpenRouter").
 2. **`tokens`**: the same for tokens, OpenRouter paid tokens only.
 3. **`tokens-with-free`**: the same as `tokens`, OpenRouter including free variants (author decision 1).
 Colours: three categorical slots for the three sources (not Anthropic's brand orange, since every line is
@@ -113,8 +140,9 @@ gitignored `outputs/…/story_frames.json`.
   Ramp's customers; Ramp says not representative of its total AI spend). Vercel and OpenRouter: developers
   who route through that gateway; first-party API traffic is invisible to both. None of the three is the
   market.
-- **Spend is measured three ways.** Ramp: realised spend (cached-token discounts included, apparently, as
-  Ramp's blended prices run below input prices). Vercel: Vercel's measure (whether BYOK, discounts or
+- **Spend is measured three ways.** Ramp: realised spend (cached-token discounts apparently included: Anthropic's blended price on Ramp has run below its
+  input price since mid-2025, falling from ~1.3× input in January 2025 to ~0.3× in September 2026, which caching
+  explains). Vercel: Vercel's measure (whether BYOK, discounts or
   caching are included is not stated). OpenRouter: our list-price estimate with caching ignored, which likely
   overstates labs whose users cache heavily (Anthropic's coding-agent traffic), so some of the gap between
   OpenRouter and the others may be method, not segment.
@@ -130,18 +158,24 @@ gitignored `outputs/…/story_frames.json`.
 
 ## Code
 `explore/2026-10-10-anthropic-share-by-source/` (`analysis.py`, `charts.py`, `explore.yaml`, `README.md`).
-Reads marts `010`, `062`, `090` only. No core change expected; one chart function serves all three visuals
-(the visual name selects measure and variant). If a core change is needed, stop and ask.
+Reads marts `010`, `062`, `090` only. No core change expected. The render contract does not pass the
+visual's name to its chart function, so each visual has its own thin function (`spend`, `tokens`,
+`tokens_with_free`) calling one shared helper with the measure and variant. If a core change is needed, stop and ask.
 
 ## Decisions
 Taken by the author in conversation (2026-10-10):
 1. Tokens in both versions: OpenRouter with and without free variants (two visuals, same formatting).
 2. Weekly points with a trailing 4-week line.
 
-Open:
+Taken after the review (2026-10-10): the recommendations of 3–5 (volume-weighted OpenRouter weeks; the
+sensitivity band with the hard lower bound in the README; stop until a new Anthropic model is mapped; each
+source from its first full week). The options as they were put:
 3. **OpenRouter weekly weighting:** volume-weighted, matching Ramp (recommended), or the mean of daily shares,
    matching Vercel (the measured table above; differences are small).
-4. **OpenRouter spend bound:** the band described above (recommended), or a footnote with the weekly
-   priced coverage only.
+4. **OpenRouter spend uncertainty:** draw the [mean-price sensitivity, computed] band and report the hard
+   lower bound in the README (recommended); or draw the hard bound [highest-price, computed] (honest but
+   so wide it swamps the line); or footnote the weekly priced coverage only. And when a week has unpriced
+   Anthropic tokens (a new model not yet mapped): stop the analysis until `models.yaml` is updated
+   (recommended), or drop that week.
 5. **Start:** each source from its first full week (recommended: Ramp and OpenRouter from January 2025,
    Vercel from October 2025), or all three from October 2025 only.
