@@ -29,6 +29,11 @@ labels fading in after each line, 0.4 s pauses, OpenRouter's band (spend only) f
 5 s final hold (longer than the house 3 s, author). Frames are built at the final frame's `fit_size` (new in
 `cachereg.viz.fit`) with hidden marks at opacity 0; every frame measured equal to the plot box and the final
 frame byte-identical to the static chart.
+**Source colours (2026-10-10, author):** brand-aligned, legibility first: Ramp `#C4D00A` (its yellow-green
+`#E4F222`, darkened), OpenRouter `#8855FE` (its Grape `#7624F4`, lifted to label contrast 4.5:1), Vercel
+`#3B9CE5` (a sky blue; Vercel's brand is black and white and near-white would rival the text). Validator on the
+dark canvas: CVD and normal-vision separation, chroma and contrast pass; Ramp stays above the lightness band
+on purpose (inside it the hue turns olive).
 
 ## Question
 

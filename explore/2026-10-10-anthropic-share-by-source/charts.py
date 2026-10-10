@@ -26,8 +26,13 @@ from cachereg.viz.theme import vl_config
 
 LABEL_PX, AXIS_PX = 17, 15
 NAMES = {"ramp": "Ramp", "vercel": "Vercel", "openrouter": "OpenRouter"}
-# Categorical slots for the sources (not Anthropic's orange: every line is Anthropic); fixed per source.
-SOURCE_SLOT = {"ramp": 0, "vercel": 2, "openrouter": 3}  # cyan, magenta, gold
+# One colour per source, close to its brand but tuned for the dark canvas and each other (author, 2026-10-10:
+# brand-aligned, legibility first). OpenRouter: its "Grape" logo fill #7624F4, lifted to OKLCH L 0.60 (label
+# contrast 3.1 -> 4.5:1). Ramp: its yellow-green #E4F222 (site CSS), darkened to L 0.82 so it does not outshine
+# the others; it stays above the dark-mode lightness band on purpose (inside it the hue turns olive). Vercel has
+# no colour brand (black and white; near-white would rival the text), so a sky blue clear of both hues and of
+# Anthropic's orange. Validator (dark, all pairs): CVD worst ΔE 10.6, normal 18.6, contrast >= 3:1 for all.
+SOURCE_COLOR = {"ramp": "#C4D00A", "openrouter": "#8855FE", "vercel": "#3B9CE5"}
 LINE_ORDER = ["ramp", "openrouter", "vercel"]  # the video draws the lines in this order (author)
 DOT_SIZE, DOT_OP = 16, 0.35  # weekly dots as in the static chart (dim)
 DOT_SIZE_BRIGHT, DOT_OP_BRIGHT = 30, 0.9  # as they sweep in
@@ -43,7 +48,7 @@ def _ms(d: date) -> int:
 
 
 def _color(source: str) -> str:
-    return brand()["colors"]["categorical"][SOURCE_SLOT[source]]
+    return SOURCE_COLOR[source]
 
 
 def spend(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
