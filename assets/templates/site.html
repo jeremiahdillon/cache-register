@@ -55,12 +55,20 @@ h1 .cursor{display:inline-block;width:.09em;height:.74em;margin-left:.06em;backg
 @keyframes key{from,to{font-size:0}}
 @keyframes hold{from,to{opacity:1}}
 @keyframes reveal{from{opacity:0;transform:translateY(6px)}}
-.lede{font-size:clamp(18px,2.4vw,24px);color:var(--ink2);margin:24px 0 40px;text-wrap:balance}
+.lede{font-size:clamp(18px,2.4vw,24px);color:var(--ink2);margin:24px 0 0;text-wrap:balance}
 .cta{display:inline-flex;gap:12px;align-items:center;padding:14px 20px;border:1px solid var(--muted);
   color:var(--ink);text-decoration:none;font:14px/1 'JetBrains Mono',ui-monospace,monospace;white-space:nowrap;
   transition:background .15s,color .15s,border-color .15s}
 .cta svg{flex:none}
 .cta:hover,.cta:focus-visible{background:var(--signal);border-color:var(--signal);color:var(--canvas);outline:none}
+/* The repo is the last call to action: below the reel (a closing screen of its own), above the footer. */
+.end{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:40px}
+.end .note{max-width:34em;margin:0 16px 24px;color:var(--ink2);text-wrap:balance}
+.end .cta{margin-bottom:48px}
+.end footer{align-self:stretch}
+.reel .end{min-height:100svh;scroll-snap-align:start}
+.reel .end .note{margin-top:auto}
+.reel .end footer{margin-top:auto}
 footer{position:relative;padding:0 16px 24px;font:12px/1.6 'JetBrains Mono',ui-monospace,monospace;color:var(--muted);
   text-transform:uppercase;letter-spacing:.08em}
 .tear{max-width:720px;margin:0 auto 14px;font-size:15px;display:flex;align-items:center;gap:10px}
@@ -75,18 +83,27 @@ footer a:hover,footer a:focus-visible{color:var(--signal)}
    video over it and reveals it only once it is playing. */
 html{scroll-snap-type:y mandatory}
 main,.slide{scroll-snap-align:start}
-.older,footer{scroll-snap-align:end}
+.older{scroll-snap-align:end}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 .reel main{min-height:100svh}
-.hint{position:absolute;left:0;right:0;bottom:20px;margin:0;font:11px/1 'JetBrains Mono',ui-monospace,monospace;
-  letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
-.hint::after{content:"";display:block;margin:10px auto 0;width:1px;height:28px;background:linear-gradient(var(--muted),transparent)}
+.hint{position:absolute;left:0;right:0;bottom:28px;width:max-content;margin:0 auto;display:flex;flex-direction:column;
+  align-items:center;gap:14px;padding:8px 12px;font:13px/1 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink2);text-decoration:none}
+.hint::after{content:"";width:12px;height:12px;border:solid var(--signal);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.hint:hover,.hint:focus-visible{color:var(--signal);outline:none}
+@media (prefers-reduced-motion:no-preference){.hint::after{animation:nudge 1.6s ease-in-out infinite}}
+@keyframes nudge{50%{transform:translateY(6px) rotate(45deg)}}
 .slide{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:14px;padding:32px 16px;--w:min(100%,calc((100svh - 128px) * 16 / 9))}
 .media{position:relative;width:var(--w);aspect-ratio:16/9;background:var(--panel);
   border:1px solid color-mix(in srgb,var(--muted) 35%,transparent)}
 .media picture{display:contents}
 .media img,.media video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
-.media video{opacity:0;transition:opacity .4s}
+.media video{opacity:0;transition:opacity .25s}
+/* While motion is on (body.in-motion, set by reel.js), a slide with a working video hides its still: the
+   still is the finished chart, so showing it first would flash back to an empty chart at frame one. */
+.in-motion .media:has(video:not(.failed)){background:var(--canvas)}
+.in-motion .media:has(video:not(.failed)) img{visibility:hidden}
 .media video.playing{opacity:1}
 @media (orientation:portrait){.slide{--w:min(100%,calc((100svh - 128px) * 4 / 5))}.media{aspect-ratio:4/5}}
 .meta{width:var(--w);display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;font:12px/1.5 'JetBrains Mono',ui-monospace,monospace;
@@ -115,12 +132,15 @@ main,.slide{scroll-snap-align:start}
   <p class="kicker reveal">$kicker</p>
   <h1 aria-label="$heading">$heading_typed<span class="cursor" aria-hidden="true"></span></h1>
   <p class="lede reveal">$lede</p>
-  <a class="cta reveal" href="$repo_url"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>$repo_label</a>
   $scroll_hint
 </main>
 $reel
-<footer class="reveal">
-  <div class="tear" aria-hidden="true">&#9986;</div>
-  <div class="line"><span>$name</span><span class="dots" aria-hidden="true"></span><a href="$author_url">$author_label</a></div>
-</footer>
+<div class="end">
+  <p class="note reveal">$description</p>
+  <a class="cta reveal" href="$repo_url"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>$repo_label</a>
+  <footer class="reveal">
+    <div class="tear" aria-hidden="true">&#9986;</div>
+    <div class="line"><span>$name</span><span class="dots" aria-hidden="true"></span><a href="$author_url">$author_label</a></div>
+  </footer>
+</div>
 </body></html>

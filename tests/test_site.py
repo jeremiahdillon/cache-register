@@ -194,7 +194,7 @@ def test_reel_on_index_only_with_media_for_slides(tmp_path):
     build_site(out, tmp_path)
     index = (out / "index.html").read_text(encoding="utf-8")
 
-    slides = re.findall(r'<section class="slide" aria-label="([^"]+)"', index)
+    slides = re.findall(r'<section class="slide"(?: id="receipts")? aria-label="([^"]+)"', index)
     assert slides == [f"Title of topic-{i}" for i in range(REEL_SIZE + 1, 1, -1)]  # aliases never get slides
     older = re.search(r'<section class="older">(.*?)</section>', index).group(1)
     assert re.findall(r'<a href="/([^"]+)">', older) == ["topic-1", "topic-0"]
@@ -212,6 +212,14 @@ def test_reel_on_index_only_with_media_for_slides(tmp_path):
     for markup in ('class="slide"', 'src="/assets/reel.js"', 'class="hint', 'body class="reel"'):
         assert markup not in not_found
     assert '<div class="tear"' in not_found  # the footer stays
+
+    # The scroll hint links to the first slide; the repo is the last call to action, after the reel.
+    assert '<a class="hint reveal" href="#receipts">' in index
+    assert index.count('id="receipts"') == 1
+    assert '<section class="slide" id="receipts" aria-label="Title of topic-7"' in index
+    main = index.split("<main>")[1].split("</main>")[0]
+    assert 'class="cta' not in main
+    assert index.index('class="older"') < index.index('class="cta') < index.index("<footer")
 
 
 def test_reel_without_older_receipts_has_no_list(tmp_path):

@@ -168,7 +168,8 @@ def _reel_markup(items: list[ReelItem]) -> str:
                 f' data-portrait="{src["portrait"]}" data-landscape="{src["landscape"]}"></video>'
             )
         slides.append(
-            f'<section class="slide" aria-label="{_attr(item.title)}"><div class="media">'
+            f'<section class="slide"{' id="receipts"' if i == 0 else ""} aria-label="{_attr(item.title)}">'
+            f'<div class="media">'
             f'<picture><source media="(orientation: portrait)" srcset="{still["portrait"]}">'
             f'<img src="{still["landscape"]}" alt="{_attr(item.title)}"'
             f' loading="lazy" decoding="async"></picture>{video}</div>'
@@ -257,7 +258,7 @@ def _splash_page(kicker: str, heading: str, lede: str, page_title: str, indexabl
             "reveal_ms": str(TYPE_START + typing_ms + REVEAL_PAUSE),
             "reel": reel,
             "body_class": "reel" if reel else "",
-            "scroll_hint": '<p class="hint reveal" aria-hidden="true">Latest receipts</p>' if reel else "",
+            "scroll_hint": '<a class="hint reveal" href="#receipts">Latest receipts</a>' if reel else "",
         },
         kicker=kicker,
         heading=heading,
