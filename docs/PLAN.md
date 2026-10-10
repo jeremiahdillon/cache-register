@@ -537,7 +537,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 | 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), derived charts publishable (author policy); the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
 | 2. Tier-1 adapters | **In progress** — `litellm_prices` done 2026-10-04 (`docs/plans/2026-10-04-litellm-price-history.md`): `010_openrouter_usage` prices each day from LiteLLM history via `config/entities/models.yaml`; the receipt's prices are Exact, its window starts 2025-01-06 and its `blog_html`/`data.json` are committed. `epoch_benchmarks` + `epoch_models` done 2026-10-06 (`docs/plans/2026-10-06-epoch.md`; CC BY 4.0, Latest-only, weekly): marts `020_epoch_capabilities` (ECI, scores, alias coverage) and `021_epoch_models`. `sec_edgar` done 2026-10-06 (`docs/plans/2026-10-06-sec-edgar.md`; XBRL companyfacts for `config/entities/tickers.yaml`, Exact by filing date): mart `030_capex` (quarterly cash capex per company and group, calendar quarters by midpoint, completeness flags). `openrouter_session_cost` + `openrouter_apps` done 2026-10-07 (`docs/plans/2026-10-07-openrouter-apps-session-cost.md`; CC BY 4.0; weekly): session-cost is a weekly 30-day snapshot (Author-only, history from our first fetch 2026-10-07), mart `055_openrouter_session_cost`; app-rankings weekly top 200 since 2025-01-06 plus current category tags (Latest-only), marts `050_openrouter_apps` and `051_openrouter_app_share`; harnesses map to apps via `config/entities/apps.yaml`. `ramp_ai_index` done 2026-10-07 (`docs/plans/2026-10-07-ramp-ai-index.md`; manual import of 13 views, monthly, Latest-only, redistribution unknown): marts `060_ramp_adoption` (per-cut coverage, adoption overall/labs/sectors/sizes), `061_ramp_spend`, `062_ramp_tokens` (token shares by lab, prices, swap checks); sectors map to NAICS via `config/entities/sectors.yaml`. `census_btos` done 2026-10-08 (`docs/plans/2026-10-07-census-btos.md`; public-domain Excel downloads, no key, weekly, Latest-only): marts `070_btos_ai_use` (per cycle, with breaks, coverage and a revision check), `071_btos_ai_monthly` (reference days → calendar months) and `072_adoption_two_lenses` (Ramp beside BTOS by NAICS, plus a check that reproduces Ramp's Census series). Analysis (c) exploration built 2026-10-08. `vercel_ai_gateway` done 2026-10-09 (`docs/plans/2026-10-08-vercel-ai-gateway.md`; CC BY 4.0, no key, daily, Latest-only): marts `090_vercel_shares` (daily lab and model shares, weekly/monthly means of daily shares, label coverage) and `091_gateway_lenses` (analysis (e)'s lenses by vendor and month: Vercel tokens and spend, OpenRouter tokens and estimated spend, Ramp paying). Curated disclosures done 2026-10-09 (`docs/plans/2026-10-08-curated-disclosures.md`; ours, CC BY 4.0, Exact by `recorded_on`): source `curated_disclosures`, mart `080_disclosures`, 50 seed rows |
 | 3. Entities & marts | **Started** 2026-10-06 — `cachereg entities suggest --source openrouter\|epoch` (replaces the bootstrap script); `aliases.epoch` maps 173 of 274 ECI models, 49 of the top 50 (98%; target 95% met — Muse Spark has no LiteLLM key); 17 cheap models near ECI 130–150 and GPT-5.2/5.4 Pro mapped by hand |
-| 4–5, 7 | Not started (Phase 5: explorations for analyses (a), (b) and (d) built 2026-10-06) |
+| 4–5, 7 | Not started (Phase 5: explorations for analyses (a), (b) and (d) built 2026-10-06, (c) 2026-10-08, (e) 2026-10-09) |
 | 6. Scheduling & ops | **Started** 2026-10-06 — `cachereg fetch --due`, launchd template and `make install-schedule` (§4.5); the author loads the agent by hand (loaded 2026-10-07; first run fetched the daily sources). 2026-10-07: `status` shows cadence, last fetch, next due and last error per source. Next: a week unattended with no gaps |
 
 **Open items carried between sessions**
@@ -588,6 +588,16 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   complete month since Sep 2023; health care and manufacturing differ); every Ramp size band sits above BTOS's
   largest size class. PNGs only (Ramp licence unknown). Not promoted. Its figures move with each Ramp
   import and BTOS release; re-render after both. Plan and build each passed an adversarial review.
+- **Analysis (e) "developer wallet vs enterprise wallet": exploration built** 2026-10-09
+  (`explore/2026-10-09-wallet-lenses/`, `docs/plans/2026-10-09-wallet-lenses.md`): verdict (author decision)
+  a limited ranking claim for the gateways (Vercel spend, OpenRouter est. spend) vs Ramp paying, as pairwise
+  orders among the six labs Ramp reports, settled over the 3 months to the headline month with a 1% floor;
+  the run-rates are a separate view with no ranking (two labs, no like-for-like point). August 2026: the
+  same three labs on top (Anthropic, OpenAI, Google); 11 of 15 pairs agree, xAI vs DeepSeek disagrees,
+  OpenAI vs Google is unsettled on Vercel; gateways have put Anthropic first in spend since October 2025,
+  Ramp only since May 2026. PNGs only (Ramp licence unknown); the footer credits all five sources on every
+  visual (per-visual sources: at promotion). Not promoted. Re-render after each Ramp import (September 2026
+  due ~2026-11-07). Plan and build each passed an adversarial review.
 - **Vercel AI Gateway (built 2026-10-09):** fetched daily by the launchd agent from its next run (`fetch --due`
   reads the registry each time; `curated_disclosures` weekly, a no-op while the file is unchanged). First real fetch 2026-10-09 reproduced the
   plan's September 2026 first look exactly. Compare two months of vintages (are days older than the
@@ -607,9 +617,13 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 - **Chart fit (found 2026-10-08):** `Frame.compose` resizes a chart's PNG to the plot box exactly, so a chart
   whose outer size (axes, titles) differs from the box is stretched or squeezed (the two-lenses LinkedIn
   sectors chart was ~10% compressed before the fix; Vega widens a concat panel to its title). The
-  two-lenses `charts._fit` renders, measures and corrects to a sub-pixel fit, or raises. The other
-  explorations and receipts have not been measured; check them (PNG size vs `page().plot_box`) before
-  promoting any, and move `_fit` into `cachereg.viz` on its second use. `open-middle` must not change.
+  helper is `cachereg.viz.fit` since 2026-10-09 (moved on its second use, analysis (e)): it renders,
+  measures and corrects until the outer size is in [box, box + 1), since vl-convert truncates the SVG size
+  to whole PNG pixels, or raises. Vega rounds each concat panel's size, so charts with n equal panels give
+  the remainder to one (`split()`), else the outer size moves in n-pixel steps and can skip the box; wraps
+  and layouts must be fixed from the box, not the size being fitted. Two-lenses and wallet-lenses are
+  measured exact; the other explorations and receipts have not been measured: check them (PNG size vs
+  `page().plot_box`) before promoting any. `open-middle` must not change.
 - **Analysis (b) "capex vs price collapse": exploration built** 2026-10-06
   (`explore/2026-10-06-capex-vs-price/`, `docs/plans/2026-10-06-capex-vs-price.md`): quarterly
   hyperscaler capex (`030_capex`) beside the cheapest price per ECI level (`040_eci_model_prices`,
