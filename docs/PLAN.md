@@ -341,14 +341,19 @@ receipt's sources, checks vintages, builds only the marts whose inputs those sou
 renders into a temp folder and compares a canonical data hash with the committed manifest
 (identical / differs with reason / cannot reproduce exactly).
 
-**Short links:** `cachereg site` builds a static redirect site from `receipts/*/` that a Pages
-workflow publishes; renamed/retired topics stay alive via `config/link-aliases.yaml`. An exploration may
+**Short links:** `cachereg site` builds a static site from `receipts/*/` that a Pages workflow
+publishes. Each receipt's link is its own page (decided 2026-10-10): its charts in a scroll-snapped
+reel, one slide per chart in `receipt.yaml` order (a chart's still and video share a slide; a video-only
+chart falls back on the receipt's first still), from its committed `output/`, under a bar with
+"Source on GitHub" (the receipt folder) that a closing screen repeats; the page's share card is its
+first chart's landscape still. A receipt with nothing rendered redirects to its folder on GitHub.
+Renamed/retired topics stay alive via `config/link-aliases.yaml` (redirecting to the page). An exploration may
 reserve its future topic (`link:` in `explore.yaml`, decided 2026-10-10): its visuals carry the short
 link and the site redirects it to the exploration until a receipt of that name with `promoted_from`
 pointing at the exploration takes it over; any other clash fails the build. A reserved link is as
 permanent as a receipt's once posted. The root
 (and 404) is a branded splash page from `assets/templates/site.html`, open to search and AI crawlers
-(`robots.txt` allows all, `sitemap.xml` lists the root). Below the root's splash, a scroll-snapped
+(`robots.txt` allows all, `sitemap.xml` lists the root and the receipt pages). Below the root's splash, a scroll-snapped
 reel shows the newest receipts (by `as_of`), one per screen, built from their committed `output/`:
 the still in the shape that fits the viewport (portrait `linkedin_*`, landscape `x_*`) with the motion
 visual played over it while on screen by `assets/site/reel.js`; older receipts are listed as text.
@@ -531,7 +536,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   line (sources, data date, repo link); ranking tables can use an itemized-receipt style.
   Series names: *Rung Up* (weekly moves), *Z-Report* (monthly summary), *Price Check*,
   *No Sale* (flops).
-- **Footer URL**: `cacheregister.dev` (splash page; `/<topic>` redirects to the analysis) once registered;
+- **Footer URL**: `cacheregister.dev` (splash page; `/<topic>` is the receipt's page) once registered;
   `github.com/jeremiahdillon/cache-register` until then. Handle/URL in footer: `jeremiahdillon.com` + repo link.
 
 ---
@@ -542,7 +547,7 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
 
 | Phase | State |
 |---|---|
-| 0. Scaffold & security | **Done** — guard + pinned gitleaks in the pre-push hook (the gate; one branch per piece of work, fast-forwarded to main on the author's OK since 2026-10-10), CI backstop, push protection, Pages short links on cacheregister.dev, with a reel of the newest receipts on the root |
+| 0. Scaffold & security | **Done** — guard + pinned gitleaks in the pre-push hook (the gate; one branch per piece of work, fast-forwarded to main on the author's OK since 2026-10-10), CI backstop, push protection, Pages short links on cacheregister.dev (a page per receipt), with a reel of the newest receipts on the root |
 | 0.5 Vertical slice | **Done** — OpenRouter rankings + model prices, marts, first receipt `receipts/openrouter-wallet-share`; motion renderer A chosen (§6.3) |
 | Layout | **Done** — explorations vs receipts, scoped build, `reproduce` (`docs/plans/2026-10-03-explore-and-receipts.md`) |
 | 1. Source verification | **In progress** — `openrouter_models` verified 2026-10-04: `redistribution: forbidden` (CC BY covers only the Datasets endpoints; Terms §12 reserves the rest), derived charts publishable (author policy); the receipt's `blog_html` and `data.json` stay withheld while it uses this source. Remaining Tier-1 sources are verified as each adapter is built |
