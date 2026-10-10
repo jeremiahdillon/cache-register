@@ -22,7 +22,7 @@ LAB = "anthropic"
 SOURCES = ["ramp", "vercel", "openrouter"]
 NAMES = {"ramp": "Ramp", "vercel": "Vercel", "openrouter": "OpenRouter"}
 # (measure, OpenRouter token variant) per visual
-VISUALS = {"spend": ("spend", None), "tokens": ("tokens", "paid"), "tokens-with-free": ("tokens", "all")}
+VISUALS = {"spend": ("spend", None), "tokens-with-free": ("tokens", "all")}  # paid-only tokens stay in `weekly`
 
 
 def _sunday(d: date) -> date:
@@ -261,7 +261,6 @@ TITLE = "Different data sources tell different stories about the AI economy"
 # The measure, stamped on the chart's face (charts.py), one per visual.
 STAMP = {
     "spend": "Anthropic's share of total spend in each data source",
-    "tokens": "Anthropic's share of total tokens in each data source",
     "tokens-with-free": "Anthropic's share of total tokens in each data source",
 }
 

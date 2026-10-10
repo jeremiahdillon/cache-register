@@ -36,6 +36,10 @@ dark canvas: CVD and normal-vision separation, chroma and contrast pass; Ramp st
 on purpose (inside it the hue turns olive). Then (author): OpenRouter brightened to `#9C6BFF` (contrast 5.6:1)
 and Vercel nudged to `#0AA3D6` to keep them apart (CVD ΔE 9.2, normal 19.7); lines 2.6 → 3.4 px and end labels
 16 → 20 px for small screens.
+**Visuals trimmed, spend video (2026-10-10, author):** the paid-only `tokens` visual is dropped (it did not
+change the story; its series stays in frame `weekly` and the README tables); `spend` gets the same video
+(17.8 s; OpenRouter's band fades in after its line). Both videos measured: every frame equals the plot box and
+the final frame equals the static chart.
 
 ## Question
 

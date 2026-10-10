@@ -1,9 +1,10 @@
 """Charts for the Anthropic-share-by-source exploration (render contract: src/cachereg/render.py).
 
-One layout for three visuals: Anthropic's share of each source's reported total, three sources on one 0–100%
-axis (same measure in each; author decision), weekly dots and a trailing 4-week line per source, labelled at
-the line ends. On `spend`, a faint band shows OpenRouter's sensitivity to its unpriced tokens. The render
-contract passes no visual name, so each visual has a thin function over the shared helper.
+One layout for two visuals (`spend`, `tokens-with-free`): Anthropic's share of each source's reported total,
+three sources on one 0–100% axis (same measure in each; author decision), weekly dots and a trailing 4-week
+line per source, labelled at the line ends. On `spend`, a faint band shows OpenRouter's sensitivity to its
+unpriced tokens. The render contract passes no visual name, so each visual has a thin function over the shared
+helper.
 
 Video (`<visual>_specs`): the weekly dots sweep in bright from left to right; then each source's line draws in
 turn (Ramp, OpenRouter, Vercel) at one calendar speed, its dots dimming as it starts and its end label fading in
@@ -59,20 +60,12 @@ def spend(story: Story, width, height, font_scale: float = 1.0, interactive: boo
     return fit(lambda w, h: _share(story, w, h, font_scale, "spend"), width, height)
 
 
-def tokens(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
-    return fit(lambda w, h: _share(story, w, h, font_scale, "tokens"), width, height)
-
-
 def tokens_with_free(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False):
     return fit(lambda w, h: _share(story, w, h, font_scale, "tokens-with-free"), width, height)
 
 
 def spend_specs(story: Story, width: int, height: int, font_scale: float, cfg: dict):
     return _specs(story, width, height, font_scale, "spend")
-
-
-def tokens_specs(story: Story, width: int, height: int, font_scale: float, cfg: dict):
-    return _specs(story, width, height, font_scale, "tokens")
 
 
 def tokens_with_free_specs(story: Story, width: int, height: int, font_scale: float, cfg: dict):
@@ -86,9 +79,7 @@ def _smooth(u: float) -> float:
 
 def _series(story: Story, visual: str) -> pl.DataFrame:
     """The visual's weekly rows, every line ending at the week the subtitle describes."""
-    measure, variant = {"spend": ("spend", None), "tokens": ("tokens", "paid"), "tokens-with-free": ("tokens", "all")}[
-        visual
-    ]
+    measure, variant = {"spend": ("spend", None), "tokens-with-free": ("tokens", "all")}[visual]
     end = date.fromisoformat(story.extra["visuals"][visual]["week"])
     w = story.frames["weekly"].filter((pl.col("measure") == measure) & (pl.col("week") <= end))
     if measure == "tokens":

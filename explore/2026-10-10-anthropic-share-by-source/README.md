@@ -17,7 +17,7 @@ rule concerned different measures).
   Ramp, 11% on Vercel, 4% on OpenRouter** (3% with OpenRouter's free models included).
 - **They disagreed on the direction for most of 2025.** Spend: Ramp rose from 38% (2025 Q1 mean of weeks) to
   55% (Q4) while OpenRouter fell from 93% to 62%. Tokens: Ramp rose from 18% (2025 Q1) to 53% (2026 Q2)
-  while OpenRouter fell from 45% to 16% (paid tokens) and Vercel from 52% (2025 Q4) to 31%.
+  while OpenRouter fell from 42% to 15% (free models included; 45% to 16% paid only) and Vercel from 52% (2025 Q4) to 31%.
 - **In 2026 the spend lines move together but stay apart.** From 2026 Q2 to Q3 all three fell (Ramp 64.9 →
   58.6, Vercel 64.0 → 59.4, OpenRouter 63.8 → 40.7); in September the gap between Ramp and OpenRouter was
   ~25 points.
@@ -35,23 +35,25 @@ rule concerned different measures).
 ## Visuals
 - `spend`: Anthropic's share of all reported spend, Ramp / Vercel / OpenRouter, weekly dots and a trailing
   4-week line per source on one 0–100% axis; OpenRouter's band is its sensitivity to unpriced tokens.
-- `tokens`: the same for tokens, OpenRouter paid models only.
-- `tokens-with-free`: the same, OpenRouter including free models (author decision 1).
-All three share one headline, "Different data sources tell different stories about the AI economy": Anthropic
+- `tokens-with-free`: the same for tokens, OpenRouter including its free models (author decision 1). A
+  paid-only token view was dropped on 2026-10-10 (author: it did not change the story); its series stays in
+  frame `weekly` (`variant = paid`) and in the tables below, 1.0–3.3 points above the free-included line per
+  quarter (0.3 in the four weeks to 27 September).
+Both share one headline, "Different data sources tell different stories about the AI economy": Anthropic
 is a large part of AI spend and tokens, so if the sources disagree this much about it, they tell different
 stories about the whole (author's framing). The subtitle gives each chart's values; the measure is stamped on
-the chart's face (upper right), with how to read dots and lines. Each line ends at the latest week all three
-sources cover (the subtitle's week); colours are fixed per
-source and close to each source's brand, tuned for the dark canvas and legibility: Ramp yellow-green
-(`#C4D00A`, from its `#E4F222`), OpenRouter purple (`#9C6BFF`, its Grape `#7624F4` brightened), Vercel sky blue
-(`#0AA3D6`; Vercel's brand is black and white). Lines are 3.4 px and end labels 20 px (scaled), for small screens. None is Anthropic's orange, since every line is Anthropic.
-**Video** (`tokens-with-free` only, for feedback first; `x_video`, `linkedin_video`, `web_video`, 17.3 s at 30
-fps): the weekly dots sweep in bright from left to right; each line then draws in turn, Ramp, OpenRouter,
+the chart's face (upper right). Each line ends at the latest week all three sources cover (the subtitle's
+week); colours are fixed per source and close to each source's brand, tuned for the dark canvas and
+legibility: Ramp yellow-green (`#C4D00A`, from its `#E4F222`), OpenRouter purple (`#9C6BFF`, its Grape
+`#7624F4` brightened), Vercel sky blue (`#0AA3D6`; Vercel's brand is black and white). None is Anthropic's
+orange, since every line is Anthropic. Lines are 3.4 px and end labels 20 px (scaled), for small screens.
+
+**Videos** (both visuals; `x_video`, `linkedin_video`, `web_video`, 30 fps; `tokens-with-free` 17.3 s, `spend`
+17.8 s): the weekly dots sweep in bright from left to right; each line then draws in turn, Ramp, OpenRouter,
 Vercel, at one calendar speed (so Vercel's shorter history draws faster), its dots dimming as it starts and its
-end label fading in once drawn; a 5-second hold on the final frame, which is byte-identical to the static
-chart. Every frame keeps the final frame's fitted size (hidden marks are drawn at opacity 0), so the canvas
-never moves. The `spend` and `tokens` videos are ready to declare (their `_specs` exist; on `spend`,
-OpenRouter's band fades in after its line).
+end label fading in once drawn; on `spend`, OpenRouter's sensitivity band fades in after its line; a 5-second
+hold on the final frame, which is byte-identical to the static chart. Every frame keeps the final frame's
+fitted size (hidden marks are drawn at opacity 0), so the canvas never moves.
 
 The visuals carry the reserved short link `cacheregister.dev/source-matters`, which redirects here until a
 receipt promoted from this exploration takes it over. The token visuals credit only Ramp, Vercel and
