@@ -3,16 +3,16 @@
   "cache_register_version": "0.0.1",
   "data_hash": "6f05c22d878656627e61697b1d4b27ef63987501566b8f6faaf7d24f14528b3f",
   "folder": "receipts/open-middle",
-  "git_dirty": true,
-  "git_sha": "cb5ddaf73b30553ae62a6cbbd686fa8eddfda819",
-  "inputs_hash": "9356291b88879b51173277d40428f191d8e5c6d33cd8e4cbafec97c78bbcdebc",
+  "git_dirty": false,
+  "git_sha": "0d38d4e413d655397fa428d0791e4ffd7b2171b2",
+  "inputs_hash": "5bb0e2105c9fc4b1052efc7a118fa08dd0d607f401c73fb10ec4009bb4668a76",
   "kind": "receipt",
   "outputs": {
-    "data.json": "2a5bb928adaa6a7b15dea209b73c8a1eebb5bd7e20030ccbd5932cc8faedacfb",
-    "push.linkedin_video.mp4": "3bfd874187933b2e7be1f4210032607fe64dae04214da0f02200ed127b893077",
-    "push.x_video.mp4": "1e98fc0257d2d43596acd448ca8939c0f703c48786816bd6f79a3a8b90d4827f",
-    "stack.linkedin_png.png": "4bd8adbff5d9c02a91397d8340694d4261cbdc37bae495f25d7a1a9c7e17c71e",
-    "stack.x_png.png": "eefde3ae58841d00374ad0148b5f698ba4e9eb1d5fb2395bd209209654b7c529"
+    "data.json": "1da15f5b415461d279bc89bbde245834fb47de3f1c08764194a51b5300dccb31",
+    "push.linkedin_video.mp4": "69bcd32029c31b798862bd1a43c784b6ffd801128c3597e430088dfbdb993fa8",
+    "push.x_video.mp4": "1c958a2102255d6d160399df1352c191df84b4d42cc80fd6f7c72e367218a572",
+    "stack.linkedin_png.png": "c41e47a3a2b61ba6683472ca5f4ed9e9511ab8c5fedbefc867ac74a53d01741b",
+    "stack.x_png.png": "bdb7b8f0077a9afda9b4cf6f7445e1cc916be9ccd56603bc8b8a8bcfb310edf6"
   },
   "sources": {
     "openrouter_rankings": {
