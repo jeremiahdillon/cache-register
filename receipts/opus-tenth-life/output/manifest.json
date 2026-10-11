@@ -4,8 +4,8 @@
   "data_hash": "8bd4dc8ed95ed213b83b45026fc501e6f0188c62c21a8d1bf95d817bab06a017",
   "folder": "receipts/opus-tenth-life",
   "git_dirty": false,
-  "git_sha": "d3c07428c1e2faaa2f328fcd6f87f01c79dfd69f",
-  "inputs_hash": "9af175fff279ce85760584efa28eabfa2516923603f1d1d825706621a76e5c56",
+  "git_sha": "db0e93ac5677631d72de341d345ab26e4775b47c",
+  "inputs_hash": "d6c1ff7b28499bf70132c7caa75b71a4b97549379e94e2541ec881b32ac3d0df",
   "kind": "receipt",
   "outputs": {
     "data.json": "dfbcff358b826356c71fb0ea030e183b23e7dc6304a2db509c6320b8c0489d60",
