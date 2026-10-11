@@ -1,5 +1,5 @@
 #!/bin/sh
-# Runs before every push to the public repo. We push straight to main, so this is the gate.
+# Runs before every push to the public repo. Work goes on branches that fast-forward main, so this is the gate.
 # Checks only the commits being pushed, then lint + tests. Bypass only in an emergency: --no-verify.
 set -e
 zero=0000000000000000000000000000000000000000

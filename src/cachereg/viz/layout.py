@@ -89,7 +89,7 @@ def page(story: Story, target: Target, receipt: Receipt) -> Frame:
     inner = W - 2 * pad
     y = pad
 
-    # Wordmark: optional lime glyph + name, in the brand's (recessive) wordmark colour
+    # Wordmark: optional lime glyph + name, in the brand's wordmark colour
     mark = brand().get("wordmark", {})
     mark_px = max(14, target.footer_px)
     x = pad

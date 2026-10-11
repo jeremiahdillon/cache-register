@@ -142,33 +142,39 @@ cache-register/
 ├── Makefile                      # thin wrappers over the CLI
 ├── .env.example                  # every variable, documented, no values
 ├── .gitignore                    # data/, outputs/, .env*, *.duckdb, logs
-├── .pre-commit-config.yaml
+├── .githooks/                    # pre-commit, pre-push (the gate, §8); installed by `make setup`
 ├── CLAUDE.md                     # rules for AI collaborators (layers, conventions, security)
-├── .claude/skills/               # v1: new-analysis, render-check (add-source, promote: backlog)
-├── .github/workflows/ci.yml      # lint/type/test/render-on-synthetic; no secrets
+├── .github/workflows/            # ci.yml (backstop: guard, gitleaks, lint, tests); pages.yml (the site)
 ├── config/
 │   ├── sources.yaml              # registry: id, history, redistribution, derived_charts,
 │   │                             #   attribution, revisions, cadence, enabled
 │   ├── entities/
 │   │   ├── models.yaml           # canonical model IDs ↔ per-source aliases
 │   │   ├── vendors.yaml          # canonical vendors, open/closed weights, HQ country
-│   │   └── tickers.yaml          # vendor ↔ ticker/CIK (for EDGAR & prices)
+│   │   ├── tickers.yaml          # vendor ↔ ticker/CIK (for EDGAR & prices)
+│   │   └── apps.yaml, sectors.yaml
 │   ├── curated/                  # §2.3, committed: disclosures.csv + metrics.yaml (vocabulary)
-│   └── brand/                    # brand.yaml, fonts (OFL), logo SVG
+│   ├── brand/brand.yaml          # colours, type, wordmark, stamp URL (§9)
+│   └── link-aliases.yaml         # (when needed) retired short links → receipts
 ├── src/cachereg/
-│   ├── core/                     # http, snapshot store, settings/secrets, lineage, logging
+│   ├── core/                     # http, snapshot store, settings/secrets, fetch state, schedule, warehouse
 │   ├── sources/<id>/             # one package per source (contract §4)
-│   ├── entities/                 # resolver + `entities check`
-│   ├── marts/                    # *.sql + mart registry (inputs, assumptions)
-│   ├── story/                    # Story model, render targets, renderers (§6)
-│   ├── viz/                      # theme, chart helpers, stamp, motion
+│   ├── entities.py               # resolver + `entities check`
+│   ├── marts/                    # *.sql (run in file order) + mart registry (inputs, assumptions)
+│   ├── build.py                  # staged views + marts into the warehouse
+│   ├── story/                    # Story model, folder config, hashing (§6)
+│   ├── viz/                      # theme, brand, layout, fit, stamp, motion
+│   ├── render.py                 # render contract + targets (§6)
+│   ├── reproduce.py              # `cachereg reproduce receipts/<topic>`
+│   ├── site.py                   # short-link site + receipt pages + reel (§5)
 │   └── cli.py                    # `cachereg …`
+├── assets/                       # fonts (OFL), site and HTML templates, site CSS/JS
+├── scripts/                      # guard.py, gitleaks.sh
 ├── explore/                      # dated explorations (may reserve a short link): 2026-10-02-<slug>/
 ├── receipts/                     # promoted topics; folder name = short link; committed output/
 ├── docs/
 │   ├── PLAN.md
-│   ├── playbook.md               # lessons learned: chart patterns, what performed, pitfalls
-│   └── sources/                  # (generated) source catalog
+│   └── plans/                    # reviewed design plans, one per analysis
 ├── ops/launchd/cachereg.fetch.plist.template   # placeholders only; installed by script
 ├── tests/
 │   └── fixtures/                 # SYNTHETIC data only (no recorded real responses)
@@ -355,7 +361,8 @@ output/          # committed: <visual>.<target>.<ext>, manifest.json (+ data.jso
 6. **Check the site**: `cachereg site --out _site`, then `python -m http.server -d _site`. The receipt
    leads the root reel if its `as_of` is the newest, and `/<topic>/` shows every chart.
 7. **Ship**: push the branch; on the author's OK, rebase on `origin/main` and fast-forward `main`. The
-   Pages workflow redeploys on any change to `receipts/*/receipt.yaml`, `README.md` or `output/**`.
+   Pages workflow redeploys on any change to `receipts/*/receipt.yaml`, `README.md` or `output/**` (and on
+   an exploration's `explore.yaml`, which may reserve a link).
 
 **Re-rendering** a receipt (a new `as_of`, a chart fix): `cachereg render receipts/<topic>` regenerates
 the whole `output/` set; commit it and ship as above. The Pages rebuild takes every visual from
@@ -515,8 +522,9 @@ decided 2026-10-10), else the folder's; the image licence gate follows the same 
 - **Pre-commit**: gitleaks; block `data/`, `outputs/`, `*.parquet`, `*.duckdb`, `.env*`; block
   files > 1 MB outside `published/`; block absolute home paths, usernames, hostnames, local IPs
   (`/Users/`, `/home/`, machine name patterns) in committed text.
-- **Workflow (decided 2026-10-02): solo, straight to `main`, no branches or PRs.** Commits are
-  pushed directly to `main`. The gate is the local **pre-push
+- **Workflow (since 2026-10-10): one branch per piece of work, no PRs.** Work goes on a
+  `claude/<topic>` branch from `origin/main`; on the author's OK it is rebased and `main` is
+  fast-forwarded to it (linear history). The gate is the local **pre-push
   hook** (`.githooks/pre-push`): guard + pinned gitleaks over exactly the commits being
   pushed, then lint + tests. GitHub **push protection** blocks known secret formats server-side
   regardless. CI is a single backstop job after the push (full-history guard + gitleaks, lint,

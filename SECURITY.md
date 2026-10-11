@@ -16,8 +16,8 @@ exposure.
 - **Operational details.** Absolute home paths, local hostnames, private IP addresses and
   machine-specific identifiers (supplied privately to CI) are blocked.
 
-This is a solo project that pushes straight to `main`, so the local **pre-push hook** is the
-gate (run `make setup` once to install the hooks). GitHub push protection blocks known secret
+Work goes on branches that fast-forward `main` without pull requests, so the local **pre-push
+hook** is the gate (run `make setup` once to install the hooks). GitHub push protection blocks known secret
 formats server-side, and CI re-checks the full history after every push as a backstop.
 
 ## If something leaks

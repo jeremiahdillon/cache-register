@@ -1,6 +1,6 @@
 name: ci
 
-# Backstop only. We push straight to main; the local pre-push hook (.githooks/pre-push) is the gate.
+# Backstop only. Branches fast-forward main without PRs; the local pre-push hook (.githooks/pre-push) is the gate.
 on:
   push:
     branches: [main]
