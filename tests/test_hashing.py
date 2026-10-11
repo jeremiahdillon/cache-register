@@ -29,6 +29,13 @@ def test_hash_ignores_row_and_column_order_and_float_width():
     assert data_hash(f) == data_hash(shuffled)
 
 
+def test_hash_ignores_summation_noise_on_a_rounding_boundary():
+    # one mean of rounded percentages, summed in two orders: 72.436275 ± 1 ulp sits on the 7-digit boundary
+    noisy = [{"v": pl.DataFrame({"share": [x]})} for x in (72.43627499999999, 72.43627500000001)]
+    assert data_hash(noisy[0]) == data_hash(noisy[1])
+    assert data_hash(noisy[0]) != data_hash({"v": pl.DataFrame({"share": [72.43628]})})
+
+
 def test_hash_changes_when_values_change():
     f = frames()
     changed = dict(f, b=f["b"].with_columns(pl.Series("share", [0.1, 0.25])))

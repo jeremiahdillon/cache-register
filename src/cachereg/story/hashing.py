@@ -1,7 +1,8 @@
 """Canonical hashes used to decide "same result?" without comparing image bytes.
 
 * ``data_hash``: the Story frames in a canonical form — frames by name, columns by name, rows sorted
-  by all columns; dates as ISO strings, floats to 7 significant digits (float32-safe), nulls as empty — serialised
+  by all columns; dates as ISO strings, floats to 7 significant digits (float32-safe; first to 12, so summation-order
+  noise cannot flip a value that sits on a 7-digit rounding boundary), nulls as empty — serialised
   as CSV. Identical data hashes identically regardless of row order, column order or dtype width.
 * ``inputs_hash``: the bytes of every file that can change how a receipt's visuals look.
 """
@@ -25,7 +26,8 @@ def _cell(v) -> str:
     if isinstance(v, bool):
         return "true" if v else "false"
     if isinstance(v, float):
-        return format(v, ".7g")
+        # 12 digits first: 72.43627499999999 and 72.43627500000001 (one mean, summed in two orders) are one value
+        return format(float(format(v, ".12g")), ".7g")
     if isinstance(v, (datetime, date)):
         return v.isoformat()
     return str(v)
