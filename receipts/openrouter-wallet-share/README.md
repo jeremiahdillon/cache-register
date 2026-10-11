@@ -30,7 +30,7 @@ In [`output/`](output/) — `output/manifest.json` records the data versions and
 - `share-lines` — weekly share line chart: `x_png` (1600×900), `linkedin_png` (1080×1350),
   `blog_html` (interactive, with the weekly table).
 - `share-race` — bar-race video, one keyframe every 4 weeks: `linkedin_video` (1080×1350),
-  `x_video` (1920×1080).
+  `x_video` (1920×1080), with its final frame as the still (`linkedin_png`, `x_png`, same sizes).
 - `data.json` — the weekly shares, spend and coverage behind the visuals.
 
 ## Data

@@ -48,10 +48,10 @@ capability that starts at an Opus's own launch price.
   Epoch's full model name and its price, is in the table below.
 - **10× point:** the first day the line is at or below a tenth of the Opus's launch price. The title's average
   is the mean of the 10× points of the Opus models that have one (`story.extra["avg_months_to_10x"]`).
-- **Video** (`isolines-motion`: `x_video`, `linkedin_video`): the lines draw one after another at one speed
+- **Video** (`isolines`: `x_video`, `linkedin_video`): the lines draw one after another at one speed
   along the drawn path, so a drop in price takes as long to draw as a stretch of time of the same on-screen
   length, and each line eases in and out. Labels fade in as the line reaches them. Each finished line dims and
-  stays dim until the last line is drawn; then all return together, on a frame identical to the static chart.
+  stays dim until the last line is drawn; then all return together, on the final frame, which is the still (`x_png`, `linkedin_png`).
   Label positions are computed once on the full chart, so nothing moves between frames.
 - Anchors are set in `receipt.yaml`. `story.frames`: `daily` (each line by day), `events` (labelled points),
   `summary`, `sensitivity`.
@@ -124,8 +124,8 @@ One change at a time (`story.frames["sensitivity"]`). Fold = Opus launch price �
   (ECI 126.9, Feb 2024) would need earlier prices.
 
 ## Output
-In [`output/`](output/): `isolines` as `x_png`, `linkedin_png` and `blog_html`, and `isolines-motion` as
-`x_video` and `linkedin_video`. `output/manifest.json` records the data versions and hashes; `data.json` holds the
+In [`output/`](output/): `isolines` as `x_video` and `linkedin_video`, their final frames as `x_png` and
+`linkedin_png`, and `blog_html`. `output/manifest.json` records the data versions and hashes; `data.json` holds the
 frames behind the visuals.
 
 ## Reproduce

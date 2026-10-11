@@ -11,4 +11,4 @@ config:
   race_every_weeks: 4   # race keyframes: every 4th week, counted back from the last
 visuals:
   - {name: share-lines, chart: line_chart, targets: [x_png, linkedin_png, blog_html]}
-  - {name: share-race, chart: race, targets: [linkedin_video, x_video]}
+  - {name: share-race, chart: race, targets: [linkedin_video, x_video, x_png, linkedin_png]}  # still = final frame

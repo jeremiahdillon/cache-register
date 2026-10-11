@@ -8,5 +8,4 @@ config:
   growth_weeks: 26          # headline: share of token growth over this many weeks to the last full week
   show_unattributed: false  # true: add OpenRouter's "other" row as a top band (else footnoted)
 visuals:
-  - {name: push, chart: push, targets: [x_video, linkedin_video]}
-  - {name: stack, chart: stack, targets: [x_png, linkedin_png]}
+  - {name: push, chart: push, targets: [x_png, linkedin_png, x_video, linkedin_video]}  # still = final frame

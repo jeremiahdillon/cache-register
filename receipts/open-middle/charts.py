@@ -275,9 +275,3 @@ def _specs(story: Story, width: int, height: int, fs: float) -> tuple[list[dict]
 
 def push_specs(story: Story, width: int, height: int, font_scale: float, cfg: dict) -> tuple[list[dict], int]:
     return _specs(story, width, height, font_scale)
-
-
-def stack(story: Story, width, height, font_scale: float, interactive: bool = False) -> alt.Chart:
-    """Static: the final frame (everything stacked)."""
-    specs, _ = _specs(story, width, height, font_scale)
-    return alt.Chart.from_dict(specs[-1])

@@ -21,7 +21,7 @@ BANDS_ORDER = ["OpenAI", CHINA, "Anthropic"]  # stack bottom to top: China enter
 TABLE_PERCENT_COLUMNS = BANDS_ORDER
 # Area visuals are smoothed; the bar visuals show each week's actual values. The method line is shared by every
 # visual in the folder, so smoothing is stated in a note on the area visuals only.
-AREA_VISUALS = ("push", "stack")
+AREA_VISUALS = ("push",)
 SMOOTHED_NOTE = "Areas smoothed: each week = (previous + 2 × this + next week) / 4."
 MIN_DAYS = 6  # a week with one missing day still counts (shares, not totals), unless it is the last week
 EMBEDDING = r"embed|bge-|/bge|e5-|minilm"  # as in open-middle: embedding models are not chat/completion traffic

@@ -45,7 +45,7 @@ Oct 4 (total rise: 99T a week).
 - **The band turns over fast.** MiniMax M3 grew, but the M2 versions declined by more. StepFun's Flash models
   faded as newer mid-size models arrived.
 
-The visuals (stacked-area video and stills for X and LinkedIn) and `data.json` are in [`output/`](output/).
+The visuals (`push`: stacked-area video for X and LinkedIn, with its final frame as the still) and `data.json` are in [`output/`](output/).
 
 ## Data
 - `openrouter_rankings`: daily tokens for the top 50 models plus an `other` row (CC BY 4.0, OpenRouter).

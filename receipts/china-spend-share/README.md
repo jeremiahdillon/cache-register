@@ -26,11 +26,11 @@ two-way view leaves out, are put back in?
 ## Visuals
 In [`output/`](output/) (`output/manifest.json` records the data versions and hashes; `data.json` holds the
 weekly figures behind the visuals):
-- `push` — video (`x_video`, `linkedin_video`): the two-way split draws in (OpenAI below, Anthropic above), holds,
-  then the Chinese-labs band grows in between them in the accent colour while the stack stays at 100%.
-- `stack` — still of the final frame (`x_png`, `linkedin_png`).
-- `push-bars` / `stack-bars` — the same video and still as stacked weekly bars: one bar per week with that week's
-  actual (unsmoothed) shares. The sweep reveals one bar at a time.
+- `push-bars` — video (`x_video`, `linkedin_video`) and its final frame as the still (`x_png`, `linkedin_png`),
+  as stacked weekly bars: one bar per week with that week's actual (unsmoothed) shares. The sweep reveals one
+  bar at a time.
+- `push` — the same as stacked areas: the two-way split draws in (OpenAI below, Anthropic above), holds, then
+  the Chinese-labs band grows in between them in the accent colour while the stack stays at 100%.
 
 ## Data
 - `openrouter_rankings` — daily tokens for the top-50 models (CC BY 4.0, OpenRouter).

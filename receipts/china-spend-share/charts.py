@@ -1,8 +1,8 @@
 """Charts for receipts/china-spend-share and china-token-share (render contract: src/cachereg/render.py).
 
 The two folders' charts.py are identical; analysis.py differs (spend vs tokens) and sets extra["y_title"].
-Two forms of each visual: stacked areas from the smoothed frame (`push`, `stack`) and stacked weekly bars from
-the raw, unsmoothed frame (`push_bars`, `stack_bars`).
+Two forms of the visual: stacked areas from the smoothed frame (`push`) and stacked weekly bars from the raw,
+unsmoothed frame (`push_bars`). Their stills are the videos' final frames (render.py renders them).
 
 Adapted from receipts/open-middle/charts.py, but stacked to 100%. The video is precomputed frame by frame
 (Vega-Lite has no tweening):
@@ -277,17 +277,5 @@ def push_specs(story: Story, width: int, height: int, font_scale: float, cfg: di
     return _specs(story, width, height, font_scale, bars=False)
 
 
-def stack(story: Story, width, height, font_scale: float, interactive: bool = False) -> alt.Chart:
-    """Static: the final frame (all three stacked)."""
-    specs, _ = _specs(story, width, height, font_scale, bars=False)
-    return alt.Chart.from_dict(specs[-1])
-
-
 def push_bars_specs(story: Story, width: int, height: int, font_scale: float, cfg: dict) -> tuple[list[dict], int]:
     return _specs(story, width, height, font_scale, bars=True)
-
-
-def stack_bars(story: Story, width, height, font_scale: float, interactive: bool = False) -> alt.Chart:
-    """Static: the final frame of the bar form (raw weekly values, all three stacked)."""
-    specs, _ = _specs(story, width, height, font_scale, bars=True)
-    return alt.Chart.from_dict(specs[-1])
