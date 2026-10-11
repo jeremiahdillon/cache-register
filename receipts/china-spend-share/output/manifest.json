@@ -4,8 +4,8 @@
   "data_hash": "0684ced55d9d36ce8bdba723d3fae380d678bf9b82b9db5fb0939edfcdf8bc87",
   "folder": "receipts/china-spend-share",
   "git_dirty": false,
-  "git_sha": "dd17021b8d7095aec3a530793cc692454c4e16ae",
-  "inputs_hash": "ddeafab33ac659aabc2c116704c3259ae2e2c1e766e63fbaa7b4c3270d5ddf8d",
+  "git_sha": "25c8e894d5957af39fdbf7645c7e15d5f6637be7",
+  "inputs_hash": "c16e7414af388834be3072fd0906c9167023c93983cba7556af377c8843e2f94",
   "kind": "receipt",
   "outputs": {
     "data.json": "a727150bee627c50af2305d7caefa818407054a2cab98508500e2afa4e2e59e9",
