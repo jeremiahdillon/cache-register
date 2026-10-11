@@ -1,23 +1,23 @@
 {
   "as_of": "2026-10-10",
   "cache_register_version": "0.0.1",
-  "data_hash": "e9bfb3a0060bb33112aba500ce1e6537f2ec313c74065ad93115419e80bab40e",
+  "data_hash": "7065bd9f1347bcf0d2c838af2e705772de0b40d1ad5ab97799183845185c3be1",
   "folder": "receipts/source-matters",
   "git_dirty": false,
-  "git_sha": "19b26c9e3af497346b2116720e7ad381950a985d",
-  "inputs_hash": "7cc134c12b8f525d0a4cad27792fbacf9526e9fa77cc9ff9720d657ede132449",
+  "git_sha": "e16dd21ef0cbfe8635ec1855a1b9409446346ce7",
+  "inputs_hash": "56e125425ba4ae9c2fa1aac2c02db2f26ff23a81d6b15b81be71c28def6483f3",
   "kind": "receipt",
   "outputs": {
     "spend.linkedin_png.png": "bab49739c540740023da37d19b72288b614e57781ba4560b6f8b81eb64e3c61c",
-    "spend.linkedin_video.mp4": "45a41abc24debc7187fd72089076f014e244d48729e561b19d7a6eb8323ddcfa",
-    "spend.web_video.webm": "5d7f13b0a992aa5ba89cbb2bb3e0075dff1a7109f092f8bf3b6be832e6013187",
+    "spend.linkedin_video.mp4": "687c95b5d0c1ac14420a16ad2a01a39911d20002136a6c91ed66516a9858dd4c",
+    "spend.web_video.webm": "b7a11270b176d09b22ce934c441486f18ad556b1c17953d33b4de65c251ccb2e",
     "spend.x_png.png": "acb5e8ea1d789cc359e2aa841937b7196114fd47eab669d70a59ef9401c1366f",
-    "spend.x_video.mp4": "f76587e21fa546b7fa21656eb26e7f1501d235c641bb1d1aa66eb66b6d03cf82",
+    "spend.x_video.mp4": "265989b50eeff79eca5c5f4a664328e3629d1a97280d57cd8f0f6e700e55b76d",
     "tokens-with-free.linkedin_png.png": "436aa933b7e497a9b6a02f0875dfadfd16dd075c9a1e7cbdac5b287c9693b19b",
-    "tokens-with-free.linkedin_video.mp4": "afed348b2c2ff65a9b95efc0db68d66a2b800a6232e5ee977dac2c287eff39a7",
-    "tokens-with-free.web_video.webm": "64fdff895bbd0f1d05e08b673bdb9e739dcc251580f97fb630a5bec8b09e9c4d",
+    "tokens-with-free.linkedin_video.mp4": "1cd5395f9f5d69b19ac1c23ea9f3958ab6f2de0fb283914ed7e481a12c5c8a42",
+    "tokens-with-free.web_video.webm": "041183ad0917923fc5a3e5fe22def40369f35c2b26bf680faf7310e7e042eb03",
     "tokens-with-free.x_png.png": "d9ed91f91905e742be15dca157b85f74be4b1e8555d900f5385b2eccc98aacde",
-    "tokens-with-free.x_video.mp4": "a8b24403eb68020216bd6ae3f319d2fa0f481431707f4e45c4eedd025e61027e"
+    "tokens-with-free.x_video.mp4": "ac131139ec646f1fd6c8ba1488dc8d3b706e0ba3bbf4e9e4eead3284b17ed209"
   },
   "sources": {
     "litellm_prices": {
