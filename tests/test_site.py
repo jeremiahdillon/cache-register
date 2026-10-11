@@ -211,9 +211,13 @@ def test_reel_on_index_only_with_media_for_every_receipt(tmp_path):
     build_site(out, tmp_path)
     index = (out / "index.html").read_text(encoding="utf-8")
 
-    slides = re.findall(r'<section class="slide"(?: id="receipts")? aria-label="([^"]+)"', index)
+    slides = re.findall(r'<section class="slide" id="[^"]+" aria-label="([^"]+)"', index)
     assert slides == [f"Title of topic-{i}" for i in range(REEL_SIZE + 1, 1, -1)]  # aliases never get slides
-    older = re.search(r'<section class="older">(.*?)</section>', index).group(1)
+    # each slide's "More" leads to the next screen: the next slide, then the older list
+    ids = re.findall(r'<section class="slide" id="([^"]+)"', index)
+    mores = re.findall(r'<a class="more" href="#([^"]+)">More</a>', index)
+    assert ids[0] == "receipts" and len(set(ids)) == REEL_SIZE and mores == [*ids[1:], "older"]
+    older = re.search(r'<section class="older" id="older">(.*?)</section>', index).group(1)
     assert re.findall(r'<a href="/([^"]+)/">', older) == ["topic-1", "topic-0"]
     assert '<script src="/assets/reel.js" defer></script>' in index and (out / "assets" / "reel.js").is_file()
     assert 'data-portrait="/media/topic-7/chart-motion.linkedin_video.mp4?v=' in index
@@ -254,12 +258,14 @@ def test_short_links_lead_to_receipt_pages(tmp_path):
 
     page = (out / "mixed" / "index.html").read_text(encoding="utf-8")
     assert "$" not in page and 'http-equiv="refresh"' not in page
-    labels = re.findall(r'<section class="slide"( data-still="borrowed")? aria-label="([^"]+)"', page)
+    labels = re.findall(r'<section class="slide" id="chart-\d"( data-still="borrowed")? aria-label="([^"]+)"', page)
     assert labels == [
         (' data-still="borrowed"', "Title of mixed, chart 1 of 3"),
         ("", "Title of mixed, chart 2 of 3"),
         ("", "Title of mixed, chart 3 of 3"),
     ]
+    assert re.findall(r'<a class="more" href="#([^"]+)">More</a>', page) == ["chart-2", "chart-3", "end"]
+    assert page.count('id="end"') == 1
     source = f"{repo}/tree/main/receipts/mixed"
     assert page.count(f'href="{source}"') == 2  # the bar and the closing screen
     assert "Source on GitHub" in page and '<a class="back" href="/">' in page
@@ -290,6 +296,19 @@ def test_reel_without_older_receipts_has_no_list(tmp_path):
     build_site(out, tmp_path)
     index = (out / "index.html").read_text(encoding="utf-8")
     assert index.count('class="slide"') == 1 and 'class="older"' not in index
+    assert '<a class="more" href="#end">More</a>' in index and index.count('id="end"') == 1
+
+
+def test_share_card_size_is_the_still_s_own(tmp_path):
+    from PIL import Image
+
+    make_receipt(tmp_path, "moving", "2026-01-01", {"push": [*STILLS, *VIDEOS]})
+    still = tmp_path / "receipts" / "moving" / "output" / "push.x_png.png"
+    Image.new("RGB", (1920, 1080)).save(still)  # a still that is its video's final frame
+    out = tmp_path / "_site"
+    build_site(out, tmp_path)
+    page = (out / "moving" / "index.html").read_text(encoding="utf-8")
+    assert 'og:image:width" content="1920"' in page and 'og:image:height" content="1080"' in page
 
 
 def test_reel_escapes_titles(tmp_path):

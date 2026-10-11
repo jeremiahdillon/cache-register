@@ -391,6 +391,8 @@ permanent as a receipt's once posted. The root
 reel shows the newest receipts (by `as_of`), one per screen, built from their committed `output/`:
 the still in the shape that fits the viewport (portrait `linkedin_*`, landscape `x_*`) with the motion
 visual played over it while on screen by `assets/site/reel.js`; older receipts are listed as text.
+Every slide (root and receipt pages) ends in a quiet, clickable "More" linking to the next screen (the next
+slide, the older list or the closing screen), smaller and stiller than the splash's hint (2026-10-11).
 
 **Learning across analyses**: `docs/playbook.md` captures reusable lessons (chart forms that
 worked, engagement notes, data pitfalls). Reusable code graduates into `cachereg.viz` / `cachereg.marts`

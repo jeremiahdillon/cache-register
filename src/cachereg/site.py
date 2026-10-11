@@ -196,8 +196,9 @@ def _media_urls(slug: str, files: dict[str, Path]) -> dict[str, str]:
     return {shape: _attr(_media_url(slug, path)) for shape, path in files.items()}
 
 
-def _slide_markup(receipt: Receipt, slide: Slide, label: str, meta: str, attrs: str = "") -> str:
-    """A snap slide: the still (shaped by orientation) with the video reel.js plays over it; `meta` is markup."""
+def _slide_markup(receipt: Receipt, slide: Slide, label: str, meta: str, slide_id: str, next_id: str) -> str:
+    """A snap slide: the still (shaped by orientation) with the video reel.js plays over it; `meta` is markup.
+    A quiet "More" at its foot links to the next screen (`next_id`), so visitors know the page goes on."""
     still, video = _media_urls(receipt.slug, slide.still), ""
     if slide.video:
         src = _media_urls(receipt.slug, slide.video)
@@ -207,10 +208,10 @@ def _slide_markup(receipt: Receipt, slide: Slide, label: str, meta: str, attrs: 
         )
     borrowed = ' data-still="borrowed"' if slide.borrowed else ""
     return (
-        f'<section class="slide"{attrs}{borrowed} aria-label="{_attr(label)}"><div class="media">'
+        f'<section class="slide" id="{slide_id}"{borrowed} aria-label="{_attr(label)}"><div class="media">'
         f'<picture><source media="(orientation: portrait)" srcset="{still["portrait"]}">'
         f'<img src="{still["landscape"]}" alt="{_attr(receipt.title)}" loading="lazy" decoding="async"></picture>'
-        f'{video}</div><div class="meta">{meta}</div></section>'
+        f'{video}</div><div class="meta">{meta}</div><a class="more" href="#{next_id}">More</a></section>'
     )
 
 
@@ -219,15 +220,17 @@ def _reel_markup(receipts: list[Receipt]) -> str:
     if not receipts:
         return ""
     host = brand()["short_link_host"]
-    slides = []
-    for i, receipt in enumerate(receipts[:REEL_SIZE]):
+    slides, shown = [], receipts[:REEL_SIZE]
+    ids = ["receipts", *(f"receipt-{i}" for i in range(2, len(shown) + 1))]
+    after = "older" if len(receipts) > REEL_SIZE else "end"
+    for i, receipt in enumerate(shown):
         slug = _attr(receipt.slug)
         meta = (
             f"<span>#{len(receipts) - i:03d} · As of {receipt.as_of.isoformat()}</span>"
             f'<span class="dots" aria-hidden="true"></span><a href="/{slug}/">{_attr(host)}/{slug} →</a>'
         )
-        attrs = ' id="receipts"' if i == 0 else ""
-        slides.append(_slide_markup(receipt, receipt.hero, receipt.title, meta, attrs))
+        next_id = ids[i + 1] if i + 1 < len(ids) else after
+        slides.append(_slide_markup(receipt, receipt.hero, receipt.title, meta, ids[i], next_id))
     older = ""
     if len(receipts) > REEL_SIZE:
         rows = "".join(
@@ -235,7 +238,7 @@ def _reel_markup(receipts: list[Receipt]) -> str:
             f"<span>{_attr(r.title)}</span></li>"
             for r in receipts[REEL_SIZE:]
         )
-        older = f'<section class="older"><p class="label">Older receipts</p><ul>{rows}</ul></section>'
+        older = f'<section class="older" id="older"><p class="label">Older receipts</p><ul>{rows}</ul></section>'
     return "\n".join(slides) + older + '\n<script src="/assets/reel.js" defer></script>'
 
 
@@ -248,6 +251,8 @@ def _receipt_slides(receipt: Receipt) -> str:
             slide,
             f"{receipt.title}, chart {i} of {n}",
             (f"<span>{i} / {n}</span>" if n > 1 else "") + '<span class="dots" aria-hidden="true"></span>',
+            f"chart-{i}",
+            f"chart-{i + 1}" if i < n else "end",
         )
         for i, slide in enumerate(receipt.slides, 1)
     )
@@ -352,11 +357,21 @@ def _splash_page(kicker: str, heading: str, lede: str, page_title: str, indexabl
     )
 
 
+def _image_size(path: Path) -> tuple[int, int]:
+    """A still's pixel size, from its PNG header: a still of a chart that moves is its video's final frame, so
+    its target's nominal size does not apply. Anything else falls back on the target's (<visual>.<target>.<ext>)."""
+    head = path.read_bytes()[:24]
+    if head[:8] == b"\x89PNG\r\n\x1a\n":
+        return int.from_bytes(head[16:20], "big"), int.from_bytes(head[20:24], "big")
+    target = TARGETS[path.name.split(".")[-2]]
+    return target.width, target.height
+
+
 def _receipt_page(receipt: Receipt) -> str:
     """cacheregister.dev/<topic>: the receipt's charts in a snap scroll, with its folder on GitHub one click away."""
     b = brand()
     site, card = b["site_url"].rstrip("/"), receipt.card
-    card_target = TARGETS[card.name.split(".")[-2]]  # <visual>.<target>.<ext>
+    card_width, card_height = _image_size(card)
     as_of = receipt.as_of.isoformat()
     return _template(
         "receipt.html",
@@ -367,8 +382,8 @@ def _receipt_page(receipt: Receipt) -> str:
         as_of=as_of,
         canonical=f"{site}/{receipt.slug}/",
         card_url=f"{site}{_media_url(receipt.slug, card)}",
-        card_width=str(card_target.width),
-        card_height=str(card_target.height),
+        card_width=str(card_width),
+        card_height=str(card_height),
         source_url=f"{b['repo_url'].rstrip('/')}/tree/main/receipts/{receipt.slug}",
         **_page_fields(),
     )

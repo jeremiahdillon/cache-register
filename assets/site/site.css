@@ -59,6 +59,13 @@ main,.slide{scroll-snap-align:start}
 .hint:hover,.hint:focus-visible{color:var(--signal);outline:none}
 @media (prefers-reduced-motion:no-preference){.hint::after{animation:nudge 1.6s ease-in-out infinite}}
 @keyframes nudge{50%{transform:translateY(6px) rotate(45deg)}}
+/* "More" at the foot of every slide: a quieter cousin of the splash's hint (smaller, muted, still), linking
+   to the next screen; lime on hover or focus. */
+.more{position:absolute;left:0;right:0;bottom:4px;width:max-content;margin:0 auto;display:flex;flex-direction:column;
+  align-items:center;gap:6px;padding:6px 10px;font:11px/1 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none}
+.more::after{content:"";width:7px;height:7px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:rotate(45deg)}
+.more:hover,.more:focus-visible{color:var(--signal);outline:none}
 .slide{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:14px;padding:32px 16px;--w:min(100%,calc((100svh - var(--chrome,128px)) * 16 / 9))}
 .media{position:relative;width:var(--w);aspect-ratio:16/9;background:var(--panel);
