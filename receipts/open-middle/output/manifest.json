@@ -4,8 +4,8 @@
   "data_hash": "6f05c22d878656627e61697b1d4b27ef63987501566b8f6faaf7d24f14528b3f",
   "folder": "receipts/open-middle",
   "git_dirty": false,
-  "git_sha": "11a1d359fcad284b9a4872877c45883bb24ae681",
-  "inputs_hash": "9dfb98baaa29853cb9cdbacf913c7ccf8af52d100b2b5bc0512c4395f7714e62",
+  "git_sha": "a56b658b56827ddcf300756521d0076019c32bfe",
+  "inputs_hash": "e8ab896de7ed5914cb392d729cce561ec43b4c43e5ba552e7588a518f1b2fc92",
   "kind": "receipt",
   "outputs": {
     "data.json": "1da15f5b415461d279bc89bbde245834fb47de3f1c08764194a51b5300dccb31",
