@@ -7,7 +7,7 @@ promoted_from: explore/2026-10-07-china-token-share
 config:
   start: 2025-01-06   # first complete Monday-to-Sunday week of 2025
 visuals:
-  - {name: push, chart: push, targets: [x_video, linkedin_video]}
-  - {name: stack, chart: stack, targets: [x_png, linkedin_png]}
   - {name: push-bars, chart: push_bars, targets: [x_video, linkedin_video]}
   - {name: stack-bars, chart: stack_bars, targets: [x_png, linkedin_png]}
+  - {name: push, chart: push, targets: [x_video, linkedin_video]}
+  - {name: stack, chart: stack, targets: [x_png, linkedin_png]}
