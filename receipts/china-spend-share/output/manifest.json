@@ -4,19 +4,19 @@
   "data_hash": "0684ced55d9d36ce8bdba723d3fae380d678bf9b82b9db5fb0939edfcdf8bc87",
   "folder": "receipts/china-spend-share",
   "git_dirty": false,
-  "git_sha": "01b632d79ba5cfb33a953ed3a95dd7b0deb8570f",
-  "inputs_hash": "a31d09c6215a16c08ca141278be498fdc1261d26f1199c212e57059f8944cfc9",
+  "git_sha": "dd17021b8d7095aec3a530793cc692454c4e16ae",
+  "inputs_hash": "ddeafab33ac659aabc2c116704c3259ae2e2c1e766e63fbaa7b4c3270d5ddf8d",
   "kind": "receipt",
   "outputs": {
     "data.json": "a727150bee627c50af2305d7caefa818407054a2cab98508500e2afa4e2e59e9",
+    "push-bars.linkedin_png.png": "1a6cd85826cfc638f022ef76055190aea5280bd717caeba6cd3e43a5541e46f8",
     "push-bars.linkedin_video.mp4": "dd25531c8f9fff629542089d98c129c514f16d06e771d24845e76f231d5b80b6",
+    "push-bars.x_png.png": "36b0ca36a602df6d7fbfa3b69a6ca16cbfc8718f081957894a65814bf89e4189",
     "push-bars.x_video.mp4": "31e14b607fa9e74cfa36553a0a9478f3c69b316428447414d245a7ca4e5895d7",
+    "push.linkedin_png.png": "8963b598604ef8207be9459981e64332221b5ddc3b8ff8fa14b9c5439b2c6bff",
     "push.linkedin_video.mp4": "32aae1ab833d6138c15dd0913ae74cafc0b5f31c5a10e85e278bad01f185f7cf",
-    "push.x_video.mp4": "c610afdf8d26f0fb3df7d04ab16b12d95607e64e64f1f79dad8a7f348e495132",
-    "stack-bars.linkedin_png.png": "8886fa9fcddfb430e9cdd85f171e7e42ace594dd5f2039d0d13f19294c34d442",
-    "stack-bars.x_png.png": "370c5b3d5f3fd02bee7b105ade58f41f0d2400353cad29c211851ec9546994b7",
-    "stack.linkedin_png.png": "2bbb3dc78b9e500e27b5ec7a1ed6094ec1fccd3b17254119a57b0ca31b94270c",
-    "stack.x_png.png": "48af68feff108f828efe3b7a1ac076893b220688f11c5fec1e7543acdfc4bcca"
+    "push.x_png.png": "c5b6d0c1ae2db7bd8c21a8ec24f9da7c479f6ae42f6dab585656b4f2c620f0f1",
+    "push.x_video.mp4": "c610afdf8d26f0fb3df7d04ab16b12d95607e64e64f1f79dad8a7f348e495132"
   },
   "sources": {
     "litellm_prices": {
