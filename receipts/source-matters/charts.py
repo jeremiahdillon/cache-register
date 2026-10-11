@@ -7,8 +7,8 @@ unpriced tokens. The render contract passes no visual name, so each visual has a
 helper.
 
 Video (`<visual>_specs`): the weekly dots sweep in bright from left to right; then each source's line draws in
-turn (Ramp, OpenRouter, Vercel) at one calendar speed, its dots dimming as it starts and its end label fading in
-once it is drawn; on `spend`, OpenRouter's band fades in after its line; a long hold on the final frame, which
+turn (Ramp, OpenRouter, Vercel) at one calendar speed; once it is drawn, its dots dim and its end label fades
+in; on `spend`, OpenRouter's band fades in after its line; a long hold on the final frame, which
 equals the static chart. Every frame draws every mark (hidden ones at opacity 0) at the final frame's fitted
 size, so the canvas never moves.
 """
@@ -124,17 +124,19 @@ def _specs(story: Story, width: int, height: int, fs: float, visual: str) -> tup
     for k, src in enumerate(LINE_ORDER):
         t0, t1 = lines[src]
         n = max(int(round((t1 - t0) / ms_per_frame)), 1)
-        dim = frames(DIM_S)
         for i in range(n):
-            u = _smooth((i + 1) / dim)  # its dots cross-fade from bright to dim as its line starts
+            state["line"][src] = t0 + (t1 - t0) * _smooth((i + 1) / n)
+            snap()
+        # once its line is drawn (author, 2026-10-10: not before), its dots cross-fade from bright to dim while
+        # its end label fades in
+        dim, label = frames(DIM_S), frames(LABEL_S)
+        for i in range(max(dim, label)):
+            u = _smooth((i + 1) / dim)
             state["dot"][src] = (
                 DOT_OP_BRIGHT + (DOT_OP - DOT_OP_BRIGHT) * u,
                 DOT_SIZE_BRIGHT + (DOT_SIZE - DOT_SIZE_BRIGHT) * u,
             )
-            state["line"][src] = t0 + (t1 - t0) * _smooth((i + 1) / n)
-            snap()
-        for i in range(frames(LABEL_S)):
-            state["label"][src] = _smooth((i + 1) / frames(LABEL_S))
+            state["label"][src] = _smooth((i + 1) / label)
             snap()
         if src == "openrouter" and visual == "spend":  # its band fades in once its line is drawn
             for i in range(frames(BAND_S)):

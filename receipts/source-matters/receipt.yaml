@@ -10,10 +10,12 @@ config:
   start: null   # null = each source from its first week; or YYYY-MM-DD to start every line there
   min_days: 6    # a gateway week needs this many days of data (OpenRouter misses 2025-06-15 and 2025-07-15)
 visuals:
-  - {name: spend, chart: spend, targets: [x_png, linkedin_png, x_video, linkedin_video, web_video]}
+  # order = the receipt page's slides; the first (tokens) leads the root reel and is the share card (author,
+  # 2026-10-10)
   # the token view uses no prices, so it credits no LiteLLM. A paid-only token view was dropped (author,
   # 2026-10-10: it did not change the story); its series stays in the frames as a sensitivity.
   - name: tokens-with-free
     chart: tokens_with_free
     targets: [x_png, linkedin_png, x_video, linkedin_video, web_video]
     sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings]
+  - {name: spend, chart: spend, targets: [x_png, linkedin_png, x_video, linkedin_video, web_video]}

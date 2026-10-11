@@ -36,12 +36,14 @@ rule concerned different measures).
   is method-free in that sense (counts, not prices), apart from tokenizers.
 
 ## Visuals
-- `spend`: Anthropic's share of all reported spend, Ramp / Vercel / OpenRouter, weekly dots and a trailing
-  4-week line per source on one 0–100% axis; OpenRouter's band is its sensitivity to unpriced tokens.
-- `tokens-with-free`: the same for tokens, OpenRouter including its free models (author decision 1). A
+In page order (`tokens-with-free` first: it leads the receipt page and the root reel and is the share card;
+author, 2026-10-10):
+- `tokens-with-free`: Anthropic's share of all reported tokens, Ramp / Vercel / OpenRouter, weekly dots and a
+  trailing 4-week line per source on one 0–100% axis, OpenRouter including its free models (author decision 1). A
   paid-only token view was dropped on 2026-10-10 (author: it did not change the story); its series stays in
   frame `weekly` (`variant = paid`) and in the tables below, 1.0–3.3 points above the free-included line per
   quarter (0.3 in the four weeks to 27 September).
+- `spend`: the same for spend; OpenRouter's band is its sensitivity to unpriced tokens.
 Both share one headline, "Different data sources tell different stories about the AI economy": Anthropic
 is a large part of AI spend and tokens, so if the sources disagree this much about it, they tell different
 stories about the whole (author's framing). The subtitle gives each chart's values; the measure is stamped on
@@ -53,8 +55,8 @@ orange, since every line is Anthropic. Lines are 3.4 px and end labels 20 px (sc
 
 **Videos** (both visuals; `x_video`, `linkedin_video`, `web_video`, 30 fps; `tokens-with-free` 17.3 s, `spend`
 17.8 s): the weekly dots sweep in bright from left to right; each line then draws in turn, Ramp, OpenRouter,
-Vercel, at one calendar speed (so Vercel's shorter history draws faster), its dots dimming as it starts and its
-end label fading in once drawn; on `spend`, OpenRouter's sensitivity band fades in after its line; a 5-second
+Vercel, at one calendar speed (so Vercel's shorter history draws faster); once a line is drawn, its dots dim
+and its end label fades in (author, 2026-10-10: dimming after the line, not as it starts); on `spend`, OpenRouter's sensitivity band fades in after its line; a 5-second
 hold on the final frame, which is byte-identical to the static chart. Every frame keeps the final frame's
 fitted size (hidden marks are drawn at opacity 0), so the canvas never moves.
 
@@ -150,7 +152,7 @@ published (the exploration's renders keep them in the gitignored `outputs/…/st
   Vercel's history starts in October 2025.
 
 ## Output
-In [`output/`](output/): `spend` and `tokens-with-free`, each as `x_png`, `linkedin_png`, `x_video`,
+In [`output/`](output/): `tokens-with-free` and `spend`, each as `x_png`, `linkedin_png`, `x_video`,
 `linkedin_video` and `web_video`. `output/manifest.json` records the data versions and hashes; `data.json` is
 withheld (Ramp's redistribution right is unknown; the manifest's `withheld` says why).
 
