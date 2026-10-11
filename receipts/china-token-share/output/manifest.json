@@ -4,8 +4,8 @@
   "data_hash": "dc92dffa467d418dbf0b4deae428729c7a517e996e50bd1f1abf84613b5ba5fe",
   "folder": "receipts/china-token-share",
   "git_dirty": false,
-  "git_sha": "53b296a00171b535f91c6db1baa018f8730819c2",
-  "inputs_hash": "3bf27933741da6e70fb41414ea1f379a8fcd1f87cce7bb7f79334b86d6d92d29",
+  "git_sha": "6e14b74dc90c5fb84abb16cfae95945c234f11c0",
+  "inputs_hash": "2461aed26a61e0f0a7a904a3a86faf2b1f21ca22d1861119986a447f36b78c09",
   "kind": "receipt",
   "outputs": {
     "data.json": "8b2211ad4d67a78bb020a9c879b5bf50f4b4c995a2b70366966b0c0ecaf3bb5a",
