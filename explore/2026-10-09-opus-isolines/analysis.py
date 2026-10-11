@@ -1,6 +1,6 @@
 """Opus isolines: what each Claude Opus's capability has cost since launch, by the later models that matched it.
 
-Reads the epoch_eci, dim_model_alias and lp_price_intervals marts. See README.md for method.
+Reads the epoch_eci, dim_model_alias, lp_price_intervals and lp_price_days marts. See README.md for method.
 `cachereg render explore/2026-10-09-opus-isolines` renders the visuals declared in explore.yaml.
 
 model_prices() and fmt_usd() are copied from explore/2026-10-06-cost-of-intelligence (explorations are
@@ -35,7 +35,7 @@ def model_prices(con, as_of: date) -> pl.DataFrame:
         con,
         f"""
         WITH lim AS (
-            SELECT least(max(date), ?::DATE) AS last_day FROM stg_litellm_prices_days
+            SELECT least(max(date), ?::DATE) AS last_day FROM lp_price_days
         ), days AS (
             SELECT CAST(d AS DATE) AS day
             FROM lim, generate_series(?::DATE, lim.last_day, INTERVAL 1 DAY) g(d)

@@ -207,6 +207,7 @@ def test_build_sources_scope(synthetic_raw):
     con = connect()
     try:
         assert query(con, "SELECT count(*) AS n FROM lp_price_intervals")["n"][0] > 0
+        assert query(con, "SELECT max(date) AS d FROM lp_price_days")["d"][0] <= date(2026, 8, 31)
     finally:
         con.close()
     assert build(date(2026, 8, 31), ["openrouter_models"]).marts_skipped == every

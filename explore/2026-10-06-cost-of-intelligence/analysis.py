@@ -1,6 +1,6 @@
 """Cost of intelligence: the cheapest list price per token at each capability level, day by day (exploration).
 
-Reads the epoch_eci, dim_model_alias and lp_price_intervals marts. See README.md for method and
+Reads the epoch_eci, dim_model_alias, lp_price_intervals and lp_price_days marts. See README.md for method and
 docs/plans/2026-10-06-cost-of-intelligence.md for the design.
 `cachereg render explore/2026-10-06-cost-of-intelligence` renders the visuals declared in explore.yaml.
 """
@@ -35,7 +35,7 @@ def model_prices(con, as_of: date, blend: str = "house", keys: str = "min", smoo
         con,
         f"""
         WITH lim AS (
-            SELECT least(max(date), ?::DATE) AS last_day FROM stg_litellm_prices_days
+            SELECT least(max(date), ?::DATE) AS last_day FROM lp_price_days
         ), days AS (
             SELECT CAST(d AS DATE) AS day
             FROM lim, generate_series(?::DATE, lim.last_day, INTERVAL 1 DAY) g(d)
