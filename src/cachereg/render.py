@@ -228,10 +228,10 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _data_as_of(story: Story) -> str:
-    """Latest data as-of reported by the story's sources themselves (for citations); else the analysis as-of."""
+def _data_as_of(story: Story, sources: list[str]) -> str:
+    """Latest data as-of reported by `sources` themselves (for citations); else the analysis as-of."""
     values = []
-    for sid in story.sources:
+    for sid in sources:
         fetches = [f for f in list_fetches(sid) if f.fetched_at.date() <= story.as_of]
         v = (fetches[-1].manifest.get("vintage") or {}) if fetches else {}
         if v.get("kind") == "api_as_of" and v.get("value"):
@@ -314,7 +314,7 @@ def render(
             out = out_dir / f"{visual.name}.{name}.{target.fmt}"
             v_sources = list(cfg.visual_sources(visual)) if cfg.sources else source_ids
             charts_reason = licence_gate(v_sources)[0] if is_receipt else None
-            rec = receipt(v_sources, _data_as_of(story), story.method, rel, cfg.link)
+            rec = receipt(v_sources, _data_as_of(story, v_sources), story.method, rel, cfg.link)
             blocked = data_reason if target.kind == "html" else charts_reason
             if blocked:
                 result.withheld[out.name] = blocked
