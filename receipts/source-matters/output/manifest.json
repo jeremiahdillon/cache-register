@@ -1,33 +1,33 @@
 {
   "as_of": "2026-10-10",
   "cache_register_version": "0.0.1",
-  "data_hash": "7065bd9f1347bcf0d2c838af2e705772de0b40d1ad5ab97799183845185c3be1",
+  "data_hash": "07b01b4ae6a6293206070f7a1ffb4a8b1a33b25d4b8d941eec71b0d2cd46a1c0",
   "folder": "receipts/source-matters",
   "git_dirty": false,
-  "git_sha": "e16dd21ef0cbfe8635ec1855a1b9409446346ce7",
-  "inputs_hash": "56e125425ba4ae9c2fa1aac2c02db2f26ff23a81d6b15b81be71c28def6483f3",
+  "git_sha": "389bf6936e3baa4a59ff2043569d3eddcc07911a",
+  "inputs_hash": "091085a2fa0b47b715692d349e41ab6d89a6b7284f8f6044eb16de331ba87d16",
   "kind": "receipt",
   "outputs": {
-    "spend.linkedin_png.png": "bab49739c540740023da37d19b72288b614e57781ba4560b6f8b81eb64e3c61c",
+    "spend.linkedin_png.png": "370715e8722ec50bd8d1ba27d484a7cbe91041addab809a0769d0a40bd36fba0",
     "spend.linkedin_video.mp4": "687c95b5d0c1ac14420a16ad2a01a39911d20002136a6c91ed66516a9858dd4c",
-    "spend.web_video.webm": "b7a11270b176d09b22ce934c441486f18ad556b1c17953d33b4de65c251ccb2e",
-    "spend.x_png.png": "acb5e8ea1d789cc359e2aa841937b7196114fd47eab669d70a59ef9401c1366f",
+    "spend.web_video.webm": "a52ab011f7a937b5eb7718433eedd6687622647cad48e069c0e008d06a4d3d4a",
+    "spend.x_png.png": "7b6337e971b1f5a4e1ccb69479a2b3e3834991378da27256eefda6099feaa835",
     "spend.x_video.mp4": "265989b50eeff79eca5c5f4a664328e3629d1a97280d57cd8f0f6e700e55b76d",
-    "tokens-with-free.linkedin_png.png": "436aa933b7e497a9b6a02f0875dfadfd16dd075c9a1e7cbdac5b287c9693b19b",
+    "tokens-with-free.linkedin_png.png": "92924ed4625295a544382f2dcb786d41cd8b28070a4146469fbe754b39a10a45",
     "tokens-with-free.linkedin_video.mp4": "1cd5395f9f5d69b19ac1c23ea9f3958ab6f2de0fb283914ed7e481a12c5c8a42",
-    "tokens-with-free.web_video.webm": "041183ad0917923fc5a3e5fe22def40369f35c2b26bf680faf7310e7e042eb03",
-    "tokens-with-free.x_png.png": "d9ed91f91905e742be15dca157b85f74be4b1e8555d900f5385b2eccc98aacde",
+    "tokens-with-free.web_video.webm": "246e5375cc9c5abe7eb128dea86e548f8ee2f7cb257fcf33370351a229e092dd",
+    "tokens-with-free.x_png.png": "5cc36d5b919e9387ffb4bd5ed822b9ad98a13d3e7380a9207b15ce8faeb6901d",
     "tokens-with-free.x_video.mp4": "ac131139ec646f1fd6c8ba1488dc8d3b706e0ba3bbf4e9e4eead3284b17ed209"
   },
   "sources": {
     "litellm_prices": {
       "class": "Exact",
-      "content_sha256": "a28e96fb66e275b28e29837d29c7533fba590e0777c3085fdb72a9bec62022d8",
-      "revision_date": "2026-10-09",
+      "content_sha256": "33e230af550c45c7a5daf0d1aed7366a2297004c553d9b6a14e130db5b6b2e8f",
+      "revision_date": "2026-10-10",
       "vintage": {
-        "date": "2026-10-09",
+        "date": "2026-10-10",
         "kind": "git_commit",
-        "value": "141dba23721c85996119a23267003ca4e1872feb"
+        "value": "9e2aae8490654e79632d2a666126c5ca0b2da439"
       },
       "vintage_after_as_of": false
     },
