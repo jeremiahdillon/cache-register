@@ -346,8 +346,10 @@ output/          # committed: <visual>.<target>.<ext>, manifest.json (+ data.jso
    `chart`: give a chart's still and its motion version the same `chart` so they share a slide. The
    first chart with a still is the page's share card; the first chart with motion stands for the
    receipt in the root reel.
-4. **Render**: `cachereg render receipts/<topic>` writes the committed `output/` (licence-gated, §7).
-   The site shows only what is rendered there; until then the link redirects to the folder on GitHub.
+4. **Render**: commit steps 2–3 first (the manifest records the commit it rendered from and whether the
+   tree was dirty), then `cachereg render receipts/<topic>` writes the committed `output/`
+   (licence-gated, §7). The site shows only what is rendered there; until then the link redirects to
+   the folder on GitHub.
 5. **Record it**: a "Promoted to receipts/<topic>" line in the exploration's README (the exploration
    stays) and a row in the root README's receipts table.
 6. **Check the site**: `cachereg site --out _site`, then `python -m http.server -d _site`. The receipt
