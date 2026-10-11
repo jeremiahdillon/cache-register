@@ -424,8 +424,13 @@ worked, engagement notes, data pitfalls). Reusable code graduates into `cachereg
 | `square_video` | MP4 | 1080×1080 | backlog |
 | `web_video` | WebM VP9 | any | for blog autoplay `<video>` |
 | `gif` | GIF (palettegen) | ≤ 1080 wide | backlog |
-| `x_png` / `linkedin_png` / `square_png` | PNG (WebP, square: backlog) | 1600×900 / 1080×1350 / 1080×1080 | 2× pixel density |
+| `x_png` / `linkedin_png` / `square_png` | PNG (WebP, square: backlog) | 1600×900 / 1080×1350 / 1080×1080 | 2× pixel density; in a visual with video, the video's final frame at its size (below) |
 | `table_png` | PNG via great_tables | per preset | for ranking tables |
+
+**A chart that moves is one visual** (decided 2026-10-11): its PNG targets are its video's final frame,
+rendered from the last motion spec at the video's size and type scale (`x_png` ← `x_video`, 1920×1080;
+`linkedin_png` ← `linkedin_video`), so pausing the motion on the site, or posting the still, shows exactly
+the frame the video ends on. Only visuals without video use the static `<chart>()`.
 
 `cachereg render <analysis> [--targets …] [--as-of …]` → `outputs/<analysis>/<as_of>/<target>.*`
 plus `run_manifest.json`.

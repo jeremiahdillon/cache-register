@@ -99,6 +99,16 @@ def test_render_receipt_on_synthetic_data(synthetic_raw, monkeypatch, tmp_path):
     assert result.out_dir == out and not result.skipped
     assert (out / "share-lines.x_png.png").stat().st_size > 10_000
     assert (out / "share-race.linkedin_video.mp4").stat().st_size > 10_000
+    # a still of a chart that moves is its video's final frame, at the video's size; other stills keep theirs
+    from PIL import Image
+
+    from cachereg.story.model import TARGETS
+
+    for name, target in (("share-race.x_png", "x_video"), ("share-race.linkedin_png", "linkedin_video")):
+        with Image.open(out / f"{name}.png") as im:
+            assert im.size == (TARGETS[target].width, TARGETS[target].height)
+    with Image.open(out / "share-lines.x_png.png") as im:
+        assert im.size == (TARGETS["x_png"].width, TARGETS["x_png"].height)
     # licence gate: both sources allow redistribution with attribution -> HTML and data committed
     assert (out / "share-lines.blog_html.html").exists() and (out / "data.json").exists()
     assert not (out / "story_frames.json").exists()

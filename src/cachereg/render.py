@@ -6,6 +6,9 @@ into gitignored `outputs/`. See docs/plans/2026-10-03-explore-and-receipts.md.
 Chart contract (functions in the folder's charts.py, named by a visual's `chart:`):
 * static/HTML: ``<chart>(story, width, height, font_scale, interactive=False) -> alt.Chart``
 * video:       ``<chart>_specs(story, width, height, font_scale, cfg) -> (list[dict], fps)``
+A visual with a video target is one chart in motion: its PNG targets are its video's final frame (same size,
+type scale and pixels as the video of that shape, `STILL_OF_VIDEO`), so a still never differs from the video
+that ends on it, and the static ``<chart>()`` is needed only for visuals without video (and for HTML).
 Optional in analysis.py: ``table(story) -> pl.DataFrame`` (HTML data table) and
 ``TABLE_PERCENT_COLUMNS`` (columns shown as percentages).
 """
@@ -113,6 +116,18 @@ def _chart_fn(charts, name: str, kind: str):
     if not callable(fn):
         raise ValueError(f"charts.py has no {fn_name}() for a {kind} target")
     return fn
+
+
+# PNG target → the video target whose final frame it is, in a visual that has video
+STILL_OF_VIDEO = {"x_png": "x_video", "linkedin_png": "linkedin_video"}
+
+
+def render_final_frame(story, chart_specs, target: Target, rec: Receipt, out: Path, cfg: dict) -> None:
+    """The video's last frame as a PNG, composed exactly as `render_video` composes it (``target`` is the video's)."""
+    frame = page(story, target, rec)
+    _, _, w, h = frame.plot_box
+    specs, _ = chart_specs(story, w, h, target.font_scale, cfg)
+    frame.compose(vlc.vegalite_to_png(vl_spec=json.dumps(specs[-1]), scale=1)).save(out, optimize=True)
 
 
 def render_static(story, chart, target: Target, rec: Receipt, out: Path) -> None:
@@ -319,14 +334,17 @@ def render(
             if blocked:
                 result.withheld[out.name] = blocked
                 continue
-            chart = _chart_fn(charts, visual.chart, target.kind)
             vstory = story.for_visual(visual.name)
-            if target.kind == "static":
-                render_static(vstory, chart, target, rec, out)
+            moves = any(TARGETS[t].kind == "video" for t in visual.targets)
+            if target.kind == "static" and moves and name in STILL_OF_VIDEO:
+                specs = _chart_fn(charts, visual.chart, "video")
+                render_final_frame(vstory, specs, TARGETS[STILL_OF_VIDEO[name]], rec, out, cfg.config)
+            elif target.kind == "static":
+                render_static(vstory, _chart_fn(charts, visual.chart, target.kind), target, rec, out)
             elif target.kind == "video":
-                render_video(vstory, chart, target, rec, out, cfg.config)
+                render_video(vstory, _chart_fn(charts, visual.chart, "video"), target, rec, out, cfg.config)
             else:
-                render_html(vstory, analysis, chart, target, rec, out)
+                render_html(vstory, analysis, _chart_fn(charts, visual.chart, "html"), target, rec, out)
             result.outputs[out.name] = _sha256(out)
 
     frames_json = json.dumps(
