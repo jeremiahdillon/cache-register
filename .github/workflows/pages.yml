@@ -5,7 +5,8 @@ name: pages
 on:
   push:
     branches: [main]
-    paths: ["receipts/*/receipt.yaml", "receipts/*/README.md", "receipts/*/output/**", "config/**",
+    paths: ["receipts/*/receipt.yaml", "receipts/*/README.md", "receipts/*/output/**", "explore/*/explore.yaml",
+            "config/**",
             "src/cachereg/site.py", "src/cachereg/viz/brand.py", "src/cachereg/story/model.py",
             "assets/templates/**", "assets/fonts/**", "assets/site/**", ".github/workflows/pages.yml"]
   workflow_dispatch:
