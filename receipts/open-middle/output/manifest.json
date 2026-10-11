@@ -4,15 +4,15 @@
   "data_hash": "6f05c22d878656627e61697b1d4b27ef63987501566b8f6faaf7d24f14528b3f",
   "folder": "receipts/open-middle",
   "git_dirty": false,
-  "git_sha": "0d38d4e413d655397fa428d0791e4ffd7b2171b2",
-  "inputs_hash": "5bb0e2105c9fc4b1052efc7a118fa08dd0d607f401c73fb10ec4009bb4668a76",
+  "git_sha": "11a1d359fcad284b9a4872877c45883bb24ae681",
+  "inputs_hash": "9dfb98baaa29853cb9cdbacf913c7ccf8af52d100b2b5bc0512c4395f7714e62",
   "kind": "receipt",
   "outputs": {
     "data.json": "1da15f5b415461d279bc89bbde245834fb47de3f1c08764194a51b5300dccb31",
+    "push.linkedin_png.png": "7e0dc78813de52f004211cbede919034e9e47c439847dca1c7af461eee703ef5",
     "push.linkedin_video.mp4": "69bcd32029c31b798862bd1a43c784b6ffd801128c3597e430088dfbdb993fa8",
-    "push.x_video.mp4": "1c958a2102255d6d160399df1352c191df84b4d42cc80fd6f7c72e367218a572",
-    "stack.linkedin_png.png": "c41e47a3a2b61ba6683472ca5f4ed9e9511ab8c5fedbefc867ac74a53d01741b",
-    "stack.x_png.png": "bdb7b8f0077a9afda9b4cf6f7445e1cc916be9ccd56603bc8b8a8bcfb310edf6"
+    "push.x_png.png": "aa0017dbdee6a7e5c59f274aa182a527e0d79ce0f97c517d9b36fa10051523b4",
+    "push.x_video.mp4": "1c958a2102255d6d160399df1352c191df84b4d42cc80fd6f7c72e367218a572"
   },
   "sources": {
     "openrouter_rankings": {
