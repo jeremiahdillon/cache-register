@@ -75,15 +75,21 @@ def build(con, as_of: date, cfg: dict) -> Story:
         .map_elements(lambda r: group_of(r["vendor_id"], r["hq"]), return_dtype=pl.String)
         .alias("group")
     )
-    totals = w.group_by("week").agg(
-        pl.col("est_spend_usd").sum().alias("spend_total"),
-        (pl.col("unpriced_tokens").sum() / pl.col("tokens").sum()).alias("unpriced_share"),
-        (pl.col("stale_priced_tokens").sum() / pl.col("tokens").sum()).alias("stale_share"),
+    # group_by and join return rows in no fixed order: sort, so data.json does not reshuffle on every render
+    totals = (
+        w.group_by("week")
+        .agg(
+            pl.col("est_spend_usd").sum().alias("spend_total"),
+            (pl.col("unpriced_tokens").sum() / pl.col("tokens").sum()).alias("unpriced_share"),
+            (pl.col("stale_priced_tokens").sum() / pl.col("tokens").sum()).alias("stale_share"),
+        )
+        .sort("week")
     )
     vendor = (
         w.join(totals, on="week")
         .with_columns((pl.col("est_spend_usd") / pl.col("spend_total")).alias("share"))
         .select("week", "vendor_id", "vendor_name", "group", "share", "est_spend_usd", "unpriced_share", "stale_share")
+        .sort("week", "vendor_id")
     )
     groups = (
         vendor.group_by("week", "group")
