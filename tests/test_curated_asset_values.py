@@ -67,12 +67,19 @@ def check(rows: list[dict]) -> list[dict]:
 
 
 @pytest.mark.parametrize(
-    ("text", "value", "percent"),
-    [("2.7%", Decimal("2.7"), True), ("$250 million", Decimal("2.5e8"), False), ("six", Decimal(6), False)],
+    ("text", "value", "suffix"),
+    [
+        ("2.7%", Decimal("2.7"), "%"),
+        ("$250 million", Decimal("2.5e8"), None),
+        ("six", Decimal(6), None),
+        ("forty", Decimal(40), None),
+        ("30x", Decimal(30), "x"),
+        ("2.5×", Decimal("2.5"), "x"),
+    ],
 )
-def test_parse_figure_reads_percentages_too(text, value, percent):
-    parsed, _, _, is_percent = ds.parse_figure(text)
-    assert (parsed, is_percent) == (value, percent)
+def test_parse_figure_reads_percentages_and_multiples_too(text, value, suffix):
+    parsed, _, _, got = ds.parse_figure(text)
+    assert (parsed, got) == (value, suffix)
 
 
 def test_a_valid_file_passes():
@@ -111,11 +118,13 @@ def test_each_rule_refuses_one_bad_row(override, match):
         check([row(**override)])
 
 
-def test_percent_figures_and_units_go_together():
-    with pytest.raises(CuratedError, match="percent"):
-        check([row(**LIT | {"value_as_stated": "2.7", "source_quote": "only 2.7 of the glass is lit"})])
-    with pytest.raises(CuratedError, match="percent"):
+def test_percent_and_multiple_figures_need_their_units():
+    low_end = {"value_as_stated": "70", "value": "70", "source_quote": "a 70-80% loan to value"}
+    check([row(**LIT | low_end)])  # the low end of a range carries no % of its own
+    with pytest.raises(CuratedError, match="has unit percent"):
         check([row(value_as_stated="2.10%", source_quote="up 2.10%")])
+    with pytest.raises(CuratedError, match="has unit multiple"):
+        check([row(value_as_stated="2.10x", source_quote="2.10x faster")])
     with pytest.raises(CuratedError, match="needs a usd unit"):
         check([row(**LIT | {"value_as_stated": "$2.7", "source_quote": "$2.7 and 2.7%", "unit": "percent"})])
 

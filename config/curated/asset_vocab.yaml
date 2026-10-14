@@ -66,8 +66,17 @@ metrics:
   contract_term:
     definition: The length of a lease, power purchase agreement or capacity contract.
     units: [years, months]
+  contract_end_year:
+    definition: The year a lease or capacity contract runs to, when only its end is stated.
+    units: [year]
+  renewal_price_ratio:
+    definition: The price of renewed or re-let capacity as a percentage of its original contract price.
+    units: [percent]
   perf_multiple:
-    definition: A new generation's performance (or cost per unit of work) as a multiple of an older one, as claimed.
+    definition: A new generation's performance as a multiple of an older one's, as claimed.
+    units: [multiple]
+  perf_per_dollar:
+    definition: How many times less a new generation costs per unit of work (or more work per dollar) than an older one, as claimed.
     units: [multiple]
   capacity_per_pair:
     definition: The capacity one fiber pair carries with the transmission equipment of the time.

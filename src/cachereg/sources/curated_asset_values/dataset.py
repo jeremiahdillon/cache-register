@@ -61,13 +61,15 @@ def check_vocab(data: dict) -> dict:
     return {"assets": assets, "metrics": metrics}
 
 
-def parse_figure(text: str) -> tuple[Decimal, bool, bool, bool]:
-    """`value_as_stated` → (value, has `$`, has a trailing `+`, is a percentage). The shared parser,
-    plus an optional trailing `%`."""
+def parse_figure(text: str) -> tuple[Decimal, bool, bool, str | None]:
+    """`value_as_stated` → (value, has `$`, has a trailing `+`, suffix). The shared parser, plus an
+    optional trailing `%` or `x` / `×` (a multiple), returned as the suffix (`%`, `x` or None)."""
     text = text.strip()
-    percent = text.endswith("%")
-    value, currency, plus = parse_stated(text.removesuffix("%").rstrip() if percent else text)
-    return value, currency, plus, percent
+    suffix = (
+        "%" if text.endswith("%") else "x" if text[-1:] in ("x", "×") and text[:-1].strip()[-1:].isdigit() else None
+    )
+    value, currency, plus = parse_stated(text[:-1].rstrip() if suffix else text)
+    return value, currency, plus, suffix
 
 
 def read_rows(body: bytes) -> list[dict]:
@@ -130,13 +132,15 @@ def validate(body: bytes, vocab: dict | None = None) -> list[dict]:
             raise CuratedError(f"{rid}: source_quote is longer than {MAX_QUOTE_WORDS} words")
         if norm(r["value_as_stated"]) not in norm(r["source_quote"]):
             raise CuratedError(f"{rid}: source_quote does not contain {r['value_as_stated']!r}")
-        parsed, currency, plus, percent = parse_figure(r["value_as_stated"])
+        parsed, currency, plus, suffix = parse_figure(r["value_as_stated"])
         if parsed != value:
             raise CuratedError(f"{rid}: {r['value_as_stated']!r} reads as {parsed}, not value {r['value']}")
         if currency and not r["unit"].startswith("usd"):
             raise CuratedError(f"{rid}: a $ figure needs a usd unit, not {r['unit']}")
-        if percent != (r["unit"] == "percent"):
-            raise CuratedError(f"{rid}: a % figure has unit percent, and a percent unit needs a % figure")
+        if suffix == "%" and r["unit"] != "percent":  # "70" of "70-80%" is a percent without its own sign
+            raise CuratedError(f"{rid}: a % figure has unit percent, not {r['unit']}")
+        if suffix == "x" and r["unit"] != "multiple":
+            raise CuratedError(f"{rid}: a multiple (x) has unit multiple, not {r['unit']}")
         if plus and r["qualifier"] != "over":
             raise CuratedError(f"{rid}: {r['value_as_stated']!r} ends in + so the qualifier is over")
         if r["supersedes"]:

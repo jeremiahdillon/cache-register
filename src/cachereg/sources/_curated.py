@@ -30,7 +30,7 @@ NUMBER_WORDS = {
         "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen "
         "seventeen eighteen nineteen twenty".split()
     )
-}
+} | {w: 10 * i for i, w in enumerate("thirty forty fifty sixty seventy eighty ninety".split(), start=3)}
 STATED = re.compile(
     r"^(?P<cur>\$)?\s*(?P<num>\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?|[a-z]+)"
     r"\s*(?P<mult>thousand|million|billion|trillion|quadrillion|[kmbt])?\s*(?P<plus>\+)?$",
