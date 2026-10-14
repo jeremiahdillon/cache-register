@@ -1,11 +1,12 @@
-# Exploration config (same schema as receipt.yaml; no short link). Prompted by CNBC, "CoreWeave shares tumble
+# Exploration config (same schema as receipt.yaml). Prompted by CNBC, "CoreWeave shares tumble
 # as bond yields near 15% on concern about AI borrowing binge" (2026-10-14). FINRA and Yahoo data are
 # redistribution-forbidden, so there is no blog_html (it would inline the data) and no data.json.
 title: CoreWeave bond yield vs stock price
+link: coreweave-credit   # reserved short link (cacheregister.dev/coreweave-credit), stamped on the visuals
 sources: [finra_trace, yahoo_prices]
 config:
   headline: CoreWeave yield is rising and stock is sliding   # author's title, 2026-10-14
   ticker: CRWV
   cusip: auto        # auto = the CoreWeave senior note with the highest yield on the latest bond date
 visuals:
-  - {name: panels, chart: panels, targets: [x_png, linkedin_png]}
+  - {name: panels, chart: panels, targets: [x_png, linkedin_png, x_video, linkedin_video]}

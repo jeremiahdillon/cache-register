@@ -1,6 +1,6 @@
 # CoreWeave bond yield vs stock price
 
-*Exploration · started 2026-10-14 · prompted by CNBC, "CoreWeave shares tumble as bond yields near 15% on
+*Exploration · started 2026-10-14 · short link reserved: cacheregister.dev/coreweave-credit · prompted by CNBC, "CoreWeave shares tumble as bond yields near 15% on
 concern about AI borrowing binge" (2026-10-14), which quoted FactSet yields of 14.8% (9.625% notes due 2032)
 and 14.9% (9.75% notes due 2031)*
 
@@ -25,7 +25,11 @@ daily yield of CoreWeave's highest-yielding senior note next to the daily close 
 - `panels`: two side-by-side line charts on the same dates (14 April to 14 October 2026), each with its own
   axis: the 2031 notes' yield (left) and CRWV's daily close (right). Start, end and the stock's peak are
   labelled. `x_png` (16:9) has the panels side by side; `linkedin_png` (4:5) stacks them, yield on top, on one
-  date axis.
+  date axis. A dashed slope from each line's first to last point carries the change (+5.7 pts, −44%).
+- Videos (`x_video` 16:9, `linkedin_video` 4:5, ~13 s): the yield line draws, then the stock line; then both
+  slopes flash in within 0.2 s as solid white beams, hold while their change labels fade in, and fade into
+  the dashed grey guides; a 3 s hold on the final frame, which the PNGs equal. Change labels are placed in
+  code clear of the lines, the other labels and the dots, at every size.
 
 ## Method
 - **Yield:** FINRA's end-of-day summary of TRACE, the yield at the price of each day's last reported trade
