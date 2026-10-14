@@ -63,12 +63,15 @@ def check_vocab(data: dict) -> dict:
 
 def parse_figure(text: str) -> tuple[Decimal, bool, bool, str | None]:
     """`value_as_stated` → (value, has `$`, has a trailing `+`, suffix). The shared parser, plus an
-    optional trailing `%` or `x` / `×` (a multiple), returned as the suffix (`%`, `x` or None)."""
+    optional trailing `%` or the word `percent` (suffix `%`), or `x` / `×` after a digit (a multiple,
+    suffix `x`)."""
     text = text.strip()
-    suffix = (
-        "%" if text.endswith("%") else "x" if text[-1:] in ("x", "×") and text[:-1].strip()[-1:].isdigit() else None
-    )
-    value, currency, plus = parse_stated(text[:-1].rstrip() if suffix else text)
+    suffix = None
+    for end, kind in (("%", "%"), (" percent", "%"), ("x", "x"), ("×", "x")):
+        if text.lower().endswith(end) and (kind == "%" or text[: -len(end)][-1:].isdigit()):
+            text, suffix = text[: -len(end)].rstrip(), kind
+            break
+    value, currency, plus = parse_stated(text)
     return value, currency, plus, suffix
 
 

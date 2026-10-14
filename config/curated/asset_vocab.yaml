@@ -81,6 +81,9 @@ metrics:
   capacity_per_pair:
     definition: The capacity one fiber pair carries with the transmission equipment of the time.
     units: [gbps, tbps]
+  cable_capacity:
+    definition: The total design capacity of a cable system across all its fiber pairs.
+    units: [gbps, tbps]
   deal_value:
     definition: The value of a sale, purchase or capacity deal for the assets, outside distress.
     units: [usd]

@@ -70,6 +70,7 @@ def check(rows: list[dict]) -> list[dict]:
     ("text", "value", "suffix"),
     [
         ("2.7%", Decimal("2.7"), "%"),
+        ("2.7 percent", Decimal("2.7"), "%"),
         ("$250 million", Decimal("2.5e8"), None),
         ("six", Decimal(6), None),
         ("forty", Decimal(40), None),
