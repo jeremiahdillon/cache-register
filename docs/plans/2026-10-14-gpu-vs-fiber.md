@@ -84,7 +84,7 @@ exploration (analyses never import each other); a figure both need goes into the
 
 ## Decisions (author, 2026-10-14)
 - A new curated source, `curated_asset_values` (built: `src/cachereg/sources/curated_asset_values/`,
-  mart `100_asset_values`). The shared rules of both curated datasets moved to `sources/_curated.py`.
+  mart `110_asset_values`). The shared rules of both curated datasets moved to `sources/_curated.py`.
 - Press may carry headlines, and sourcing should be broad: research notes, published indices and
   archived pages are all welcome, marked `secondary`.
 - Values stay in the unit the source stated (each metric lists its allowed units); the analysis

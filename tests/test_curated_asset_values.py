@@ -1,4 +1,4 @@
-"""Curated asset values: validation, append-only rule, stage and mart 100 (synthetic rows), plus a check
+"""Curated asset values: validation, append-only rule, stage and mart 110 (synthetic rows), plus a check
 that the real committed file validates (it is our own dataset, not a recorded third-party response)."""
 
 from __future__ import annotations

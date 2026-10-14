@@ -1,7 +1,7 @@
 """Stage the curated asset values: the newest stored copy only, after checking it is append-only.
 
 Every older stored copy must appear unchanged in the newest (rows are only appended), so `asset_values`
-holds each `id` once, and mart 100 selects rows by `recorded_on` and `supersedes` as of `as_of` (Exact).
+holds each `id` once, and mart 110 selects rows by `recorded_on` and `supersedes` as of `as_of` (Exact).
 """
 
 from __future__ import annotations

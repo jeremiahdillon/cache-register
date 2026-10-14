@@ -1,6 +1,6 @@
 """GPUs vs dark fiber: does anything keep its value after a bust, the way the fiber did? (exploration)
 
-Reads the asset_values mart (100) only, picking rows by id from explore.yaml so each point traces to
+Reads the asset_values mart (110) only, picking rows by id from explore.yaml so each point traces to
 its cited quote. Four views: price paths, book useful lives, what dot-com networks fetched, and
 generations (capacity per fiber pair vs NVIDIA's claimed gain per GPU generation). See README.md.
 `cachereg render explore/2026-10-14-gpu-vs-fiber` renders the visuals declared in explore.yaml.

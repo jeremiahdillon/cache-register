@@ -34,7 +34,7 @@ generation did to the old one.
   For now, demand has outrun that obsolescence: old GPUs still rent near or above their earlier prices.
 
 ## Method
-- **Data:** the `asset_values` mart (100) of our curated source `curated_asset_values`, one row per
+- **Data:** the `asset_values` mart (110) of our curated source `curated_asset_values`, one row per
   stated figure, each with its source URL and a quote of ≤ 25 words. Every point on a chart is picked by
   row id in `explore.yaml`.
 - **Prices:** each series is shown as a % of its own first quote, against years since that quote.
