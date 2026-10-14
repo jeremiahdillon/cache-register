@@ -159,3 +159,26 @@ sources:
     cadence: weekly
     requires: []
     enabled: true
+
+  # One-off market data for explore/2026-10-14-coreweave-credit (author, 2026-10-14): personal,
+  # non-commercial use; raw never committed or inlined; derived charts credited. Disabled = not on the
+  # daily schedule; fetch on demand with `cachereg fetch yahoo_prices finra_trace`.
+  - id: yahoo_prices
+    history: native
+    revisions: revised
+    redistribution: forbidden
+    derived_charts: allowed-with-attribution
+    attribution: "Yahoo Finance (finance.yahoo.com), daily close, as of {as_of}"
+    cadence: daily
+    requires: []
+    enabled: false
+
+  - id: finra_trace
+    history: native
+    revisions: revised
+    redistribution: forbidden
+    derived_charts: allowed-with-attribution
+    attribution: "FINRA TRACE end-of-day prices and yields (finra.org/finra-data), as of {as_of}"
+    cadence: daily
+    requires: []
+    enabled: false
