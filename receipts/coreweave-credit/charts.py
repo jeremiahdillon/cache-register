@@ -40,6 +40,12 @@ def _ms(d) -> int:
     return int(datetime(d.year, d.month, d.day, tzinfo=UTC).timestamp() * 1000)
 
 
+def _op(v: float) -> float:
+    """A hidden mark stays at an invisible opacity, never 0: Vega leaves 0-opacity marks out of the chart's
+    bounds, so a dot on the plot's edge appearing would resize the canvas and the video would jump."""
+    return max(v, 0.002)
+
+
 def _smooth(u: float) -> float:
     u = min(max(u, 0.0), 1.0)
     return u * u * (3 - 2 * u)
@@ -126,25 +132,26 @@ def _panel(rows, field, title, subtitle, fmt_axis, domain, labels, change, t_dom
     drawn = _drawn(pts_all, field, st["until"]) or [pts_all[0]]
     line = (
         alt.Chart(alt.Data(values=drawn))
-        .mark_line(color=color("accent"), strokeWidth=3 * fs, opacity=1 if st["until"] >= pts_all[0]["t"] else 0)
+        .mark_line(color=color("accent"), strokeWidth=3 * fs, opacity=1 if st["until"] >= pts_all[0]["t"] else _op(0))
         .encode(x=x, y=y)
     )
 
     # slope: first → last point, drawn to fraction st["slope"]: a solid white beam with a soft glow that
-    # cross-fades into the dashed grey guide that stays
+    # cross-fades into the dashed grey guide that stays. Clipped to the plot: the glow's round cap would
+    # otherwise stick out past the axis and widen the chart while it shows, so the video's canvas would jump.
     a, b = pts_all[0], pts_all[-1]
     p = st["slope"]
     tip = {"t": a["t"] + (b["t"] - a["t"]) * p, field: a[field] + (b[field] - a[field]) * p}
     seg, shown = alt.Data(values=[a, tip]), p > 0
-    glow = alt.Chart(seg).mark_line(color=BEAM, strokeWidth=16 * fs, strokeCap="round",
-                                    opacity=0.22 * st["beam"] if shown else 0).encode(x=x, y=y)  # fmt: skip
-    beam = alt.Chart(seg).mark_line(color=BEAM, strokeWidth=5 * fs, strokeCap="round",
-                                    opacity=st["beam"] if shown else 0).encode(x=x, y=y)  # fmt: skip
-    guide = alt.Chart(seg).mark_line(color=GUIDE, strokeWidth=2 * fs, strokeDash=[10 * fs, 7 * fs],
-                                     opacity=st["guide"] if shown else 0).encode(x=x, y=y)  # fmt: skip
+    glow = alt.Chart(seg).mark_line(clip=True, color=BEAM, strokeWidth=16 * fs, strokeCap="round",
+                                    opacity=_op(0.22 * st["beam"] if shown else 0)).encode(x=x, y=y)  # fmt: skip
+    beam = alt.Chart(seg).mark_line(clip=True, color=BEAM, strokeWidth=5 * fs, strokeCap="round",
+                                    opacity=_op(st["beam"] if shown else 0)).encode(x=x, y=y)  # fmt: skip
+    guide = alt.Chart(seg).mark_line(clip=True, color=GUIDE, strokeWidth=2 * fs, strokeDash=[10 * fs, 7 * fs],
+                                     opacity=_op(st["guide"] if shown else 0)).encode(x=x, y=y)  # fmt: skip
 
     pts = [{"t": _ms(r["date"]), field: r[field], "label": text, "dx": dx, "dy": dy, "align": al,
-            "at": r[field] if at is None else at, "op": st[group]}
+            "at": r[field] if at is None else at, "op": _op(st[group])}
            for r, text, al, dx, dy, at, group in labels]  # fmt: skip
     dots = (
         alt.Chart(alt.Data(values=pts))
@@ -180,7 +187,7 @@ def _panel(rows, field, title, subtitle, fmt_axis, domain, labels, change, t_dom
     change_text = (
         alt.Chart(alt.Data(values=[mid]))
         .mark_text(align="center", baseline="middle", dy=dy, fontSize=SLOPE_PX * fs, font=fonts["mono"],
-                   fontWeight="bold", color=color("text"), opacity=st["change"])
+                   fontWeight="bold", color=color("text"), opacity=_op(st["change"]))
         .encode(x=x, y=y, text="label:N")
     )  # fmt: skip
     t = alt.TitleParams(title, subtitle=subtitle, anchor="start", fontSize=TITLE_PX * fs, font=fonts["body"],
