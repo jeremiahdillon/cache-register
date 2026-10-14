@@ -44,6 +44,18 @@ curated_asset_values` and `make check`. Press, research notes and published indi
 (author, 2026-10-14) and marked `secondary`; dead pages are cited through web.archive.org. Excluded:
 forecasts, our own arithmetic (a node price ÷ 8 is done in the analysis, which says so).
 
+## Seed (2026-10-14)
+249 rows from four research passes of 2026-10-14 (GPU prices; book useful lives; the dot-com fiber bust;
+GPU-backed debt and obsolescence). Every quote was matched against the fetched page text by script; a
+random sample of 30 was re-checked by hand (all found but one SEC page the checker could not read in full).
+The evidence notes stay local, never committed. Left out: forecasts (a 1997 cable's design rates), figures
+from one promotional newsletter (dark-fiber prices 'up 70%'), a C$ figure the parser cannot carry, figures
+only seen in search snippets (Global Crossing's $15bn build, WorldCom's $41bn debt, 360networks' sale).
+Price pages read through web.archive.org snapshots join table cells with spaces (noted per row).
+Dot-com carriers' lives are split into `dark_fiber` (fiber, conduit, rights-of-way),
+`fiber_electronics` (switches, routers, transmission electronics) and `fiber_network` where the filing
+lumps them together.
+
 ## Caveats (carry into analyses)
 - Prices are scattered quotes, not a series: different configurations (SXM or PCIe, on-demand or
   reserved, per GPU or per node), venues and regions. Compare only like with like (`scope`).

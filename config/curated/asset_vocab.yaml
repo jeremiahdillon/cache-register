@@ -3,7 +3,8 @@
 # transmission electronics that light fiber), `infrastructure` is long-lived (fiber and conduit,
 # buildings, power), `company` is a carrier's or operator's whole network as one figure.
 # Metrics: each lists the units a figure may be stated in. Values stay in the stated unit; analyses
-# convert (e.g. a node price ÷ 8 GPUs) and say so.
+# convert (e.g. a node price ÷ 8 GPUs) and say so. An instance is a cloud's machine size,
+# whose GPU count is in the row's `scope`.
 assets:
   gpu_v100: {label: NVIDIA V100, era: ai, layer: equipment}
   gpu_a100: {label: NVIDIA A100, era: ai, layer: equipment}
@@ -26,10 +27,13 @@ metrics:
     units: [usd, usd_per_gpu, usd_per_server]
   rental_price:
     definition: The price to rent compute for an hour (or a stated period), as stated.
-    units: [usd_per_gpu_hour, usd_per_node_hour, usd_per_gpu_month]
+    units: [usd_per_gpu_hour, usd_per_node_hour, usd_per_instance_hour, usd_per_gpu_month]
   resale_price:
     definition: The price of used equipment on the secondary market.
     units: [usd, usd_per_gpu, usd_per_server]
+  resale_to_new_ratio:
+    definition: The price of used equipment as a percentage of the price of the same equipment new at the time.
+    units: [percent]
   iru_price:
     definition: The price of dark fiber under an indefeasible right of use (IRU) or similar long lease.
     units: [usd, usd_per_route_mile, usd_per_fiber_mile, usd_per_fiber_km]
