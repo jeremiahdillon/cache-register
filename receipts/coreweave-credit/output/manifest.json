@@ -4,14 +4,14 @@
   "data_hash": "5a267f75236b6b2fdd54f3ce7563f06f9085c86618ffe9a11ff73364e027fc16",
   "folder": "receipts/coreweave-credit",
   "git_dirty": false,
-  "git_sha": "254f15acce3afca547d4ddba719a44b3f91a9ce8",
-  "inputs_hash": "b4d92cca5ae15b39ca1ceacdaa7355dc27fd22bfa12cefe3bb44061f3ca58c8c",
+  "git_sha": "793d7ca35a9f38223487608eff14e1d7e2e1973d",
+  "inputs_hash": "d0c75a008bc653c3e236169c82a7523ea2fc744dd10044679707f99be4b8734f",
   "kind": "receipt",
   "outputs": {
-    "panels.linkedin_png.png": "d998a9e87a7850c96c389171a131e167a82ad476a2386d7ded6a81e8f3778ce7",
-    "panels.linkedin_video.mp4": "bbce6cc21fda7e3f353515fc601766d6f17e8c2abb15ea3450b9fbd41a60e170",
-    "panels.x_png.png": "9aac8795b13b1cba83572c2319a609192fdcfc2b75f46d7d8ed477fd1951812f",
-    "panels.x_video.mp4": "b140e7e5c39549f7b777d58332be476f922bb53b1fb6eaad31b56ff5fcfb945a"
+    "panels.linkedin_png.png": "2698f4c63328b7cc43c9d5a50384eb37b9826b5fe74ef484917c8754df49fec6",
+    "panels.linkedin_video.mp4": "49b24c12150a0d50805e7e31a97aafbbb04352fb0d4948a4ac2e76c641469fa7",
+    "panels.x_png.png": "e40c603c80b449057bc8fe210956d9115067805580bf73e7651f697becc20165",
+    "panels.x_video.mp4": "321c9ab3461ea5a9f984585946a60d4037adf06bad219bfe88fe57246ab6ccc1"
   },
   "sources": {
     "finra_trace": {
