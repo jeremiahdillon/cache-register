@@ -1,0 +1,89 @@
+# Exploration config (same schema as receipt.yaml). Design: docs/plans/2026-10-14-gpu-vs-fiber.md.
+# Every point comes from a row of the curated_asset_values mart, picked here by id, so each one can be
+# traced to its cited quote. `per: 8` divides an 8-GPU instance's price to a per-GPU price.
+title: GPUs vs dark fiber, value after a bust
+sources: [curated_asset_values]
+config:
+  # 1. Price paths: each series as % of its own first quote, by years since that quote.
+  prices:
+    - name: US IP transit, per Mbps
+      era: dotcom
+      ids: [lit_bandwidth-bandwidth_price-2014-01-01, lit_bandwidth-bandwidth_price-2014-01-01-2,
+            lit_bandwidth-bandwidth_price-2014-01-01-3, lit_bandwidth-bandwidth_price-2014-01-01-4,
+            lit_bandwidth-bandwidth_price-2014-01-01-5]
+    - name: OC-3 circuit, New York–LA
+      era: dotcom
+      ids: [lit_bandwidth-bandwidth_price-2003-04-14, lit_bandwidth-bandwidth_price-2003-04-14-2,
+            lit_bandwidth-bandwidth_price-2003-04-14-3, lit_bandwidth-bandwidth_price-2003-04-14-4]
+    - name: H100, market rate
+      era: ai
+      # launch-era and early-2024 quotes (Latent Space), then Silicon Data's neocloud H100 index: two sources
+      ids: [gpu_h100-rental_price-2024-10-11-2, gpu_h100-rental_price-2024-10-11-3,
+            gpu_h100-rental_price-2025-10-20, gpu_h100-rental_price-2026-01-09,
+            gpu_h100-rental_price-2026-01-09-2, gpu_h100-rental_price-2026-06-16-2]
+    - name: H100, Lambda on-demand
+      era: ai
+      ids: [{id: gpu_h100-rental_price-2024-07-11, per: 8}, gpu_h100-rental_price-2025-01-01,
+            gpu_h100-rental_price-2026-03-10, gpu_h100-rental_price-2026-10-01]
+    - name: A100, Lambda on-demand
+      era: ai
+      ids: [{id: gpu_a100-rental_price-2023-06-14, per: 8}, {id: gpu_a100-rental_price-2024-07-11, per: 8},
+            gpu_a100-rental_price-2026-01-09, gpu_a100-rental_price-2026-10-01]
+    - name: V100, Lambda on-demand
+      era: ai
+      ids: [{id: gpu_v100-rental_price-2022-06-13, per: 8}, gpu_v100-rental_price-2026-01-09,
+            gpu_v100-rental_price-2026-10-01]
+  # 2. Book useful lives, by group (a range is its low and high rows; a single figure is one row).
+  lives:
+    - group: AI servers and GPUs, 2025–26
+      era: ai
+      ids: [gpu_generic-book_useful_life-2026-07-29, gpu_generic-book_useful_life-2026-07-29-2,
+            gpu_generic-book_useful_life-2026-02-05, gpu_generic-book_useful_life-2026-02-06,
+            gpu_generic-book_useful_life-2026-02-06-2, gpu_generic-book_useful_life-2025-01-30-3,
+            gpu_generic-book_useful_life-2026-06-22, gpu_generic-book_useful_life-2026-03-02-3,
+            gpu_generic-book_useful_life-2026-04-30]
+    - group: Dot-com network electronics, 2000–01
+      era: dotcom
+      ids: [fiber_electronics-book_useful_life-2002-03-13, fiber_electronics-book_useful_life-2002-03-13-2,
+            fiber_electronics-book_useful_life-2002-03-19, fiber_electronics-book_useful_life-2002-03-19-2,
+            fiber_electronics-book_useful_life-2002-04-01, fiber_electronics-book_useful_life-2002-04-01-2,
+            fiber_electronics-book_useful_life-2002-04-01-3, fiber_electronics-book_useful_life-2002-04-01-4]
+    - group: Dot-com fiber, conduit and rights-of-way
+      era: dotcom
+      ids: [dark_fiber-book_useful_life-2001-05-22, dark_fiber-book_useful_life-2001-05-22-2,
+            dark_fiber-book_useful_life-2002-03-19, dark_fiber-book_useful_life-2002-03-19-2,
+            dark_fiber-book_useful_life-2002-04-01, dark_fiber-book_useful_life-2002-04-01-2,
+            dark_fiber-book_useful_life-2002-04-01-3, dark_fiber-book_useful_life-2002-04-01-4,
+            dark_fiber-book_useful_life-2002-04-01-5, dark_fiber-book_useful_life-2002-04-01-6]
+    - group: Data-centre buildings, 2024–26
+      era: ai
+      ids: [dc_shell-book_useful_life-2026-02-11, dc_shell-book_useful_life-2026-02-11-2,
+            dc_shell-book_useful_life-2026-02-13, dc_shell-book_useful_life-2026-02-13-2,
+            dc_shell-book_useful_life-2026-02-05, dc_shell-book_useful_life-2026-02-05-2,
+            dc_shell-book_useful_life-2025-01-30, dc_shell-book_useful_life-2025-01-30-2,
+            dc_shell-book_useful_life-2026-07-29, dc_shell-book_useful_life-2026-07-29-2]
+    - group: Nuclear power contracts (term)
+      era: ai
+      ids: [power-contract_term-2024-09-20, power-contract_term-2025-06-03]
+  # 3. What dot-com networks fetched: one track per company, in date order.
+  recovery:
+    - company: Global Crossing
+      ids: [fiber_network-capital_invested-2023-11-14, fiber_network-debt_at_bankruptcy-2002-08-11,
+            fiber_network-distressed_sale_price-2002-08-11, fiber_network-deal_value-2023-11-14]
+    - company: Williams Communications
+      ids: [fiber_network-debt_at_bankruptcy-2002-10-16, fiber_network-deal_value-2005-11-01]
+    - company: Velocita
+      ids: [fiber_network-capital_invested-2002-11-11, fiber_network-debt_at_bankruptcy-2002-11-11,
+            fiber_network-distressed_sale_price-2002-11-11]
+    - company: FLAG Telecom
+      ids: [fiber_network-debt_at_bankruptcy-2003-10-20, fiber_network-distressed_sale_price-2003-10-16]
+  # 4. Generations: capacity of one fiber pair over time, and NVIDIA's own claimed gain per generation.
+  capacity_ids: [dark_fiber-capacity_per_pair-2001-01-22, dark_fiber-capacity_per_pair-2012-09-17,
+                 dark_fiber-capacity_per_pair-2019-03-11, dark_fiber-capacity_per_pair-2025-11-17]
+  generation_ids: [gpu_a100-perf_multiple-2020-05-14, gpu_h100-perf_multiple-2022-03-22,
+                   gpu_gb200-perf_multiple-2024-03-18, gpu_rubin-perf_per_dollar-2026-01-05]
+visuals:
+  - {name: lives, chart: lives, targets: [x_png, linkedin_png, blog_html]}
+  - {name: prices, chart: prices, targets: [x_png, linkedin_png, blog_html]}
+  - {name: recovery, chart: recovery, targets: [x_png, linkedin_png, blog_html]}
+  - {name: generations, chart: generations, targets: [x_png, linkedin_png, blog_html]}

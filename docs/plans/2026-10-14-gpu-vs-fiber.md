@@ -1,6 +1,10 @@
 # Plan: GPUs vs dark fiber, residual value after a bust (exploration)
 
-Status: SOURCE BUILT, SEEDING · 2026-10-14
+Status: EXPLORATION BUILT · 2026-10-14
+
+Outcome: `explore/2026-10-14-gpu-vs-fiber/` renders four visuals (lives, prices, recovery, generations)
+from 249 cited rows. So far GPUs look like the fiber's electronics, not its glass (2–6-year book lives),
+yet their rents have held up far better than bandwidth prices did. Not promoted.
 
 ## Question
 In the dot-com bust the carriers failed but the fiber stayed useful: later owners bought it cheaply
