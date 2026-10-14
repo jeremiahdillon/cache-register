@@ -12,11 +12,8 @@ file as it was at the pushed range's base.
 
 from __future__ import annotations
 
-import csv
-import io
 import math
 import re
-import subprocess
 import sys
 from datetime import date
 from decimal import Decimal, InvalidOperation
@@ -25,6 +22,9 @@ from pathlib import Path
 import yaml
 
 from cachereg.core.paths import REPO_ROOT, entities_dir
+from cachereg.sources import _curated
+from cachereg.sources._curated import MAX_QUOTE_WORDS, CuratedError, parse_stated
+from cachereg.sources._curated import norm as _norm
 
 CURATED_DIR = REPO_ROOT / "config" / "curated"
 FILE = "disclosures.csv"
@@ -39,54 +39,9 @@ COLUMNS = (
 REQUIRED = tuple(c for c in COLUMNS if c not in ("supersedes", "notes"))
 QUALIFIERS = ("exact", "over", "about", "under", "up_to")
 SOURCE_KINDS = ("primary", "secondary")
-MAX_QUOTE_WORDS = 25
-
-MULTIPLIERS = {
-    "thousand": 10**3, "million": 10**6, "billion": 10**9, "trillion": 10**12, "quadrillion": 10**15,
-    "k": 10**3, "m": 10**6, "b": 10**9, "t": 10**12,
-}  # fmt: skip
-NUMBER_WORDS = {
-    w: i
-    for i, w in enumerate(
-        "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen "
-        "seventeen eighteen nineteen twenty".split()
-    )
-}
-STATED = re.compile(
-    r"^(?P<cur>\$)?\s*(?P<num>\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?|[a-z]+)"
-    r"\s*(?P<mult>thousand|million|billion|trillion|quadrillion|[kmbt])?\s*(?P<plus>\+)?$",
-    re.I,
-)
 SUFFIX = re.compile(r"[2-9]|[1-9]\d+")  # the n of a second, third, … row with the same base id
 
-
-class DisclosureError(ValueError):
-    """The curated file breaks a rule; the message names the row."""
-
-
-def parse_stated(text: str) -> tuple[Decimal, bool, bool]:
-    """`value_as_stated` → (value in base units, has a currency sign, has a trailing +).
-
-    Digits with optional `$`, `,` and `+`, a K/M/B/T suffix or a multiplier word; or a number word
-    (`seven billion`). Decimal arithmetic throughout: 8.3 × 10¹² is not exact in binary.
-    """
-    m = STATED.match(text.strip())
-    if not m:
-        raise DisclosureError(f"value_as_stated {text!r} is not a figure this parser reads")
-    num = m["num"].lower()
-    if num.isalpha():
-        if num not in NUMBER_WORDS:
-            raise DisclosureError(f"value_as_stated {text!r}: unknown number word {num!r}")
-        base = Decimal(NUMBER_WORDS[num])
-    else:
-        base = Decimal(num.replace(",", ""))
-    mult = MULTIPLIERS[m["mult"].lower()] if m["mult"] else 1
-    return base * mult, bool(m["cur"]), bool(m["plus"])
-
-
-def _norm(text: str) -> str:
-    text = text.replace("’", "'").replace("‘", "'").replace("“", '"').replace("”", '"')
-    return re.sub(r"\s+", " ", text.replace(" ", " ")).strip().lower()
+DisclosureError = CuratedError  # this dataset's name for the shared error
 
 
 def _day(row: dict, col: str) -> date:
@@ -111,16 +66,7 @@ def load_vendors() -> set[str]:
 
 def read_rows(body: bytes) -> list[dict]:
     """Parse the CSV (UTF-8, header row) without validating it."""
-    text = body.decode("utf-8-sig")
-    reader = csv.DictReader(io.StringIO(text, newline=""))
-    if tuple(reader.fieldnames or ()) != COLUMNS:
-        raise DisclosureError(f"{FILE}: columns must be exactly {', '.join(COLUMNS)}")
-    rows = []
-    for i, r in enumerate(reader, start=2):
-        if None in r or any(v is None for v in r.values()):
-            raise DisclosureError(f"{FILE} line {i}: wrong number of fields")
-        rows.append(r)
-    return rows
+    return _curated.read_rows(body, COLUMNS, FILE)
 
 
 def validate(body: bytes, metrics: dict[str, dict] | None = None, vendors: set[str] | None = None) -> list[dict]:
@@ -195,55 +141,14 @@ def validate(body: bytes, metrics: dict[str, dict] | None = None, vendors: set[s
 
 def check_append_only(old: bytes, new: bytes) -> None:
     """No row of `old` may be removed or changed in `new` (rows are only appended)."""
-    before = {r["id"]: r for r in read_rows(old)}
-    after = {r["id"]: r for r in read_rows(new)}
-    for rid, row in before.items():
-        if rid not in after:
-            raise DisclosureError(f"{rid}: a published row was removed (add a superseding row instead)")
-        changed = [c for c in COLUMNS if row[c] != after[rid][c]]
-        if changed:
-            raise DisclosureError(f"{rid}: a published row was edited ({', '.join(changed)}); add a superseding row")
-
-
-def _git_show(rev: str) -> bytes | None:
-    """The file at `rev`, or None when the commit or the file does not exist there."""
-    try:
-        return subprocess.run(  # noqa: S603 (fixed git argv)
-            ["git", "show", f"{rev}:{REPO_PATH}"],
-            cwd=REPO_ROOT,
-            capture_output=True,
-            check=True,  # noqa: S607
-        ).stdout
-    except subprocess.CalledProcessError:
-        return None
+    _curated.check_append_only(old, new, COLUMNS, FILE)
 
 
 def main(argv: list[str]) -> int:
-    """`--base <rev> [--head <rev>]`: check the file at `head` (default: the working file) against the
-    file at `base`. Skipped when `base` is all zeros (a new branch) or lacks the file."""
-    args = dict(zip(argv[::2], argv[1::2], strict=False))
-    if len(argv) % 2 or "--base" not in args or set(args) - {"--base", "--head"}:
-        print("usage: python -m cachereg.sources.curated_disclosures.dataset --base REV [--head REV]", file=sys.stderr)
-        return 2
-    base, head = args["--base"], args.get("--head")
-    if set(base) == {"0"}:
-        print("curated disclosures: no base commit; append-only check skipped")
-        return 0
-    old = _git_show(base)
-    if old is None:
-        print(f"curated disclosures: {REPO_PATH} not at {base[:12]}; append-only check skipped")
-        return 0
-    working = REPO_ROOT / REPO_PATH
-    new = _git_show(head) if head else (working.read_bytes() if working.is_file() else None)
-    if new is None:
-        print(f"curated disclosures: {REPO_PATH} was removed (a published file is never removed)", file=sys.stderr)
-        return 1
-    try:
-        check_append_only(old, new)
-    except DisclosureError as e:
-        print(f"curated disclosures: {e}", file=sys.stderr)
-        return 1
-    return 0
+    """`--base <rev> [--head <rev>]`: the append-only check of the pre-push hook and CI."""
+    return _curated.append_only_main(
+        argv, module=__spec__.name, label="curated disclosures", repo_path=REPO_PATH, columns=COLUMNS
+    )
 
 
 if __name__ == "__main__":

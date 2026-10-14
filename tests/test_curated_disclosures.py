@@ -15,6 +15,7 @@ from cachereg.build import build
 from cachereg.core.paths import REPO_ROOT
 from cachereg.core.store import RawFetch
 from cachereg.core.warehouse import connect, query
+from cachereg.sources import _curated
 from cachereg.sources.curated_disclosures import dataset as ds
 from cachereg.sources.curated_disclosures import fetch as cf
 from cachereg.sources.curated_disclosures import stage as cs
@@ -165,7 +166,7 @@ def test_append_only_allows_added_rows_and_refuses_edits_and_removals():
 
 def test_main_skips_without_a_base_and_checks_head_against_base(monkeypatch, capsys):
     files = {"base": to_csv([row()]), "good": to_csv([row(), row(**ANTHROPIC)]), "bad": to_csv([row(value="2")])}
-    monkeypatch.setattr(ds, "_git_show", lambda rev: files.get(rev))
+    monkeypatch.setattr(_curated, "_git_show", lambda rev, path: files.get(rev))
     assert ds.main(["--base", "0" * 40]) == 0  # a new branch
     assert ds.main(["--base", "first", "--head", "good"]) == 0  # the commit that introduces the file
     assert "skipped" in capsys.readouterr().out
