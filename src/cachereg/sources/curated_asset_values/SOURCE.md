@@ -46,8 +46,10 @@ forecasts, our own arithmetic (a node price ÷ 8 is done in the analysis, which 
 
 ## Seed (2026-10-14)
 249 rows from four research passes of 2026-10-14 (GPU prices; book useful lives; the dot-com fiber bust;
-GPU-backed debt and obsolescence). Every quote was matched against the fetched page text by script; a
-random sample of 30 was re-checked by hand (all found but one SEC page the checker could not read in full).
+GPU-backed debt and obsolescence). Every quote was matched against the fetched page text by script.
+A random sample of 30 was re-fetched independently: 16 matched as plain text; MAREA, the CTC PDF,
+DrPeering's table and Amazon's 10-K matched when read by hand; Microsoft's FY2022 10-K could not be read in
+full (inconclusive); the other SEC filings refused the plain fetch (no declared contact) and were not re-checked.
 The evidence notes stay local, never committed. Left out: forecasts (a 1997 cable's design rates), figures
 from one promotional newsletter (dark-fiber prices 'up 70%'), a C$ figure the parser cannot carry, figures
 only seen in search snippets (Global Crossing's $15bn build, WorldCom's $41bn debt, 360networks' sale).
