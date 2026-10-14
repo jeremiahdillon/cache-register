@@ -46,6 +46,9 @@ metrics:
   book_useful_life:
     definition: The depreciation life a company states for a class of assets in its accounts.
     units: [years]
+  economic_life_view:
+    definition: How long an executive, investor or analyst says the assets stay economically useful (an opinion, not an accounting life).
+    units: [years]
   capital_invested:
     definition: What was spent building a network or fleet (capex, build cost), as stated.
     units: [usd]
