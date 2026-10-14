@@ -1,0 +1,14 @@
+# Receipt: cacheregister.dev/coreweave-credit (the folder name is the short link, taken over from the
+# exploration's reservation — never rename without adding an alias in config/link-aliases.yaml).
+# FINRA and Yahoo data are redistribution-forbidden, so there is no blog_html (it would inline the data) and no
+# data.json; derived charts are credited (author's personal, non-commercial use).
+title: CoreWeave bond yield vs stock price
+sources: [finra_trace, yahoo_prices]
+as_of: 2026-10-14
+promoted_from: explore/2026-10-14-coreweave-credit
+config:
+  headline: CoreWeave yield is rising and stock is sliding   # author's title, 2026-10-14
+  ticker: CRWV
+  cusip: auto        # auto = the CoreWeave senior note with the highest yield on the latest bond date
+visuals:
+  - {name: panels, chart: panels, targets: [x_png, linkedin_png, x_video, linkedin_video]}

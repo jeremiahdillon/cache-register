@@ -1,6 +1,7 @@
 # CoreWeave bond yield vs stock price
 
-*Exploration · started 2026-10-14 · short link reserved: cacheregister.dev/coreweave-credit · prompted by CNBC, "CoreWeave shares tumble as bond yields near 15% on
+*Exploration · started 2026-10-14 · **promoted to [`receipts/coreweave-credit`](../../receipts/coreweave-credit/)**, which is the
+maintained version and now owns cacheregister.dev/coreweave-credit · prompted by CNBC, "CoreWeave shares tumble as bond yields near 15% on
 concern about AI borrowing binge" (2026-10-14), which quoted FactSet yields of 14.8% (9.625% notes due 2032)
 and 14.9% (9.75% notes due 2031)*
 

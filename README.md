@@ -16,6 +16,7 @@ charts and videos. Every published visual links back to the exact code that made
 > | [`china-token-share`](receipts/china-token-share/) | [cacheregister.dev/china-token-share](https://cacheregister.dev/china-token-share) | Chinese labs served 78% of those three groups' OpenRouter tokens in the week of Sep 28, 2026, up from 10% in the week of Jan 6, 2025. |
 > | [`opus-tenth-life`](receipts/opus-tenth-life/) | [cacheregister.dev/opus-tenth-life](https://cacheregister.dev/opus-tenth-life) | Claude Opus 4, 4.5 and 4.6 were each matched in capability (Epoch ECI) at a tenth of their list price after 5.8 months on average. |
 > | [`source-matters`](receipts/source-matters/) | [cacheregister.dev/source-matters](https://cacheregister.dev/source-matters) | Anthropic's share of spend in the four weeks to Sep 27, 2026 was 53% on Ramp, 47% on Vercel AI Gateway and 28% on OpenRouter (of tokens: 42%, 11% and 4%); the sources also disagreed on its direction for most of 2025. |
+> | [`coreweave-credit`](receipts/coreweave-credit/) | [cacheregister.dev/coreweave-credit](https://cacheregister.dev/coreweave-credit) | The yield on CoreWeave's 9.75% notes due 2031 rose from 9.0% when they began trading on Apr 14, 2026 to 14.7% on Oct 13, while CRWV fell 44%, from $117.20 to $65.78 (Oct 14). |
 
 ## How it works
 
