@@ -1,0 +1,50 @@
+{
+  "as_of": "2026-10-14",
+  "cache_register_version": "0.0.1",
+  "data_hash": "5a267f75236b6b2fdd54f3ce7563f06f9085c86618ffe9a11ff73364e027fc16",
+  "folder": "receipts/coreweave-credit",
+  "git_dirty": false,
+  "git_sha": "254f15acce3afca547d4ddba719a44b3f91a9ce8",
+  "inputs_hash": "b4d92cca5ae15b39ca1ceacdaa7355dc27fd22bfa12cefe3bb44061f3ca58c8c",
+  "kind": "receipt",
+  "outputs": {
+    "panels.linkedin_png.png": "d998a9e87a7850c96c389171a131e167a82ad476a2386d7ded6a81e8f3778ce7",
+    "panels.linkedin_video.mp4": "bbce6cc21fda7e3f353515fc601766d6f17e8c2abb15ea3450b9fbd41a60e170",
+    "panels.x_png.png": "9aac8795b13b1cba83572c2319a609192fdcfc2b75f46d7d8ed477fd1951812f",
+    "panels.x_video.mp4": "b140e7e5c39549f7b777d58332be476f922bb53b1fb6eaad31b56ff5fcfb945a"
+  },
+  "sources": {
+    "finra_trace": {
+      "class": "Latest-only",
+      "content_sha256": "69e9ef6d08bb39b1486eb2dd674b1e95bd1ed17155283e8299866174bc923246",
+      "fetch_date": "2026-10-14",
+      "vintage": {
+        "kind": "content",
+        "value": "3835be50c7742683b3d262ab5d017c3e021081adebaddf00e281aef4e8e2eb6a",
+        "window": [
+          "2025-01-01",
+          "2026-10-14"
+        ]
+      },
+      "vintage_after_as_of": false
+    },
+    "yahoo_prices": {
+      "class": "Latest-only",
+      "content_sha256": "e2e326d8d098cd5343301d3784f4bc4fbf4abbe65b745358fd4fc922fc85f8c8",
+      "fetch_date": "2026-10-14",
+      "vintage": {
+        "kind": "content",
+        "value": "b5891d4fae33c4ae3af7189cbf4d35c0e0b2a030d5f2a0257478b27915a70123",
+        "window": [
+          "2025-01-01",
+          "2026-10-14"
+        ]
+      },
+      "vintage_after_as_of": false
+    }
+  },
+  "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "withheld": {
+    "data.json": "redistribution not allowed for: finra_trace, yahoo_prices"
+  }
+}
