@@ -160,6 +160,18 @@ sources:
     requires: []
     enabled: true
 
+  # Our own dataset (docs/plans/2026-10-14-gpu-vs-fiber.md): cited figures on GPU, AI-infrastructure
+  # and dot-com fiber values; company statements, filings and press (marked secondary). CC BY 4.0.
+  - id: curated_asset_values
+    history: curated
+    revisions: append-only
+    redistribution: allowed-with-attribution
+    derived_charts: allowed-with-attribution
+    attribution: "Cache Register curated asset values, from the cited filings and press, CC BY 4.0, as of {as_of}"
+    cadence: weekly
+    requires: []
+    enabled: true
+
   # One-off market data for explore/2026-10-14-coreweave-credit (author, 2026-10-14): personal,
   # non-commercial use; raw never committed or inlined; derived charts credited. Disabled = not on the
   # daily schedule; fetch on demand with `cachereg fetch yahoo_prices finra_trace`.

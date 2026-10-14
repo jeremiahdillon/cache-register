@@ -1,0 +1,77 @@
+# Controlled vocabulary for config/curated/asset_values.csv (docs/plans/2026-10-14-gpu-vs-fiber.md).
+# Assets: era (ai | dotcom) and layer: `equipment` wears out or is superseded within years (GPUs; the
+# transmission electronics that light fiber), `infrastructure` is long-lived (fiber and conduit,
+# buildings, power), `company` is a carrier's or operator's whole network as one figure.
+# Metrics: each lists the units a figure may be stated in. Values stay in the stated unit; analyses
+# convert (e.g. a node price ÷ 8 GPUs) and say so.
+assets:
+  gpu_v100: {label: NVIDIA V100, era: ai, layer: equipment}
+  gpu_a100: {label: NVIDIA A100, era: ai, layer: equipment}
+  gpu_h100: {label: NVIDIA H100, era: ai, layer: equipment}
+  gpu_h200: {label: NVIDIA H200, era: ai, layer: equipment}
+  gpu_b200: {label: NVIDIA B200, era: ai, layer: equipment}
+  gpu_gb200: {label: NVIDIA GB200, era: ai, layer: equipment}
+  gpu_rubin: {label: NVIDIA Rubin, era: ai, layer: equipment}
+  gpu_generic: {label: AI servers and GPUs, era: ai, layer: equipment}
+  ai_operator: {label: GPU cloud or AI data-centre operator, era: ai, layer: company}
+  dc_shell: {label: Data-centre buildings, era: ai, layer: infrastructure}
+  power: {label: Power and grid connections, era: ai, layer: infrastructure}
+  dark_fiber: {label: Fiber and conduit, era: dotcom, layer: infrastructure}
+  fiber_electronics: {label: Transmission electronics, era: dotcom, layer: equipment}
+  lit_bandwidth: {label: Lit bandwidth, era: dotcom, layer: equipment}
+  fiber_network: {label: A carrier's network, era: dotcom, layer: company}
+metrics:
+  list_price:
+    definition: The price of new equipment at or near launch (per GPU, card or server), as stated.
+    units: [usd, usd_per_gpu, usd_per_server]
+  rental_price:
+    definition: The price to rent compute for an hour (or a stated period), as stated.
+    units: [usd_per_gpu_hour, usd_per_node_hour, usd_per_gpu_month]
+  resale_price:
+    definition: The price of used equipment on the secondary market.
+    units: [usd, usd_per_gpu, usd_per_server]
+  iru_price:
+    definition: The price of dark fiber under an indefeasible right of use (IRU) or similar long lease.
+    units: [usd, usd_per_route_mile, usd_per_fiber_mile, usd_per_fiber_km]
+  bandwidth_price:
+    definition: The price of lit capacity (wavelengths, leased circuits, IP transit).
+    units: [usd_per_mbps_month, usd_per_month, usd_per_year]
+  price_decline:
+    definition: A stated percentage fall in a price over a stated period.
+    units: [percent]
+  book_useful_life:
+    definition: The depreciation life a company states for a class of assets in its accounts.
+    units: [years]
+  capital_invested:
+    definition: What was spent building a network or fleet (capex, build cost), as stated.
+    units: [usd]
+  debt_at_bankruptcy:
+    definition: Debt or liabilities stated at a bankruptcy filing.
+    units: [usd]
+  distressed_sale_price:
+    definition: The price paid for a company's assets or equity in or after bankruptcy or a distressed sale.
+    units: [usd]
+  impairment:
+    definition: A write-down of assets' book value, as stated.
+    units: [usd]
+  utilization:
+    definition: The share of capacity in use (e.g. fiber lit, GPUs rented), as stated.
+    units: [percent]
+  loan_amount:
+    definition: The size of a loan or facility secured on, or raised to buy, the assets.
+    units: [usd]
+  advance_rate:
+    definition: A loan's size as a share of the collateral's value (loan-to-value, advance rate).
+    units: [percent]
+  contract_term:
+    definition: The length of a lease, power purchase agreement or capacity contract.
+    units: [years, months]
+  perf_multiple:
+    definition: A new generation's performance (or cost per unit of work) as a multiple of an older one, as claimed.
+    units: [multiple]
+  capacity_per_pair:
+    definition: The capacity one fiber pair carries with the transmission equipment of the time.
+    units: [gbps, tbps]
+  deal_value:
+    definition: The value of a sale, purchase or capacity deal for the assets, outside distress.
+    units: [usd]

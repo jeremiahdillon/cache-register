@@ -1,6 +1,6 @@
 # Plan: GPUs vs dark fiber, residual value after a bust (exploration)
 
-Status: DESIGN · 2026-10-14
+Status: SOURCE BUILT, SEEDING · 2026-10-14
 
 ## Question
 In the dot-com bust the carriers failed but the fiber stayed useful: later owners bought it cheaply
@@ -46,7 +46,7 @@ story is a loss on the first measure and a win on the second.
   `rental_price`, `resale_price`, `iru_price`, `bandwidth_price`, `book_useful_life`,
   `capital_invested`, `distressed_sale_price`, `utilization`, `perf_per_dollar`, `capacity_per_pair`),
   value, unit, dates, `source_kind` (primary/secondary), URL, quote. It is a new source folder under the
-  contract, with no core changes.
+  contract, with no core changes. (As built, the vocabulary is in `config/curated/asset_vocab.yaml`.)
 - **SEC EDGAR** (already ingested): current companies' 10-K text for useful lives; full-text search
   and filing indexes for dot-com carriers (pre-XBRL, so curated by hand rather than staged from facts).
 - **Public secondary figures** (press and research citing GPU rental prices, dark-fiber utilization in
@@ -78,7 +78,10 @@ Out of scope: paid or ToS-restricted price data (unless the author decides other
 forecast of an AI bust, a link reservation, promotion. Kept separate from the CoreWeave credit
 exploration (analyses never import each other); a figure both need goes into the curated source.
 
-## Open decisions for the author
-- A new source `curated_asset_values` vs widening `curated_disclosures` (recommended: new source,
-  above).
-- Whether `secondary` (press) rows may carry the headline of measure 1, or only primary rows.
+## Decisions (author, 2026-10-14)
+- A new curated source, `curated_asset_values` (built: `src/cachereg/sources/curated_asset_values/`,
+  mart `100_asset_values`). The shared rules of both curated datasets moved to `sources/_curated.py`.
+- Press may carry headlines, and sourcing should be broad: research notes, published indices and
+  archived pages are all welcome, marked `secondary`.
+- Values stay in the unit the source stated (each metric lists its allowed units); the analysis
+  converts and says how.
