@@ -24,7 +24,8 @@ daily yield of CoreWeave's highest-yielding senior note next to the daily close 
 ## Visual
 - `panels`: two side-by-side line charts on the same dates (14 April to 14 October 2026), each with its own
   axis: the 2031 notes' yield (left) and CRWV's daily close (right). Start, end and the stock's peak are
-  labelled.
+  labelled. `x_png` (16:9) has the panels side by side; `linkedin_png` (4:5) stacks them, yield on top, on one
+  date axis.
 
 ## Method
 - **Yield:** FINRA's end-of-day summary of TRACE, the yield at the price of each day's last reported trade

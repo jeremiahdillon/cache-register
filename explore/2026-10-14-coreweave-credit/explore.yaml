@@ -8,4 +8,4 @@ config:
   ticker: CRWV
   cusip: auto        # auto = the CoreWeave senior note with the highest yield on the latest bond date
 visuals:
-  - {name: panels, chart: panels, targets: [x_png]}
+  - {name: panels, chart: panels, targets: [x_png, linkedin_png]}
