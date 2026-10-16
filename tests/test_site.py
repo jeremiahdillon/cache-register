@@ -374,8 +374,8 @@ def test_receipt_page_text_comes_from_the_charts_and_the_blurb(tmp_path):
     about = re.search(r'<div class="about">(.*?)</div>', page).group(1)
     assert about.startswith("<h1>Title of worded</h1>")
     assert '<p class="blurb">What the chart measures.</p>' in about
-    assert re.findall(r"<h2>([^<]+)</h2>", about) == ["Share rose &amp; held.", "Second claim."]
-    assert '<p class="credits">Sources: OpenRouter; LiteLLM; Epoch AI</p>' in about  # each credit once
+    assert re.findall(r"<h2>([^<]+)</h2>", about) == ["Share rose &amp; held", "Second claim."]  # as drawn
+    assert '<p class="credits">Source: OpenRouter; LiteLLM; Epoch AI</p>' in about  # each credit once
     ld = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', page).group(1))
     assert ld["@type"] == "Article" and ld["headline"] == "Title of worded" and ld["dateModified"] == "2026-01-01"
     assert ld["description"] == "Share rose & held. Weekly share of tokens"
@@ -391,3 +391,36 @@ def test_receipt_page_without_manifest_texts_or_blurb_falls_back(tmp_path):
     assert "a Cache Register receipt, data as of 2026-01-01" in page  # the generic description
     ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', page, re.S).group(1)
     assert "</script>" not in ld and json.loads(ld)["headline"] == "</script><b>T</b>"
+
+
+def test_without_chart_texts_the_blurb_is_the_description(tmp_path):
+    make_receipt(tmp_path, "blurbed", "2026-01-01", FULL, blurb="What the chart  measures.")
+    out = tmp_path / "_site"
+    build_site(out, tmp_path)
+    page = (out / "blurbed" / "index.html").read_text(encoding="utf-8")
+    assert '<meta name="description" content="What the chart measures.">' in page  # whitespace collapsed
+    assert 'property="og:description" content="What the chart measures."' in page
+    ld = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', page).group(1))
+    assert ld["description"] == "What the chart measures."
+
+
+@pytest.mark.parametrize(
+    ("manifest", "blurb", "error"),
+    [
+        ("{not json", "", "not a render manifest"),
+        ("[1, 2]", "", "not a render manifest"),
+        ('{"visuals": [{"title": "x"}]}', "", "must map each visual"),
+        ('{"visuals": {"chart": "x"}}', "", "must map each visual"),
+        ('{"visuals": {"chart": {"title": 5}}}', "", "must map each visual"),
+        (None, "[a, b]", "blurb must be a line of text"),
+    ],
+)
+def test_malformed_manifest_or_blurb_stops_the_build(tmp_path, manifest, blurb, error):
+    make_receipt(tmp_path, "broken", "2026-01-01", FULL)
+    folder = tmp_path / "receipts" / "broken"
+    if manifest is not None:
+        (folder / "output" / "manifest.json").write_text(manifest)
+    if blurb:
+        (folder / "receipt.yaml").write_text((folder / "receipt.yaml").read_text() + f"blurb: {blurb}\n")
+    with pytest.raises(ValueError, match=error):
+        build_site(tmp_path / "_site", tmp_path)

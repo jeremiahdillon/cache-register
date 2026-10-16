@@ -61,16 +61,20 @@ SHARED_RENDER_INPUTS = (
 )
 
 
-UNHASHED_KEYS = ("as_of:", "blurb:")  # as_of changes the data, not the look (tracked separately); blurb is site text
+# as_of changes the data, not the look (tracked separately): its line alone is dropped. The blurb is site text:
+# its line and its block (indented or blank lines, up to the next top-level line) are dropped.
+UNHASHED_LINE, UNHASHED_BLOCK = "as_of:", "blurb:"
 
 
 def _look(text: str) -> str:
-    """A receipt.yaml / explore.yaml without its UNHASHED_KEYS (a key's indented continuation lines included)."""
+    """A receipt.yaml / explore.yaml without what does not change how its visuals look."""
     kept, skipping = [], False
     for line in text.splitlines():
-        if line.startswith(UNHASHED_KEYS):
+        if line.startswith(UNHASHED_LINE):
+            skipping = False
+        elif line.startswith(UNHASHED_BLOCK):
             skipping = True
-        elif not (skipping and line[:1] in (" ", "\t")):
+        elif not (skipping and (not line.strip() or line[:1] in (" ", "\t"))):
             skipping = False
             kept.append(line)
     return "\n".join(kept)

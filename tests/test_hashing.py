@@ -74,4 +74,9 @@ def test_inputs_hash_ignores_as_of_and_blurb_but_not_the_rest(tmp_path):
     base = hashed("title: T\nas_of: 2026-01-01\nvisuals: []\n")
     assert hashed("title: T\nas_of: 2026-02-01\nvisuals: []\n") == base
     assert hashed("title: T\nas_of: 2026-01-01\nblurb: >-\n  Two lines\n  of text.\nvisuals: []\n") == base
+    assert hashed("title: T\nas_of: 2026-01-01\nblurb: >-\n  One.\n\n  Two.\nvisuals: []\n") == base  # paragraphs
+    assert hashed("title: T\nas_of: 2026-01-01\nvisuals: []\nblurb: last key\n") == base
+    assert hashed("title: T\nas_of: 2026-01-01\nblurb: x\nvisuals: [a]\n") != base  # the next key still counts
+    # a blank line after as_of is kept, as before blurbs existed; only a blurb's block swallows blank lines
+    assert hashed("title: T\nas_of: 2026-01-01\n\nvisuals: []\n") != base
     assert hashed("title: U\nas_of: 2026-01-01\nvisuals: []\n") != base

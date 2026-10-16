@@ -185,6 +185,22 @@ def _slides(folder: Path, visuals: list[dict]) -> list[Slide]:
     ]
 
 
+def _visual_texts(manifest: Path) -> dict[str, dict]:
+    """The manifest's visual → title/subtitle/source; empty for a manifest from before render recorded them.
+    A manifest that is not what render writes is a bug, so it stops the build rather than going unseen."""
+    if not manifest.is_file():
+        return {}
+    try:
+        texts = json.loads(manifest.read_text(encoding="utf-8")).get("visuals") or {}
+    except (json.JSONDecodeError, AttributeError) as e:
+        raise ValueError(f"{manifest}: not a render manifest ({e})") from e
+    if not isinstance(texts, dict) or not all(
+        isinstance(t, dict) and all(isinstance(v, str) for v in t.values()) for t in texts.values()
+    ):
+        raise ValueError(f"{manifest}: `visuals` must map each visual to its title, subtitle and source")
+    return texts
+
+
 def collect_receipts(root: Path = REPO_ROOT) -> list[Receipt]:
     """Every receipt with rendered visuals, newest as_of first. Aliases never get pages or slides of their own."""
     receipts = []
@@ -194,11 +210,12 @@ def collect_receipts(root: Path = REPO_ROOT) -> list[Receipt]:
         cfg = yaml.safe_load(spec.read_text()) or {}
         slides = _slides(folder, cfg.get("visuals") or [])
         if slides:
-            manifest = folder / "output" / "manifest.json"
-            texts = json.loads(manifest.read_text()).get("visuals") or {} if manifest.is_file() else {}
+            blurb = cfg.get("blurb") or ""
+            if not isinstance(blurb, str):
+                raise ValueError(f"{spec}: blurb must be a line of text")
             as_of = date.fromisoformat(str(cfg["as_of"]))
-            blurb = " ".join(str(cfg.get("blurb") or "").split())
-            receipts.append(Receipt(folder.name, _title(folder), as_of, slides, blurb, texts))
+            texts = _visual_texts(folder / "output" / "manifest.json")
+            receipts.append(Receipt(folder.name, _title(folder), as_of, slides, " ".join(blurb.split()), texts))
     return sorted(receipts, key=lambda receipt: (-receipt.as_of.toordinal(), receipt.slug))
 
 
@@ -395,13 +412,12 @@ def _image_size(path: Path) -> tuple[int, int]:
 
 
 def _about_markup(receipt: Receipt) -> str:
-    """Below the charts: the title, the optional blurb, each chart's headline and subtitle and the credits, all
-    text already on the charts or in receipt.yaml, so crawlers and screen readers get the findings as words."""
+    """Below the charts: the title, the optional blurb, each chart's headline and subtitle as drawn and the
+    credits under the footer's own label, all text already on the charts or in receipt.yaml, so crawlers and
+    screen readers get the findings as words."""
     texts = [receipt.text(slide) for slide in receipt.slides]
     charts = "".join(
-        f"<li><h2>{_attr(_sentence(t['title']))}</h2>"
-        + (f"<p>{_attr(t['subtitle'])}</p>" if t.get("subtitle") else "")
-        + "</li>"
+        f"<li><h2>{_attr(t['title'])}</h2>" + (f"<p>{_attr(t['subtitle'])}</p>" if t.get("subtitle") else "") + "</li>"
         for t in texts
         if t.get("title")
     )
@@ -410,7 +426,7 @@ def _about_markup(receipt: Receipt) -> str:
         f'<div class="about"><h1>{_attr(receipt.title)}</h1>'
         + (f'<p class="blurb">{_attr(receipt.blurb)}</p>' if receipt.blurb else "")
         + (f'<ul class="charts">{charts}</ul>' if charts else "")
-        + (f'<p class="credits">Sources: {_attr("; ".join(credits))}</p>' if credits else "")
+        + (f'<p class="credits">Source: {_attr("; ".join(credits))}</p>' if credits else "")
         + "</div>"
     )
 
