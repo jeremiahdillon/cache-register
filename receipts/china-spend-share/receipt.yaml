@@ -1,6 +1,10 @@
 # Receipt: cacheregister.dev/china-spend-share (the folder name is the short link — never rename
 # without adding an alias in config/link-aliases.yaml).
 title: Chinese labs' share of OpenRouter spend
+blurb: >-   # site text below the charts (author-approved 2026-10-16); not hashed, no re-render needed
+  Estimated weekly spend on OpenRouter, split between Anthropic, OpenAI and Chinese labs, since the first full
+  week of 2025. Spend is estimated by pricing OpenRouter's public token rankings at list prices, so it ignores
+  discounts and caching.
 sources: [openrouter_rankings, litellm_prices]
 as_of: 2026-10-07
 promoted_from: explore/2026-10-07-china-spend-share

@@ -3,6 +3,10 @@
 # Design: docs/plans/2026-10-10-anthropic-share-by-source.md. No blog_html: Ramp's redistribution is unknown,
 # so nothing inlines its data.
 title: Anthropic's share of AI spend and tokens, by data source
+blurb: >-   # site text below the charts (author-approved 2026-10-16); not hashed, no re-render needed
+  Anthropic's share of spend and of tokens, as reported by Ramp, Vercel AI Gateway and OpenRouter. Each source
+  sees a different slice of the market, so their levels differ. The charts show how far apart they are, not
+  which source is right.
 sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings, litellm_prices]
 as_of: 2026-10-10
 promoted_from: explore/2026-10-10-anthropic-share-by-source

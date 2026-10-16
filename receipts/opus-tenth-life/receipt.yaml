@@ -1,6 +1,9 @@
 # Receipt: cacheregister.dev/opus-tenth-life (the folder name is the short link — never rename
 # without adding an alias in config/link-aliases.yaml).
 title: Opus tenth-life
+blurb: >-   # site text below the charts (author-approved 2026-10-16); not hashed, no re-render needed
+  Each line fixes capability at one Claude Opus model's Epoch Capabilities Index score, then tracks the lowest
+  list price of any later model that matched it. It shows how fast the same capability got cheaper.
 sources: [epoch_benchmarks, litellm_prices]
 as_of: 2026-10-09
 promoted_from: explore/2026-10-09-opus-isolines

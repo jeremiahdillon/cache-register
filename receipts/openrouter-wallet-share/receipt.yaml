@@ -1,6 +1,10 @@
 # Receipt: cacheregister.dev/openrouter-wallet-share (the folder name is the short link — never rename
 # without adding an alias in config/link-aliases.yaml).
 title: Who gets paid on OpenRouter?
+blurb: >-   # site text below the charts (author-approved 2026-10-16); not hashed, no re-render needed
+  Estimated weekly developer spend on OpenRouter's top 50 models, split by model maker, since the first full
+  week of 2025. Each day's tokens are priced at that day's list prices, so this is an estimate, not billed
+  revenue.
 sources: [openrouter_rankings, litellm_prices]
 as_of: 2026-10-02
 promoted_from: explore/2026-10-02-openrouter-wallet-share

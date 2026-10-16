@@ -3,6 +3,9 @@
 # FINRA and Yahoo data are redistribution-forbidden, so there is no blog_html (it would inline the data) and no
 # data.json; derived charts are credited (author's personal, non-commercial use).
 title: CoreWeave bond yield vs stock price
+blurb: >-   # site text below the charts (author-approved 2026-10-16); not hashed, no re-render needed
+  The daily yield on CoreWeave's highest-yielding senior note, from FINRA TRACE trade reports, next to the
+  daily close of CoreWeave's stock (CRWV) on the same dates, since April 2026.
 sources: [finra_trace, yahoo_prices]
 as_of: 2026-10-14
 promoted_from: explore/2026-10-14-coreweave-credit

@@ -1,6 +1,9 @@
 # Receipt: cacheregister.dev/open-middle (the folder name is the short link — never rename
 # without adding an alias in config/link-aliases.yaml).
 title: The open middle
+blurb: >-   # site text below the charts (author-approved 2026-10-16); not hashed, no re-render needed
+  OpenRouter's weekly tokens, with closed models split by lab and open-weight models split by size: small,
+  mid-size and flagship. Prompted by Reflection AI's Beam, an open-weight model entering the mid-size class.
 sources: [openrouter_rankings]
 as_of: 2026-10-05
 promoted_from: explore/2026-10-05-beam-class-share

@@ -1,6 +1,10 @@
 # Receipt: cacheregister.dev/china-token-share (the folder name is the short link — never rename
 # without adding an alias in config/link-aliases.yaml).
 title: Chinese labs' share of OpenRouter tokens
+blurb: >-   # site text below the charts (author-approved 2026-10-16); not hashed, no re-render needed
+  Weekly tokens served on OpenRouter, split between Anthropic, OpenAI and Chinese labs, since the first full
+  week of 2025. Chinese labs' models cost much less per token, so their share of tokens runs far higher than
+  their share of spend.
 sources: [openrouter_rankings]
 as_of: 2026-10-07
 promoted_from: explore/2026-10-07-china-token-share
