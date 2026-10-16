@@ -25,6 +25,8 @@ assets:
   fiber_electronics: {label: Transmission electronics, era: dotcom, layer: equipment}
   lit_bandwidth: {label: Lit bandwidth, era: dotcom, layer: equipment}
   fiber_network: {label: A carrier's network, era: dotcom, layer: company}
+  carrier_buildings: {label: Carrier buildings and land, era: dotcom, layer: infrastructure}
+  carrier_mixed: {label: Carrier construction in progress and other property, era: dotcom, layer: mixed}
 metrics:
   list_price:
     definition: The price of new equipment at or near launch (per GPU, card or server), as stated.
@@ -55,7 +57,7 @@ metrics:
     units: [years]
   capital_invested:
     definition: What was spent building a network or fleet (capex, build cost), as stated.
-    units: [usd]
+    units: [usd, usd_millions]
   debt_at_bankruptcy:
     definition: Debt or liabilities stated at a bankruptcy filing.
     units: [usd]
@@ -97,7 +99,7 @@ metrics:
     units: [gbps, tbps]
   ppe_gross:
     definition: Gross property and equipment of one class on a company's balance sheet (before depreciation), as in its notes.
-    units: [usd, usd_millions]
+    units: [usd, usd_thousands, usd_millions]
   ppe_net:
     definition: Net property and equipment of one class (after accumulated depreciation), as in its notes.
     units: [usd, usd_millions]
