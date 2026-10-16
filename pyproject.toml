@@ -22,7 +22,7 @@ cachereg = "cachereg.cli:app"
 [dependency-groups]
 dev = [
     "pytest>=9.1",
-    "ruff>=0.16",
+    "ruff>=0.17.0",
 ]
 # Motion-renderer spike only (docs/PLAN.md §6.3, candidate B). Uses the system Chrome.
 spike = [
