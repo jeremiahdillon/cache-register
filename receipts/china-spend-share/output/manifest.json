@@ -4,8 +4,8 @@
   "data_hash": "0684ced55d9d36ce8bdba723d3fae380d678bf9b82b9db5fb0939edfcdf8bc87",
   "folder": "receipts/china-spend-share",
   "git_dirty": false,
-  "git_sha": "25c8e894d5957af39fdbf7645c7e15d5f6637be7",
-  "inputs_hash": "c16e7414af388834be3072fd0906c9167023c93983cba7556af377c8843e2f94",
+  "git_sha": "20e5ee34b24d71e4da9671d5b1050e9c04bfab7c",
+  "inputs_hash": "1b8d14dfe223ca912d14e192f548aef07b1a6e61e37710039e5f334a57e4b348",
   "kind": "receipt",
   "outputs": {
     "data.json": "a727150bee627c50af2305d7caefa818407054a2cab98508500e2afa4e2e59e9",
@@ -46,5 +46,17 @@
     }
   },
   "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "visuals": {
+    "push": {
+      "source": "OpenRouter (openrouter.ai/rankings), as of 2026-10-07; LiteLLM model prices (github.com/BerriAI/litellm), MIT",
+      "subtitle": "Share of estimated weekly spend on OpenRouter among Anthropic, OpenAI and Chinese labs, January 2025 to October 4, 2026. Week of September 28, 2026: OpenAI 35%, Chinese labs 33%, Anthropic 32%.",
+      "title": "Chinese labs grew from 1% to 33% of spend on OpenRouter, a three-way tie with Anthropic and OpenAI."
+    },
+    "push-bars": {
+      "source": "OpenRouter (openrouter.ai/rankings), as of 2026-10-07; LiteLLM model prices (github.com/BerriAI/litellm), MIT",
+      "subtitle": "Share of estimated weekly spend on OpenRouter among Anthropic, OpenAI and Chinese labs, January 2025 to October 4, 2026. Week of September 28, 2026: OpenAI 35%, Chinese labs 33%, Anthropic 32%.",
+      "title": "Chinese labs grew from 1% to 33% of spend on OpenRouter, a three-way tie with Anthropic and OpenAI."
+    }
+  },
   "withheld": {}
 }
