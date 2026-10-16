@@ -4,8 +4,8 @@
   "data_hash": "6f05c22d878656627e61697b1d4b27ef63987501566b8f6faaf7d24f14528b3f",
   "folder": "receipts/open-middle",
   "git_dirty": false,
-  "git_sha": "a56b658b56827ddcf300756521d0076019c32bfe",
-  "inputs_hash": "e8ab896de7ed5914cb392d729cce561ec43b4c43e5ba552e7588a518f1b2fc92",
+  "git_sha": "d4c62b65d2da244c2409d00ec65bda05201b0eee",
+  "inputs_hash": "86ac2570e003dfd776b05aea16ceb2e0279ee1aeaefcd163e0e6f32ed5ddabcd",
   "kind": "receipt",
   "outputs": {
     "data.json": "1da15f5b415461d279bc89bbde245834fb47de3f1c08764194a51b5300dccb31",
@@ -31,5 +31,12 @@
     }
   },
   "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "visuals": {
+    "push": {
+      "source": "OpenRouter (openrouter.ai/rankings), as of 2026-10-05",
+      "subtitle": "Tokens per week by model type. Mid-size open models accounted for 74% of the growth in tokens from Mar 30 to Oct 4, 2026. Mid-size open = open-weight models with 100B\u20131T total parameters (e.g. DeepSeek V4 Flash, GLM-5.3 Flash, MiniMax M3).",
+      "title": "Mid-size open-weight models accounted for 3\u00a0out\u00a0of\u00a0every\u00a04 new tokens in the past 6 months"
+    }
+  },
   "withheld": {}
 }
