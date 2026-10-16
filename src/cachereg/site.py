@@ -21,7 +21,7 @@ import html
 import json
 import re
 import shutil
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 from string import Template
@@ -127,6 +127,23 @@ class Receipt:
     title: str
     as_of: date
     slides: list[Slide]
+    blurb: str = ""  # receipt.yaml's optional line of explainer text, shown below the charts
+    texts: dict[str, dict] = field(default_factory=dict)  # visual → its title, subtitle and credits (manifest)
+
+    def text(self, slide: Slide) -> dict:
+        """A slide's headline, subtitle and credits as rendered on the chart; empty for an older manifest."""
+        return self.texts.get(slide.name) or {}
+
+    def alt(self, slide: Slide) -> str:
+        """The chart's own headline and subtitle, else the receipt's title."""
+        text = self.text(slide)
+        return " ".join(t for t in (_sentence(text.get("title", "")), text.get("subtitle", "")) if t) or self.title
+
+    @property
+    def summary(self) -> str:
+        """The page description: the first chart's headline and subtitle, else the blurb."""
+        alt = self.alt(self.slides[0])
+        return alt if alt != self.title else self.blurb
 
     @property
     def hero(self) -> Slide:
@@ -177,8 +194,18 @@ def collect_receipts(root: Path = REPO_ROOT) -> list[Receipt]:
         cfg = yaml.safe_load(spec.read_text()) or {}
         slides = _slides(folder, cfg.get("visuals") or [])
         if slides:
-            receipts.append(Receipt(folder.name, _title(folder), date.fromisoformat(str(cfg["as_of"])), slides))
+            manifest = folder / "output" / "manifest.json"
+            texts = json.loads(manifest.read_text()).get("visuals") or {} if manifest.is_file() else {}
+            as_of = date.fromisoformat(str(cfg["as_of"]))
+            blurb = " ".join(str(cfg.get("blurb") or "").split())
+            receipts.append(Receipt(folder.name, _title(folder), as_of, slides, blurb, texts))
     return sorted(receipts, key=lambda receipt: (-receipt.as_of.toordinal(), receipt.slug))
+
+
+def _sentence(text: str) -> str:
+    """A headline as a sentence: chart titles carry no closing stop."""
+    text = text.strip()
+    return text if not text or text[-1] in ".!?" else f"{text}."
 
 
 def _attr(text: object) -> str:
@@ -210,7 +237,7 @@ def _slide_markup(receipt: Receipt, slide: Slide, label: str, meta: str, slide_i
     return (
         f'<section class="slide" id="{slide_id}"{borrowed} aria-label="{_attr(label)}"><div class="media">'
         f'<picture><source media="(orientation: portrait)" srcset="{still["portrait"]}">'
-        f'<img src="{still["landscape"]}" alt="{_attr(receipt.title)}" loading="lazy" decoding="async"></picture>'
+        f'<img src="{still["landscape"]}" alt="{_attr(receipt.alt(slide))}" loading="lazy" decoding="async"></picture>'
         f'{video}</div><div class="meta">{meta}</div><a class="more" href="#{next_id}">More</a></section>'
     )
 
@@ -367,24 +394,72 @@ def _image_size(path: Path) -> tuple[int, int]:
     return target.width, target.height
 
 
+def _about_markup(receipt: Receipt) -> str:
+    """Below the charts: the title, the optional blurb, each chart's headline and subtitle and the credits, all
+    text already on the charts or in receipt.yaml, so crawlers and screen readers get the findings as words."""
+    texts = [receipt.text(slide) for slide in receipt.slides]
+    charts = "".join(
+        f"<li><h2>{_attr(_sentence(t['title']))}</h2>"
+        + (f"<p>{_attr(t['subtitle'])}</p>" if t.get("subtitle") else "")
+        + "</li>"
+        for t in texts
+        if t.get("title")
+    )
+    credits = list(dict.fromkeys(c for t in texts for c in (t.get("source") or "").split("; ") if c))
+    return (
+        f'<div class="about"><h1>{_attr(receipt.title)}</h1>'
+        + (f'<p class="blurb">{_attr(receipt.blurb)}</p>' if receipt.blurb else "")
+        + (f'<ul class="charts">{charts}</ul>' if charts else "")
+        + (f'<p class="credits">Sources: {_attr("; ".join(credits))}</p>' if credits else "")
+        + "</div>"
+    )
+
+
+def _json_ld(receipt: Receipt, url: str, image: str, description: str) -> str:
+    """Structured data for search: the page as an Article (a data block, so the CSP's script-src does not apply)."""
+    b = brand()
+    data = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": receipt.title,
+        "description": description,
+        "url": url,
+        "image": image,
+        "dateModified": receipt.as_of.isoformat(),
+        "author": {"@type": "Person", "url": b["author_url"]},
+        "publisher": {"@type": "Organization", "name": b["name"], "url": b["site_url"].rstrip("/") + "/"},
+        "isAccessibleForFree": True,
+    }
+    body = json.dumps(data, ensure_ascii=False).replace("<", "\\u003c")  # no "</script>" inside the block
+    return f'<script type="application/ld+json">{body}</script>'
+
+
 def _receipt_page(receipt: Receipt) -> str:
     """cacheregister.dev/<topic>: the receipt's charts in a snap scroll, with its folder on GitHub one click away."""
     b = brand()
     site, card = b["site_url"].rstrip("/"), receipt.card
     card_width, card_height = _image_size(card)
     as_of = receipt.as_of.isoformat()
+    canonical, card_url = f"{site}/{receipt.slug}/", f"{site}{_media_url(receipt.slug, card)}"
+    source_url = f"{b['repo_url'].rstrip('/')}/tree/main/receipts/{receipt.slug}"
+    description = receipt.summary or f"{receipt.title}: a {b['name']} receipt, data as of {as_of}. {b['tagline']}."
     return _template(
         "receipt.html",
-        raw={"slides": _receipt_slides(receipt), "github_icon": _github_icon()},
+        raw={
+            "slides": _receipt_slides(receipt),
+            "github_icon": _github_icon(),
+            "about": _about_markup(receipt),
+            "json_ld": _json_ld(receipt, canonical, card_url, description),
+        },
         page_title=f"{receipt.title} · {b['name']}",
-        page_description=f"{receipt.title}: a {b['name']} receipt, data as of {as_of}. {b['tagline']}.",
+        page_description=description,
         title=receipt.title,
         as_of=as_of,
-        canonical=f"{site}/{receipt.slug}/",
-        card_url=f"{site}{_media_url(receipt.slug, card)}",
+        canonical=canonical,
+        card_url=card_url,
         card_width=str(card_width),
         card_height=str(card_height),
-        source_url=f"{b['repo_url'].rstrip('/')}/tree/main/receipts/{receipt.slug}",
+        source_url=source_url,
         **_page_fields(),
     )
 
@@ -410,12 +485,16 @@ def _write_assets(out: Path) -> None:
 def _crawler_files(out: Path, receipts: list[Receipt]) -> None:
     """Open to every crawler, search and AI alike; the sitemap lists the real pages: the root and each receipt's."""
     site = html.escape(brand()["site_url"].rstrip("/"))
-    urls = [f"{site}/", *(f"{site}/{html.escape(r.slug)}/" for r in receipts)]
+    newest = max((r.as_of for r in receipts), default=None)  # the root's reel changes with its newest receipt
+    urls = [(f"{site}/", newest), *((f"{site}/{html.escape(r.slug)}/", r.as_of) for r in receipts)]
     (out / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {site}/sitemap.xml\n")
     (out / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        + "".join(f"  <url><loc>{url}</loc></url>\n" for url in urls)
+        + "".join(
+            f"  <url><loc>{url}</loc>" + (f"<lastmod>{day.isoformat()}</lastmod>" if day else "") + "</url>\n"
+            for url, day in urls
+        )
         + "</urlset>\n"
     )
 

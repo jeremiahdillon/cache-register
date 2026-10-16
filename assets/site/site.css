@@ -118,6 +118,15 @@ html:has(body.page){scroll-padding-top:48px}
   text-transform:uppercase;color:var(--ink2);text-decoration:none}
 .end .back:hover,.end .back:focus-visible{color:var(--signal);outline:none}
 @media (max-width:560px){.bar .home{display:none}.bar{gap:12px}}
+/* Below the charts on a receipt page: its title, blurb, each chart's headline and subtitle and the credits,
+   as quiet text in the closing screen (words for crawlers and screen readers; the charts stay the page). */
+.end .about{max-width:40em;margin:auto 16px 32px;color:var(--ink2);text-wrap:pretty}
+.about h1{margin:0 0 12px;font:700 clamp(22px,3vw,30px)/1.2 'Space Grotesk',system-ui,sans-serif;color:var(--ink)}
+.about .blurb{margin:0 0 20px}
+.about .charts{list-style:none;margin:0 0 20px;padding:0;display:grid;gap:12px}
+.about h2{margin:0;font:400 16px/1.4 Inter,system-ui,sans-serif;color:var(--ink)}
+.about .charts p{margin:2px 0 0;font-size:14px}
+.about .credits{margin:0 0 8px;font:12px/1.6 'JetBrains Mono',ui-monospace,monospace;color:var(--muted)}
 /* Static mode (reduced motion or paused): a chart that exists only as video shows its own video, paused,
    with native controls, rather than the borrowed still of another chart. */
 .static .slide[data-still=borrowed] video:not(.failed){opacity:1}

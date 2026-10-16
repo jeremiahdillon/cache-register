@@ -352,7 +352,9 @@ output/          # committed: <visual>.<target>.<ext>, manifest.json (+ data.jso
    link), `config`, and `visuals`. The visuals' order is the receipt page's slide order, one slide per
    `chart`: give a chart's still and its motion version the same `chart` so they share a slide. The
    first chart with a still is the page's share card; the first chart with motion stands for the
-   receipt in the root reel.
+   receipt in the root reel. Optional `blurb:`, a line or two of plain explainer text the author approves
+   (what the charts measure, no figures, so it does not go stale and never refers to another receipt),
+   shown below the charts; it is not a render input.
 4. **Render**: commit steps 2–3 first (the manifest records the commit it rendered from and whether the
    tree was dirty), then `cachereg render receipts/<topic>` writes the committed `output/`
    (licence-gated, §7). The site shows only what is rendered there; until then the link redirects to
@@ -382,6 +384,10 @@ reel, one slide per chart in `receipt.yaml` order (a chart's still and video sha
 chart falls back on the receipt's first still), from its committed `output/`, under a bar with
 "Source on GitHub" (the receipt folder) that a closing screen repeats; the page's share card is its
 first chart's landscape still. A receipt with nothing rendered redirects to its folder on GitHub.
+Search text (decided 2026-10-16, no new copy to review): the closing screen carries the title as `<h1>`, the
+`blurb` and each chart's headline and subtitle with its credits, as `cachereg render` records them in the
+manifest (`visuals`); the chart's headline and subtitle are also its alt text and the page's meta / Open Graph
+description, and the page has Article JSON-LD and a `lastmod` (its `as_of`) in the sitemap.
 Renamed/retired topics stay alive via `config/link-aliases.yaml` (redirecting to the page). An exploration may
 reserve its future topic (`link:` in `explore.yaml`, decided 2026-10-10): its visuals carry the short
 link and the site redirects it to the exploration until a receipt of that name with `promoted_from`

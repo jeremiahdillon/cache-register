@@ -14,13 +14,24 @@ MIXED = {"push": VIDEOS, "stack": STILLS, "lines": STILLS, "lines-motion": VIDEO
 EXT = {"png": "png", "video": "mp4"}
 
 
-def make_receipt(root: Path, topic: str, as_of: str | None = None, visuals: dict | None = None, title: str = ""):
-    """A receipt folder; `visuals` maps visual name → targets, each written as a placeholder output file."""
+def make_receipt(
+    root: Path,
+    topic: str,
+    as_of: str | None = None,
+    visuals: dict | None = None,
+    title: str = "",
+    blurb: str = "",
+    texts: dict | None = None,
+):
+    """A receipt folder; `visuals` maps visual name → targets, each written as a placeholder output file;
+    `texts` is the manifest's visual → title/subtitle/source, as `cachereg render` writes it."""
     d = root / "receipts" / topic
     d.mkdir(parents=True)
     lines = [f"title: {json.dumps(title or f'Title of {topic}')}"]
     if as_of:
         lines.append(f"as_of: {as_of}")
+    if blurb:
+        lines.append(f"blurb: {json.dumps(blurb)}")
     if visuals:
         lines.append("visuals:")
         (d / "output").mkdir()
@@ -29,6 +40,8 @@ def make_receipt(root: Path, topic: str, as_of: str | None = None, visuals: dict
             lines.append(f"  - {{name: {name}, chart: {chart}, targets: [{', '.join(targets)}]}}")
             for target in targets:
                 (d / "output" / f"{name}.{target}.{EXT[target.split('_')[-1]]}").write_bytes(b"synthetic")
+    if texts is not None:
+        (d / "output" / "manifest.json").write_text(json.dumps({"visuals": texts}))
     (d / "receipt.yaml").write_text("\n".join(lines) + "\n")
 
 
@@ -286,7 +299,8 @@ def test_short_links_lead_to_receipt_pages(tmp_path):
         assert 'http-equiv="refresh"' in redirect and f"/tree/main/{folder}" in redirect
 
     sitemap = (out / "sitemap.xml").read_text()
-    assert f"<loc>{site}/mixed/</loc>" in sitemap
+    assert f"<loc>{site}/</loc><lastmod>2026-01-01</lastmod>" in sitemap
+    assert f"<loc>{site}/mixed/</loc><lastmod>2026-01-01</lastmod>" in sitemap
     assert "unrendered" not in sitemap and "old-mixed" not in sitemap and "an-idea" not in sitemap
 
 
@@ -340,3 +354,40 @@ def test_rerender_reaches_the_root_reel_and_the_receipt_page(tmp_path):
     after = urls()
     assert all(len(found) == 1 for found in after) and before[0] != after[0] and after[0] == after[1]
     assert (out / "media" / "topic" / "chart.x_png.png").read_bytes() == b"re-rendered"
+
+
+def test_receipt_page_text_comes_from_the_charts_and_the_blurb(tmp_path):
+    texts = {
+        "chart": {"title": "Share rose & held", "subtitle": "Weekly share of tokens", "source": "OpenRouter; LiteLLM"},
+        "other": {"title": "Second claim.", "subtitle": "", "source": "LiteLLM; Epoch AI"},
+    }
+    visuals = {"chart": STILLS, "other": STILLS}
+    make_receipt(tmp_path, "worded", "2026-01-01", visuals, blurb="What the chart measures.", texts=texts)
+    out = tmp_path / "_site"
+    build_site(out, tmp_path)
+    page = (out / "worded" / "index.html").read_text(encoding="utf-8")
+    assert "$" not in page
+    described = "Share rose &amp; held. Weekly share of tokens"  # the first chart's headline and subtitle
+    assert f'<meta name="description" content="{described}">' in page
+    assert f'property="og:description" content="{described}"' in page
+    assert f'alt="{described}"' in page and 'alt="Second claim."' in page
+    about = re.search(r'<div class="about">(.*?)</div>', page).group(1)
+    assert about.startswith("<h1>Title of worded</h1>")
+    assert '<p class="blurb">What the chart measures.</p>' in about
+    assert re.findall(r"<h2>([^<]+)</h2>", about) == ["Share rose &amp; held.", "Second claim."]
+    assert '<p class="credits">Sources: OpenRouter; LiteLLM; Epoch AI</p>' in about  # each credit once
+    ld = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', page).group(1))
+    assert ld["@type"] == "Article" and ld["headline"] == "Title of worded" and ld["dateModified"] == "2026-01-01"
+    assert ld["description"] == "Share rose & held. Weekly share of tokens"
+
+
+def test_receipt_page_without_manifest_texts_or_blurb_falls_back(tmp_path):
+    make_receipt(tmp_path, "plain", "2026-01-01", FULL, title="</script><b>T</b>")
+    out = tmp_path / "_site"
+    build_site(out, tmp_path)
+    page = (out / "plain" / "index.html").read_text(encoding="utf-8")
+    assert 'alt="&lt;/script&gt;&lt;b&gt;T&lt;/b&gt;"' in page and 'class="blurb"' not in page
+    assert 'class="charts"' not in page and 'class="credits"' not in page
+    assert "a Cache Register receipt, data as of 2026-01-01" in page  # the generic description
+    ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', page, re.S).group(1)
+    assert "</script>" not in ld and json.loads(ld)["headline"] == "</script><b>T</b>"

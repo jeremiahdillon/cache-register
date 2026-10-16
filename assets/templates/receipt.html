@@ -20,6 +20,7 @@
 <meta property="og:image:height" content="$card_height">
 <meta property="og:image:alt" content="$title">
 <meta name="twitter:card" content="summary_large_image">
+$json_ld
 <link rel="stylesheet" href="/assets/site.css">
 <style>
 @font-face{font-family:'Space Grotesk';font-weight:700;font-display:swap;src:url(/assets/fonts/$font_display) format('truetype')}
@@ -36,7 +37,7 @@
 $slides
 </div>
 <div class="end" id="end">
-  <p class="note">$description</p>
+  $about
   <a class="cta" href="$source_url">$github_icon Source on GitHub</a>
   <a class="back" href="/">← All receipts</a>
   <footer>
