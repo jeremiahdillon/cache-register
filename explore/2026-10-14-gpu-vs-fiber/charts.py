@@ -491,3 +491,83 @@ def buyers(story: Story, width, height, font_scale: float = 1.0, interactive: bo
     )
     chart = alt.layer(bars, lab).properties(width=width, height=height)
     return chart.configure(**vl_config(fs))
+
+
+# --- glass -------------------------------------------------------------------------------------
+
+BUCKETS = {
+    "long": "Land and buildings (long-lived)",
+    "mixed": "Mixed or not yet in service",
+    "short": "Servers and network gear (short-lived)",
+}
+
+
+def glass(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
+    """100%-stacked bars of gross property and equipment per company; the long-lived share in the accent."""
+    fs = font_scale
+    width, height = _size(width, height)
+    g = story.frames["glass"]
+    long_share = {c: s for c, b, s in g.select("company", "bucket", "share").iter_rows() if b == "long"}
+    order = sorted(long_share, key=long_share.get, reverse=True)
+    stack = ["long", "mixed", "short"]
+    d = (
+        g.with_columns(
+            what=pl.col("bucket").replace_strict(BUCKETS, return_dtype=pl.String),
+            k=pl.col("bucket").replace_strict({b: i for i, b in enumerate(stack)}, return_dtype=pl.Int64),
+            pct=pl.col("share").map_elements(lambda v: f"{v:.0%}", return_dtype=pl.String),
+            total_label=(pl.col("total") / 1e9).map_elements(lambda v: f"${v:,.0f}bn", return_dtype=pl.String),
+            asof=pl.col("period_end").cast(pl.String),
+        )
+        .sort("company", "k")
+        .with_columns(x1=pl.col("share").cum_sum().over("company"))
+        .with_columns(x0=pl.col("x1") - pl.col("share"), xm=pl.col("x1") - pl.col("share") / 2)
+    )
+    ink = {"long": color("accent"), "mixed": "#3A3F4B", "short": GREYS[0]}
+    whats = [BUCKETS[b] for b in stack]
+    clr = alt.Color(
+        "what:N",
+        scale=alt.Scale(domain=whats, range=[ink[b] for b in stack]),
+        legend=alt.Legend(
+            title=None,
+            orient="top",
+            direction="horizontal",
+            labelLimit=600,
+            labelFontSize=(AXIS_PX + 1) * fs,
+            symbolType="square",
+            symbolSize=180 * fs**2,
+        ),
+    )
+    label_px = 150 * fs
+    total_px = 110 * fs
+    x_scale = alt.Scale(domain=[0, 1])
+    y = alt.Y(
+        "company:N",
+        sort=order,
+        title=None,
+        axis=alt.Axis(labelFontSize=(AXIS_PX + 2) * fs, labelFont=brand()["fonts"]["body"], grid=False),
+    )
+    rows = d.select("company", "what", "bucket", "x0", "x1", "xm", "pct", "share", "total_label", "asof", "lines")
+    base = alt.Chart(alt.Data(values=rows.to_dicts())).encode(y=y)
+    bar_h = min(height / len(order) * 0.62, 44 * fs)
+    bars = base.mark_bar(height=bar_h, stroke=color("canvas"), strokeWidth=2).encode(
+        x=alt.X("x0:Q", scale=x_scale, axis=None), x2="x1:Q", color=clr
+    )
+    if interactive:
+        bars = bars.encode(
+            tooltip=["company:N", "what:N", "pct:N", alt.Tooltip("asof:N", title="Balance sheet"), "lines:N"]
+        )
+    big = "datum.share >= 0.07"
+    on_lime = base.transform_filter(f"{big} && datum.bucket == 'long'").mark_text(
+        **_text(fs, LABEL_PX, color=color("canvas"), fontWeight="bold")
+    )
+    on_grey = base.transform_filter(f"{big} && datum.bucket != 'long'").mark_text(
+        **_text(fs, LABEL_PX, color=color("text"))
+    )
+    pcts = [m.encode(x=alt.X("xm:Q", scale=x_scale), text="pct:N") for m in (on_lime, on_grey)]
+    totals = (
+        alt.Chart(alt.Data(values=d.unique("company").select("company", "total_label").to_dicts()))
+        .mark_text(align="left", dx=12 * fs, **_text(fs, LABEL_PX - 1, color=color("text_secondary")))
+        .encode(y=y, x=alt.datum(1.0), text="total_label:N")
+    )
+    chart = alt.layer(bars, *pcts, totals).properties(width=width - label_px - total_px, height=height)
+    return chart.configure(**vl_config(fs))

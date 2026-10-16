@@ -10,13 +10,13 @@ how long each is assumed to last, what happens to its price, what bankrupt owner
 could buy the assets now.
 
 ## Findings (curated_asset_values to 2026-10-16; SEC filings to 2026-10-13)
-Six visuals, in story order.
-- **lives: GPUs look like the electronics on the fiber, not the glass.** The AI servers of Microsoft,
-  Alphabet, Amazon, Meta, Oracle, CoreWeave and Nebius are written off over 2–6 years (most say 6;
-  Amazon cut a subset from 6 to 5 for 2025, citing the pace of AI). The 2000–01 carriers wrote off
-  their network electronics over 2–14 years and their fiber, conduit and rights-of-way over 7–57
-  (typically 20–25). The long-lived AI assets are the buildings (5–60 years, mostly 25–40) and the
-  power contracts (Microsoft's and Meta's nuclear PPAs: 20 years each).
+Seven visuals, in story order.
+- **years: a GPU gets 6 years on the books; dot-com fiber got 25, a data centre gets 39.** One square
+  per year: the median across companies of the longest life each states. AI servers (2–6 years at
+  Microsoft, Alphabet, Amazon, Meta, Oracle, CoreWeave and Nebius; Amazon cut a subset from 6 to 5 for
+  2025, citing the pace of AI) sit with the 2000–01 carriers' network electronics (2–14, median 10), not
+  their fiber and conduit (7–57, median 25). Buildings (5–60, median 39) and nuclear power contracts (20)
+  are the long-lived AI assets.
 - **book-life: six years on the books, three newer generations.** From NVIDIA's announcement, a
   six-year book life (the servers' life at Microsoft, Alphabet, Oracle and CoreWeave, and the GPU
   collateral's in CoreWeave's DDTL 2.0 loan) took the A100 to May 2026. In that time NVIDIA announced
@@ -34,6 +34,15 @@ Six visuals, in story order.
   was bought whole by Level 3 for about $3bn in 2011. Velocita's 14,000-mile network went to AT&T for
   $37m against $827m of debt. Williams Communications owed $7.15bn and was bought for $680m in 2005. No
   GPU fleet has been sold out of bankruptcy as of this dataset.
+- **glass: CoreWeave owns almost no glass.** Of gross property and equipment on each latest 10-K, land
+  and buildings are 49% at Microsoft ($210bn of $432bn), 29% at Amazon and Meta, 18% at Oracle, 14% at
+  Alphabet (understated: its data centres sit in a mixed line) and 8% at CoreWeave ($2.8bn of $34bn,
+  fit-out of leased buildings). Servers and network gear are 62% at CoreWeave and 50% at Microsoft (44% a
+  year earlier). Oracle says its construction in progress is mostly servers and networking awaiting
+  deployment. In a bust, a neocloud's assets are mostly GPUs; the long-lived buildings belong to its
+  landlords. Alphabet says about 60% of its technical-infrastructure spending goes to servers; Microsoft's
+  CFO has put the short-lived share of its spending at "roughly two thirds" (stated in words, not in the
+  dataset).
 - **buyers: the likely buyers have the cash.** On their latest balance sheets (May–July 2026),
   Alphabet, Amazon, Meta, Microsoft and NVIDIA hold $589bn in cash and short-term investments
   (Alphabet $242bn). Oracle owes $130bn against $32bn (4×) and CoreWeave $36bn against $6bn (6×), before
@@ -49,7 +58,12 @@ Six visuals, in story order.
   Only quotes from one source are joined into a line, except the H100 market line, which joins Latent
   Space's 2023–24 quotes to Silicon Data's neocloud H100 index. Lambda's 8-GPU instance prices are
   divided by 8 to get a per-GPU price. A quote covering a period is placed at the period's midpoint.
-- **Lives:** a company's stated range (low and high rows of one filing) is one bar; a single figure is a dot.
+- **Years:** per group, the median across companies of the longest life each states (rounded to whole
+  squares); the stated ranges are in the HTML tooltips.
+- **Glass:** gross property and equipment by class from each company's latest 10-K note (both columns
+  are in the dataset), in three buckets: servers and network equipment (short-lived); land, buildings
+  and leasehold improvements (long-lived); construction in progress and lines that mix kinds or hold
+  other equipment (mixed). Gross, so fully depreciated assets still in use count.
 - **Recovery:** dollars as stated, at the date each figure refers to.
 - **Book life:** each generation from the date of the cited NVIDIA release that announced it, plus six years.
   Later generations are counted only when already announced (no roadmaps).

@@ -182,6 +182,34 @@ def book_life(con, launches: list[dict], years_on_books: int, life_ids: list[str
     return pl.DataFrame(out)
 
 
+def glass(con, companies: list[str], buckets: dict[str, str]) -> pl.DataFrame:
+    """Per company and bucket (short / long / mixed): gross PP&E at the latest balance-sheet date in the
+    curated 10-K rows, as a share of the company's gross PP&E (incl. construction in progress)."""
+    g = query(
+        con,
+        """SELECT entity AS company, asset, value, unit, period_end, scope, id FROM asset_values
+           WHERE metric = 'ppe_gross' AND list_contains(?, entity)
+           QUALIFY period_end = max(period_end) OVER (PARTITION BY entity)""",
+        [companies],
+    )
+    if set(g["unit"]) != {"usd_millions"}:
+        raise ValueError(f"glass: expected usd_millions, got {sorted(set(g['unit']))}")
+    unknown = set(g["asset"]) - set(buckets)
+    if unknown:
+        raise ValueError(f"glass: no bucket for assets {sorted(unknown)}")
+    out = (
+        g.with_columns(bucket=pl.col("asset").replace_strict(buckets, return_dtype=pl.String))
+        .group_by("company", "bucket", "period_end")
+        .agg(usd=pl.col("value").sum() * 1e6, lines=pl.col("scope").str.join("; "))
+        .with_columns(total=pl.col("usd").sum().over("company"))
+        .with_columns(share=pl.col("usd") / pl.col("total"))
+    )
+    missing = set(companies) - set(out["company"])
+    if missing:
+        raise ValueError(f"glass: no PP&E rows for {sorted(missing)}")
+    return out
+
+
 def buyers(con, tickers: list[str]) -> pl.DataFrame:
     return query(
         con,
@@ -201,6 +229,15 @@ def build(con, as_of: date, cfg: dict) -> Story:
     glut = prices.filter(pl.col("series").is_in(cfg["glut_series"]) & (pl.col("years") <= cfg["glut_years"]))
     lit = rows(con, [cfg["glut_utilization_id"]]).to_dicts()[0]
     who = buyers(con, cfg["buyers"])
+    gl = glass(con, cfg["glass_companies"], cfg["glass_buckets"])
+
+    def share(company: str, bucket: str) -> float:
+        v = gl.filter((pl.col("company") == company) & (pl.col("bucket") == bucket))["share"]
+        return v[0] if v.len() else 0.0
+
+    long_ = {c: share(c, "long") for c in cfg["glass_companies"]}
+    least = min(long_, key=long_.get)
+    most = max(long_, key=long_.get)
 
     ai_servers = life.filter(pl.col("group").str.starts_with("AI servers"))
     electronics = life.filter(pl.col("group").str.starts_with("Dot-com network electronics"))
@@ -294,6 +331,21 @@ def build(con, as_of: date, cfg: dict) -> Story:
                 "in bankruptcy."
             ),
         },
+        "glass": {
+            "title": (
+                f"{least} owns almost no glass: {long_[least]:.0%} of its property is buildings and land, "
+                f"against {long_[most]:.0%} at {most}"
+            ),
+            "subtitle": (
+                "Gross property and equipment on each company's latest 10-K: short-lived servers and network "
+                "gear, long-lived land and buildings, and lines that mix them or are not yet in service. "
+                f"{least} rents its data centres; the buildings belong to its landlords."
+            ),
+            "notes": [
+                "Alphabet reports servers and data centres as one line (technical infrastructure, in 'mixed'), "
+                "so its long-lived share is understated; Amazon's and Microsoft's buildings include offices."
+            ],
+        },
         "buyers": {
             "title": (
                 f"{len(rich)} firms hold {fmt_usd(rich['liquidity_usd'].sum())} in cash; {stretched_names} "
@@ -318,6 +370,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "ladder": lad,
             "book_life": books,
             "buyers": who,
+            "glass": gl,
         },
         sources=SOURCES,
         as_of=as_of,

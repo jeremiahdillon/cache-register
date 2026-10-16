@@ -104,10 +104,19 @@ config:
   glut_utilization_id: lit_bandwidth-utilization-2001-07-19
   # 7. Who gets the glass: cash and short-term investments vs debt (mart 111), latest balance sheets.
   buyers: [GOOGL, AMZN, META, MSFT, NVDA, ORCL, CRWV]
+  # 8. How much is glass: gross property and equipment by class, latest 10-K, in three buckets.
+  glass_companies: [Microsoft, Alphabet, Amazon, Meta, Oracle, CoreWeave]
+  glass_buckets:
+    gpu_generic: short     # servers and network equipment
+    land: long
+    dc_shell: long         # buildings and improvements (offices included where the line mixes them)
+    construction_in_progress: mixed
+    other_ppe: mixed       # incl. Alphabet's technical infrastructure (servers and data centres in one line)
 visuals:
   - {name: years, chart: years, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: book-life, chart: book_life, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: ladder, chart: ladder, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: glut, chart: glut, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: recovery, chart: recovery, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
+  - {name: glass, chart: glass, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: buyers, chart: buyers, targets: [x_png, linkedin_png, blog_html], sources: [sec_edgar]}
