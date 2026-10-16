@@ -393,6 +393,17 @@ def test_receipt_page_without_manifest_texts_or_blurb_falls_back(tmp_path):
     assert "</script>" not in ld and json.loads(ld)["headline"] == "</script><b>T</b>"
 
 
+def test_charts_sharing_a_headline_list_it_once(tmp_path):
+    same = {"title": "One finding", "subtitle": "Weekly share", "source": "OpenRouter"}
+    texts = {"bars": same, "lines": same, "tokens": {**same, "subtitle": "Weekly tokens"}}
+    make_receipt(tmp_path, "twice", "2026-01-01", {name: STILLS for name in texts}, texts=texts)
+    out = tmp_path / "_site"
+    build_site(out, tmp_path)
+    page = (out / "twice" / "index.html").read_text(encoding="utf-8")
+    charts = re.search(r'<ul class="charts">(.*?)</ul>', page).group(1)
+    assert charts == "<li><h2>One finding</h2><p>Weekly share</p><p>Weekly tokens</p></li>"
+
+
 def test_without_chart_texts_the_blurb_is_the_description(tmp_path):
     make_receipt(tmp_path, "blurbed", "2026-01-01", FULL, blurb="What the chart  measures.")
     out = tmp_path / "_site"

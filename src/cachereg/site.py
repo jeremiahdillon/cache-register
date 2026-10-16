@@ -414,12 +414,16 @@ def _image_size(path: Path) -> tuple[int, int]:
 def _about_markup(receipt: Receipt) -> str:
     """Below the charts: the title, the optional blurb, each chart's headline and subtitle as drawn and the
     credits under the footer's own label, all text already on the charts or in receipt.yaml, so crawlers and
-    screen readers get the findings as words."""
+    screen readers get the findings as words. Charts that share a headline (one finding drawn two ways) list
+    it once, with each distinct subtitle under it."""
     texts = [receipt.text(slide) for slide in receipt.slides]
+    headlines: dict[str, dict[str, None]] = {}  # headline → its distinct subtitles, both in slide order
+    for t in texts:
+        if t.get("title"):
+            headlines.setdefault(t["title"], {}).update({t["subtitle"]: None} if t.get("subtitle") else {})
     charts = "".join(
-        f"<li><h2>{_attr(t['title'])}</h2>" + (f"<p>{_attr(t['subtitle'])}</p>" if t.get("subtitle") else "") + "</li>"
-        for t in texts
-        if t.get("title")
+        f"<li><h2>{_attr(title)}</h2>" + "".join(f"<p>{_attr(s)}</p>" for s in subtitles) + "</li>"
+        for title, subtitles in headlines.items()
     )
     credits = list(dict.fromkeys(c for t in texts for c in (t.get("source") or "").split("; ") if c))
     return (
