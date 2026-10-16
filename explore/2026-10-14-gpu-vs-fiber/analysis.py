@@ -15,8 +15,9 @@ import polars as pl
 from cachereg.core.warehouse import query
 from cachereg.story.model import Story
 
-SOURCES = ["curated_asset_values"]
-COLS = "id, entity, asset, metric, value, unit, qualifier, period_start, period_end, scope, source_kind"
+SOURCES = ["curated_asset_values", "sec_edgar"]
+STRETCHED = 2.0  # debt at least this multiple of cash and short-term investments
+COLS = "id, statement_date, entity, asset, metric, value, unit, qualifier, period_start, period_end, scope, source_kind"
 
 
 def rows(con, ids: list[str]) -> pl.DataFrame:
@@ -126,51 +127,127 @@ def fmt_usd(v: float) -> str:
     return f"${v:,.0f}"
 
 
+def ladder(con, pairs: list[dict]) -> pl.DataFrame:
+    """Per GPU generation: the January and October 2026 prices (one venue, one configuration) and the change."""
+    out = []
+    for p in pairs:
+        a, b = rows(con, [p["from"], p["to"]]).to_dicts()
+        if a["unit"] != b["unit"] or a["entity"] != b["entity"]:
+            raise ValueError(f"ladder {p['gpu']}: the two prices differ in venue or unit")
+        out.append(
+            {
+                "gpu": p["gpu"],
+                "entity": a["entity"],
+                "from_day": a["period_end"],
+                "to_day": b["period_end"],
+                "from_price": a["value"],
+                "to_price": b["value"],
+                "change": b["value"] / a["value"] - 1,
+                "from_id": a["id"],
+                "to_id": b["id"],
+            }
+        )
+    return pl.DataFrame(out)
+
+
+def book_life(con, launches: list[dict], years_on_books: int, life_ids: list[str]) -> pl.DataFrame:
+    """Per generation: announcement, end of a `years_on_books` book life, and the later generations announced
+    before that end (as of today: only announcements already made)."""
+    lives_ = rows(con, life_ids)
+    if set(lives_["value"]) != {float(years_on_books)}:
+        raise ValueError(f"book_life_ids do not all state {years_on_books} years")
+    days = {x["gpu"]: rows(con, [x["id"]])["statement_date"][0] for x in launches}
+    out = []
+    for g, d in days.items():
+        end = d.replace(year=d.year + years_on_books)
+        later = [h for h, e in days.items() if d < e < end]
+        out.append({"gpu": g, "announced": d, "book_end": end, "later": ", ".join(later), "n_later": len(later)})
+    return pl.DataFrame(out)
+
+
+def buyers(con, tickers: list[str]) -> pl.DataFrame:
+    return query(
+        con,
+        """SELECT ticker, company, company_group, period_end, liquidity_usd, debt_usd,
+                  operating_lease_liability_usd, liquidity_tags, debt_tags
+           FROM balance_sheet_latest WHERE list_contains(?, ticker)""",
+        [tickers],
+    ).with_columns(net_usd=pl.col("liquidity_usd") - pl.col("debt_usd"))
+
+
 def build(con, as_of: date, cfg: dict) -> Story:
     prices = price_paths(con, cfg["prices"])
     life = lives(con, cfg["lives"])
     rec = recovery(con, cfg["recovery"])
-    cap = rows(con, cfg["capacity_ids"]).with_columns(
-        day=pl.col("period_end"),
-        gbps=pl.when(pl.col("unit") == "tbps").then(pl.col("value") * 1000).otherwise(pl.col("value")),
-    )
-    gen = rows(con, cfg["generation_ids"]).with_columns(day=pl.col("period_end"))
+    lad = ladder(con, cfg["ladder"])
+    books = book_life(con, cfg["launches"], int(cfg["book_life_years"]), cfg["book_life_ids"])
+    glut = prices.filter(pl.col("series").is_in(cfg["glut_series"]) & (pl.col("years") <= cfg["glut_years"]))
+    lit = rows(con, [cfg["glut_utilization_id"]]).to_dicts()[0]
+    who = buyers(con, cfg["buyers"])
 
-    last = prices.group_by("series", maintain_order=True).agg(
-        pl.col("era").first(), pl.col("pct_of_first").last(), pl.col("years").last(), pl.col("first_year").first()
-    )
-    pct = {r["series"]: r for r in last.to_dicts()}
-    transit, oc3, h100 = pct["US IP transit, per Mbps"], pct["OC-3 circuit, New York–LA"], pct["H100, market rate"]
     ai_servers = life.filter(pl.col("group").str.starts_with("AI servers"))
     electronics = life.filter(pl.col("group").str.starts_with("Dot-com network electronics"))
     fiber = life.filter(pl.col("group").str.starts_with("Dot-com fiber"))
-
     gc = rec.filter(pl.col("company") == "Global Crossing")
     gc_raised = gc.filter(pl.col("stage") == "raised / invested")["usd"][0]
     gc_sold = gc.filter(pl.col("stage") == "sold in bankruptcy")["usd"][0]
     gc_later = gc.filter(pl.col("stage") == "bought later")["usd"][0]
-    cap0, cap1 = cap.sort("day")["gbps"][0], cap["gbps"].max()
+
+    def path(series: str) -> pl.DataFrame:
+        return glut.filter(pl.col("series") == series).sort("years")
+
+    oc3, h100 = path("OC-3 circuit, New York–LA"), path("H100, market rate")
+    oc3_1y = oc3.filter(pl.col("years").round(0) == 1)["pct_of_first"][0]
+    h100_low = h100["pct_of_first"].min()
+    h100_last = h100["pct_of_first"][-1]
+    oldest, newest = lad.row(0, named=True), lad.row(-1, named=True)
+    first_gen = books.row(0, named=True)
+    who = who.with_columns(times=pl.col("debt_usd") / pl.col("liquidity_usd"))
+    stretched = who.filter(pl.col("times") >= STRETCHED)
+    rich = who.filter(pl.col("times") < STRETCHED)
+    rich_names = ", ".join(rich.sort("liquidity_usd", descending=True)["company"])
+    stretched_names = " and ".join(stretched.sort("times")["company"])
 
     title = "So far, GPUs look like the electronics on the fiber, not the glass"
     ai_lo, ai_hi = ai_servers["low"].min(), ai_servers["high"].max()
     subtitle = (
         f"AI servers are written off over {ai_lo:g}–{ai_hi:g} years, like the dot-com "
         f"carriers' network electronics ({electronics['low'].min():g}–{electronics['high'].max():g}), not their fiber "
-        f"(up to {fiber['high'].max():g}). Yet GPU rents have held up far better than bandwidth prices did."
+        f"(up to {fiber['high'].max():g}). The long-lived AI assets are buildings and power."
     )
     by_visual = {
         "lives": {"title": title, "subtitle": subtitle},
-        "prices": {
+        "book-life": {
             "title": (
-                f"{oc3['years']:.0f} years on, a coast-to-coast line cost {oc3['pct_of_first']:.0f}% "
-                "of its 2000 price; "
-                f"an H100 rents for {h100['pct_of_first']:.0f}% of its launch rate"
+                f"An {first_gen['gpu']} stays on the books for {cfg['book_life_years']} years; NVIDIA announced "
+                f"{first_gen['n_later']} newer generations in that time"
             ),
             "subtitle": (
-                "Each line is one price series as a % of its own first quote, by years since that quote (log scale). "
-                f"Dot-com bandwidth in grey: US IP transit reached {transit['pct_of_first']:.1f}% of its 1998 price "
-                "by 2010. GPU rents per GPU-hour in colour: at Lambda, older GPUs cost more in 2026 than when first "
-                "listed."
+                f"Each bar runs from NVIDIA's announcement to the end of a {cfg['book_life_years']}-year book life, "
+                "the life Microsoft, Alphabet, Oracle and CoreWeave give servers, and CoreWeave's lenders give GPU "
+                "collateral. Vertical lines mark later announcements. Chips bought after launch stay on the books "
+                "longer still."
+            ),
+        },
+        "ladder": {
+            "title": (
+                f"Every GPU generation got dearer to rent in 2026, even the {oldest['gpu']} ({oldest['change']:+.0%})"
+            ),
+            "subtitle": (
+                f"Lambda's on-demand price per GPU-hour on 8-GPU machines, January vs October 2026. The newest, the "
+                f"{newest['gpu']}, rose {newest['change']:.0%}; the oldest, the {oldest['gpu']}, rose "
+                f"{oldest['change']:.0%}, to {oldest['to_price']:.2f} dollars an hour."
+            ),
+        },
+        "glut": {
+            "title": (
+                f"In 2001 a glut showed in prices within a year; H100 rents fell to {h100_low:.0f}%, then rose to "
+                f"{h100_last:.0f}%"
+            ),
+            "subtitle": (
+                f"Price as % of each series' first quote, by years since that quote (log scale). A New York–LA "
+                f"line lost {100 - oc3_1y:.0f}% of its price in its first year, when carriers used about "
+                f"{lit['value']:g}% of their lit capacity (Merrill Lynch, July 2001). H100 rents are rising again."
             ),
         },
         "recovery": {
@@ -184,23 +261,33 @@ def build(con, as_of: date, cfg: dict) -> Story:
                 "in bankruptcy."
             ),
         },
-        "generations": {
-            "title": f"The same fiber pair carries {cap1 / cap0:.0f}× more than in 2001; each GPU generation is "
-            "claimed to be 10–30× better than the last",
+        "buyers": {
+            "title": (
+                f"{len(rich)} firms hold {fmt_usd(rich['liquidity_usd'].sum())} in cash; {stretched_names} "
+                f"owe {stretched['times'].min():.0f}–{stretched['times'].max():.0f}× what they hold"
+            ),
             "subtitle": (
-                "Left: capacity of one fiber pair with the optics of the day. Right: NVIDIA's own 'up to' claim "
-                "for each generation against the one before, on its chosen workload. New optics made old glass "
-                "worth more; new GPUs make old ones worth less."
+                f"Cash and short-term investments vs debt (leases excluded) on each company's latest balance sheet. "
+                f"{rich_names} could fund purchases; {stretched_names} owe at least {STRETCHED:g}× their cash. "
+                "In 2002–05 the buyers of bankrupt networks were the survivors with cash."
             ),
         },
     }
     return Story(
         title=title,
         subtitle=subtitle,
-        frames={"prices": prices, "lives": life, "recovery": rec, "capacity": cap, "generations": gen},
+        frames={
+            "prices": prices,
+            "glut": glut,
+            "lives": life,
+            "recovery": rec,
+            "ladder": lad,
+            "book_life": books,
+            "buyers": who,
+        },
         sources=SOURCES,
         as_of=as_of,
-        method="cited figures from filings, company statements and press (curated_asset_values); values as stated",
+        method="cited figures (curated_asset_values) and XBRL balance sheets (SEC EDGAR); values as stated",
         caveats=[
             "Scattered quotes, not series: venues, tiers and configurations differ, so only same-source lines "
             "are joined (the H100 market line joins Latent Space's 2023–24 quotes to Silicon Data's neocloud index).",
@@ -210,16 +297,15 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "within a company. Buildings lives include offices.",
             "Bankruptcy figures differ in scope (Global Crossing's $250m bought 61.5% of the company; Velocita's "
             "$37m bought the network only); 'bought later' prices include new investment since.",
-            "NVIDIA's multiples are vendor marketing claims on its own chosen workloads.",
+            "The 2026 price ladder is one venue (Lambda) on two dates; hyperscalers' list prices barely move.",
+            "Announcement dates mark generations; volume shipments came months later.",
+            "Balance sheets as filed in XBRL (tag choices in mart 111); leases, which are large for CoreWeave and "
+            "Oracle, are excluded from debt. Alphabet's cash and short-term investments doubled in its Q2 2026 10-Q.",
         ],
         by_visual=by_visual,
-        extra={
-            "pct_last": {k: v["pct_of_first"] for k, v in pct.items()},
-            "capacity_multiple": cap1 / cap0,
-        },
+        extra={"h100_low": h100_low, "h100_last": h100_last, "oc3_1y": oc3_1y, "lit_pct": lit["value"]},
     )
 
 
 def table(story: Story) -> pl.DataFrame:
-    p = story.frames["prices"]
-    return p.select("series", "day", pl.col("price").round(2), pl.col("pct_of_first").round(1), "unit", "entity")
+    return story.frames["ladder"].select("gpu", "entity", "from_day", "from_price", "to_day", "to_price", "change")

@@ -2,7 +2,7 @@
 # Every point comes from a row of the curated_asset_values mart, picked here by id, so each one can be
 # traced to its cited quote. `per: 8` divides an 8-GPU instance's price to a per-GPU price.
 title: GPUs vs dark fiber, value after a bust
-sources: [curated_asset_values]
+sources: [curated_asset_values, sec_edgar]
 config:
   # 1. Price paths: each series as % of its own first quote, by years since that quote.
   prices:
@@ -77,13 +77,32 @@ config:
             fiber_network-distressed_sale_price-2002-11-11]
     - company: FLAG Telecom
       ids: [fiber_network-debt_at_bankruptcy-2003-10-20, fiber_network-distressed_sale_price-2003-10-16]
-  # 4. Generations: capacity of one fiber pair over time, and NVIDIA's own claimed gain per generation.
-  capacity_ids: [dark_fiber-capacity_per_pair-2001-01-22, dark_fiber-capacity_per_pair-2012-09-17,
-                 dark_fiber-capacity_per_pair-2019-03-11, dark_fiber-capacity_per_pair-2025-11-17]
-  generation_ids: [gpu_a100-perf_multiple-2020-05-14, gpu_h100-perf_multiple-2022-03-22,
-                   gpu_gb200-perf_multiple-2024-03-18, gpu_rubin-perf_per_dollar-2026-01-05]
+  # 4. Old GPUs cost more: Lambda's on-demand price per GPU-hour (8-GPU instances), January vs October 2026.
+  ladder:
+    - {gpu: V100, from: gpu_v100-rental_price-2026-01-09, to: gpu_v100-rental_price-2026-10-01}
+    - {gpu: A100, from: gpu_a100-rental_price-2026-01-09, to: gpu_a100-rental_price-2026-10-01}
+    - {gpu: H100, from: gpu_h100-rental_price-2026-01-09-3, to: gpu_h100-rental_price-2026-10-01}
+    - {gpu: B200, from: gpu_b200-rental_price-2026-01-09, to: gpu_b200-rental_price-2026-10-01}
+  # 5. On the books, behind: each generation from NVIDIA's announcement (the cited release's date) over a
+  # six-year book life (the servers' life at Microsoft, Alphabet, Oracle and CoreWeave, and the GPU
+  # collateral's in CoreWeave's DDTL 2.0 loan).
+  book_life_years: 6
+  book_life_ids: [gpu_generic-book_useful_life-2026-03-02-3, gpu_generic-book_useful_life-2025-03-03]
+  launches:
+    - {gpu: A100, id: gpu_a100-perf_multiple-2020-05-14}
+    - {gpu: H100, id: gpu_h100-perf_multiple-2022-03-22}
+    - {gpu: Blackwell, id: gpu_b200-perf_per_dollar-2024-03-18}
+    - {gpu: Rubin, id: gpu_rubin-perf_per_dollar-2026-01-05}
+  # 6. The 2001 signal: price paths in the first years after each series' first quote.
+  glut_series: ["OC-3 circuit, New York–LA", "US IP transit, per Mbps", "H100, market rate"]
+  glut_years: 7
+  glut_utilization_id: lit_bandwidth-utilization-2001-07-19
+  # 7. Who gets the glass: cash and short-term investments vs debt (mart 111), latest balance sheets.
+  buyers: [GOOGL, AMZN, META, MSFT, NVDA, ORCL, CRWV]
 visuals:
-  - {name: lives, chart: lives, targets: [x_png, linkedin_png, blog_html]}
-  - {name: prices, chart: prices, targets: [x_png, linkedin_png, blog_html]}
-  - {name: recovery, chart: recovery, targets: [x_png, linkedin_png, blog_html]}
-  - {name: generations, chart: generations, targets: [x_png, linkedin_png, blog_html]}
+  - {name: lives, chart: lives, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
+  - {name: book-life, chart: book_life, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
+  - {name: ladder, chart: ladder, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
+  - {name: glut, chart: glut, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
+  - {name: recovery, chart: recovery, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
+  - {name: buyers, chart: buyers, targets: [x_png, linkedin_png, blog_html], sources: [sec_edgar]}

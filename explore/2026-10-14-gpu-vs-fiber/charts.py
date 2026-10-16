@@ -2,12 +2,13 @@
 
 * lives: book useful lives as range bars, one panel per group on a shared years axis; AI servers in
   the accent, everything else in greys, each bar labelled with its range.
-* prices: each price series as % of its first quote by years since it, log axis; dot-com bandwidth
-  in greys, GPU rents in the categorical slots (fixed order), direct labels at line ends.
+* book_life: one bar per GPU generation from announcement to the end of its book life, later
+  announcements as vertical rules, today as a dashed rule.
+* ladder: January and October 2026 rents per GPU generation at one venue, as a dumbbell.
+* glut: the first years of each price path as % of its first quote (log axis); the H100 in the accent.
 * recovery: what four dot-com networks raised, owed and fetched over time, log dollars; Global Crossing
   in the accent with every point labelled.
-* generations: two panels, each with one y-axis: capacity per fiber pair (log Gbps) over time, and
-  NVIDIA's claimed gain per GPU generation as bars.
+* buyers: cash and short-term investments vs debt per company, paired bars.
 """
 
 from __future__ import annotations
@@ -138,88 +139,6 @@ def lives(story: Story, width, height, font_scale: float = 1.0, interactive: boo
     return chart.configure(**vl_config(fs))
 
 
-# --- prices ------------------------------------------------------------------------------------
-
-
-def prices(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
-    fs = font_scale
-    width, height = _size(width, height)
-    d = story.frames["prices"].with_columns(
-        label=pl.format("{} ({})", pl.col("series"), pl.col("first_year").cast(pl.String))
-    )
-    names = list(dict.fromkeys(d["label"]))
-    eras = dict(zip(d["label"], d["era"], strict=False))
-    cats = brand()["colors"]["categorical"]
-    ink, gi, ci = {}, 0, 0
-    for n in names:
-        if eras[n] == "dotcom":
-            ink[n], gi = GREYS[gi % 2], gi + 1
-        else:
-            ink[n], ci = cats[ci], ci + 1
-    clr = alt.Color("label:N", scale=alt.Scale(domain=names, range=[ink[n] for n in names]), legend=None)
-    lo, hi = 0.2, 400.0
-    label_px = 330 * fs
-    xmax = math.ceil(d["years"].max())
-    x_scale = alt.Scale(domain=[0, xmax * (1 + label_px / max(width - label_px, 1))])
-    y_scale = alt.Scale(type="log", domain=[lo, hi], nice=False)
-    ticks = [v for v in (0.3, 1, 3, 10, 30, 100, 300) if lo <= v <= hi]
-    x = alt.X(
-        "years:Q",
-        scale=x_scale,
-        title="Years since the series' first quote",
-        axis=alt.Axis(values=list(range(0, xmax + 1, 2)), format="d", labelFontSize=AXIS_PX * fs, grid=False),
-    )
-    y = alt.Y(
-        "pct_of_first:Q",
-        scale=y_scale,
-        title="% of first quote (log)",
-        axis=alt.Axis(values=ticks, labelExpr="format(datum.value, '~g') + '%'", labelFontSize=AXIS_PX * fs),
-    )
-    data = alt.Data(
-        values=d.select("label", "series", "years", "pct_of_first", "price", "unit", "entity", "day")
-        .with_columns(pl.col("day").cast(pl.String))
-        .to_dicts()
-    )
-    base = alt.Chart(data).encode(x=x, y=y, color=clr)
-    ref = alt.Chart(alt.Data(values=[{"v": 100}])).mark_rule(color=color("muted"), strokeDash=[4, 4]).encode(y="v:Q")
-    line = base.mark_line(strokeWidth=2.6 * fs, point=alt.OverlayMarkDef(size=70 * fs**2, filled=True)).encode(
-        detail="label:N"
-    )
-    if interactive:
-        line = line.encode(
-            tooltip=[
-                alt.Tooltip("series:N"),
-                alt.Tooltip("day:N", title="Date"),
-                alt.Tooltip("price:Q", format=",.2f"),
-                alt.Tooltip("unit:N"),
-                alt.Tooltip("pct_of_first:Q", title="% of first", format=".1f"),
-                alt.Tooltip("entity:N", title="Source"),
-            ]
-        )
-    ends = d.group_by("label", maintain_order=True).last().sort("pct_of_first", descending=True)
-    span = math.log10(hi) - math.log10(lo)
-    gap = 1.25 * LABEL_PX * fs * span / max(height, 1.0)
-    ys, prev = [], None
-    for v in ends["pct_of_first"]:
-        yv = math.log10(v) if prev is None else min(math.log10(v), prev - gap)
-        ys.append(yv)
-        prev = yv
-    ends = ends.with_columns(
-        label_y=pl.Series([10**v for v in ys]),
-        text=pl.col("label")
-        + " · "
-        + pl.col("pct_of_first").map_elements(lambda v: f"{v:.3g}%", return_dtype=pl.String),
-    )
-    end_data = alt.Data(values=ends.select("label", "years", "label_y", "text").to_dicts())
-    tags = (
-        alt.Chart(end_data)
-        .mark_text(align="left", baseline="middle", dx=12 * fs, **_text(fs, LABEL_PX - 1))
-        .encode(x=alt.X("years:Q", scale=x_scale), y=alt.Y("label_y:Q", scale=y_scale), text="text:N", color=clr)
-    )
-    chart = alt.layer(ref, line, tags).properties(width=width, height=height)
-    return chart.configure(**vl_config(fs))
-
-
 # --- recovery ----------------------------------------------------------------------------------
 
 
@@ -307,101 +226,293 @@ def recovery(story: Story, width, height, font_scale: float = 1.0, interactive: 
     return chart.configure(**vl_config(fs))
 
 
-# --- generations -------------------------------------------------------------------------------
-
-GEN_LABELS = {
-    "gpu_a100": "A100 vs V100",
-    "gpu_h100": "H100 vs A100",
-    "gpu_gb200": "GB200 vs H100",
-    "gpu_rubin": "Rubin vs Blackwell",
-}
+# --- book life ----------------------------------------------------------------------------------
 
 
-def generations(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.HConcatChart:
+def book_life(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
     fs = font_scale
     width, height = _size(width, height)
-    spacing = 60 * fs
-    w = (width - spacing) / 2
-    cap = story.frames["capacity"].with_columns(
-        t=pl.col("day").map_elements(_ms, return_dtype=pl.Int64),
-        label=pl.col("gbps").map_elements(
-            lambda g: f"{g / 1000:g} Tbps" if g >= 1000 else f"{g:g} Gbps", return_dtype=pl.String
+    d = story.frames["book_life"].with_columns(
+        t0=pl.col("announced").map_elements(_ms, return_dtype=pl.Int64),
+        t1=pl.col("book_end").map_elements(_ms, return_dtype=pl.Int64),
+        label=pl.when(pl.col("n_later") == 0)
+        .then(pl.format("on the books to {}", pl.col("book_end").dt.year()))
+        .otherwise(
+            pl.format(
+                "to {} · {} newer generation{} so far",
+                pl.col("book_end").dt.year(),
+                pl.col("n_later"),
+                pl.when(pl.col("n_later") == 1).then(pl.lit("")).otherwise(pl.lit("s")),
+            )
         ),
-        who=pl.col("entity").str.replace(r" \(.*\)$", ""),
     )
-    x_cap = alt.X(
-        "t:T",
+    order = d["gpu"].to_list()
+    x_scale = alt.Scale(type="utc", domain=[_ms(datetime(2019, 7, 1)), _ms(datetime(2036, 6, 30))])
+    x = alt.X(
+        "t0:T",
+        scale=x_scale,
         title=None,
-        scale=alt.Scale(type="utc", domain=[_ms(datetime(2000, 1, 1)), _ms(datetime(2030, 12, 31))]),
         axis=alt.Axis(
-            values=[_ms(datetime(y, 1, 1)) for y in (2000, 2010, 2020, 2030)],
+            values=[_ms(datetime(y, 1, 1)) for y in range(2020, 2034, 2)],
             format="%Y",
             labelFontSize=AXIS_PX * fs,
             grid=False,
         ),
     )
-    y_cap = alt.Y(
-        "gbps:Q",
-        title="Capacity of one fiber pair (log)",
-        scale=alt.Scale(type="log", domain=[300, 100000], nice=False),
-        axis=alt.Axis(
-            values=[1000, 10000, 100000],
-            labelExpr="datum.value / 1000 + ' Tbps'",
-            labelFontSize=AXIS_PX * fs,
-        ),
+    y = alt.Y(
+        "gpu:N",
+        sort=order,
+        title=None,
+        axis=alt.Axis(labelFontSize=(AXIS_PX + 2) * fs, labelFont=brand()["fonts"]["body"], grid=False),
     )
-    cbase = alt.Chart(alt.Data(values=cap.select("t", "gbps", "label", "who", "scope").to_dicts())).encode(
-        x=x_cap, y=y_cap
+    data = alt.Data(values=d.select("gpu", "t0", "t1", "label", "later").to_dicts())
+    base = alt.Chart(data).encode(y=y)
+    bar = base.mark_bar(height=min(height / len(order) * 0.38, 26 * fs), cornerRadius=4 * fs).encode(
+        x=x, x2="t1:T", color=alt.value(GREYS[0])
     )
-    cline = cbase.mark_line(color=color("accent"), strokeWidth=2.6 * fs)
-    cpts = cbase.mark_circle(color=color("accent"), size=110 * fs**2, opacity=1, stroke=color("canvas"), strokeWidth=2)
+    first = (
+        base.transform_filter(alt.datum.gpu == order[0])
+        .mark_bar(height=min(height / len(order) * 0.38, 26 * fs), cornerRadius=4 * fs, color=color("accent"))
+        .encode(x=x, x2="t1:T")
+    )
     if interactive:
-        cpts = cpts.encode(tooltip=["who:N", "label:N", "scope:N"])
-    clab = cbase.mark_text(align="left", dx=8 * fs, dy=20 * fs, **_text(fs, LABEL_PX - 1, color=color("text"))).encode(
-        text="label:N"
+        bar = bar.encode(
+            tooltip=[
+                "gpu:N",
+                alt.Tooltip("t0:T", title="Announced"),
+                alt.Tooltip("t1:T", title="Book life ends"),
+                "later:N",
+            ]
+        )
+    lab = base.mark_text(align="left", dx=10 * fs, **_text(fs, LABEL_PX - 1, color=color("text_secondary"))).encode(
+        x=alt.X("t1:T", scale=x_scale), text="label:N"
     )
-    cwho = cbase.mark_text(
-        align="left", dx=8 * fs, dy=38 * fs, **_text(fs, LABEL_PX - 3, color=color("text_secondary"))
-    ).encode(text="who:N")
-    left = alt.layer(cline, cpts, clab, cwho).properties(
-        width=w,
-        height=height,
-        title=alt.TitleParams("Same glass, new optics", anchor="start", fontSize=17 * fs, color=color("text")),
+    rules_data = alt.Data(values=d.select("gpu", "t0").to_dicts()[1:])
+    rules = (
+        alt.Chart(rules_data)
+        .mark_rule(color=color("muted"), strokeDash=[3, 4], strokeWidth=1.2 * fs)
+        .encode(x=alt.X("t0:T", scale=x_scale))
     )
+    today = alt.Chart(alt.Data(values=[{"t": _ms(story.as_of), "label": "today"}]))
+    now_rule = today.mark_rule(color=color("text_secondary"), strokeWidth=1.2 * fs, opacity=0.45).encode(
+        x=alt.X("t:T", scale=x_scale)
+    )
+    now_lab = today.mark_text(
+        align="left", baseline="top", dx=6 * fs, y=0, **_text(fs, LABEL_PX - 2, color=color("text_secondary"))
+    ).encode(x=alt.X("t:T", scale=x_scale), text="label:N")
+    chart = alt.layer(rules, now_rule, now_lab, bar, first, lab).properties(width=width, height=height)
+    return chart.configure(**vl_config(fs))
 
-    gen = story.frames["generations"].with_columns(
-        gen=pl.col("asset").replace_strict(GEN_LABELS, return_dtype=pl.String),
-        label=pl.format("up to {}×", pl.col("value").cast(pl.Int64)),
+
+# --- ladder ------------------------------------------------------------------------------------
+
+
+def ladder(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
+    fs = font_scale
+    width, height = _size(width, height)
+    d = story.frames["ladder"].with_columns(
+        change_label=pl.col("change").map_elements(lambda v: f"{v:+.0%}", return_dtype=pl.String),
+        from_label=pl.col("from_price").map_elements(lambda v: f"${v:.2f}", return_dtype=pl.String),
+        to_label=pl.col("to_price").map_elements(lambda v: f"${v:.2f}", return_dtype=pl.String),
     )
-    order = [GEN_LABELS[a] for a in gen["asset"]]
-    gbase = alt.Chart(alt.Data(values=gen.select("gen", "value", "label", "scope").to_dicts())).encode(
-        x=alt.X(
-            "gen:N",
-            sort=order,
-            title=None,
-            axis=alt.Axis(
-                labelAngle=0,
-                labelFontSize=(AXIS_PX - 1) * fs,
-                labelExpr="split(datum.label, ' vs ')",
-                labelLineHeight=(AXIS_PX + 3) * fs,
-            ),
-        ),
-        y=alt.Y(
-            "value:Q",
-            title="Claimed gain over the previous generation (×)",
-            scale=alt.Scale(domain=[0, 40]),
-            axis=alt.Axis(values=[0, 10, 20, 30, 40], labelFontSize=AXIS_PX * fs),
-        ),
+    order = d["gpu"].to_list()
+    xmax = d["to_price"].max() * 1.3
+    x_scale = alt.Scale(domain=[0, xmax])
+    x = alt.X(
+        "from_price:Q",
+        scale=x_scale,
+        title="Dollars per GPU-hour, Lambda on-demand",
+        axis=alt.Axis(labelExpr="'$' + format(datum.value, '.0f')", labelFontSize=AXIS_PX * fs, tickCount=4),
     )
-    bars = gbase.mark_bar(color=GREYS[0], cornerRadiusTopLeft=4 * fs, cornerRadiusTopRight=4 * fs, size=w / 7)
+    y = alt.Y(
+        "gpu:N",
+        sort=order,
+        title=None,
+        axis=alt.Axis(labelFontSize=(AXIS_PX + 2) * fs, labelFont=brand()["fonts"]["body"], grid=False),
+    )
+    data = alt.Data(
+        values=d.select("gpu", "from_price", "to_price", "from_label", "to_label", "change_label").to_dicts()
+    )
+    base = alt.Chart(data).encode(y=y)
+    link = base.mark_rule(color=color("muted"), strokeWidth=3 * fs).encode(x=x, x2="to_price:Q")
+    jan = base.mark_circle(size=170 * fs**2, opacity=1, color=GREYS[0]).encode(x=x)
+    octo = base.mark_circle(size=170 * fs**2, opacity=1, color=color("accent")).encode(
+        x=alt.X("to_price:Q", scale=x_scale)
+    )
     if interactive:
-        bars = bars.encode(tooltip=["gen:N", "label:N", "scope:N"])
-    blab = gbase.mark_text(baseline="bottom", dy=-6 * fs, **_text(fs, LABEL_PX - 1, color=color("text"))).encode(
-        text="label:N"
+        octo = octo.encode(
+            tooltip=[
+                "gpu:N",
+                alt.Tooltip("from_label:N", title="January 2026"),
+                alt.Tooltip("to_label:N", title="October 2026"),
+                alt.Tooltip("change_label:N", title="Change"),
+            ]
+        )
+    jan_lab = base.mark_text(
+        align="right", dx=-14 * fs, **_text(fs, LABEL_PX - 1, color=color("text_secondary"))
+    ).encode(x=x, text="from_label:N")
+    oct_lab = base.mark_text(align="left", dx=14 * fs, **_text(fs, LABEL_PX, color=color("text"))).encode(
+        x=alt.X("to_price:Q", scale=x_scale), text=alt.Text("to_label:N")
     )
-    right = alt.layer(bars, blab).properties(
-        width=w,
-        height=height,
-        title=alt.TitleParams("New GPU, old GPU worth less", anchor="start", fontSize=17 * fs, color=color("text")),
+    chg = base.mark_text(
+        align="left", dx=72 * fs, **_text(fs, LABEL_PX, color=color("accent"), fontWeight="bold")
+    ).encode(x=alt.X("to_price:Q", scale=x_scale), text="change_label:N")
+    key = alt.Data(values=[{"x": d["from_price"][-1], "t": "Jan 2026"}, {"x": d["to_price"][-1], "t": "Oct 2026"}])
+    key_lab = (
+        alt.Chart(key)
+        .mark_text(baseline="bottom", dy=-22 * fs, **_text(fs, LABEL_PX - 2, color=color("text_secondary")))
+        .encode(x=alt.X("x:Q", scale=x_scale), y=alt.datum(order[-1]), text="t:N")
     )
-    return alt.hconcat(left, right, spacing=spacing).configure(**vl_config(fs))
+    chart = alt.layer(link, jan, octo, jan_lab, oct_lab, chg, key_lab).properties(width=width, height=height)
+    return chart.configure(**vl_config(fs))
+
+
+# --- glut --------------------------------------------------------------------------------------
+
+
+def glut(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
+    fs = font_scale
+    width, height = _size(width, height)
+    d = story.frames["glut"].with_columns(
+        label=pl.format("{} ({})", pl.col("series"), pl.col("first_year").cast(pl.String))
+    )
+    names = list(dict.fromkeys(d["label"]))
+    ink = {n: (color("accent") if n.startswith("H100") else GREYS[i % 2]) for i, n in enumerate(names)}
+    clr = alt.Color("label:N", scale=alt.Scale(domain=names, range=[ink[n] for n in names]), legend=None)
+    lo, hi = 8.0, 160.0
+    label_px = 300 * fs
+    xmax = 5
+    x_scale = alt.Scale(domain=[0, xmax * (1 + label_px / max(width - label_px, 1))])
+    y_scale = alt.Scale(type="log", domain=[lo, hi], nice=False)
+    x = alt.X(
+        "years:Q",
+        scale=x_scale,
+        title="Years since the series' first quote",
+        axis=alt.Axis(values=list(range(0, xmax + 1)), format="d", labelFontSize=AXIS_PX * fs, grid=False),
+    )
+    y = alt.Y(
+        "pct_of_first:Q",
+        scale=y_scale,
+        title="% of first quote (log)",
+        axis=alt.Axis(values=[10, 20, 50, 100], labelExpr="datum.value + '%'", labelFontSize=AXIS_PX * fs),
+    )
+    d = d.filter(pl.col("years") <= xmax)
+    data = alt.Data(values=d.select("label", "series", "years", "pct_of_first", "price", "unit", "entity").to_dicts())
+    base = alt.Chart(data).encode(x=x, y=y, color=clr)
+    line = base.mark_line(strokeWidth=2.8 * fs, point=alt.OverlayMarkDef(size=80 * fs**2, filled=True)).encode(
+        detail="label:N"
+    )
+    if interactive:
+        line = line.encode(
+            tooltip=[
+                "series:N",
+                alt.Tooltip("pct_of_first:Q", title="% of first", format=".0f"),
+                alt.Tooltip("price:Q", format=",.2f"),
+                "unit:N",
+                alt.Tooltip("entity:N", title="Source"),
+            ]
+        )
+    ends = (
+        d.group_by("label", maintain_order=True)
+        .last()
+        .with_columns(
+            text=pl.col("label")
+            + " · "
+            + pl.col("pct_of_first").map_elements(lambda v: f"{v:.0f}%", return_dtype=pl.String)
+        )
+    )
+    tags = (
+        alt.Chart(alt.Data(values=ends.select("label", "years", "pct_of_first", "text").to_dicts()))
+        .mark_text(align="left", baseline="middle", dx=12 * fs, **_text(fs, LABEL_PX - 1))
+        .encode(x=alt.X("years:Q", scale=x_scale), y=alt.Y("pct_of_first:Q", scale=y_scale), text="text:N", color=clr)
+    )
+    ref = (
+        alt.Chart(alt.Data(values=[{"v": 100}]))
+        .mark_rule(color=color("muted"), strokeDash=[4, 4])
+        .encode(y=alt.Y("v:Q", scale=y_scale))
+    )
+    lit = story.frames["glut"].filter(pl.col("series").str.starts_with("OC-3") & (pl.col("years").round(0) == 1))
+    note = alt.Data(
+        values=[
+            {
+                "years": lit["years"][0],
+                "pct": lit["pct_of_first"][0],
+                "t": f"2001: {story.extra['lit_pct']:g}% of lit capacity in use",
+            }
+        ]
+    )
+    note_lab = (
+        alt.Chart(note)
+        .mark_text(
+            align="left",
+            baseline="top",
+            dx=16 * fs,
+            dy=2 * fs,
+            **_text(fs, LABEL_PX - 2, color=color("text_secondary")),
+        )
+        .encode(x=alt.X("years:Q", scale=x_scale), y=alt.Y("pct:Q", scale=y_scale), text="t:N")
+    )
+    chart = alt.layer(ref, line, tags, note_lab).properties(width=width, height=height)
+    return chart.configure(**vl_config(fs))
+
+
+# --- buyers ------------------------------------------------------------------------------------
+
+
+def buyers(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
+    fs = font_scale
+    width, height = _size(width, height)
+    cats = brand()["colors"]["categorical"]
+    w = story.frames["buyers"].sort("net_usd", descending=True)
+    order = w["company"].to_list()
+    long = pl.concat(
+        [
+            w.select(
+                "company",
+                pl.lit("Cash and short-term investments").alias("what"),
+                (pl.col("liquidity_usd") / 1e9).alias("bn"),
+                "period_end",
+            ),
+            w.select("company", pl.lit("Debt").alias("what"), (pl.col("debt_usd") / 1e9).alias("bn"), "period_end"),
+        ]
+    ).with_columns(
+        label=pl.col("bn").map_elements(lambda v: f"${v:.0f}bn", return_dtype=pl.String),
+        period=pl.col("period_end").cast(pl.String),
+    )
+    whats = ["Cash and short-term investments", "Debt"]
+    clr = alt.Color(
+        "what:N",
+        scale=alt.Scale(domain=whats, range=[cats[0], cats[1]]),
+        legend=alt.Legend(
+            title=None,
+            labelLimit=600,
+            orient="top",
+            direction="horizontal",
+            labelFontSize=(AXIS_PX + 1) * fs,
+            symbolSize=160 * fs**2,
+        ),
+    )
+    xmax = long["bn"].max() * 1.18
+    x = alt.X(
+        "bn:Q",
+        title="US$ billions, latest balance sheet",
+        scale=alt.Scale(domain=[0, xmax]),
+        axis=alt.Axis(labelFontSize=AXIS_PX * fs, tickCount=5),
+    )
+    y = alt.Y(
+        "company:N",
+        sort=order,
+        title=None,
+        axis=alt.Axis(labelFontSize=(AXIS_PX + 1) * fs, labelFont=brand()["fonts"]["body"], grid=False),
+    )
+    yoff = alt.YOffset("what:N", sort=whats)
+    data = alt.Data(values=long.select("company", "what", "bn", "label", "period").to_dicts())
+    base = alt.Chart(data).encode(y=y, yOffset=yoff)
+    bars = base.mark_bar(cornerRadiusTopRight=3 * fs, cornerRadiusBottomRight=3 * fs).encode(x=x, color=clr)
+    if interactive:
+        bars = bars.encode(tooltip=["company:N", "what:N", "label:N", alt.Tooltip("period:N", title="Balance sheet")])
+    lab = base.mark_text(align="left", dx=6 * fs, **_text(fs, LABEL_PX - 2, color=color("text_secondary"))).encode(
+        x=x, text="label:N"
+    )
+    chart = alt.layer(bars, lab).properties(width=width, height=height)
+    return chart.configure(**vl_config(fs))

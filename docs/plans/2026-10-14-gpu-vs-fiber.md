@@ -2,7 +2,9 @@
 
 Status: EXPLORATION BUILT · 2026-10-14
 
-Outcome: `explore/2026-10-14-gpu-vs-fiber/` renders four visuals (lives, prices, recovery, generations)
+Outcome (2026-10-16, revised on the author's ask for charts that tell a story): six visuals (lives,
+book-life, ladder, glut, recovery, buyers); the buyers view adds mart `111_balance_sheet` from SEC XBRL.
+First version: four visuals (lives, prices, recovery, generations)
 from 249 cited rows. So far GPUs look like the fiber's electronics, not its glass (2–6-year book lives),
 yet their rents have held up far better than bandwidth prices did. Not promoted.
 
