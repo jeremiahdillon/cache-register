@@ -588,3 +588,96 @@ def glass(story: Story, width, height, font_scale: float = 1.0, interactive: boo
     )
     chart = alt.layer(bars, *pcts, totals).properties(width=width - label_px - total_px, height=height)
     return chart.configure(**vl_config(fs))
+
+
+# --- split -------------------------------------------------------------------------------------
+
+
+def _fmt_bn(v: float) -> str:
+    return f"${v / 1e9:,.0f}bn" if v >= 1e10 else f"${v / 1e9:,.1f}bn"
+
+
+SPLIT_BUCKETS = BUCKETS | {"long": "Long-lived: fiber, conduit, land and buildings"}
+
+
+def split(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
+    """Two eras × (added in a year, on the books): 100%-stacked bars by kind; long-lived in the accent."""
+    fs = font_scale
+    width, height = _size(width, height)
+    s = story.frames["split"]
+    eras = list(dict.fromkeys(s["era"]))
+    measures = ["added in a year", "on the books"]
+    stack = ["long", "mixed", "short"]
+    d = (
+        s.with_columns(
+            row=pl.col("era")
+            + "|"
+            + pl.col("measure").str.slice(0, 1).str.to_uppercase()
+            + pl.col("measure").str.slice(1),
+            what=pl.col("bucket").replace_strict(SPLIT_BUCKETS, return_dtype=pl.String),
+            k=pl.col("bucket").replace_strict({b: i for i, b in enumerate(stack)}, return_dtype=pl.Int64),
+            pct=pl.col("share").map_elements(lambda v: f"{v:.0%}", return_dtype=pl.String),
+        )
+        .sort("row", "k")
+        .with_columns(x1=pl.col("share").cum_sum().over("row"))
+        .with_columns(x0=pl.col("x1") - pl.col("share"), xm=pl.col("x1") - pl.col("share") / 2)
+    )
+    order = [f"{e}|{m[0].upper()}{m[1:]}" for e in eras for m in measures]
+    ink = {"long": color("accent"), "mixed": "#3A3F4B", "short": GREYS[0]}
+    whats = [SPLIT_BUCKETS[b] for b in stack]
+    clr = alt.Color(
+        "what:N",
+        scale=alt.Scale(domain=whats, range=[ink[b] for b in stack]),
+        legend=alt.Legend(
+            title=None,
+            orient="top",
+            direction="vertical" if height / width > 0.5 else "horizontal",
+            labelLimit=600,
+            labelFontSize=(AXIS_PX + 1) * fs,
+            symbolType="square",
+            symbolSize=180 * fs**2,
+        ),
+    )
+    label_px, total_px = 230 * fs, 110 * fs
+    x_scale = alt.Scale(domain=[0, 1])
+    y = alt.Y(
+        "row:N",
+        sort=order,
+        title=None,
+        axis=alt.Axis(
+            labelExpr="split(datum.label, '|')",
+            labelFontSize=(AXIS_PX + 1) * fs,
+            labelLineHeight=(AXIS_PX + 6) * fs,
+            labelFont=brand()["fonts"]["body"],
+            labelLimit=label_px,
+            grid=False,
+        ),
+    )
+    cols = ["row", "what", "bucket", "x0", "x1", "xm", "pct", "share", "companies"]
+    base = alt.Chart(alt.Data(values=d.select(cols).to_dicts())).encode(y=y)
+    bar_h = min(height / len(order) * 0.6, 46 * fs)
+    bars = base.mark_bar(height=bar_h, stroke=color("canvas"), strokeWidth=2).encode(
+        x=alt.X("x0:Q", scale=x_scale, axis=None), x2="x1:Q", color=clr
+    )
+    if interactive:
+        bars = bars.encode(tooltip=["row:N", "what:N", "pct:N", "companies:N"])
+    big = "datum.share >= 0.07"
+    on_lime = base.transform_filter(f"{big} && datum.bucket == 'long'").mark_text(
+        **_text(fs, LABEL_PX, color=color("canvas"), fontWeight="bold")
+    )
+    on_grey = base.transform_filter(f"{big} && datum.bucket != 'long'").mark_text(
+        **_text(fs, LABEL_PX, color=color("text"))
+    )
+    pcts = [m.encode(x=alt.X("xm:Q", scale=x_scale), text="pct:N") for m in (on_lime, on_grey)]
+    totals = (
+        d.group_by("row")
+        .agg(pl.col("usd").sum())
+        .with_columns(t=pl.col("usd").map_elements(_fmt_bn, return_dtype=pl.String))
+    )
+    tot = (
+        alt.Chart(alt.Data(values=totals.select("row", "t").to_dicts()))
+        .mark_text(align="left", dx=12 * fs, **_text(fs, LABEL_PX - 1, color=color("text_secondary")))
+        .encode(y=y, x=alt.datum(1.0), text="t:N")
+    )
+    chart = alt.layer(bars, *pcts, tot).properties(width=width - label_px - total_px, height=height)
+    return chart.configure(**vl_config(fs))

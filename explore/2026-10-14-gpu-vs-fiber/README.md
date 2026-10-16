@@ -10,7 +10,7 @@ how long each is assumed to last, what happens to its price, what bankrupt owner
 could buy the assets now.
 
 ## Findings (curated_asset_values to 2026-10-16; SEC filings to 2026-10-13)
-Seven visuals, in story order.
+Eight visuals, in story order.
 - **years: both build-outs paired short-lived gear with long-lived assets.** One square per year of book
   life (the median across companies of the longest life each states), grouped by era. Dot-com: network
   electronics 10 years (2–14 across Genuity, Level 3, Qwest and WorldCom), fiber and conduit 25 (7–57).
@@ -34,6 +34,18 @@ Seven visuals, in story order.
   was bought whole by Level 3 for about $3bn in 2011. Velocita's 14,000-mile network went to AT&T for
   $37m against $827m of debt. Williams Communications owed $7.15bn and was bought for $680m in 2005. No
   GPU fleet has been sold out of bankruptcy as of this dataset.
+- **split: the dot-com builders bought glass; the AI builders buy gear.** Of the gross property and
+  equipment five fiber carriers added in 2000 (Level 3, Williams Communications, Genuity, Metromedia Fiber
+  Network, Touch America: the carriers that report fiber and electronics apart), 76% of the part whose kind is
+  known went into long-lived plant (fiber, conduit, rights-of-way, buildings) and 24% into electronics;
+  30% of the additions sat in construction in progress or lumped lines. In the AI builders' latest year
+  (Microsoft, Alphabet, Amazon, Meta, Oracle, CoreWeave; $521bn of additions) 66% of the known part went to
+  servers and network gear and 34% to land and buildings, with 38% mixed. Bounds, putting the whole mixed
+  line one way or the other: long-lived 53–83% of the dot-com additions, short-lived 41–79% of the AI ones.
+  A Harvard Business School case (2001) puts trenching and laying conduit and fiber at over 70% of a dark
+  network's cost. The national picture differs: US spending on communications equipment ran several times
+  telecom structures and fiber cable in 2000 (BEA via the Richmond Fed; Doms, San Francisco Fed), because
+  the whole economy, not just the long-haul builders, bought electronics, and kept re-buying them.
 - **glass: CoreWeave owns almost no glass.** Of gross property and equipment on each latest 10-K, land
   and buildings are 49% at Microsoft ($210bn of $432bn), 29% at Amazon and Meta, 18% at Oracle, 14% at
   Alphabet (understated: its data centres sit in a mixed line) and 8% at CoreWeave ($2.8bn of $34bn,
@@ -70,6 +82,11 @@ Seven visuals, in story order.
 - **Ladder:** two prices per generation from one venue and configuration (Lambda on-demand, 8-GPU
   machines, per GPU), read from archived pricing pages on 2026-01-09 and 2026-10-01.
 - **Glut:** the price paths' first five years, from the same rows as the price analysis.
+- **Split:** for each company, the change in gross PP&E by kind between two balance sheets a year apart
+  (latest filing's figures where a year was restated; the dot-com carriers at 1999-12-31 and 2000-12-31,
+  Touch America only on the books as it has no 1999 column), summed per era. "Known" excludes the mixed
+  line (construction in progress, lumped lines). A change in gross PP&E is additions net of retirements and
+  impairments.
 - **Buyers:** mart 111 (SEC XBRL): cash and cash equivalents plus short-term investments; debt as
   `LongTermDebt` (current and non-current) or its parts, else `DebtInstrumentCarryingAmount`; leases
   excluded. Each company's latest balance sheet with both measures, as filed by the build's as-of.

@@ -216,6 +216,75 @@ def glass(con, companies: list[str], buckets: dict[str, str]) -> pl.DataFrame:
     return out
 
 
+def ppe_by_bucket(con, companies: list[str], buckets: dict[str, str]) -> pl.DataFrame:
+    """Gross PP&E per (company, balance-sheet date, bucket) in dollars; for a date reported in several
+    filings (restatements), the latest filing's figures."""
+    scale = {"usd": 1.0, "usd_thousands": 1e3, "usd_millions": 1e6}
+    g = query(
+        con,
+        """SELECT entity AS company, asset, unit, value, period_end, statement_date FROM asset_values
+           WHERE metric = 'ppe_gross' AND list_contains(?, entity)
+           QUALIFY statement_date = max(statement_date) OVER (PARTITION BY entity, period_end)""",
+        [companies],
+    )
+    return (
+        g.with_columns(
+            bucket=pl.col("asset").replace_strict(buckets, return_dtype=pl.String),
+            usd=pl.col("value") * pl.col("unit").replace_strict(scale, return_dtype=pl.Float64),
+        )
+        .group_by("company", "period_end", "bucket")
+        .agg(pl.col("usd").sum())
+    )
+
+
+def era_split(con, cfg: dict) -> pl.DataFrame:
+    """Per era and measure ('on the books' = gross PP&E at the date; 'added' = its change over the year):
+    dollars and shares by bucket, across the era's companies."""
+    buckets = cfg["glass_buckets"]
+    out = []
+
+    def add(era: str, companies: list[str], dates: dict[str, tuple]) -> None:
+        g = ppe_by_bucket(con, companies, buckets)
+        for c in companies:
+            now, prior = dates[c]
+            a = g.filter((pl.col("company") == c) & (pl.col("period_end") == now))
+            b = g.filter((pl.col("company") == c) & (pl.col("period_end") == prior))
+            if a.is_empty():
+                raise ValueError(f"split: no PP&E for {c} at {now}")
+            for bucket in ("long", "mixed", "short"):
+                v = a.filter(pl.col("bucket") == bucket)["usd"].sum()
+                out.append({"era": era, "measure": "on the books", "company": c, "bucket": bucket, "usd": v})
+                if not b.is_empty():
+                    w = b.filter(pl.col("bucket") == bucket)["usd"].sum()
+                    out.append({"era": era, "measure": "added in a year", "company": c, "bucket": bucket, "usd": v - w})
+
+    d = cfg["split_dotcom"]
+    to_date = lambda x: x if isinstance(x, date) else date.fromisoformat(x)  # noqa: E731
+    add(
+        "Dot-com builders, 2000",
+        d["carriers"],
+        {c: (to_date(d["now"]), to_date(d["prior"])) for c in d["carriers"]},
+    )
+    ai = ppe_by_bucket(con, cfg["glass_companies"], buckets)
+    dates = {}
+    for c in cfg["glass_companies"]:
+        ends = sorted(ai.filter(pl.col("company") == c)["period_end"].unique())
+        dates[c] = (ends[-1], ends[-2])
+    add("AI builders, latest year", cfg["glass_companies"], dates)
+    per = pl.DataFrame(out)
+    tot = (
+        per.group_by("era", "measure", "bucket", maintain_order=True)
+        .agg(pl.col("usd").sum(), companies=pl.col("company").str.join(", "))
+        .with_columns(share=pl.col("usd") / pl.col("usd").sum().over("era", "measure"))
+    )
+    known = (
+        tot.filter(pl.col("bucket") != "mixed")
+        .with_columns(of_known=pl.col("usd") / pl.col("usd").sum().over("era", "measure"))
+        .select("era", "measure", "bucket", "of_known")
+    )
+    return tot.join(known, on=["era", "measure", "bucket"], how="left")
+
+
 def buyers(con, tickers: list[str]) -> pl.DataFrame:
     return query(
         con,
@@ -236,6 +305,13 @@ def build(con, as_of: date, cfg: dict) -> Story:
     lit = rows(con, [cfg["glut_utilization_id"]]).to_dicts()[0]
     who = buyers(con, cfg["buyers"])
     gl = glass(con, cfg["glass_companies"], cfg["glass_buckets"])
+    split = era_split(con, cfg)
+
+    def known(era_prefix: str, measure: str, bucket: str) -> float:
+        f = split.filter(
+            pl.col("era").str.starts_with(era_prefix) & (pl.col("measure") == measure) & (pl.col("bucket") == bucket)
+        )
+        return f["of_known"][0]
 
     def share(company: str, bucket: str) -> float:
         v = gl.filter((pl.col("company") == company) & (pl.col("bucket") == bucket))["share"]
@@ -336,6 +412,22 @@ def build(con, as_of: date, cfg: dict) -> Story:
                 "in bankruptcy."
             ),
         },
+        "split": {
+            "title": (
+                f"The dot-com builders put {known('Dot-com', 'added in a year', 'long'):.0%} of their known "
+                f"spending into long-lived plant; the AI builders put {known('AI', 'added in a year', 'short'):.0%} "
+                "into short-lived gear"
+            ),
+            "subtitle": (
+                "Gross property and equipment by kind, on the books and added over one year: five carriers that "
+                "report fiber and electronics apart (2000) against Microsoft, Alphabet, Amazon, Meta, Oracle and "
+                "CoreWeave (latest fiscal year). Shares of known spending exclude the mixed line."
+            ),
+            "notes": [
+                "Mixed: construction in progress and lines that lump kinds (Alphabet's technical infrastructure). "
+                "Nationally, US telecom equipment spending ran far above fiber and structures in 2000 (BEA, Fed)."
+            ],
+        },
         "glass": {
             "title": (
                 f"{least} owns almost no glass: {long_[least]:.0%} of its property is buildings and land, "
@@ -376,6 +468,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "book_life": books,
             "buyers": who,
             "glass": gl,
+            "split": split,
         },
         sources=SOURCES,
         as_of=as_of,

@@ -117,11 +117,22 @@ config:
     dc_shell: long         # buildings and improvements (offices included where the line mixes them)
     construction_in_progress: mixed
     other_ppe: mixed       # incl. Alphabet's technical infrastructure (servers and data centres in one line)
+    dark_fiber: long       # fiber, conduit, rights-of-way, network infrastructure
+    carrier_buildings: long
+    fiber_electronics: short
+    carrier_mixed: mixed   # construction in progress and lines that lump fiber with electronics
+  # 9. Where each era's money went: the carriers that report fiber and electronics apart, at the peak of the
+  # build-out (year-end 2000, additions over 2000), against the AI companies' latest year.
+  split_dotcom:
+    carriers: [Level 3, Williams Communications, Genuity, Metromedia Fiber Network, Touch America]
+    now: 2000-12-31
+    prior: 1999-12-31
 visuals:
   - {name: years, chart: years, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: book-life, chart: book_life, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: ladder, chart: ladder, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: glut, chart: glut, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: recovery, chart: recovery, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
+  - {name: split, chart: split, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: glass, chart: glass, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: buyers, chart: buyers, targets: [x_png, linkedin_png, blog_html], sources: [sec_edgar]}
