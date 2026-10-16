@@ -91,3 +91,11 @@ exploration (analyses never import each other); a figure both need goes into the
   archived pages are all welcome, marked `secondary`.
 - Values stay in the unit the source stated (each metric lists its allowed units); the analysis
   converts and says how.
+
+## Story and receipts (author, 2026-10-16)
+Three receipts, posted in this order, each promoted from this exploration: `years` → `gpus-are-not-glass`,
+`split` → `glass-then-gear-now`, `exposure` → `own-the-shell`. Names chosen, not yet reserved or promoted. On
+the charts "glass" is literal (fiber, conduit, rights-of-way); the AI era's long-lived site is the "powered
+shell" (land and buildings, with the power plants and grid behind them); the fiber between today's data
+centres is left out.
+
