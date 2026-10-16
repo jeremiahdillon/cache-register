@@ -53,7 +53,8 @@ config:
             fiber_electronics-book_useful_life-2002-04-01, fiber_electronics-book_useful_life-2002-04-01-2,
             fiber_electronics-book_useful_life-2002-04-01-3, fiber_electronics-book_useful_life-2002-04-01-4]
     - group: Dot-com fiber, conduit and rights-of-way
-      short: Fiber and conduit
+      short: Fiber, conduit and rights-of-way
+      tag: the glass
       lifespan: long
       era: dotcom
       ids: [dark_fiber-book_useful_life-2001-05-22, dark_fiber-book_useful_life-2001-05-22-2,
@@ -63,6 +64,7 @@ config:
             dark_fiber-book_useful_life-2002-04-01-5, dark_fiber-book_useful_life-2002-04-01-6]
     - group: Data-centre buildings, 2024–26
       short: Data-centre buildings
+      tag: the powered shell
       lifespan: long
       era: ai
       ids: [dc_shell-book_useful_life-2026-02-11, dc_shell-book_useful_life-2026-02-11-2,
@@ -70,11 +72,23 @@ config:
             dc_shell-book_useful_life-2026-02-05, dc_shell-book_useful_life-2026-02-05-2,
             dc_shell-book_useful_life-2025-01-30, dc_shell-book_useful_life-2025-01-30-2,
             dc_shell-book_useful_life-2026-07-29, dc_shell-book_useful_life-2026-07-29-2]
-    - group: Nuclear power contracts (term)
-      short: Nuclear power contracts (term)
+    - group: Power plants and grid, FY2025
+      short: Power plants and grid
       lifespan: long
       era: ai
-      ids: [power-contract_term-2024-09-20, power-contract_term-2025-06-03]
+      # stated total lives only: Constellation gas; Dominion nuclear and other generation; AEP, AEP Texas and AEP
+      # Transmission Co transmission and distribution; Exelon transmission and distribution. Left out: remaining
+      # lives (Vistra, Duke), Talen's fresh-start basis, Entergy's tax-note average, AEP's 20-162-year generation
+      # range, 'up to' figures (Southern Power) and wind and solar.
+      ids: [power-book_useful_life-2026-02-12-10, power-book_useful_life-2026-02-12-7,
+            power-book_useful_life-2026-02-12-8, power-book_useful_life-2026-02-12-9,
+            power-book_useful_life-2026-02-12-11, power-book_useful_life-2026-02-12-12,
+            power-book_useful_life-2026-02-12-3, power-book_useful_life-2026-02-12-4,
+            power-book_useful_life-2026-02-12-5, power-book_useful_life-2026-02-12-6,
+            power-book_useful_life-2026-02-24, power-book_useful_life-2026-02-24-2,
+            power-book_useful_life-2026-02-23, power-book_useful_life-2026-02-23-2,
+            power-book_useful_life-2026-02-23-3, power-book_useful_life-2026-02-23-4,
+            power-book_useful_life-2026-02-12-13, power-book_useful_life-2026-02-12-14]
   # 3. What dot-com networks fetched: one track per company, in date order.
   recovery:
     - company: Global Crossing
@@ -111,16 +125,23 @@ config:
   buyers: [GOOGL, AMZN, META, MSFT, NVDA, ORCL, CRWV]
   # 8. How much is glass: gross property and equipment by class, latest 10-K, in three buckets.
   glass_companies: [Microsoft, Alphabet, Amazon, Meta, Oracle, CoreWeave]
-  glass_buckets:
-    gpu_generic: short     # servers and network equipment
-    land: long
-    dc_shell: long         # buildings and improvements (offices included where the line mixes them)
+  # Kinds of property: gear (short-lived electronics), glass (fiber, conduit, rights-of-way: the dot-com
+  # long-lived plant), buildings (the carriers'), shell (the AI powered shell: land and buildings), mixed
+  # (construction in progress, lines that lump kinds, other equipment).
+  kinds:
+    gpu_generic: gear
+    fiber_electronics: gear
+    dark_fiber: glass
+    carrier_buildings: buildings
+    land: shell
+    dc_shell: shell
     construction_in_progress: mixed
-    other_ppe: mixed       # incl. Alphabet's technical infrastructure (servers and data centres in one line)
-    dark_fiber: long       # fiber, conduit, rights-of-way, network infrastructure
-    carrier_buildings: long
-    fiber_electronics: short
-    carrier_mixed: mixed   # construction in progress and lines that lump fiber with electronics
+    other_ppe: mixed
+    carrier_mixed: mixed
+  # Lines split by the company's own stated mix (drawn as estimates): Alphabet says about 60% of its
+  # technical-infrastructure investment goes to servers and 40% to data centres and networking equipment.
+  allocate:
+    - {company: Alphabet, line: Technical infrastructure, gear: 0.6, shell: 0.4}
   # 9. Where each era's money went: the carriers that report fiber and electronics apart, at the peak of the
   # build-out (year-end 2000, additions over 2000), against the AI companies' latest year.
   split_dotcom:
@@ -128,11 +149,14 @@ config:
     now: 2000-12-31
     prior: 1999-12-31
 visuals:
-  - {name: years, chart: years, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
+  - {name: years, chart: years, targets: [x_png, linkedin_png, x_video, linkedin_video, blog_html], sources: [curated_asset_values]}
+  - {name: split, chart: split, targets: [x_png, linkedin_png, x_video, linkedin_video, blog_html], sources: [curated_asset_values]}
+  - name: exposure
+    chart: exposure
+    targets: [x_png, linkedin_png, x_video, linkedin_video, blog_html]
+    sources: [curated_asset_values, sec_edgar]
   - {name: book-life, chart: book_life, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: ladder, chart: ladder, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: glut, chart: glut, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: recovery, chart: recovery, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
-  - {name: split, chart: split, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
-  - {name: glass, chart: glass, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: buyers, chart: buyers, targets: [x_png, linkedin_png, blog_html], sources: [sec_edgar]}

@@ -9,14 +9,40 @@ is an open test that compares GPUs, and the AI infrastructure around them, with 
 how long each is assumed to last, what happens to its price, what bankrupt owners recovered, and who
 could buy the assets now.
 
+## Terms
+On the charts, **glass** is literal: the fiber, with its conduit and rights-of-way. **Gear** is the
+short-lived electronics written off within a decade: the dot-com era's lasers, switches and routers; today's
+servers and GPUs. The **powered shell** is the AI era's long-lived site: land and buildings, with the power
+plants and grid behind them. The fiber between today's data centres is left out: under 2% of the AI
+builders' annual property additions, and not the dot-com build-out.
+
 ## Findings (curated_asset_values to 2026-10-16; SEC filings to 2026-10-13)
-Eight visuals, in story order.
-- **years: both build-outs paired short-lived gear with long-lived assets.** One square per year of book
-  life (the median across companies of the longest life each states), grouped by era. Dot-com: network
-  electronics 10 years (2–14 across Genuity, Level 3, Qwest and WorldCom), fiber and conduit 25 (7–57).
-  AI: servers and GPUs 6 (2–6 at Microsoft, Alphabet, Amazon, Meta, Oracle, CoreWeave and Nebius; Amazon
-  cut a subset from 6 to 5 for 2025, citing the pace of AI), nuclear power contracts 20, data-centre
-  buildings 39 (5–60). The glass of the dot-com era was the fiber; in the AI era it is buildings and power.
+The three story visuals, in posting order (each with a still, a video and an HTML version), then the
+earlier exploration views.
+- **years: GPUs get 5.5 years on the books, like the dot-com era's network gear (7); its glass got
+  22.5.** One square per year: the median across companies of the midpoint of each stated life. Dot-com:
+  network electronics 7 (2–14 across Genuity, Level 3, Qwest and WorldCom), fiber, conduit and rights-of-way
+  22.5 (7–57). AI: servers and GPUs 5.5 (2–6 at Microsoft, Alphabet, Amazon, Meta, Oracle, CoreWeave and
+  Nebius), data-centre buildings 23.5 (5–60), power plants and grid 46 (stated total lives at Constellation,
+  Dominion, AEP and Exelon: gas 40–45, nuclear 54–64, transmission and distribution 5–85). Each build-out
+  paired short-lived gear with long-lived assets.
+- **split: in 2000 the fiber builders spent 60% of their known additions on glass; the AI builders spend
+  65% on short-lived gear.** Additions to gross property and equipment in one year: $12.8bn at four fiber
+  carriers that report fiber and electronics apart (Level 3, Williams, Genuity, Metromedia Fiber; 2000) —
+  glass 60%, buildings 16%, gear 24% of the known part — against $521bn at Microsoft, Alphabet, Amazon,
+  Meta, Oracle and CoreWeave in their latest year (41×): gear 65%, powered shell 35%. Counting the unassigned
+  additions (construction in progress, lumped lines) all one way, long-lived is 53–83% then and 26–52% now.
+  A Harvard Business School case (2001) puts trenching and laying conduit and fiber at over 70% of a dark
+  network's cost. Nationally the picture differs: US spending on communications equipment ran several times
+  fiber cable and telecom structures in 2000 (BEA via the Richmond Fed; Doms, San Francisco Fed).
+- **exposure: CoreWeave owns little of the powered shell: 8% of its property is buildings and land, and it
+  owes 6× its cash.** Gross property and equipment on each latest 10-K, by kind, with debt ÷ cash and
+  short-term investments (leases excluded): Microsoft 49% shell (0.5×), Alphabet 38% (24 points estimated;
+  0.4×), Amazon 29% (1.1×), Meta 29% (0.9×), Oracle 18% (4.1×), CoreWeave 8% (6.4×). CoreWeave rents its
+  data centres, so its landlords own the shell; Oracle's construction in progress is mostly servers awaiting
+  deployment. The two with the least shell are the two most indebted.
+
+### Earlier views (exploration only)
 - **book-life: six years on the books, three newer generations.** From NVIDIA's announcement, a
   six-year book life (the servers' life at Microsoft, Alphabet, Oracle and CoreWeave, and the GPU
   collateral's in CoreWeave's DDTL 2.0 loan) took the A100 to May 2026. In that time NVIDIA announced
@@ -34,27 +60,6 @@ Eight visuals, in story order.
   was bought whole by Level 3 for about $3bn in 2011. Velocita's 14,000-mile network went to AT&T for
   $37m against $827m of debt. Williams Communications owed $7.15bn and was bought for $680m in 2005. No
   GPU fleet has been sold out of bankruptcy as of this dataset.
-- **split: the dot-com builders bought glass; the AI builders buy gear.** Of the gross property and
-  equipment five fiber carriers added in 2000 (Level 3, Williams Communications, Genuity, Metromedia Fiber
-  Network, Touch America: the carriers that report fiber and electronics apart), 76% of the part whose kind is
-  known went into long-lived plant (fiber, conduit, rights-of-way, buildings) and 24% into electronics;
-  30% of the additions sat in construction in progress or lumped lines. In the AI builders' latest year
-  (Microsoft, Alphabet, Amazon, Meta, Oracle, CoreWeave; $521bn of additions) 66% of the known part went to
-  servers and network gear and 34% to land and buildings, with 38% mixed. Bounds, putting the whole mixed
-  line one way or the other: long-lived 53–83% of the dot-com additions, short-lived 41–79% of the AI ones.
-  A Harvard Business School case (2001) puts trenching and laying conduit and fiber at over 70% of a dark
-  network's cost. The national picture differs: US spending on communications equipment ran several times
-  telecom structures and fiber cable in 2000 (BEA via the Richmond Fed; Doms, San Francisco Fed), because
-  the whole economy, not just the long-haul builders, bought electronics, and kept re-buying them.
-- **glass: CoreWeave owns almost no glass.** Of gross property and equipment on each latest 10-K, land
-  and buildings are 49% at Microsoft ($210bn of $432bn), 29% at Amazon and Meta, 18% at Oracle, 14% at
-  Alphabet (understated: its data centres sit in a mixed line) and 8% at CoreWeave ($2.8bn of $34bn,
-  fit-out of leased buildings). Servers and network gear are 62% at CoreWeave and 50% at Microsoft (44% a
-  year earlier). Oracle says its construction in progress is mostly servers and networking awaiting
-  deployment. In a bust, a neocloud's assets are mostly GPUs; the long-lived buildings belong to its
-  landlords. Alphabet says about 60% of its technical-infrastructure spending goes to servers; Microsoft's
-  CFO has put the short-lived share of its spending at "roughly two thirds" (stated in words, not in the
-  dataset).
 - **buyers: the likely buyers have the cash.** On their latest balance sheets (May–July 2026),
   Alphabet, Amazon, Meta, Microsoft and NVIDIA hold $589bn in cash and short-term investments
   (Alphabet $242bn). Oracle owes $130bn against $32bn (4×) and CoreWeave $36bn against $6bn (6×), before
@@ -70,8 +75,10 @@ Eight visuals, in story order.
   Only quotes from one source are joined into a line, except the H100 market line, which joins Latent
   Space's 2023–24 quotes to Silicon Data's neocloud H100 index. Lambda's 8-GPU instance prices are
   divided by 8 to get a per-GPU price. A quote covering a period is placed at the period's midpoint.
-- **Years:** per group, the median across companies of the longest life each states (rounded to whole
-  squares); the stated ranges are in the HTML tooltips.
+- **Years:** per group, the median across companies of the midpoint of each company's stated life (a part
+  square for a half year); the stated ranges are in the HTML tooltips. Power: stated total lives only (left
+  out: remaining lives, Talen's fresh-start basis, Entergy's tax-note average, AEP's 20–162-year generation
+  range, "up to" figures, wind and solar).
 - **Glass:** gross property and equipment by class from each company's latest 10-K note (both columns
   are in the dataset), in three buckets: servers and network equipment (short-lived); land, buildings
   and leasehold improvements (long-lived); construction in progress and lines that mix kinds or hold
@@ -82,6 +89,9 @@ Eight visuals, in story order.
 - **Ladder:** two prices per generation from one venue and configuration (Lambda on-demand, 8-GPU
   machines, per GPU), read from archived pricing pages on 2026-01-09 and 2026-10-01.
 - **Glut:** the price paths' first five years, from the same rows as the price analysis.
+- **Alphabet's technical infrastructure** (servers and data centres in one line) is split 60/40 into gear
+  and powered shell by Alphabet's own statement of where that investment goes; drawn lighter as an estimate.
+  Its 40% includes networking equipment, so the shell share is an upper bound.
 - **Split:** for each company, the change in gross PP&E by kind between two balance sheets a year apart
   (latest filing's figures where a year was restated; the dot-com carriers at 1999-12-31 and 2000-12-31,
   Touch America only on the books as it has no 1999 column), summed per era. "Known" excludes the mixed

@@ -74,22 +74,23 @@ def price_paths(con, series: list[dict]) -> pl.DataFrame:
 
 
 def years_on_books(life: pl.DataFrame, groups: list[dict]) -> pl.DataFrame:
-    """Per group: the median across companies of the longest life each states (whole years for the squares),
-    ordered by era (dot-com first) and then by years."""
-    short = {g["group"]: g["short"] for g in groups}
-    lifespan = {g["group"]: g["lifespan"] for g in groups}
+    """Per group: the median across companies of the midpoint of each company's stated life (a single figure
+    is its own midpoint), ordered by era (dot-com first) and then by years."""
+    meta = {g["group"]: (g["short"], g["lifespan"], g.get("tag")) for g in groups}
     return (
-        life.group_by("group", "era", maintain_order=True)
+        life.with_columns(mid=(pl.col("low") + pl.col("high")) / 2)
+        .group_by("group", "era", maintain_order=True)
         .agg(
-            years=pl.col("high").median(),
+            years=pl.col("mid").median(),
             companies=pl.len(),
             low=pl.col("low").min(),
             high=pl.col("high").max(),
             who=pl.col("entity").str.join(", "),
         )
         .with_columns(
-            label=pl.col("group").replace_strict(short, return_dtype=pl.String),
-            lifespan=pl.col("group").replace_strict(lifespan, return_dtype=pl.String),
+            label=pl.col("group").map_elements(lambda g: meta[g][0], return_dtype=pl.String),
+            lifespan=pl.col("group").map_elements(lambda g: meta[g][1], return_dtype=pl.String),
+            tag=pl.col("group").map_elements(lambda g: meta[g][2], return_dtype=pl.String),
             era_order=pl.col("era").replace_strict({"dotcom": 0, "ai": 1}, return_dtype=pl.Int64),
         )
         .sort("era_order", "years")
@@ -188,101 +189,118 @@ def book_life(con, launches: list[dict], years_on_books: int, life_ids: list[str
     return pl.DataFrame(out)
 
 
-def glass(con, companies: list[str], buckets: dict[str, str]) -> pl.DataFrame:
-    """Per company and bucket (short / long / mixed): gross PP&E at the latest balance-sheet date in the
-    curated 10-K rows, as a share of the company's gross PP&E (incl. construction in progress)."""
-    g = query(
-        con,
-        """SELECT entity AS company, asset, value, unit, period_end, scope, id FROM asset_values
-           WHERE metric = 'ppe_gross' AND list_contains(?, entity)
-           QUALIFY period_end = max(period_end) OVER (PARTITION BY entity)""",
-        [companies],
-    )
-    if set(g["unit"]) != {"usd_millions"}:
-        raise ValueError(f"glass: expected usd_millions, got {sorted(set(g['unit']))}")
-    unknown = set(g["asset"]) - set(buckets)
-    if unknown:
-        raise ValueError(f"glass: no bucket for assets {sorted(unknown)}")
-    out = (
-        g.with_columns(bucket=pl.col("asset").replace_strict(buckets, return_dtype=pl.String))
-        .group_by("company", "bucket", "period_end")
-        .agg(usd=pl.col("value").sum() * 1e6, lines=pl.col("scope").str.join("; "))
-        .with_columns(total=pl.col("usd").sum().over("company"))
-        .with_columns(share=pl.col("usd") / pl.col("total"))
-    )
-    missing = set(companies) - set(out["company"])
-    if missing:
-        raise ValueError(f"glass: no PP&E rows for {sorted(missing)}")
-    return out
+SCALE = {"usd": 1.0, "usd_thousands": 1e3, "usd_millions": 1e6}
 
 
-def ppe_by_bucket(con, companies: list[str], buckets: dict[str, str]) -> pl.DataFrame:
-    """Gross PP&E per (company, balance-sheet date, bucket) in dollars; for a date reported in several
-    filings (restatements), the latest filing's figures."""
-    scale = {"usd": 1.0, "usd_thousands": 1e3, "usd_millions": 1e6}
+def ppe_rows(con, companies: list[str], cfg: dict) -> pl.DataFrame:
+    """Gross PP&E per (company, balance-sheet date, kind) in dollars, with `estimated` for the parts of a line
+    split by the company's own stated mix (`allocate` in explore.yaml). For a date reported in several filings
+    (restatements), the latest filing's figures."""
     g = query(
         con,
-        """SELECT entity AS company, asset, unit, value, period_end, statement_date FROM asset_values
+        """SELECT entity AS company, asset, scope, unit, value, period_end, statement_date FROM asset_values
            WHERE metric = 'ppe_gross' AND list_contains(?, entity)
            QUALIFY statement_date = max(statement_date) OVER (PARTITION BY entity, period_end)""",
         [companies],
     )
-    return (
-        g.with_columns(
-            bucket=pl.col("asset").replace_strict(buckets, return_dtype=pl.String),
-            usd=pl.col("value") * pl.col("unit").replace_strict(scale, return_dtype=pl.Float64),
-        )
-        .group_by("company", "period_end", "bucket")
-        .agg(pl.col("usd").sum())
+    unknown = set(g["asset"]) - set(cfg["kinds"])
+    if unknown:
+        raise ValueError(f"no kind for assets {sorted(unknown)}")
+    g = g.with_columns(
+        kind=pl.col("asset").replace_strict(cfg["kinds"], return_dtype=pl.String),
+        usd=pl.col("value") * pl.col("unit").replace_strict(SCALE, return_dtype=pl.Float64),
+        estimated=pl.lit(False),
     )
+    for a in cfg.get("allocate", []):
+        if a["company"] not in companies:
+            continue
+        hit = (pl.col("company") == a["company"]) & pl.col("scope").str.starts_with(a["line"])
+        if g.filter(hit).is_empty():
+            raise ValueError(f"allocate: no line {a['line']!r} for {a['company']}")
+        shares = {k: v for k, v in a.items() if k not in ("company", "line")}
+        if abs(sum(shares.values()) - 1) > 1e-9:
+            raise ValueError(f"allocate: shares for {a['company']} do not sum to 1")
+        parts = [
+            g.filter(hit).with_columns(kind=pl.lit(k), usd=pl.col("usd") * v, estimated=pl.lit(True))
+            for k, v in shares.items()
+        ]
+        g = pl.concat([g.filter(~hit), *parts])
+    return g.group_by("company", "period_end", "kind", "estimated").agg(pl.col("usd").sum())
 
 
-def era_split(con, cfg: dict) -> pl.DataFrame:
-    """Per era and measure ('on the books' = gross PP&E at the date; 'added' = its change over the year):
-    dollars and shares by bucket, across the era's companies."""
-    buckets = cfg["glass_buckets"]
-    out = []
+LONG = ("glass", "buildings", "shell")
 
-    def add(era: str, companies: list[str], dates: dict[str, tuple]) -> None:
-        g = ppe_by_bucket(con, companies, buckets)
+
+def era_split(con, cfg: dict) -> tuple[pl.DataFrame, dict]:
+    """Additions to gross PP&E over one year, per era and kind (the change between two balance sheets a year
+    apart, summed over the era's companies), with each kind's share of the known (non-mixed) additions; and per
+    era the totals and the range of the long-lived share if the mixed additions went all one way."""
+    to_date = lambda x: x if isinstance(x, date) else date.fromisoformat(x)  # noqa: E731
+    d = cfg["split_dotcom"]
+    eras = {
+        "Dot-com fiber builders, 2000": (
+            d["carriers"],
+            {c: (to_date(d["now"]), to_date(d["prior"])) for c in d["carriers"]},
+        ),
+    }
+    ai = ppe_rows(con, cfg["glass_companies"], cfg)
+    ai_dates = {}
+    for c in cfg["glass_companies"]:
+        ends = sorted(ai.filter(pl.col("company") == c)["period_end"].unique())
+        ai_dates[c] = (ends[-1], ends[-2])
+    eras["AI builders, latest year"] = (cfg["glass_companies"], ai_dates)
+    out, totals = [], {}
+    for era, (companies, dates) in eras.items():
+        g = ppe_rows(con, companies, cfg)
+        used = []
         for c in companies:
             now, prior = dates[c]
             a = g.filter((pl.col("company") == c) & (pl.col("period_end") == now))
             b = g.filter((pl.col("company") == c) & (pl.col("period_end") == prior))
             if a.is_empty():
                 raise ValueError(f"split: no PP&E for {c} at {now}")
-            for bucket in ("long", "mixed", "short"):
-                v = a.filter(pl.col("bucket") == bucket)["usd"].sum()
-                out.append({"era": era, "measure": "on the books", "company": c, "bucket": bucket, "usd": v})
-                if not b.is_empty():
-                    w = b.filter(pl.col("bucket") == bucket)["usd"].sum()
-                    out.append({"era": era, "measure": "added in a year", "company": c, "bucket": bucket, "usd": v - w})
-
-    d = cfg["split_dotcom"]
-    to_date = lambda x: x if isinstance(x, date) else date.fromisoformat(x)  # noqa: E731
-    add(
-        "Dot-com builders, 2000",
-        d["carriers"],
-        {c: (to_date(d["now"]), to_date(d["prior"])) for c in d["carriers"]},
-    )
-    ai = ppe_by_bucket(con, cfg["glass_companies"], buckets)
-    dates = {}
-    for c in cfg["glass_companies"]:
-        ends = sorted(ai.filter(pl.col("company") == c)["period_end"].unique())
-        dates[c] = (ends[-1], ends[-2])
-    add("AI builders, latest year", cfg["glass_companies"], dates)
+            if b.is_empty():
+                continue  # no prior column: no additions to measure
+            used.append(c)
+            for kind in sorted(set(a["kind"]) | set(b["kind"])):
+                for est in (False, True):
+                    v = a.filter((pl.col("kind") == kind) & (pl.col("estimated") == est))["usd"].sum()
+                    w = b.filter((pl.col("kind") == kind) & (pl.col("estimated") == est))["usd"].sum()
+                    if v or w:
+                        out.append({"era": era, "company": c, "kind": kind, "estimated": est, "usd": v - w})
+        e = pl.DataFrame([r for r in out if r["era"] == era])
+        total, mixed = e["usd"].sum(), e.filter(pl.col("kind") == "mixed")["usd"].sum()
+        long_ = e.filter(pl.col("kind").is_in(LONG))["usd"].sum()
+        known = total - mixed
+        totals[era] = {
+            "companies": used,
+            "total_usd": total,
+            "mixed_usd": mixed,
+            "long_share": long_ / known,
+            "long_low": long_ / total,
+            "long_high": (long_ + mixed) / total,
+        }
     per = pl.DataFrame(out)
-    tot = (
-        per.group_by("era", "measure", "bucket", maintain_order=True)
-        .agg(pl.col("usd").sum(), companies=pl.col("company").str.join(", "))
-        .with_columns(share=pl.col("usd") / pl.col("usd").sum().over("era", "measure"))
+    kinds = (
+        per.filter(pl.col("kind") != "mixed")
+        .group_by("era", "kind", maintain_order=True)
+        .agg(pl.col("usd").sum(), estimated_usd=pl.col("usd").filter(pl.col("estimated")).sum())
+        .with_columns(share=pl.col("usd") / pl.col("usd").sum().over("era"))
     )
-    known = (
-        tot.filter(pl.col("bucket") != "mixed")
-        .with_columns(of_known=pl.col("usd") / pl.col("usd").sum().over("era", "measure"))
-        .select("era", "measure", "bucket", "of_known")
-    )
-    return tot.join(known, on=["era", "measure", "bucket"], how="left")
+    return kinds, totals
+
+
+def exposure(con, cfg: dict, who: pl.DataFrame) -> pl.DataFrame:
+    """Per company and kind (gear / shell / mixed): gross PP&E on its latest balance sheet as a share of the
+    total (estimated parts flagged), with the company's debt ÷ cash and short-term investments (mart 111)."""
+    g = ppe_rows(con, cfg["glass_companies"], cfg)
+    g = g.filter(pl.col("period_end") == pl.col("period_end").max().over("company"))
+    out = g.with_columns(total=pl.col("usd").sum().over("company")).with_columns(share=pl.col("usd") / pl.col("total"))
+    debt = who.select("company", (pl.col("debt_usd") / pl.col("liquidity_usd")).alias("debt_to_cash"))
+    missing = set(cfg["glass_companies"]) - set(debt["company"])
+    if missing:
+        raise ValueError(f"exposure: no balance sheet for {sorted(missing)}")
+    return out.join(debt, on="company", how="left")
 
 
 def buyers(con, tickers: list[str]) -> pl.DataFrame:
@@ -304,22 +322,23 @@ def build(con, as_of: date, cfg: dict) -> Story:
     glut = prices.filter(pl.col("series").is_in(cfg["glut_series"]) & (pl.col("years") <= cfg["glut_years"]))
     lit = rows(con, [cfg["glut_utilization_id"]]).to_dicts()[0]
     who = buyers(con, cfg["buyers"])
-    gl = glass(con, cfg["glass_companies"], cfg["glass_buckets"])
-    split = era_split(con, cfg)
+    kinds, eras = era_split(con, cfg)
+    who = who.with_columns(times=pl.col("debt_usd") / pl.col("liquidity_usd"))
+    exp = exposure(con, cfg, who)
+    dot, ai = (eras[k] for k in eras)
+    dot_era, ai_era = list(eras)
 
-    def known(era_prefix: str, measure: str, bucket: str) -> float:
-        f = split.filter(
-            pl.col("era").str.starts_with(era_prefix) & (pl.col("measure") == measure) & (pl.col("bucket") == bucket)
-        )
-        return f["of_known"][0]
-
-    def share(company: str, bucket: str) -> float:
-        v = gl.filter((pl.col("company") == company) & (pl.col("bucket") == bucket))["share"]
+    def kind_share(era: str, kind: str) -> float:
+        v = kinds.filter((pl.col("era") == era) & (pl.col("kind") == kind))["share"]
         return v[0] if v.len() else 0.0
 
-    long_ = {c: share(c, "long") for c in cfg["glass_companies"]}
-    least = min(long_, key=long_.get)
-    most = max(long_, key=long_.get)
+    shell = {
+        c: exp.filter((pl.col("company") == c) & (pl.col("kind") == "shell"))["share"].sum()
+        for c in cfg["glass_companies"]
+    }
+    least = min(shell, key=shell.get)
+    most = max(shell, key=shell.get)
+    least_debt = exp.filter(pl.col("company") == least)["debt_to_cash"][0]
 
     ai_servers = life.filter(pl.col("group").str.starts_with("AI servers"))
     electronics = life.filter(pl.col("group").str.starts_with("Dot-com network electronics"))
@@ -338,7 +357,6 @@ def build(con, as_of: date, cfg: dict) -> Story:
     h100_last = h100["pct_of_first"][-1]
     oldest, newest = lad.row(0, named=True), lad.row(-1, named=True)
     first_gen = books.row(0, named=True)
-    who = who.with_columns(times=pl.col("debt_usd") / pl.col("liquidity_usd"))
     stretched = who.filter(pl.col("times") >= STRETCHED)
     rich = who.filter(pl.col("times") < STRETCHED)
     rich_names = ", ".join(rich.sort("liquidity_usd", descending=True)["company"])
@@ -347,7 +365,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
     yrs = years_on_books(life, cfg["lives"])
     span = {
         p: yrs.filter(pl.col("group").str.starts_with(p))["years"][0]
-        for p in ("AI servers", "Dot-com fiber", "Data-centre")
+        for p in ("AI servers", "Dot-com fiber", "Dot-com network", "Data-centre")
     }
     title = "So far, GPUs look like the electronics on the fiber, not the glass"
     ai_lo, ai_hi = ai_servers["low"].min(), ai_servers["high"].max()
@@ -359,13 +377,13 @@ def build(con, as_of: date, cfg: dict) -> Story:
     by_visual = {
         "years": {
             "title": (
-                f"Both build-outs paired short-lived gear with long-lived assets: GPUs get {span['AI servers']:g} "
-                f"years on the books, data centres {span['Data-centre']:g}"
+                f"GPUs get {span['AI servers']:g} years on the books, like the dot-com era's network gear "
+                f"({span['Dot-com network']:g}); its glass got {span['Dot-com fiber']:g}"
             ),
             "subtitle": (
-                "One square per year of book life (the median of the longest life each company states). Lime: "
-                "short-lived gear, written off in under a decade; grey: long-lived assets. In the dot-com era the "
-                f"glass was the fiber ({span['Dot-com fiber']:g} years); in the AI era it is buildings and power."
+                "One square per year of book life: the median across companies of the midpoint of each stated "
+                "life. Each build-out paired short-lived gear (lime) with long-lived assets (grey): then the glass, "
+                "now the powered shell and the power plants and grid behind it."
             ),
         },
         "book-life": {
@@ -414,33 +432,36 @@ def build(con, as_of: date, cfg: dict) -> Story:
         },
         "split": {
             "title": (
-                f"The dot-com builders put {known('Dot-com', 'added in a year', 'long'):.0%} of their known "
-                f"spending into long-lived plant; the AI builders put {known('AI', 'added in a year', 'short'):.0%} "
-                "into short-lived gear"
+                f"In 2000 the fiber builders spent {kind_share(dot_era, 'glass'):.0%} of their known additions on "
+                f"glass; the AI builders spend {kind_share(ai_era, 'gear'):.0%} on short-lived gear"
             ),
             "subtitle": (
-                "Gross property and equipment by kind, on the books and added over one year: five carriers that "
-                "report fiber and electronics apart (2000) against Microsoft, Alphabet, Amazon, Meta, Oracle and "
-                "CoreWeave (latest fiscal year). Shares of known spending exclude the mixed line."
+                f"Additions to gross property and equipment in one year: {fmt_usd(dot['total_usd'])} at "
+                f"{len(dot['companies'])} fiber carriers in 2000, {fmt_usd(ai['total_usd'])} at Microsoft, "
+                "Alphabet, Amazon, Meta, Oracle and "
+                f"CoreWeave in their latest year ({ai['total_usd'] / dot['total_usd']:.0f}×). Bars: known spending; "
+                "brackets: the long-lived share if the unassigned spending went all one way."
             ),
             "notes": [
-                "Mixed: construction in progress and lines that lump kinds (Alphabet's technical infrastructure). "
-                "Nationally, US telecom equipment spending ran far above fiber and structures in 2000 (BEA, Fed)."
+                "Unassigned: construction in progress and lines that lump kinds. Alphabet's technical infrastructure "
+                "is split 60/40 by its own statement (estimate). The carriers report fiber and electronics apart; "
+                "nationally, US communications-equipment spending ran far above fiber and structures in 2000."
             ],
         },
-        "glass": {
+        "exposure": {
             "title": (
-                f"{least} owns almost no glass: {long_[least]:.0%} of its property is buildings and land, "
-                f"against {long_[most]:.0%} at {most}"
+                f"{least} owns little of the powered shell: {shell[least]:.0%} of its property is buildings and "
+                f"land, and it owes {least_debt:.0f}× its cash"
             ),
             "subtitle": (
-                "Gross property and equipment on each company's latest 10-K: short-lived servers and network "
-                "gear, long-lived land and buildings, and lines that mix them or are not yet in service. "
-                f"{least} rents its data centres; the buildings belong to its landlords."
+                "Gross property and equipment on each latest 10-K: buildings and land (the powered shell), mixed or "
+                "not yet in service, and servers and network gear. Right: debt ÷ cash and short-term investments "
+                f"(leases excluded). {least} rents its data centres; its landlords own the shell. "
+                f"{most}: {shell[most]:.0%} shell."
             ),
             "notes": [
-                "Alphabet reports servers and data centres as one line (technical infrastructure, in 'mixed'), "
-                "so its long-lived share is understated; Amazon's and Microsoft's buildings include offices."
+                "Alphabet reports servers and data centres as one line, split 60/40 by its own statement (lighter: "
+                "estimate). Buildings include offices at Amazon, Microsoft and Alphabet."
             ],
         },
         "buyers": {
@@ -467,8 +488,8 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "ladder": lad,
             "book_life": books,
             "buyers": who,
-            "glass": gl,
-            "split": split,
+            "split": kinds,
+            "exposure": exp,
         },
         sources=SOURCES,
         as_of=as_of,
@@ -488,7 +509,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "Oracle, are excluded from debt. Alphabet's cash and short-term investments doubled in its Q2 2026 10-Q.",
         ],
         by_visual=by_visual,
-        extra={"h100_low": h100_low, "h100_last": h100_last, "oc3_1y": oc3_1y, "lit_pct": lit["value"]},
+        extra={"h100_low": h100_low, "h100_last": h100_last, "oc3_1y": oc3_1y, "lit_pct": lit["value"], "eras": eras},
     )
 
 

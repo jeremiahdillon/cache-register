@@ -21,6 +21,7 @@ from analysis import fmt_usd
 
 from cachereg.story.model import Story
 from cachereg.viz.brand import brand, color
+from cachereg.viz.fit import fit, fit_size
 from cachereg.viz.theme import vl_config
 
 GREYS = ["#858B9B", "#C3C8D3"]
@@ -40,95 +41,6 @@ def _text(fs: float, size: float = LABEL_PX, **kw) -> dict:
 
 
 # --- lives -------------------------------------------------------------------------------------
-
-
-def years(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
-    """One square per year of book life, a small gap every five years, grouped by era under a header;
-    short-lived gear in the accent, long-lived assets in grey. Landscape: one line per asset, labels at the
-    left. Portrait: lines of ten years (a decade each), label above."""
-    fs = font_scale
-    width, height = _size(width, height)
-    d = story.frames["years"]
-    portrait = height / width > 0.5  # the plot area of a portrait image is still wider than tall
-    per_line = 10 if portrait else 100
-    gap = 0.45  # extra columns between groups of five years
-    era_names = {"dotcom": "Dot-com build-out, 1998–2002", "ai": "AI build-out, 2020s"}
-    units, heads, eras, ends, top = [], [], [], [], 0.0
-    era = None
-    for r in d.to_dicts():
-        if r["era"] != era:
-            era = r["era"]
-            top += 0.4 if eras else 0.0
-            eras.append({"x": -0.9 if not portrait else -0.4, "y": top, "text": era_names[era]})
-            top += 1.15
-        n = int(round(r["years"]))
-        ink = color("accent") if r["lifespan"] == "short" else GREYS[0]
-        lines = -(-n // per_line)
-        if portrait:
-            heads.append({"x": -0.4, "y": top, "text": r["label"]})
-            top += 1.0
-        for i in range(n):
-            col = i % per_line
-            units.append(
-                {"label": r["label"], "x": col + (col // 5) * gap, "y": top + i // per_line, "ink": ink, "year": i + 1}
-            )
-        last = n - 1
-        ends.append(
-            {
-                "label": r["label"],
-                "x": (last % per_line) + ((last % per_line) // 5) * gap,
-                "y": top + last // per_line,
-                "text": f"{r['years']:g} years",
-                "range": f"{r['low']:g}–{r['high']:g} across {r['companies']} companies ({r['who']})",
-            }
-        )
-        if not portrait:
-            heads.append({"x": -0.9, "y": top, "text": r["label"]})
-        top += lines + (0.9 if portrait else 1.0)
-    label_px = 0 if portrait else 290 * fs
-    max_x = max(u["x"] for u in units)
-    tail_cols = 7
-    plot_w = width - label_px
-    cell = plot_w / (max_x + tail_cols + 1)
-    cell = min(cell, (height / top) * (1.0 if portrait else 0.75))
-    size = (cell * 0.78) ** 2
-    left = label_px / cell  # label room, in squares, left of the first square
-    x_scale = alt.Scale(domain=[-0.6 - left, -0.6 + plot_w / cell])
-    y_scale = alt.Scale(domain=[-0.6, max(top - 0.4, -0.6 + height / cell * 0.5)], reverse=True)
-    x = alt.X("x:Q", scale=x_scale, axis=None)
-    y = alt.Y("y:Q", scale=y_scale, axis=None)
-    sq = (
-        alt.Chart(alt.Data(values=units))
-        .mark_square(size=size, opacity=1)
-        .encode(x=x, y=y, color=alt.Color("ink:N", scale=None))
-    )
-    lab = (
-        alt.Chart(alt.Data(values=ends))
-        .mark_text(align="left", dx=cell * 0.5 + 8 * fs, **_text(fs, LABEL_PX + 1, color=color("text")))
-        .encode(x=x, y=y, text="text:N")
-    )
-    if interactive:
-        lab = lab.encode(tooltip=["label:N", "text:N", alt.Tooltip("range:N", title="Stated range")])
-    head = (
-        alt.Chart(alt.Data(values=heads))
-        .mark_text(
-            align="left" if portrait else "right",
-            baseline="middle",
-            **_text(fs, LABEL_PX + 1, color=color("text_secondary")),
-        )
-        .encode(x=x, y=y, text="text:N")
-    )
-    era_head = (
-        alt.Chart(alt.Data(values=eras))
-        .mark_text(
-            align="left" if portrait else "right",
-            baseline="middle",
-            **_text(fs, LABEL_PX + 3, color=color("text"), fontWeight="bold"),
-        )
-        .encode(x=x, y=y, text="text:N")
-    )
-    chart = alt.layer(sq, lab, head, era_head).properties(width=width, height=height)
-    return chart.configure(**vl_config(fs))
 
 
 # --- recovery ----------------------------------------------------------------------------------
@@ -510,174 +422,475 @@ def buyers(story: Story, width, height, font_scale: float = 1.0, interactive: bo
     return chart.configure(**vl_config(fs))
 
 
-# --- glass -------------------------------------------------------------------------------------
+# --- motion helpers ----------------------------------------------------------------------------
+# The three story charts (years, split, exposure) draw from an animation `state`; the static chart is the final
+# state, built through `fit` so its outer size is exactly the plot box. Their `_specs` fit the final frame once
+# and draw every frame at that size with every mark present (hidden ones at opacity 0), so the canvas never moves.
 
-BUCKETS = {
-    "long": "Land and buildings (long-lived)",
-    "mixed": "Mixed or not yet in service",
-    "short": "Servers and network gear (short-lived)",
-}
+FPS = 30
+LIME_DARK = "#7FA61E"  # long-lived kinds other than glass (buildings, the powered shell)
+MIXED_INK = "#3A3F4B"
 
 
-def glass(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
-    """100%-stacked bars of gross property and equipment per company; the long-lived share in the accent."""
-    fs = font_scale
-    width, height = _size(width, height)
-    g = story.frames["glass"]
-    long_share = {c: s for c, b, s in g.select("company", "bucket", "share").iter_rows() if b == "long"}
-    order = sorted(long_share, key=long_share.get, reverse=True)
-    stack = ["long", "mixed", "short"]
-    d = (
-        g.with_columns(
-            what=pl.col("bucket").replace_strict(BUCKETS, return_dtype=pl.String),
-            k=pl.col("bucket").replace_strict({b: i for i, b in enumerate(stack)}, return_dtype=pl.Int64),
-            pct=pl.col("share").map_elements(lambda v: f"{v:.0%}", return_dtype=pl.String),
-            total_label=(pl.col("total") / 1e9).map_elements(lambda v: f"${v:,.0f}bn", return_dtype=pl.String),
-            asof=pl.col("period_end").cast(pl.String),
+def _smooth(u: float) -> float:
+    u = min(max(u, 0.0), 1.0)
+    return u * u * (3 - 2 * u)
+
+
+def _n(seconds: float) -> int:
+    return max(int(round(seconds * FPS)), 1)
+
+
+def _lerp(a: float, b: float, u: float) -> float:
+    return a + (b - a) * u
+
+
+def _texts(rows: list[dict], fs: float, x: alt.X, y: alt.Y, size: float, **kw) -> alt.Chart:
+    """Text marks whose colour and opacity come from each row (`ink`, `op`)."""
+    return (
+        alt.Chart(alt.Data(values=rows or [{"x": 0, "y": 0, "text": "", "ink": "#000000", "op": 0}]))
+        .mark_text(**_text(fs, size, **kw))
+        .encode(
+            x=x,
+            y=y,
+            text="text:N",
+            color=alt.Color("ink:N", scale=None),
+            opacity=alt.Opacity("op:Q", scale=None),
         )
-        .sort("company", "k")
-        .with_columns(x1=pl.col("share").cum_sum().over("company"))
-        .with_columns(x0=pl.col("x1") - pl.col("share"), xm=pl.col("x1") - pl.col("share") / 2)
     )
-    ink = {"long": color("accent"), "mixed": "#3A3F4B", "short": GREYS[0]}
-    whats = [BUCKETS[b] for b in stack]
-    clr = alt.Color(
-        "what:N",
-        scale=alt.Scale(domain=whats, range=[ink[b] for b in stack]),
-        legend=alt.Legend(
-            title=None,
-            orient="top",
-            direction="horizontal",
-            labelLimit=600,
-            labelFontSize=(AXIS_PX + 1) * fs,
-            symbolType="square",
-            symbolSize=180 * fs**2,
-        ),
+
+
+def _rects(rows: list[dict], x: alt.X, y: alt.Y) -> alt.Chart:
+    return (
+        alt.Chart(alt.Data(values=rows or [{"x": 0, "x2": 0, "y": 0, "y2": 0, "ink": "#000000", "op": 0}]))
+        .mark_rect()
+        .encode(
+            x=x,
+            x2="x2:Q",
+            y=y,
+            y2="y2:Q",
+            color=alt.Color("ink:N", scale=None),
+            opacity=alt.Opacity("op:Q", scale=None),
+        )
     )
-    label_px = 150 * fs
-    total_px = 110 * fs
-    x_scale = alt.Scale(domain=[0, 1])
-    y = alt.Y(
-        "company:N",
-        sort=order,
-        title=None,
-        axis=alt.Axis(labelFontSize=(AXIS_PX + 2) * fs, labelFont=brand()["fonts"]["body"], grid=False),
-    )
-    rows = d.select("company", "what", "bucket", "x0", "x1", "xm", "pct", "share", "total_label", "asof", "lines")
-    base = alt.Chart(alt.Data(values=rows.to_dicts())).encode(y=y)
-    bar_h = min(height / len(order) * 0.62, 44 * fs)
-    bars = base.mark_bar(height=bar_h, stroke=color("canvas"), strokeWidth=2).encode(
-        x=alt.X("x0:Q", scale=x_scale, axis=None), x2="x1:Q", color=clr
-    )
+
+
+# --- years -------------------------------------------------------------------------------------
+
+ERA_NAMES = {"dotcom": "Dot-com build-out, 1998–2002", "ai": "AI build-out, 2020s"}
+
+
+def _years(story: Story, width: float, height: float, fs: float, state: dict | None = None, interactive=False):
+    """One square per year of book life (a part square for a half year), a gap every five years, grouped by
+    era; short-lived gear in the accent, long-lived assets in grey. Landscape: one line per asset, labels at
+    the left. Portrait: lines of ten years, label above. `state['t']` = years drawn so far."""
+    d = story.frames["years"]
+    t = float("inf") if state is None else state["t"]
+    portrait = height / width > 0.5
+    per_line = 10 if portrait else 100
+    gap = 0.45
+    label_px = 0 if portrait else 300 * fs
+    max_years = d["years"].max()
+    n_cols = min(per_line, int(-(-max_years // 1)))
+    max_x = (n_cols - 1) + ((n_cols - 1) // 5) * gap
+    tail_cols = 9
+    cell = (width - label_px) / (max_x + tail_cols + 1)
+    # rows: era header, then per asset (a label line in portrait) and its lines of squares
+    plan, top = [], 0.0
+    era = None
+    for r in d.to_dicts():
+        if r["era"] != era:
+            era = r["era"]
+            plan.append(("era", top, era))
+            top += 1.2
+        n = int(-(-r["years"] // 1))
+        lines = -(-n // per_line)
+        if portrait:
+            plan.append(("head", top, r))
+            top += 1.0
+        plan.append(("row", top, r))
+        top += lines + 0.8
+    cell = min(cell, height / top)
+    spare = max(height / cell - top, 0.0) / max(len(plan), 1)
+    x_scale = alt.Scale(domain=[-0.6 - label_px / cell, -0.6 + (width - label_px) / cell], nice=False, zero=False)
+    y_scale = alt.Scale(domain=[-0.6, -0.6 + height / cell], reverse=True, nice=False, zero=False)
+    x = alt.X("x:Q", scale=x_scale, axis=None)
+    y = alt.Y("y:Q", scale=y_scale, axis=None)
+    units, heads, eras, ends = [], [], [], []
+    shift = 0.0
+    for kind, y0, item in plan:
+        y0 += shift
+        shift += spare
+        if kind == "era":
+            eras.append(
+                {"x": -0.9 if not portrait else -0.4, "y": y0, "text": ERA_NAMES[item], "ink": color("text"), "op": 1}
+            )
+            continue
+        r = item
+        if kind == "head":
+            heads.append({"x": -0.4, "y": y0, "text": r["label"], "ink": color("text_secondary"), "op": 1})
+            continue
+        if not portrait:
+            heads.append({"x": -0.9, "y": y0, "text": r["label"], "ink": color("text_secondary"), "op": 1})
+        ink = color("accent") if r["lifespan"] == "short" else GREYS[0]
+        shown = min(t, r["years"])
+        for i in range(int(-(-r["years"] // 1))):
+            full = min(r["years"] - i, 1.0)  # a half year is a half-width square
+            drawn = min(max(shown - i, 0.0), full)
+            col = i % per_line
+            x0 = col + (col // 5) * gap - 0.39
+            yy = y0 + i // per_line
+            units.append(
+                {"x": x0, "x2": x0 + 0.78 * drawn, "y": yy - 0.39, "y2": yy + 0.39, "ink": ink, "op": 1 if drawn else 0}
+            )
+        last = int(-(-r["years"] // 1)) - 1
+        col = last % per_line
+        done = _smooth((t - r["years"]) / 0.8) if t != float("inf") else 1.0
+        text = f"{r['years']:g} years" + (f" · {r['tag']}" if r["tag"] else "")
+        ends.append(
+            {
+                "x": col + (col // 5) * gap + 0.85,
+                "y": y0 + last // per_line,
+                "text": text,
+                "ink": color("text"),
+                "op": done,
+                "range": f"{r['low']:g}–{r['high']:g} years across {r['companies']} companies ({r['who']})",
+            }
+        )
+    layers = [_rects(units, x, y)]
+    end_marks = _texts(ends, fs, x, y, LABEL_PX + 1, align="left", baseline="middle")
     if interactive:
-        bars = bars.encode(
-            tooltip=["company:N", "what:N", "pct:N", alt.Tooltip("asof:N", title="Balance sheet"), "lines:N"]
+        end_marks = end_marks.encode(
+            tooltip=[alt.Tooltip("text:N", title="Book life"), alt.Tooltip("range:N", title="Stated")]
         )
-    big = "datum.share >= 0.07"
-    on_lime = base.transform_filter(f"{big} && datum.bucket == 'long'").mark_text(
-        **_text(fs, LABEL_PX, color=color("canvas"), fontWeight="bold")
+    layers.append(end_marks)
+    align = "left" if portrait else "right"
+    layers.append(_texts(heads, fs, x, y, LABEL_PX + 1, align=align, baseline="middle"))
+    layers.append(_texts(eras, fs, x, y, LABEL_PX + 3, align=align, baseline="middle", fontWeight="bold"))
+    counter = (
+        []
+        if state is None
+        else [
+            {
+                "x": -0.6 + (width - label_px) / cell - 0.2,
+                "y": 0.0,
+                "text": f"year {min(int(-(-state['t'] // 1)), int(max_years // 1) + 1)}"
+                if state["t"] > 0
+                else "year 0",
+                "ink": color("text_secondary"),
+                "op": state.get("counter", 0.0),
+            }
+        ]
     )
-    on_grey = base.transform_filter(f"{big} && datum.bucket != 'long'").mark_text(
-        **_text(fs, LABEL_PX, color=color("text"))
+    layers.append(
+        _texts(
+            counter or [{"x": 0, "y": 0, "text": "", "ink": "#000", "op": 0}],
+            fs,
+            x,
+            y,
+            LABEL_PX + 2,
+            align="right",
+            baseline="middle",
+        )
     )
-    pcts = [m.encode(x=alt.X("xm:Q", scale=x_scale), text="pct:N") for m in (on_lime, on_grey)]
-    totals = (
-        alt.Chart(alt.Data(values=d.unique("company").select("company", "total_label").to_dicts()))
-        .mark_text(align="left", dx=12 * fs, **_text(fs, LABEL_PX - 1, color=color("text_secondary")))
-        .encode(y=y, x=alt.datum(1.0), text="total_label:N")
-    )
-    chart = alt.layer(bars, *pcts, totals).properties(width=width - label_px - total_px, height=height)
-    return chart.configure(**vl_config(fs))
+    return alt.layer(*layers).properties(width=width, height=height).configure(**vl_config(fs))
+
+
+def years(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False):
+    return fit(lambda w, h: _years(story, w, h, font_scale, None, interactive), width, height)
+
+
+def years_specs(story: Story, width: int, height: int, font_scale: float, cfg: dict):
+    """Video: a year counter runs while every row fills one square per year; the gear rows stop at 5–7 years
+    while the long-lived rows keep filling; each row's label fades in as it completes; the counter fades out."""
+    w, h = fit_size(lambda a, b: _years(story, a, b, font_scale, {"t": 1e9, "counter": 0.0}), width, height)
+    top = story.frames["years"]["years"].max()
+    states = [{"t": 0.0, "counter": 0.0} for _ in range(_n(0.5))]
+    states += [{"t": 0.0, "counter": _smooth((i + 1) / _n(0.3))} for i in range(_n(0.3))]
+    n = _n(6.0)
+    states += [{"t": top * (i + 1) / n, "counter": 1.0} for i in range(n)]
+    states += [
+        {"t": top + 0.8 * (i + 1) / _n(0.6), "counter": 1.0 - _smooth((i + 1) / _n(0.6))} for i in range(_n(0.6))
+    ]
+    states += [{"t": 1e9, "counter": 0.0} for _ in range(_n(3.0))]
+    return [_years(story, w, h, font_scale, st).to_dict() for st in states], FPS
 
 
 # --- split -------------------------------------------------------------------------------------
 
-
-def _fmt_bn(v: float) -> str:
-    return f"${v / 1e9:,.0f}bn" if v >= 1e10 else f"${v / 1e9:,.1f}bn"
-
-
-SPLIT_BUCKETS = BUCKETS | {"long": "Long-lived: fiber, conduit, land and buildings"}
+KIND_NAMES = {"glass": "Glass", "buildings": "Buildings", "shell": "Powered shell", "gear": "Gear"}
+KIND_ORDER = ["glass", "buildings", "shell", "gear"]
 
 
-def split(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
-    """Two eras × (added in a year, on the books): 100%-stacked bars by kind; long-lived in the accent."""
-    fs = font_scale
-    width, height = _size(width, height)
-    s = story.frames["split"]
-    eras = list(dict.fromkeys(s["era"]))
-    measures = ["added in a year", "on the books"]
-    stack = ["long", "mixed", "short"]
-    d = (
-        s.with_columns(
-            row=pl.col("era")
-            + "|"
-            + pl.col("measure").str.slice(0, 1).str.to_uppercase()
-            + pl.col("measure").str.slice(1),
-            what=pl.col("bucket").replace_strict(SPLIT_BUCKETS, return_dtype=pl.String),
-            k=pl.col("bucket").replace_strict({b: i for i, b in enumerate(stack)}, return_dtype=pl.Int64),
-            pct=pl.col("share").map_elements(lambda v: f"{v:.0%}", return_dtype=pl.String),
+def _split(story: Story, width: float, height: float, fs: float, state: dict | None = None, interactive=False):
+    """Known additions per era as a bar by kind (long-lived kinds first); a bracket above each bar spans the
+    long-lived share if the unassigned additions went all one way. `state`: grow (0–1 bar length), s (0 =
+    dollar scale, 1 = shares), x40 (opacity of the scale note), seg (segment labels), bracket."""
+    st = state or {"grow": 1.0, "s": 1.0, "x40": 0.0, "seg": 1.0, "bracket": 1.0}
+    k = story.frames["split"]
+    eras = story.extra["eras"]
+    names = list(eras)
+    portrait = height / width > 0.5
+    label_px = (0 if portrait else 250) * fs
+    total_px = 120 * fs
+    bar_px = width - label_px - total_px
+    x_scale = alt.Scale(domain=[-label_px / bar_px, 1 + total_px / bar_px], nice=False, zero=False)
+    rows_y = {e: i * (2.2 if portrait else 1.6) for i, e in enumerate(names)}
+    y_scale = alt.Scale(domain=[-1.2, max(rows_y.values()) + 0.9], reverse=True, nice=False, zero=False)
+    x = alt.X("x:Q", scale=x_scale, axis=None)
+    y = alt.Y("y:Q", scale=y_scale, axis=None)
+    known = {e: k.filter(pl.col("era") == e)["usd"].sum() for e in names}
+    big = max(known.values())
+    segs, labels, brackets, totals, heads = [], [], [], [], []
+    for e in names:
+        y0 = rows_y[e]
+        part = (
+            k.filter(pl.col("era") == e)
+            .with_columns(
+                o=pl.col("kind").replace_strict({n: i for i, n in enumerate(KIND_ORDER)}, return_dtype=pl.Int64)
+            )
+            .sort("o")
         )
-        .sort("row", "k")
-        .with_columns(x1=pl.col("share").cum_sum().over("row"))
-        .with_columns(x0=pl.col("x1") - pl.col("share"), xm=pl.col("x1") - pl.col("share") / 2)
-    )
-    order = [f"{e}|{m[0].upper()}{m[1:]}" for e in eras for m in measures]
-    ink = {"long": color("accent"), "mixed": "#3A3F4B", "short": GREYS[0]}
-    whats = [SPLIT_BUCKETS[b] for b in stack]
-    clr = alt.Color(
-        "what:N",
-        scale=alt.Scale(domain=whats, range=[ink[b] for b in stack]),
-        legend=alt.Legend(
-            title=None,
-            orient="top",
-            direction="vertical" if height / width > 0.5 else "horizontal",
-            labelLimit=600,
-            labelFontSize=(AXIS_PX + 1) * fs,
-            symbolType="square",
-            symbolSize=180 * fs**2,
+        scale = _lerp(known[e] / big, 1.0, _smooth(st["s"])) * st["grow"]
+        x0 = 0.0
+        for r in part.to_dicts():
+            wdt = r["share"] * scale
+            ink = (
+                color("accent")
+                if r["kind"] == "glass"
+                else LIME_DARK
+                if r["kind"] in ("buildings", "shell")
+                else GREYS[0]
+            )
+            segs.append({"x": x0, "x2": x0 + wdt, "y": y0 - 0.32, "y2": y0 + 0.32, "ink": ink, "op": 1})
+            labels.append(
+                {
+                    "x": x0 + wdt / 2,
+                    "y": y0,
+                    "text": (
+                        f"{KIND_NAMES[r['kind']]} {r['share']:.0%}"
+                        if r["share"] * bar_px > (len(KIND_NAMES[r["kind"]]) + 5) * 0.62 * LABEL_PX * fs + 16 * fs
+                        else f"{r['share']:.0%}"
+                    ),
+                    "ink": color("canvas"),
+                    "op": st["seg"] if r["share"] >= 0.06 else 0.0,
+                }
+            )
+            x0 += wdt
+        lo, hi = eras[e]["long_low"], eras[e]["long_high"]
+        yb = y0 - 0.5
+        op = st["bracket"]
+        brackets += [
+            {"x": lo, "x2": hi, "y": yb - 0.012, "y2": yb + 0.012, "ink": color("text_secondary"), "op": op},
+            {"x": lo - 0.0015, "x2": lo + 0.0015, "y": yb, "y2": yb + 0.12, "ink": color("text_secondary"), "op": op},
+            {"x": hi - 0.0015, "x2": hi + 0.0015, "y": yb, "y2": yb + 0.12, "ink": color("text_secondary"), "op": op},
+        ]
+        labels.append(
+            {
+                "x": hi + 0.012,
+                "y": yb,
+                "text": f"{lo:.0%}–{hi:.0%} long-lived, counting unassigned spending",
+                "ink": color("text_secondary"),
+                "op": op,
+            }
+        )
+        totals.append(
+            {
+                "x": x0 + 0.015,
+                "y": y0,
+                "text": f"{fmt_usd(eras[e]['total_usd'])} in all",
+                "ink": color("text_secondary"),
+                "op": st["grow"],
+            }
+        )
+        if portrait:
+            heads.append({"x": 0.0, "y": y0 - 0.95, "text": e, "ink": color("text"), "op": 1})
+        else:
+            heads.append({"x": -0.02, "y": y0, "text": e, "ink": color("text"), "op": 1})
+    ratio = eras[names[-1]]["total_usd"] / eras[names[0]]["total_usd"]
+    note = [
+        {
+            "x": 0.0,
+            "y": rows_y[names[0]] + 0.75,
+            "text": f"{ratio:.0f}× more added in a year now than by the fiber builders then",
+            "ink": color("accent"),
+            "op": st["x40"],
+        }
+    ]
+    layers = [
+        _rects(brackets, x, y),
+        _rects(segs, x, y),
+        _texts(
+            [r for r in labels if r["ink"] == color("canvas")],
+            fs,
+            x,
+            y,
+            LABEL_PX,
+            align="center",
+            baseline="middle",
+            fontWeight="bold",
         ),
-    )
-    label_px, total_px = 230 * fs, 110 * fs
-    x_scale = alt.Scale(domain=[0, 1])
-    y = alt.Y(
-        "row:N",
-        sort=order,
-        title=None,
-        axis=alt.Axis(
-            labelExpr="split(datum.label, '|')",
-            labelFontSize=(AXIS_PX + 1) * fs,
-            labelLineHeight=(AXIS_PX + 6) * fs,
-            labelFont=brand()["fonts"]["body"],
-            labelLimit=label_px,
-            grid=False,
+        _texts(
+            [r for r in labels if r["ink"] != color("canvas")], fs, x, y, LABEL_PX - 2, align="left", baseline="middle"
         ),
-    )
-    cols = ["row", "what", "bucket", "x0", "x1", "xm", "pct", "share", "companies"]
-    base = alt.Chart(alt.Data(values=d.select(cols).to_dicts())).encode(y=y)
-    bar_h = min(height / len(order) * 0.6, 46 * fs)
-    bars = base.mark_bar(height=bar_h, stroke=color("canvas"), strokeWidth=2).encode(
-        x=alt.X("x0:Q", scale=x_scale, axis=None), x2="x1:Q", color=clr
-    )
-    if interactive:
-        bars = bars.encode(tooltip=["row:N", "what:N", "pct:N", "companies:N"])
-    big = "datum.share >= 0.07"
-    on_lime = base.transform_filter(f"{big} && datum.bucket == 'long'").mark_text(
-        **_text(fs, LABEL_PX, color=color("canvas"), fontWeight="bold")
-    )
-    on_grey = base.transform_filter(f"{big} && datum.bucket != 'long'").mark_text(
-        **_text(fs, LABEL_PX, color=color("text"))
-    )
-    pcts = [m.encode(x=alt.X("xm:Q", scale=x_scale), text="pct:N") for m in (on_lime, on_grey)]
-    totals = (
-        d.group_by("row")
-        .agg(pl.col("usd").sum())
-        .with_columns(t=pl.col("usd").map_elements(_fmt_bn, return_dtype=pl.String))
-    )
-    tot = (
-        alt.Chart(alt.Data(values=totals.select("row", "t").to_dicts()))
-        .mark_text(align="left", dx=12 * fs, **_text(fs, LABEL_PX - 1, color=color("text_secondary")))
-        .encode(y=y, x=alt.datum(1.0), text="t:N")
-    )
-    chart = alt.layer(bars, *pcts, tot).properties(width=width - label_px - total_px, height=height)
+        _texts(totals, fs, x, y, LABEL_PX - 1, align="left", baseline="middle"),
+        _texts(
+            heads, fs, x, y, LABEL_PX + 1, align="left" if portrait else "right", baseline="middle", fontWeight="bold"
+        ),
+        _texts(note, fs, x, y, LABEL_PX, align="left", baseline="middle"),
+    ]
+    chart = alt.layer(*layers).properties(width=width, height=height)
     return chart.configure(**vl_config(fs))
+
+
+def split(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False):
+    return fit(lambda w, h: _split(story, w, h, font_scale, None, interactive), width, height)
+
+
+def split_specs(story: Story, width: int, height: int, font_scale: float, cfg: dict):
+    """Video: both bars grow at dollar scale (the fiber builders' a sliver), the scale note shows; then both
+    stretch to 100% of known additions, the kind labels fade in, then the brackets."""
+    fs = font_scale
+    w, h = fit_size(lambda a, b: _split(story, a, b, fs, None), width, height)
+    base = {"grow": 0.0, "s": 0.0, "x40": 0.0, "seg": 0.0, "bracket": 0.0}
+    states = [dict(base) for _ in range(_n(0.5))]
+    states += [dict(base, grow=_smooth((i + 1) / _n(1.2))) for i in range(_n(1.2))]
+    states += [dict(base, grow=1.0, x40=_smooth((i + 1) / _n(0.5))) for i in range(_n(0.5))]
+    states += [dict(base, grow=1.0, x40=1.0) for _ in range(_n(1.8))]
+    states += [dict(base, grow=1.0, x40=1.0 - (i + 1) / _n(0.4)) for i in range(_n(0.4))]
+    states += [dict(base, grow=1.0, s=(i + 1) / _n(1.4)) for i in range(_n(1.4))]
+    states += [dict(base, grow=1.0, s=1.0, seg=_smooth((i + 1) / _n(0.6))) for i in range(_n(0.6))]
+    states += [dict(base, grow=1.0, s=1.0, seg=1.0, bracket=_smooth((i + 1) / _n(0.6))) for i in range(_n(0.6))]
+    states += [dict(grow=1.0, s=1.0, x40=0.0, seg=1.0, bracket=1.0) for _ in range(_n(3.0))]
+    return [_split(story, w, h, fs, st).to_dict() for st in states], FPS
+
+
+# --- exposure ----------------------------------------------------------------------------------
+
+EXPOSURE_KINDS = ["shell", "mixed", "gear"]
+EXPOSURE_NAMES = {
+    "shell": "Buildings and land (powered shell)",
+    "mixed": "Mixed or not yet in service",
+    "gear": "Servers and network gear",
+}
+
+
+def _exposure(story: Story, width: float, height: float, fs: float, state: dict | None = None, interactive=False):
+    """Per company: gross PP&E by kind as a bar (estimates lighter), the total, and debt ÷ cash. `state`: grow,
+    s (0 = dollar scale, 1 = shares), order (0 = by size, 1 = by shell share), debt (column opacity)."""
+    st = state or {"grow": 1.0, "s": 1.0, "order": 1.0, "debt": 1.0}
+    e = story.frames["exposure"]
+    totals = e.group_by("company").agg(pl.col("usd").sum().alias("total"), pl.col("debt_to_cash").first())
+    shell = e.filter(pl.col("kind") == "shell").group_by("company").agg(pl.col("share").sum())
+    by_size = totals.sort("total", descending=True)["company"].to_list()
+    by_shell = shell.sort("share", descending=True)["company"].to_list()
+    portrait = height / width > 0.5
+    label_px, total_px, debt_px = 130 * fs, 100 * fs, 120 * fs
+    bar_px = width - label_px - total_px - debt_px
+    x_scale = alt.Scale(domain=[-label_px / bar_px, 1 + (total_px + debt_px) / bar_px], nice=False, zero=False)
+    n = len(by_size)
+    step = 1.0
+    y_scale = alt.Scale(domain=[-2.4 if portrait else -1.6, (n - 1) * step + 0.7], reverse=True, nice=False, zero=False)
+    x = alt.X("x:Q", scale=x_scale, axis=None)
+    y = alt.Y("y:Q", scale=y_scale, axis=None)
+    big = totals["total"].max()
+    u = _smooth(st["s"])
+    segs, inside, names, tot_labels, debts = [], [], [], [], []
+    for c in by_size:
+        yy = _lerp(by_size.index(c), by_shell.index(c), _smooth(st["order"])) * step
+        t = totals.filter(pl.col("company") == c).row(0, named=True)
+        scale = _lerp(t["total"] / big, 1.0, u) * st["grow"]
+        x0 = 0.0
+        for kind in EXPOSURE_KINDS:
+            for est in (False, True) if kind == "shell" else (True, False):
+                part = e.filter((pl.col("company") == c) & (pl.col("kind") == kind) & (pl.col("estimated") == est))
+                if part.is_empty():
+                    continue
+                share = part["share"].sum()
+                wdt = share * scale
+                ink = color("accent") if kind == "shell" else MIXED_INK if kind == "mixed" else GREYS[0]
+                segs.append(
+                    {"x": x0, "x2": x0 + wdt, "y": yy - 0.3, "y2": yy + 0.3, "ink": ink, "op": 0.5 if est else 1.0}
+                )
+                x0 += wdt
+            k_rows = e.filter((pl.col("company") == c) & (pl.col("kind") == kind))
+            k_share = k_rows["share"].sum()
+            est_part = bool(k_rows["estimated"].any()) if k_rows.height else False
+            if kind in ("shell", "gear") and k_share >= 0.07:
+                inside.append(
+                    {
+                        "x": x0 - k_share * scale / 2,
+                        "y": yy,
+                        "text": f"{k_share:.0%}",
+                        "ink": color("text") if est_part else color("canvas"),
+                        "op": u,
+                    }
+                )
+        names.append({"x": -0.02, "y": yy, "text": c, "ink": color("text"), "op": 1})
+        tot_labels.append(
+            {"x": x0 + 0.015, "y": yy, "text": fmt_usd(t["total"]), "ink": color("text_secondary"), "op": st["grow"]}
+        )
+        dc = t["debt_to_cash"]
+        debts.append(
+            {
+                "x": 1 + (total_px + debt_px * 0.55) / bar_px,
+                "y": yy,
+                "text": f"{dc:.1f}×",
+                "ink": color("accent") if dc >= 2 else color("text_secondary"),
+                "op": st["debt"],
+            }
+        )
+    head_y = -0.85
+    debt_head = [
+        {
+            "x": 1 + (total_px + debt_px * 0.55) / bar_px,
+            "y": head_y,
+            "text": "Debt ÷ cash",
+            "ink": color("text_secondary"),
+            "op": st["debt"],
+        }
+    ]
+    heads = []
+    legend_y = -1.9 if portrait else -1.2
+    legend, lx = [], 0.0
+    sw = 0.025
+    for i, kind in enumerate(EXPOSURE_KINDS):
+        ink = color("accent") if kind == "shell" else MIXED_INK if kind == "mixed" else GREYS[0]
+        ly = legend_y + (i * 0.33 if portrait else 0.0)
+        legend.append({"x": lx, "x2": lx + sw, "y": ly - 0.11, "y2": ly + 0.11, "ink": ink, "op": 1})
+        heads.append(
+            {"x": lx + sw + 0.01, "y": ly, "text": EXPOSURE_NAMES[kind], "ink": color("text_secondary"), "op": 1}
+        )
+        if not portrait:
+            lx += sw + 0.02 + len(EXPOSURE_NAMES[kind]) * 0.0105 * 1000 / bar_px
+    layers = [
+        _rects(segs, x, y),
+        _rects(legend, x, y),
+        _texts(inside, fs, x, y, LABEL_PX, align="center", baseline="middle", fontWeight="bold"),
+        _texts(names, fs, x, y, LABEL_PX + 1, align="right", baseline="middle"),
+        _texts(tot_labels, fs, x, y, LABEL_PX - 1, align="left", baseline="middle"),
+        _texts(debts, fs, x, y, LABEL_PX + 1, align="center", baseline="middle", fontWeight="bold"),
+        _texts(heads, fs, x, y, LABEL_PX - 1, align="left", baseline="middle"),
+        _texts(debt_head, fs, x, y, LABEL_PX - 1, align="center", baseline="middle"),
+    ]
+    return alt.layer(*layers).properties(width=width, height=height).configure(**vl_config(fs))
+
+
+def exposure(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False):
+    return fit(lambda w, h: _exposure(story, w, h, font_scale, None, interactive), width, height)
+
+
+def exposure_specs(story: Story, width: int, height: int, font_scale: float, cfg: dict):
+    """Video: bars grow at dollar scale (Amazon's $534bn to CoreWeave's $34bn); they stretch to 100% shares;
+    the rows re-sort by the shell's share, CoreWeave's sliver landing last; debt ÷ cash fades in."""
+    fs = font_scale
+    w, h = fit_size(lambda a, b: _exposure(story, a, b, fs, None), width, height)
+    base = {"grow": 0.0, "s": 0.0, "order": 0.0, "debt": 0.0}
+    states = [dict(base) for _ in range(_n(0.5))]
+    states += [dict(base, grow=_smooth((i + 1) / _n(1.2))) for i in range(_n(1.2))]
+    states += [dict(base, grow=1.0) for _ in range(_n(1.2))]
+    states += [dict(base, grow=1.0, s=(i + 1) / _n(1.3)) for i in range(_n(1.3))]
+    states += [dict(base, grow=1.0, s=1.0, order=(i + 1) / _n(1.1)) for i in range(_n(1.1))]
+    states += [dict(base, grow=1.0, s=1.0, order=1.0, debt=_smooth((i + 1) / _n(0.7))) for i in range(_n(0.7))]
+    states += [dict(grow=1.0, s=1.0, order=1.0, debt=1.0) for _ in range(_n(3.0))]
+    return [_exposure(story, w, h, fs, st).to_dict() for st in states], FPS
