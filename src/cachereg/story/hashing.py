@@ -61,6 +61,21 @@ SHARED_RENDER_INPUTS = (
 )
 
 
+UNHASHED_KEYS = ("as_of:", "blurb:")  # as_of changes the data, not the look (tracked separately); blurb is site text
+
+
+def _look(text: str) -> str:
+    """A receipt.yaml / explore.yaml without its UNHASHED_KEYS (a key's indented continuation lines included)."""
+    kept, skipping = [], False
+    for line in text.splitlines():
+        if line.startswith(UNHASHED_KEYS):
+            skipping = True
+        elif not (skipping and line[:1] in (" ", "\t")):
+            skipping = False
+            kept.append(line)
+    return "\n".join(kept)
+
+
 def inputs_hash(folder: Path, root: Path = REPO_ROOT) -> str:
     files: list[Path] = [folder / n for n in ("analysis.py", "charts.py", "receipt.yaml", "explore.yaml")]
     for rel in SHARED_RENDER_INPUTS:
@@ -69,9 +84,7 @@ def inputs_hash(folder: Path, root: Path = REPO_ROOT) -> str:
     h = hashlib.sha256()
     for f in sorted({f for f in files if f.is_file() and "__pycache__" not in f.parts}):
         if f.name == "receipt.yaml" or f.name == "explore.yaml":
-            # as_of is tracked separately (it changes the data, not the look)
-            body = "\n".join(line for line in f.read_text().splitlines() if not line.startswith("as_of:"))
-            data = body.encode()
+            data = _look(f.read_text()).encode()
         else:
             data = f.read_bytes()
         try:

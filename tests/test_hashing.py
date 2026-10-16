@@ -60,3 +60,18 @@ def test_visual_without_chart_or_targets_is_a_clear_error(tmp_path):
         (d / "explore.yaml").write_text(f"visuals:\n  - {visual}\n")
         with pytest.raises(ValueError, match="needs a chart and at least one target"):
             config.load(d)
+
+
+def test_inputs_hash_ignores_as_of_and_blurb_but_not_the_rest(tmp_path):
+    from cachereg.story.hashing import inputs_hash
+
+    spec = tmp_path / "receipt.yaml"
+
+    def hashed(text):
+        spec.write_text(text)
+        return inputs_hash(tmp_path)
+
+    base = hashed("title: T\nas_of: 2026-01-01\nvisuals: []\n")
+    assert hashed("title: T\nas_of: 2026-02-01\nvisuals: []\n") == base
+    assert hashed("title: T\nas_of: 2026-01-01\nblurb: >-\n  Two lines\n  of text.\nvisuals: []\n") == base
+    assert hashed("title: U\nas_of: 2026-01-01\nvisuals: []\n") != base

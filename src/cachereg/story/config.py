@@ -2,6 +2,8 @@
 
 ```yaml
 title: Who gets paid on OpenRouter?
+blurb: >-                        # receipts, optional: site text below the charts (not hashed)
+  Estimated weekly developer spend on OpenRouter's top 50 models, split by model maker.
 sources: [openrouter_rankings, openrouter_models]
 as_of: 2026-10-02                # receipts: data date of the committed outputs
 promoted_from: explore/…          # receipts only, informational

@@ -321,20 +321,22 @@ def render(
             if old.is_file():
                 old.unlink()
 
+    texts = {}  # each visual's headline, subtitle and credits, for the site's text (alt, description, page)
     for visual in cfg.visuals:
+        v_sources = list(cfg.visual_sources(visual)) if cfg.sources else source_ids
+        vstory = story.for_visual(visual.name)
+        rec = receipt(v_sources, _data_as_of(story, v_sources), story.method, rel, cfg.link)
+        charts_reason = licence_gate(v_sources)[0] if is_receipt else None
+        texts[visual.name] = {"title": vstory.title, "subtitle": vstory.subtitle, "source": rec.source}
         for name in visual.targets:
             if targets and name not in targets:
                 continue
             target = TARGETS[name]
             out = out_dir / f"{visual.name}.{name}.{target.fmt}"
-            v_sources = list(cfg.visual_sources(visual)) if cfg.sources else source_ids
-            charts_reason = licence_gate(v_sources)[0] if is_receipt else None
-            rec = receipt(v_sources, _data_as_of(story, v_sources), story.method, rel, cfg.link)
             blocked = data_reason if target.kind == "html" else charts_reason
             if blocked:
                 result.withheld[out.name] = blocked
                 continue
-            vstory = story.for_visual(visual.name)
             moves = any(TARGETS[t].kind == "video" for t in visual.targets)
             if target.kind == "static" and moves and name in STILL_OF_VIDEO:
                 specs = _chart_fn(charts, visual.chart, "video")
@@ -372,6 +374,7 @@ def render(
         "sources": source_vintages(source_ids, as_of),
         "outputs": dict(sorted(result.outputs.items())),
         "withheld": dict(sorted(result.withheld.items())),
+        "visuals": texts,
     }
     own = {v.name: list(v.sources) for v in cfg.visuals if v.sources is not None}
     if own:  # only when a visual declares its own sources, so existing manifests are unchanged

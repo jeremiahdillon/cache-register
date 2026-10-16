@@ -121,6 +121,10 @@ def test_render_receipt_on_synthetic_data(synthetic_raw, monkeypatch, tmp_path):
     assert lp["class"] == "Exact" and "fetch_date" not in lp and lp["revision_date"] == "2026-08-30"
     assert lp["vintage"] == {"kind": "git_commit", "value": "c_mid", "date": "2026-08-30"}
     assert "Anthropic" in result.title
+    # each visual's headline, subtitle and footer credits, for the site's text
+    texts = manifest["visuals"]
+    assert set(texts) == {"share-lines", "share-race"}
+    assert all(t["title"] and t["subtitle"] and "OpenRouter" in t["source"] for t in texts.values())
     # unchanged data and code -> nothing rewritten
     assert render(receipt).skipped
 
