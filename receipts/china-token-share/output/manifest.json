@@ -4,8 +4,8 @@
   "data_hash": "dc92dffa467d418dbf0b4deae428729c7a517e996e50bd1f1abf84613b5ba5fe",
   "folder": "receipts/china-token-share",
   "git_dirty": false,
-  "git_sha": "6e14b74dc90c5fb84abb16cfae95945c234f11c0",
-  "inputs_hash": "2461aed26a61e0f0a7a904a3a86faf2b1f21ca22d1861119986a447f36b78c09",
+  "git_sha": "b93c4f1fdacf89177d1aa9b08ee885c0e2cafb61",
+  "inputs_hash": "6ffd137b50d20336fd4840d28b18e88f712cbc3169910736e1594227b048932d",
   "kind": "receipt",
   "outputs": {
     "data.json": "8b2211ad4d67a78bb020a9c879b5bf50f4b4c995a2b70366966b0c0ecaf3bb5a",
@@ -35,5 +35,17 @@
     }
   },
   "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "visuals": {
+    "push": {
+      "source": "OpenRouter (openrouter.ai/rankings), as of 2026-10-07",
+      "subtitle": "Share of weekly tokens on OpenRouter among Anthropic, OpenAI and Chinese labs, January 2025 to October 4, 2026. Week of September 28, 2026: OpenAI 17%, Chinese labs 78%, Anthropic 6%.",
+      "title": "Chinese labs grew from 10% to 78% of tokens on OpenRouter, more than Anthropic and OpenAI combined."
+    },
+    "push-bars": {
+      "source": "OpenRouter (openrouter.ai/rankings), as of 2026-10-07",
+      "subtitle": "Share of weekly tokens on OpenRouter among Anthropic, OpenAI and Chinese labs, January 2025 to October 4, 2026. Week of September 28, 2026: OpenAI 17%, Chinese labs 78%, Anthropic 6%.",
+      "title": "Chinese labs grew from 10% to 78% of tokens on OpenRouter, more than Anthropic and OpenAI combined."
+    }
+  },
   "withheld": {}
 }
