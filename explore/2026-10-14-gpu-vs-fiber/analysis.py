@@ -74,8 +74,10 @@ def price_paths(con, series: list[dict]) -> pl.DataFrame:
 
 
 def years_on_books(life: pl.DataFrame, groups: list[dict]) -> pl.DataFrame:
-    """Per group: the median across companies of the longest life each states (whole years for the squares)."""
+    """Per group: the median across companies of the longest life each states (whole years for the squares),
+    ordered by era (dot-com first) and then by years."""
     short = {g["group"]: g["short"] for g in groups}
+    lifespan = {g["group"]: g["lifespan"] for g in groups}
     return (
         life.group_by("group", "era", maintain_order=True)
         .agg(
@@ -85,8 +87,12 @@ def years_on_books(life: pl.DataFrame, groups: list[dict]) -> pl.DataFrame:
             high=pl.col("high").max(),
             who=pl.col("entity").str.join(", "),
         )
-        .with_columns(label=pl.col("group").replace_strict(short, return_dtype=pl.String))
-        .sort("years")
+        .with_columns(
+            label=pl.col("group").replace_strict(short, return_dtype=pl.String),
+            lifespan=pl.col("group").replace_strict(lifespan, return_dtype=pl.String),
+            era_order=pl.col("era").replace_strict({"dotcom": 0, "ai": 1}, return_dtype=pl.Int64),
+        )
+        .sort("era_order", "years")
     )
 
 
@@ -277,14 +283,13 @@ def build(con, as_of: date, cfg: dict) -> Story:
     by_visual = {
         "years": {
             "title": (
-                f"A GPU gets {span['AI servers']:g} years on the books; dot-com fiber got {span['Dot-com fiber']:g}, "
-                f"a data centre gets {span['Data-centre']:g}"
+                f"Both build-outs paired short-lived gear with long-lived assets: GPUs get {span['AI servers']:g} "
+                f"years on the books, data centres {span['Data-centre']:g}"
             ),
             "subtitle": (
-                "One square per year of book life: the median of the longest life each company states for the "
-                f"asset. AI servers ({ai_lo:g}–{ai_hi:g} years) sit with the dot-com network electronics "
-                f"({electronics['low'].min():g}–{electronics['high'].max():g}), not the glass. The long-lived AI "
-                "assets are buildings and power."
+                "One square per year of book life (the median of the longest life each company states). Lime: "
+                "short-lived gear, written off in under a decade; grey: long-lived assets. In the dot-com era the "
+                f"glass was the fiber ({span['Dot-com fiber']:g} years); in the AI era it is buildings and power."
             ),
         },
         "book-life": {

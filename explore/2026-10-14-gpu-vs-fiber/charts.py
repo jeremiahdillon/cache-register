@@ -43,18 +43,26 @@ def _text(fs: float, size: float = LABEL_PX, **kw) -> dict:
 
 
 def years(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
-    """One square per year of book life, a small gap every five years; AI servers in the accent. Landscape:
-    one line per asset, labels at the left. Portrait: lines of ten years (a decade each), label above."""
+    """One square per year of book life, a small gap every five years, grouped by era under a header;
+    short-lived gear in the accent, long-lived assets in grey. Landscape: one line per asset, labels at the
+    left. Portrait: lines of ten years (a decade each), label above."""
     fs = font_scale
     width, height = _size(width, height)
     d = story.frames["years"]
     portrait = height / width > 0.5  # the plot area of a portrait image is still wider than tall
     per_line = 10 if portrait else 100
     gap = 0.45  # extra columns between groups of five years
-    units, heads, ends, top = [], [], [], 0.0
+    era_names = {"dotcom": "Dot-com build-out, 1998–2002", "ai": "AI build-out, 2020s"}
+    units, heads, eras, ends, top = [], [], [], [], 0.0
+    era = None
     for r in d.to_dicts():
+        if r["era"] != era:
+            era = r["era"]
+            top += 0.4 if eras else 0.0
+            eras.append({"x": -0.9 if not portrait else -0.4, "y": top, "text": era_names[era]})
+            top += 1.15
         n = int(round(r["years"]))
-        ink = color("accent") if r["group"].startswith("AI servers") else GREYS[1] if r["era"] == "dotcom" else GREYS[0]
+        ink = color("accent") if r["lifespan"] == "short" else GREYS[0]
         lines = -(-n // per_line)
         if portrait:
             heads.append({"x": -0.4, "y": top, "text": r["label"]})
@@ -110,7 +118,16 @@ def years(story: Story, width, height, font_scale: float = 1.0, interactive: boo
         )
         .encode(x=x, y=y, text="text:N")
     )
-    chart = alt.layer(sq, lab, head).properties(width=width, height=height)
+    era_head = (
+        alt.Chart(alt.Data(values=eras))
+        .mark_text(
+            align="left" if portrait else "right",
+            baseline="middle",
+            **_text(fs, LABEL_PX + 3, color=color("text"), fontWeight="bold"),
+        )
+        .encode(x=x, y=y, text="text:N")
+    )
+    chart = alt.layer(sq, lab, head, era_head).properties(width=width, height=height)
     return chart.configure(**vl_config(fs))
 
 

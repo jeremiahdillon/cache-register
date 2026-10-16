@@ -11,12 +11,12 @@ could buy the assets now.
 
 ## Findings (curated_asset_values to 2026-10-16; SEC filings to 2026-10-13)
 Seven visuals, in story order.
-- **years: a GPU gets 6 years on the books; dot-com fiber got 25, a data centre gets 39.** One square
-  per year: the median across companies of the longest life each states. AI servers (2–6 years at
-  Microsoft, Alphabet, Amazon, Meta, Oracle, CoreWeave and Nebius; Amazon cut a subset from 6 to 5 for
-  2025, citing the pace of AI) sit with the 2000–01 carriers' network electronics (2–14, median 10), not
-  their fiber and conduit (7–57, median 25). Buildings (5–60, median 39) and nuclear power contracts (20)
-  are the long-lived AI assets.
+- **years: both build-outs paired short-lived gear with long-lived assets.** One square per year of book
+  life (the median across companies of the longest life each states), grouped by era. Dot-com: network
+  electronics 10 years (2–14 across Genuity, Level 3, Qwest and WorldCom), fiber and conduit 25 (7–57).
+  AI: servers and GPUs 6 (2–6 at Microsoft, Alphabet, Amazon, Meta, Oracle, CoreWeave and Nebius; Amazon
+  cut a subset from 6 to 5 for 2025, citing the pace of AI), nuclear power contracts 20, data-centre
+  buildings 39 (5–60). The glass of the dot-com era was the fiber; in the AI era it is buildings and power.
 - **book-life: six years on the books, three newer generations.** From NVIDIA's announcement, a
   six-year book life (the servers' life at Microsoft, Alphabet, Oracle and CoreWeave, and the GPU
   collateral's in CoreWeave's DDTL 2.0 loan) took the A100 to May 2026. In that time NVIDIA announced
