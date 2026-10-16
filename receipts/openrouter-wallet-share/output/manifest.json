@@ -4,8 +4,8 @@
   "data_hash": "57267660a8cbaad6c9d2e02ed16c209d674cb0e0b8be11e81ce2fd57f07b05fd",
   "folder": "receipts/openrouter-wallet-share",
   "git_dirty": false,
-  "git_sha": "92c6986d2b24bc99ac4f87432189aceafbd3a75f",
-  "inputs_hash": "00d7e2c9bbe4a584d1f84578e148907f8fd374f78b7f4757cf69a49ca729242e",
+  "git_sha": "4715639dd5838f4f612c30648d83644b720ffee9",
+  "inputs_hash": "42c689b862023a4c500299a1e72dd118cb01a35bc5326b18acff49c89bf17805",
   "kind": "receipt",
   "outputs": {
     "data.json": "f35c84370481d8a5a3e282898d0abdef1c716adb0751bccd79db2354c89a30ab",
@@ -45,5 +45,17 @@
     }
   },
   "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "visuals": {
+    "share-lines": {
+      "source": "OpenRouter (openrouter.ai/rankings), as of 2026-10-02; LiteLLM model prices (github.com/BerriAI/litellm), MIT",
+      "subtitle": "Share of estimated weekly spend on OpenRouter's top-50 models, by developer. Week of Sep 21: Anthropic 29%, OpenAI 29%, Chinese labs 35%.",
+      "title": "Anthropic's share of OpenRouter spend fell from 93% to 29% in 87 weeks"
+    },
+    "share-race": {
+      "source": "OpenRouter (openrouter.ai/rankings), as of 2026-10-02; LiteLLM model prices (github.com/BerriAI/litellm), MIT",
+      "subtitle": "Share of estimated weekly spend on OpenRouter's top-50 models, by developer. Week of Sep 21: Anthropic 29%, OpenAI 29%, Chinese labs 35%.",
+      "title": "Anthropic's share of OpenRouter spend fell from 93% to 29% in 87 weeks"
+    }
+  },
   "withheld": {}
 }
