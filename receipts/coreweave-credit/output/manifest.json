@@ -4,8 +4,8 @@
   "data_hash": "5a267f75236b6b2fdd54f3ce7563f06f9085c86618ffe9a11ff73364e027fc16",
   "folder": "receipts/coreweave-credit",
   "git_dirty": false,
-  "git_sha": "793d7ca35a9f38223487608eff14e1d7e2e1973d",
-  "inputs_hash": "d0c75a008bc653c3e236169c82a7523ea2fc744dd10044679707f99be4b8734f",
+  "git_sha": "ac1334103fb8b31220ab00a4913db51295d73b40",
+  "inputs_hash": "bc59381bbf2080b5a1e68b26cf721b048db5cf8981b97d322b0a4d15cbe9a409",
   "kind": "receipt",
   "outputs": {
     "panels.linkedin_png.png": "2698f4c63328b7cc43c9d5a50384eb37b9826b5fe74ef484917c8754df49fec6",
@@ -44,6 +44,13 @@
     }
   },
   "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "visuals": {
+    "panels": {
+      "source": "FINRA TRACE end-of-day prices and yields (finra.org/finra-data), as of 2026-10-14; Yahoo Finance (finance.yahoo.com), daily close, as of 2026-10-14",
+      "subtitle": "Yield on CoreWeave\u2019s 9.75% senior notes due Oct. 2031 rose from 9.0% when they began trading on April 14 to 14.7% on October 13. Over the same span the stock fell 44%, from $117.20 to $65.78, after a 15.5% drop on October 14.",
+      "title": "CoreWeave yield is rising and stock is sliding"
+    }
+  },
   "withheld": {
     "data.json": "redistribution not allowed for: finra_trace, yahoo_prices"
   }
