@@ -16,7 +16,7 @@ assets:
   gpu_rubin: {label: NVIDIA Rubin, era: ai, layer: equipment}
   gpu_generic: {label: AI servers and GPUs, era: ai, layer: equipment}
   ai_operator: {label: GPU cloud or AI data-centre operator, era: ai, layer: company}
-  dc_shell: {label: Data-centre buildings, era: ai, layer: infrastructure}
+  dc_shell: {label: Buildings and improvements (data centres and offices), era: ai, layer: infrastructure}
   land: {label: Land, era: ai, layer: infrastructure}
   construction_in_progress: {label: Construction in progress, era: ai, layer: mixed}
   other_ppe: {label: Other property and equipment, era: ai, layer: mixed}
