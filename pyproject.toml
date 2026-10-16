@@ -12,7 +12,7 @@ dependencies = [
     "pillow>=11",
     "polars>=1.44",
     "pyyaml>=6.0",
-    "typer>=0.27",
+    "typer>=0.27.3",
     "vl-convert-python>=1.9",
 ]
 
