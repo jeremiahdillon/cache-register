@@ -4,18 +4,18 @@
   "data_hash": "0e013ec47fc9b91dc5398257e6e65604b7a204b1acdc33cd166e48dac3d66a9e",
   "folder": "receipts/source-matters",
   "git_dirty": false,
-  "git_sha": "550421098629331e26ff9308444320d912a1743c",
-  "inputs_hash": "e3ccf40af8f7b38e1b1f69c0aa83a34a808a72fb4d17fafce9131a901ffb5304",
+  "git_sha": "e531485dc49515bdb7e7eccc49a22ecbc6718fb9",
+  "inputs_hash": "0ba1027e70190d51066e8745f2844e111a690e11e2af28cc83a57d96b140bb4a",
   "kind": "receipt",
   "outputs": {
     "spend.linkedin_png.png": "370715e8722ec50bd8d1ba27d484a7cbe91041addab809a0769d0a40bd36fba0",
     "spend.linkedin_video.mp4": "687c95b5d0c1ac14420a16ad2a01a39911d20002136a6c91ed66516a9858dd4c",
-    "spend.web_video.webm": "61944533503af8061b433cf673323506ef4b2cb5f39b2b68792c045847a7da9f",
+    "spend.web_video.webm": "e56fca8cd4865fad2cbf28f96e934b8ec66807b395dee2bd78a0f3713d23f6c8",
     "spend.x_png.png": "7b6337e971b1f5a4e1ccb69479a2b3e3834991378da27256eefda6099feaa835",
     "spend.x_video.mp4": "265989b50eeff79eca5c5f4a664328e3629d1a97280d57cd8f0f6e700e55b76d",
     "tokens-with-free.linkedin_png.png": "92924ed4625295a544382f2dcb786d41cd8b28070a4146469fbe754b39a10a45",
     "tokens-with-free.linkedin_video.mp4": "1cd5395f9f5d69b19ac1c23ea9f3958ab6f2de0fb283914ed7e481a12c5c8a42",
-    "tokens-with-free.web_video.webm": "1ede6f81208b90b6b561409357b5240552b777297cc673bd7ef61762041fcc37",
+    "tokens-with-free.web_video.webm": "1f2c4eef6bc634c3b83747d7b990b2646b6ccbd74606d6de104ea5148c931232",
     "tokens-with-free.x_png.png": "5cc36d5b919e9387ffb4bd5ed822b9ad98a13d3e7380a9207b15ce8faeb6901d",
     "tokens-with-free.x_video.mp4": "ac131139ec646f1fd6c8ba1488dc8d3b706e0ba3bbf4e9e4eead3284b17ed209"
   },
@@ -81,6 +81,18 @@
       "vercel_ai_gateway",
       "openrouter_rankings"
     ]
+  },
+  "visuals": {
+    "spend": {
+      "source": "Ramp AI Index (ramp.com/data/ai-index), as of 2026-10-10; \u00a9 2026 Vercel, \"AI Gateway Leaderboard Data\" (vercel.com/ai-gateway/leaderboards), CC BY 4.0, as of 2026-10-10; OpenRouter (openrouter.ai/rankings), as of 2026-10-10; LiteLLM model prices (github.com/BerriAI/litellm), MIT",
+      "subtitle": "Anthropic's share of all spend varies widely between sources and over time; by the end of September 2026 it stood at 53% on Ramp, 47% on Vercel and 28% on OpenRouter (4-week averages).",
+      "title": "Different data sources tell different stories about the AI economy"
+    },
+    "tokens-with-free": {
+      "source": "Ramp AI Index (ramp.com/data/ai-index), as of 2026-10-10; \u00a9 2026 Vercel, \"AI Gateway Leaderboard Data\" (vercel.com/ai-gateway/leaderboards), CC BY 4.0, as of 2026-10-10; OpenRouter (openrouter.ai/rankings), as of 2026-10-10",
+      "subtitle": "Anthropic's share of all tokens varies widely between sources and over time; by the end of September 2026 it stood at 42% on Ramp, 11% on Vercel and 3% on OpenRouter (4-week averages).",
+      "title": "Different data sources tell different stories about the AI economy"
+    }
   },
   "withheld": {
     "data.json": "redistribution not allowed for: ramp_ai_index"
