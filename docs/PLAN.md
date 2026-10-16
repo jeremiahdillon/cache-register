@@ -386,8 +386,8 @@ chart falls back on the receipt's first still), from its committed `output/`, un
 first chart's landscape still. A receipt with nothing rendered redirects to its folder on GitHub.
 Search text (decided 2026-10-16, no new copy to review): the closing screen carries the title as `<h1>`, the
 `blurb` and each chart's headline and subtitle with its credits, as `cachereg render` records them in the
-manifest (`visuals`); the chart's headline and subtitle are also its alt text and the page's meta / Open Graph
-description, and the page has Article JSON-LD and a `lastmod` (its `as_of`) in the sitemap.
+manifest (`visuals`); the chart's headline and subtitle are also its alt text (on the root reel too, since
+the slides are shared) and the page's meta / Open Graph description, and the page has Article JSON-LD and a `lastmod` (its `as_of`) in the sitemap.
 Renamed/retired topics stay alive via `config/link-aliases.yaml` (redirecting to the page). An exploration may
 reserve its future topic (`link:` in `explore.yaml`, decided 2026-10-10): its visuals carry the short
 link and the site redirects it to the exploration until a receipt of that name with `promoted_from`
