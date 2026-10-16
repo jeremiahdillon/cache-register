@@ -36,6 +36,7 @@ config:
   # 2. Book useful lives, by group (a range is its low and high rows; a single figure is one row).
   lives:
     - group: AI servers and GPUs, 2025–26
+      short: AI servers and GPUs
       era: ai
       ids: [gpu_generic-book_useful_life-2026-07-29, gpu_generic-book_useful_life-2026-07-29-2,
             gpu_generic-book_useful_life-2026-02-05, gpu_generic-book_useful_life-2026-02-06,
@@ -43,12 +44,14 @@ config:
             gpu_generic-book_useful_life-2026-06-22, gpu_generic-book_useful_life-2026-03-02-3,
             gpu_generic-book_useful_life-2026-04-30]
     - group: Dot-com network electronics, 2000–01
+      short: Dot-com network electronics
       era: dotcom
       ids: [fiber_electronics-book_useful_life-2002-03-13, fiber_electronics-book_useful_life-2002-03-13-2,
             fiber_electronics-book_useful_life-2002-03-19, fiber_electronics-book_useful_life-2002-03-19-2,
             fiber_electronics-book_useful_life-2002-04-01, fiber_electronics-book_useful_life-2002-04-01-2,
             fiber_electronics-book_useful_life-2002-04-01-3, fiber_electronics-book_useful_life-2002-04-01-4]
     - group: Dot-com fiber, conduit and rights-of-way
+      short: Dot-com fiber and conduit
       era: dotcom
       ids: [dark_fiber-book_useful_life-2001-05-22, dark_fiber-book_useful_life-2001-05-22-2,
             dark_fiber-book_useful_life-2002-03-19, dark_fiber-book_useful_life-2002-03-19-2,
@@ -56,6 +59,7 @@ config:
             dark_fiber-book_useful_life-2002-04-01-3, dark_fiber-book_useful_life-2002-04-01-4,
             dark_fiber-book_useful_life-2002-04-01-5, dark_fiber-book_useful_life-2002-04-01-6]
     - group: Data-centre buildings, 2024–26
+      short: Data-centre buildings
       era: ai
       ids: [dc_shell-book_useful_life-2026-02-11, dc_shell-book_useful_life-2026-02-11-2,
             dc_shell-book_useful_life-2026-02-13, dc_shell-book_useful_life-2026-02-13-2,
@@ -63,6 +67,7 @@ config:
             dc_shell-book_useful_life-2025-01-30, dc_shell-book_useful_life-2025-01-30-2,
             dc_shell-book_useful_life-2026-07-29, dc_shell-book_useful_life-2026-07-29-2]
     - group: Nuclear power contracts (term)
+      short: Nuclear power contracts (term)
       era: ai
       ids: [power-contract_term-2024-09-20, power-contract_term-2025-06-03]
   # 3. What dot-com networks fetched: one track per company, in date order.
@@ -100,7 +105,7 @@ config:
   # 7. Who gets the glass: cash and short-term investments vs debt (mart 111), latest balance sheets.
   buyers: [GOOGL, AMZN, META, MSFT, NVDA, ORCL, CRWV]
 visuals:
-  - {name: lives, chart: lives, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
+  - {name: years, chart: years, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: book-life, chart: book_life, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: ladder, chart: ladder, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}
   - {name: glut, chart: glut, targets: [x_png, linkedin_png, blog_html], sources: [curated_asset_values]}

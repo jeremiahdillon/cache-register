@@ -73,6 +73,23 @@ def price_paths(con, series: list[dict]) -> pl.DataFrame:
     return pl.DataFrame(out)
 
 
+def years_on_books(life: pl.DataFrame, groups: list[dict]) -> pl.DataFrame:
+    """Per group: the median across companies of the longest life each states (whole years for the squares)."""
+    short = {g["group"]: g["short"] for g in groups}
+    return (
+        life.group_by("group", "era", maintain_order=True)
+        .agg(
+            years=pl.col("high").median(),
+            companies=pl.len(),
+            low=pl.col("low").min(),
+            high=pl.col("high").max(),
+            who=pl.col("entity").str.join(", "),
+        )
+        .with_columns(label=pl.col("group").replace_strict(short, return_dtype=pl.String))
+        .sort("years")
+    )
+
+
 def lives(con, groups: list[dict]) -> pl.DataFrame:
     """One row per (group, company figure): low and high years (equal for a single figure)."""
     out = []
@@ -208,6 +225,11 @@ def build(con, as_of: date, cfg: dict) -> Story:
     rich_names = ", ".join(rich.sort("liquidity_usd", descending=True)["company"])
     stretched_names = " and ".join(stretched.sort("times")["company"])
 
+    yrs = years_on_books(life, cfg["lives"])
+    span = {
+        p: yrs.filter(pl.col("group").str.starts_with(p))["years"][0]
+        for p in ("AI servers", "Dot-com fiber", "Data-centre")
+    }
     title = "So far, GPUs look like the electronics on the fiber, not the glass"
     ai_lo, ai_hi = ai_servers["low"].min(), ai_servers["high"].max()
     subtitle = (
@@ -216,7 +238,18 @@ def build(con, as_of: date, cfg: dict) -> Story:
         f"(up to {fiber['high'].max():g}). The long-lived AI assets are buildings and power."
     )
     by_visual = {
-        "lives": {"title": title, "subtitle": subtitle},
+        "years": {
+            "title": (
+                f"A GPU gets {span['AI servers']:g} years on the books; dot-com fiber got {span['Dot-com fiber']:g}, "
+                f"a data centre gets {span['Data-centre']:g}"
+            ),
+            "subtitle": (
+                "One square per year of book life: the median of the longest life each company states for the "
+                f"asset. AI servers ({ai_lo:g}–{ai_hi:g} years) sit with the dot-com network electronics "
+                f"({electronics['low'].min():g}–{electronics['high'].max():g}), not the glass. The long-lived AI "
+                "assets are buildings and power."
+            ),
+        },
         "book-life": {
             "title": (
                 f"An {first_gen['gpu']} stays on the books for {cfg['book_life_years']} years; NVIDIA announced "
@@ -280,6 +313,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "prices": prices,
             "glut": glut,
             "lives": life,
+            "years": yrs,
             "recovery": rec,
             "ladder": lad,
             "book_life": books,

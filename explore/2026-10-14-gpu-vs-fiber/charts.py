@@ -1,7 +1,7 @@
 """Charts for the GPUs-vs-fiber exploration (render contract: src/cachereg/render.py).
 
-* lives: book useful lives as range bars, one panel per group on a shared years axis; AI servers in
-  the accent, everything else in greys, each bar labelled with its range.
+* years: book lives as a unit chart, one square per year (the median of the companies' longest stated
+  life per group); AI servers in the accent, everything else in greys.
 * book_life: one bar per GPU generation from announcement to the end of its book life, later
   announcements as vertical rules, today as a dashed rule.
 * ladder: January and October 2026 rents per GPU generation at one venue, as a dumbbell.
@@ -13,7 +13,6 @@
 
 from __future__ import annotations
 
-import math
 from datetime import UTC, datetime
 
 import altair as alt
@@ -43,99 +42,75 @@ def _text(fs: float, size: float = LABEL_PX, **kw) -> dict:
 # --- lives -------------------------------------------------------------------------------------
 
 
-LIVES_COLUMNS = (("AI servers", "Dot-com network electronics"), ("Dot-com fiber", "Data-centre", "Nuclear"))
-SHORT = {"Williams Communications": "Williams"}
-
-
-def lives(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.HConcatChart:
+def years(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.LayerChart:
+    """One square per year of book life, a small gap every five years; AI servers in the accent. Landscape:
+    one line per asset, labels at the left. Portrait: lines of ten years (a decade each), label above."""
     fs = font_scale
     width, height = _size(width, height)
-    fmt = {"return_dtype": pl.String}
-    d = story.frames["lives"].with_columns(
-        entity=pl.col("entity").replace(SHORT),
-        label=pl.when(pl.col("low") == pl.col("high"))
-        .then(pl.col("high").map_elements(lambda v: f"{v:g}", **fmt))
-        .otherwise(
-            pl.format(
-                "{}–{}",
-                pl.col("low").map_elements(lambda v: f"{v:g}", **fmt),
-                pl.col("high").map_elements(lambda v: f"{v:g}", **fmt),
+    d = story.frames["years"]
+    portrait = height / width > 0.5  # the plot area of a portrait image is still wider than tall
+    per_line = 10 if portrait else 100
+    gap = 0.45  # extra columns between groups of five years
+    units, heads, ends, top = [], [], [], 0.0
+    for r in d.to_dicts():
+        n = int(round(r["years"]))
+        ink = color("accent") if r["group"].startswith("AI servers") else GREYS[1] if r["era"] == "dotcom" else GREYS[0]
+        lines = -(-n // per_line)
+        if portrait:
+            heads.append({"x": -0.4, "y": top, "text": r["label"]})
+            top += 1.0
+        for i in range(n):
+            col = i % per_line
+            units.append(
+                {"label": r["label"], "x": col + (col // 5) * gap, "y": top + i // per_line, "ink": ink, "year": i + 1}
             )
-        ),
-        ink=pl.when(pl.col("group").str.starts_with("AI servers"))
-        .then(pl.lit(color("accent")))
-        .when(pl.col("era") == "dotcom")
-        .then(pl.lit(GREYS[1]))
-        .otherwise(pl.lit(GREYS[0])),
+        last = n - 1
+        ends.append(
+            {
+                "label": r["label"],
+                "x": (last % per_line) + ((last % per_line) // 5) * gap,
+                "y": top + last // per_line,
+                "text": f"{r['years']:g} years",
+                "range": f"{r['low']:g}–{r['high']:g} across {r['companies']} companies ({r['who']})",
+            }
+        )
+        if not portrait:
+            heads.append({"x": -0.9, "y": top, "text": r["label"]})
+        top += lines + (0.9 if portrait else 1.0)
+    label_px = 0 if portrait else 290 * fs
+    max_x = max(u["x"] for u in units)
+    tail_cols = 7
+    plot_w = width - label_px
+    cell = plot_w / (max_x + tail_cols + 1)
+    cell = min(cell, (height / top) * (1.0 if portrait else 0.75))
+    size = (cell * 0.78) ** 2
+    left = label_px / cell  # label room, in squares, left of the first square
+    x_scale = alt.Scale(domain=[-0.6 - left, -0.6 + plot_w / cell])
+    y_scale = alt.Scale(domain=[-0.6, max(top - 0.4, -0.6 + height / cell * 0.5)], reverse=True)
+    x = alt.X("x:Q", scale=x_scale, axis=None)
+    y = alt.Y("y:Q", scale=y_scale, axis=None)
+    sq = (
+        alt.Chart(alt.Data(values=units))
+        .mark_square(size=size, opacity=1)
+        .encode(x=x, y=y, color=alt.Color("ink:N", scale=None))
     )
-    groups = list(dict.fromkeys(d["group"]))
-    columns = (
-        [[g for g in groups if g.startswith(prefix)] for prefix in LIVES_COLUMNS[0]],
-        [[g for g in groups if g.startswith(prefix)] for prefix in LIVES_COLUMNS[1]],
+    lab = (
+        alt.Chart(alt.Data(values=ends))
+        .mark_text(align="left", dx=cell * 0.5 + 8 * fs, **_text(fs, LABEL_PX + 1, color=color("text")))
+        .encode(x=x, y=y, text="text:N")
     )
-    columns = [[g for sub in col for g in sub] for col in columns]
-    title_px, spacing, col_gap = 30 * fs, 14 * fs, 56 * fs
-    label_w = 120 * fs
-    col_w = (width - col_gap) / 2 - label_w
-    xmax = math.ceil(d["high"].max() / 10) * 10
-    x_scale = alt.Scale(domain=[0, xmax + 8])
-
-    def column(gs: list[str]) -> alt.VConcatChart:
-        n = d.filter(pl.col("group").is_in(gs)).height
-        row_h = (height - 40 * fs - len(gs) * (title_px + spacing)) / max(n, 1)
-        panels = []
-        for i, g in enumerate(gs):
-            part = d.filter(pl.col("group") == g)
-            data = alt.Data(values=part.select("entity", "low", "high", "label", "ink", "scope").to_dicts())
-            last = i == len(gs) - 1
-            x_axis = alt.Axis(
-                title="Years" if last else None,
-                labels=last,
-                grid=True,
-                gridColor="#1C1F27",
-                values=list(range(0, xmax + 1, 10)),
-                labelFontSize=AXIS_PX * fs,
-            )
-            y = alt.Y(
-                "entity:N",
-                sort=None,
-                title=None,
-                axis=alt.Axis(
-                    labelFontSize=(AXIS_PX - 1) * fs, labelFont=brand()["fonts"]["body"], labelLimit=label_w, grid=False
-                ),
-            )
-            base = alt.Chart(data).encode(y=y)
-            bar = base.mark_bar(height=min(max(row_h * 0.45, 5), 12 * fs), cornerRadius=3 * fs).encode(
-                x=alt.X("low:Q", scale=x_scale, axis=x_axis), x2="high:Q", color=alt.Color("ink:N", scale=None)
-            )
-            dot = (
-                base.mark_circle(size=90 * fs**2, opacity=1)
-                .encode(x=alt.X("high:Q", scale=x_scale), color=alt.Color("ink:N", scale=None))
-                .transform_filter("datum.low == datum.high")
-            )
-            lab = base.mark_text(
-                align="left", dx=9 * fs, **_text(fs, LABEL_PX - 2, color=color("text_secondary"))
-            ).encode(x=alt.X("high:Q", scale=x_scale), text="label:N")
-            layer = alt.layer(bar, dot, lab)
-            if interactive:
-                layer = layer.encode(tooltip=["entity:N", "scope:N", "label:N"])
-            panels.append(
-                layer.properties(
-                    width=col_w,
-                    height=row_h * part.height,
-                    title=alt.TitleParams(
-                        g,
-                        anchor="start",
-                        fontSize=16 * fs,
-                        font=brand()["fonts"]["body"],
-                        fontWeight="bold",
-                        color=color("text"),
-                    ),
-                )
-            )
-        return alt.vconcat(*panels, spacing=spacing)
-
-    chart = alt.hconcat(column(columns[0]), column(columns[1]), spacing=col_gap).resolve_scale(x="shared")
+    if interactive:
+        lab = lab.encode(tooltip=["label:N", "text:N", alt.Tooltip("range:N", title="Stated range")])
+    head = (
+        alt.Chart(alt.Data(values=heads))
+        .mark_text(
+            align="left" if portrait else "right",
+            baseline="middle",
+            **_text(fs, LABEL_PX + 1, color=color("text_secondary")),
+        )
+        .encode(x=x, y=y, text="text:N")
+    )
+    chart = alt.layer(sq, lab, head).properties(width=width, height=height)
     return chart.configure(**vl_config(fs))
 
 

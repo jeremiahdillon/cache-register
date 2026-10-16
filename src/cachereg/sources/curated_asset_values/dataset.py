@@ -41,7 +41,7 @@ QUALIFIERS = ("exact", "over", "about", "under", "up_to", "range_low", "range_hi
 SOURCE_KINDS = ("primary", "secondary")
 SUFFIX = re.compile(r"[2-9]|[1-9]\d+")  # the n of a second, third, … row with the same base id
 ERAS = ("ai", "dotcom")
-LAYERS = ("equipment", "infrastructure", "company")
+LAYERS = ("equipment", "infrastructure", "company", "mixed")
 
 
 def load_vocab(path: Path | None = None) -> dict:
