@@ -1,15 +1,21 @@
 name: pages
 
 # Publishes the short-link site (cacheregister.dev/<link> → analysis folder) and the root page's reel
-# of committed receipt visuals. No data involved.
+# of committed receipt visuals. No data involved. Pages whose HTML changed are then submitted to IndexNow
+# (Bing, Yandex and the other participants; cachereg/indexnow.py); that never fails the deploy.
 on:
   push:
     branches: [main]
     paths: ["receipts/*/receipt.yaml", "receipts/*/README.md", "receipts/*/output/**", "explore/*/explore.yaml",
             "config/**",
-            "src/cachereg/site.py", "src/cachereg/viz/brand.py", "src/cachereg/story/model.py",
+            "src/cachereg/site.py", "src/cachereg/indexnow.py", "src/cachereg/viz/brand.py", "src/cachereg/story/model.py",
             "assets/templates/**", "assets/fonts/**", "assets/site/**", ".github/workflows/pages.yml"]
   workflow_dispatch:
+    inputs:
+      indexnow_all:
+        description: "Submit every page to IndexNow, changed or not"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -34,9 +40,19 @@ jobs:
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
       - name: Build site
         run: uv run --frozen cachereg site --out _site
+      - name: Pages that changed (for IndexNow)
+        id: changed
+        continue-on-error: true
+        env:
+          ALL: ${{ inputs.indexnow_all && '--all' || '' }}
+        run: uv run --frozen cachereg indexnow-changed --site _site --out "$RUNNER_TEMP/indexnow-urls.txt" $ALL
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: _site
       - id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+      - name: Submit changed pages to IndexNow
+        if: steps.changed.outcome == 'success'
+        continue-on-error: true
+        run: uv run --frozen cachereg indexnow-submit "$RUNNER_TEMP/indexnow-urls.txt"

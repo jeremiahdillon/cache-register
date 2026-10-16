@@ -249,6 +249,38 @@ def site(out: str = typer.Option("_site", help="Output folder (gitignored).")) -
         typer.echo(f"  {short_url(link.slug):<45} -> {link.analysis}")
 
 
+@app.command("indexnow-changed")
+def indexnow_changed(
+    site_dir: str = typer.Option("_site", "--site", help="The built site (cachereg site)."),
+    out: str = typer.Option(..., help="File to write the changed URLs to, one per line."),
+    every: bool = typer.Option(False, "--all", help="List every page, changed or not (a first submission)."),
+) -> None:
+    """Before a deploy: the site's pages whose new HTML differs from what is live (network)."""
+    from cachereg import indexnow
+
+    built = Path(site_dir)
+    urls = list(indexnow.pages(built)) if every else indexnow.changed(built)
+    Path(out).write_text("".join(f"{url}\n" for url in urls))
+    typer.echo(f"{len(urls)} page(s) to submit" + "".join(f"\n  {url}" for url in urls))
+
+
+@app.command("indexnow-submit")
+def indexnow_submit(urls_file: str = typer.Argument(..., help="The file indexnow-changed wrote.")) -> None:
+    """After a deploy: submit the changed pages to IndexNow (network); nothing to do if none changed."""
+    from cachereg import indexnow
+
+    urls = [line.strip() for line in Path(urls_file).read_text().splitlines() if line.strip()]
+    if not urls:
+        typer.echo("No changed pages: nothing submitted.")
+        return
+    try:
+        status, meaning = indexnow.submit(urls)
+    except (RuntimeError, ValueError, OSError) as e:
+        typer.echo(f"IndexNow: {e}", err=True)
+        raise typer.Exit(code=1) from e
+    typer.echo(f"IndexNow {status} ({meaning}): {len(urls)} page(s)")
+
+
 @app.command()
 def status() -> None:
     """Per enabled source: cadence, last fetch, next due date and last error; then which credentials are set."""

@@ -388,6 +388,11 @@ Search text (decided 2026-10-16, no new copy to review): the closing screen carr
 `blurb` and each chart's headline and subtitle with its credits, as `cachereg render` records them in the
 manifest (`visuals`); the chart's headline and subtitle are also its alt text (on the root reel too, since
 the slides are shared) and the page's meta / Open Graph description, and the page has Article JSON-LD and a `lastmod` (its `as_of`) in the sitemap.
+IndexNow (decided 2026-10-16): the Pages workflow lists the pages whose new HTML differs from the live site
+before deploying and submits them after (`cachereg indexnow-changed` / `indexnow-submit`; Bing, Yandex, Seznam,
+Naver, Yep and the other participants share one submission; Google and Brave do not take part). The key in
+`config/indexnow.yaml` is public by design (served at `/<key>.txt`); a failed submission never fails the deploy;
+a manual run with `indexnow_all` submits every page.
 Renamed/retired topics stay alive via `config/link-aliases.yaml` (redirecting to the page). An exploration may
 reserve its future topic (`link:` in `explore.yaml`, decided 2026-10-10): its visuals carry the short
 link and the site redirects it to the exploration until a receipt of that name with `promoted_from`

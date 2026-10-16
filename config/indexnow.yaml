@@ -1,0 +1,2 @@
+# IndexNow (cachereg/indexnow.py). Kept out of brand.yaml, which is a render input.
+key: 1b9abf854d0315a8dd5a6831c829ba3f   # gitleaks:allow (public by design: served at /<key>.txt so IndexNow engines can verify the host)

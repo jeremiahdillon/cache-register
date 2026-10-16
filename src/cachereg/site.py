@@ -28,6 +28,7 @@ from string import Template
 
 import yaml
 
+from cachereg import indexnow
 from cachereg.core.paths import REPO_ROOT
 from cachereg.story.model import TARGETS
 from cachereg.viz.brand import FONT_FILES, brand, color, font_path, register_fonts
@@ -511,6 +512,8 @@ def _crawler_files(out: Path, receipts: list[Receipt]) -> None:
     newest = max((r.as_of for r in receipts), default=None)  # the root's reel changes with its newest receipt
     urls = [(f"{site}/", newest), *((f"{site}/{html.escape(r.slug)}/", r.as_of) for r in receipts)]
     (out / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {site}/sitemap.xml\n")
+    if key := indexnow.key():  # IndexNow engines check the host serves its key (cachereg.indexnow)
+        (out / f"{key}.txt").write_text(key, encoding="utf-8")
     (out / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
