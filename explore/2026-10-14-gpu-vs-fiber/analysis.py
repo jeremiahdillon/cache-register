@@ -76,7 +76,7 @@ def price_paths(con, series: list[dict]) -> pl.DataFrame:
 def years_on_books(life: pl.DataFrame, groups: list[dict]) -> pl.DataFrame:
     """Per group: the median across companies of the midpoint of each company's stated life (a single figure
     is its own midpoint), ordered by era (dot-com first) and then by years."""
-    meta = {g["group"]: (g["short"], g["lifespan"], g.get("tag")) for g in groups}
+    meta = {g["group"]: (g["short"], g["lifespan"], g.get("tag"), bool(g.get("highlight"))) for g in groups}
     return (
         life.with_columns(mid=(pl.col("low") + pl.col("high")) / 2)
         .group_by("group", "era", maintain_order=True)
@@ -91,6 +91,7 @@ def years_on_books(life: pl.DataFrame, groups: list[dict]) -> pl.DataFrame:
             label=pl.col("group").map_elements(lambda g: meta[g][0], return_dtype=pl.String),
             lifespan=pl.col("group").map_elements(lambda g: meta[g][1], return_dtype=pl.String),
             tag=pl.col("group").map_elements(lambda g: meta[g][2], return_dtype=pl.String),
+            highlight=pl.col("group").map_elements(lambda g: meta[g][3], return_dtype=pl.Boolean),
             era_order=pl.col("era").replace_strict({"dotcom": 0, "ai": 1}, return_dtype=pl.Int64),
         )
         .sort("era_order", "years")
@@ -229,6 +230,8 @@ def ppe_rows(con, companies: list[str], cfg: dict) -> pl.DataFrame:
 
 
 LONG = ("glass", "buildings", "shell")
+# The asset each era's story is about (drawn in the accent): the glass then, GPU servers (gear) now.
+HEADLINE = {"Dot-com fiber builders, 2000": "glass", "AI builders, latest year": "gear"}
 
 
 def era_split(con, cfg: dict) -> tuple[pl.DataFrame, dict]:
@@ -272,7 +275,12 @@ def era_split(con, cfg: dict) -> tuple[pl.DataFrame, dict]:
         total, mixed = e["usd"].sum(), e.filter(pl.col("kind") == "mixed")["usd"].sum()
         long_ = e.filter(pl.col("kind").is_in(LONG))["usd"].sum()
         known = total - mixed
+        headline = HEADLINE[era]
+        head_usd = e.filter(pl.col("kind") == headline)["usd"].sum()
         totals[era] = {
+            "headline": headline,
+            "headline_low": head_usd / total,
+            "headline_high": (head_usd + mixed) / total,
             "companies": used,
             "total_usd": total,
             "mixed_usd": mixed,
@@ -336,9 +344,12 @@ def build(con, as_of: date, cfg: dict) -> Story:
         c: exp.filter((pl.col("company") == c) & (pl.col("kind") == "shell"))["share"].sum()
         for c in cfg["glass_companies"]
     }
-    least = min(shell, key=shell.get)
-    most = max(shell, key=shell.get)
-    least_debt = exp.filter(pl.col("company") == least)["debt_to_cash"][0]
+    gear = {
+        c: exp.filter((pl.col("company") == c) & (pl.col("kind") == "gear"))["share"].sum()
+        for c in cfg["glass_companies"]
+    }
+    most_gear = max(gear, key=gear.get)
+    gear_debt = exp.filter(pl.col("company") == most_gear)["debt_to_cash"][0]
 
     ai_servers = life.filter(pl.col("group").str.starts_with("AI servers"))
     electronics = life.filter(pl.col("group").str.starts_with("Dot-com network electronics"))
@@ -377,13 +388,13 @@ def build(con, as_of: date, cfg: dict) -> Story:
     by_visual = {
         "years": {
             "title": (
-                f"GPUs get {span['AI servers']:g} years on the books, like the dot-com era's network gear "
-                f"({span['Dot-com network']:g}); its glass got {span['Dot-com fiber']:g}"
+                f"Dot-com glass went on the books for {span['Dot-com fiber']:g} years; today's GPU servers get "
+                f"{span['AI servers']:g}"
             ),
             "subtitle": (
-                "One square per year of book life: the median across companies of the midpoint of each stated "
-                "life. Each build-out paired short-lived gear (lime) with long-lived assets (grey): then the glass, "
-                "now the powered shell and the power plants and grid behind it."
+                "One square per year of book life: the median across companies of the midpoint of each stated life. "
+                "In lime, the asset each build-out is remembered for: the glass then, GPU servers now. In grey, the "
+                "rest: the dot-com era's network electronics; today's buildings, power plants and grid."
             ),
         },
         "book-life": {
@@ -432,15 +443,15 @@ def build(con, as_of: date, cfg: dict) -> Story:
         },
         "split": {
             "title": (
-                f"In 2000 the fiber builders spent {kind_share(dot_era, 'glass'):.0%} of their known additions on "
-                f"glass; the AI builders spend {kind_share(ai_era, 'gear'):.0%} on short-lived gear"
+                f"In 2000, fiber builders put {kind_share(dot_era, 'glass'):.0%} of known spending into long-lived "
+                f"glass; AI builders now put {kind_share(ai_era, 'gear'):.0%} into short-lived GPU servers"
             ),
             "subtitle": (
                 f"Additions to gross property and equipment in one year: {fmt_usd(dot['total_usd'])} at "
-                f"{len(dot['companies'])} fiber carriers in 2000, {fmt_usd(ai['total_usd'])} at Microsoft, "
-                "Alphabet, Amazon, Meta, Oracle and "
-                f"CoreWeave in their latest year ({ai['total_usd'] / dot['total_usd']:.0f}×). Bars: known spending; "
-                "brackets: the long-lived share if the unassigned spending went all one way."
+                f"{len(dot['companies'])} fiber carriers in 2000; {fmt_usd(ai['total_usd'])} at Microsoft, Alphabet, "
+                f"Amazon, Meta, Oracle and CoreWeave in their latest year ({ai['total_usd'] / dot['total_usd']:.0f}×). "
+                "GPU servers: the filings' servers and network equipment. Brackets: the lime share counting "
+                "unassigned spending."
             ),
             "notes": [
                 "Unassigned: construction in progress and lines that lump kinds. Alphabet's technical infrastructure "
@@ -450,14 +461,14 @@ def build(con, as_of: date, cfg: dict) -> Story:
         },
         "exposure": {
             "title": (
-                f"{least} owns little of the powered shell: {shell[least]:.0%} of its property is buildings and "
-                f"land, and it owes {least_debt:.0f}× its cash"
+                f"{most_gear}'s property is {gear[most_gear]:.0%} GPU servers and {shell[most_gear]:.0%} buildings, "
+                f"and it owes {gear_debt:.0f}× its cash"
             ),
             "subtitle": (
-                "Gross property and equipment on each latest 10-K: buildings and land (the powered shell), mixed or "
-                "not yet in service, and servers and network gear. Right: debt ÷ cash and short-term investments "
-                f"(leases excluded). {least} rents its data centres; its landlords own the shell. "
-                f"{most}: {shell[most]:.0%} shell."
+                "Gross property and equipment on each latest 10-K: GPU servers and network gear (the filings' "
+                "servers and network equipment), mixed or not yet in service, and buildings and land (the powered "
+                "shell). Right: debt ÷ cash and short-term investments (leases excluded). "
+                f"{most_gear} rents its data centres; its landlords own the shell."
             ),
             "notes": [
                 "Alphabet reports servers and data centres as one line, split 60/40 by its own statement (lighter: "

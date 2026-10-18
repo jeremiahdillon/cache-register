@@ -36,7 +36,8 @@ config:
   # 2. Book useful lives, by group (a range is its low and high rows; a single figure is one row).
   lives:
     - group: AI servers and GPUs, 2025–26
-      short: Servers and GPUs
+      short: GPU servers and network gear
+      highlight: true
       lifespan: short
       era: ai
       ids: [gpu_generic-book_useful_life-2026-07-29, gpu_generic-book_useful_life-2026-07-29-2,
@@ -54,6 +55,7 @@ config:
             fiber_electronics-book_useful_life-2002-04-01-3, fiber_electronics-book_useful_life-2002-04-01-4]
     - group: Dot-com fiber, conduit and rights-of-way
       short: Fiber, conduit and rights-of-way
+      highlight: true
       tag: the glass
       lifespan: long
       era: dotcom

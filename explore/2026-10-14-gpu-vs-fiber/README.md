@@ -12,35 +12,38 @@ could buy the assets now.
 ## Terms
 On the charts, **glass** is literal: the fiber, with its conduit and rights-of-way. **Gear** is the
 short-lived electronics written off within a decade: the dot-com era's lasers, switches and routers; today's
-servers and GPUs. The **powered shell** is the AI era's long-lived site: land and buildings, with the power
+**GPU servers** (the filings' "servers and network equipment": mostly GPU servers, with CPU servers, storage
+and network gear; the filings do not split GPUs out). The **powered shell** is the AI era's long-lived site: land and buildings, with the power
 plants and grid behind them. The fiber between today's data centres is left out: under 2% of the AI
 builders' annual property additions, and not the dot-com build-out.
 
 ## Findings (curated_asset_values to 2026-10-16; SEC filings to 2026-10-13)
 The three story visuals, in posting order (each with a still, a video and an HTML version), then the
 earlier exploration views.
-- **years: GPUs get 5.5 years on the books, like the dot-com era's network gear (7); its glass got
-  22.5.** One square per year: the median across companies of the midpoint of each stated life. Dot-com:
+- **years (gpus-are-not-glass): dot-com glass went on the books for 22.5 years; today's GPU servers get
+  5.5.** One square per year: the median across companies of the midpoint of each stated life. Dot-com:
   network electronics 7 (2–14 across Genuity, Level 3, Qwest and WorldCom), fiber, conduit and rights-of-way
-  22.5 (7–57). AI: servers and GPUs 5.5 (2–6 at Microsoft, Alphabet, Amazon, Meta, Oracle, CoreWeave and
-  Nebius), data-centre buildings 23.5 (5–60), power plants and grid 46 (stated total lives at Constellation,
-  Dominion, AEP and Exelon: gas 40–45, nuclear 54–64, transmission and distribution 5–85). Each build-out
-  paired short-lived gear with long-lived assets.
-- **split: in 2000 the fiber builders spent 60% of their known additions on glass; the AI builders spend
-  65% on short-lived gear.** Additions to gross property and equipment in one year: $12.8bn at four fiber
+  22.5 (7–57). AI: GPU servers and network gear 5.5 (2–6 at Microsoft, Alphabet, Amazon, Meta, Oracle,
+  CoreWeave and Nebius), data-centre buildings 23.5 (5–60), power plants and grid 46 (stated total lives at
+  Constellation, Dominion, AEP and Exelon: gas 40–45, nuclear 54–64, transmission and distribution 5–85). In
+  lime, the asset each build-out is remembered for; the video builds the dot-com era, pauses, then the AI era.
+- **split (glass-then-gear-now): in 2000, fiber builders put 60% of known spending into long-lived glass; AI
+  builders now put 65% into short-lived GPU servers.** Additions to gross property and equipment in one year: $12.8bn at four fiber
   carriers that report fiber and electronics apart (Level 3, Williams, Genuity, Metromedia Fiber; 2000) —
   glass 60%, buildings 16%, gear 24% of the known part — against $521bn at Microsoft, Alphabet, Amazon,
-  Meta, Oracle and CoreWeave in their latest year (41×): gear 65%, powered shell 35%. Counting the unassigned
-  additions (construction in progress, lumped lines) all one way, long-lived is 53–83% then and 26–52% now.
+  Meta, Oracle and CoreWeave in their latest year (41×): GPU servers and network gear 65%, powered shell 35%.
+  Counting the unassigned additions (construction in progress, lumped lines) all one way, glass is 42–72% of
+  the 2000 additions and GPU servers 48–74% of today's.
   A Harvard Business School case (2001) puts trenching and laying conduit and fiber at over 70% of a dark
   network's cost. Nationally the picture differs: US spending on communications equipment ran several times
   fiber cable and telecom structures in 2000 (BEA via the Richmond Fed; Doms, San Francisco Fed).
-- **exposure: CoreWeave owns little of the powered shell: 8% of its property is buildings and land, and it
-  owes 6× its cash.** Gross property and equipment on each latest 10-K, by kind, with debt ÷ cash and
-  short-term investments (leases excluded): Microsoft 49% shell (0.5×), Alphabet 38% (24 points estimated;
-  0.4×), Amazon 29% (1.1×), Meta 29% (0.9×), Oracle 18% (4.1×), CoreWeave 8% (6.4×). CoreWeave rents its
-  data centres, so its landlords own the shell; Oracle's construction in progress is mostly servers awaiting
-  deployment. The two with the least shell are the two most indebted.
+- **exposure (own-the-shell): CoreWeave's property is 62% GPU servers and 8% buildings, and it owes 6× its
+  cash.** Gross property and equipment on each latest 10-K, by kind, with debt ÷ cash and short-term
+  investments (leases excluded), sorted by the GPU-server share: CoreWeave 62% GPU servers, 8% shell (6.4×);
+  Microsoft 50%, 49% (0.5×); Oracle 49%, 18% (4.1×); Meta 42%, 29% (0.9×); Alphabet 35%, 38% (both partly
+  estimated; 0.4×); Amazon 32%, 29% (1.1×). CoreWeave rents its data centres, so its landlords own the shell;
+  Oracle's construction in progress is mostly servers awaiting deployment. The two most indebted hold the
+  least shell.
 
 ### Earlier views (exploration only)
 - **book-life: six years on the books, three newer generations.** From NVIDIA's announcement, a
