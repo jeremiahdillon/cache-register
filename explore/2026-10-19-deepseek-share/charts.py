@@ -331,8 +331,8 @@ def latest(story: Story, width, height, font_scale: float, interactive: bool = F
 # frame: light grey lines for each step, the bold grey line (all US models) and the lime DeepSeek line.
 
 FPS = 30
-LEAD, GROW, STAY, WIPE, HOLD = 12, 30, 30, 24, 75  # frames per phase (grey steps); STAY = 1 s at full height
-DS_PAUSE, DS_GROW, DS_STAY, DS_WIPE = 45, 48, 30, 30  # a longer beat before DeepSeek; its step is slower
+LEAD, GROW, STAY, WIPE, HOLD = 12, 30, 15, 24, 75  # frames per phase (grey steps); STAY = 0.5 s at full height
+DS_PAUSE, DS_GROW, DS_STAY, DS_WIPE = 45, 48, 20, 30  # a longer beat before DeepSeek; its step is slower
 # Each step is one or more columns of the wide frame; xAI is rolled into other closed US models here.
 BUILD_STEPS = [["Anthropic"], ["OpenAI"], ["Google"], ["xAI (Grok)", "Other US closed"], [US_OPEN]]
 BAR_GREY = "#D3D7E0"  # bars a shade brighter than the bold line, so the incoming step stands out
@@ -396,7 +396,7 @@ def _bar_slices(weeks, lo: list[float], hi: list[float], wipe: float) -> list[di
     return rows
 
 
-def _build_spec(wide, cum, ds, labels_text, state, ticks, pad, w, h, fs, y_title) -> dict:
+def _build_spec(wide, cum, ds, labels, state, ticks, pad, w, h, fs, y_title) -> dict:
     fonts = brand()["fonts"]
     first = wide["week"].min().replace(day=1)
     edge = (wide["week"].max() + timedelta(days=BAR_DAYS)).isoformat()
@@ -420,14 +420,14 @@ def _build_spec(wide, cum, ds, labels_text, state, ticks, pad, w, h, fs, y_title
             {"x": x, "v": v, "s": f"g{k}", "sw": sw * fs, "c": _mix(color("text_secondary"), color("muted"), lightness)}
             for x, v in zip(mid, top, strict=True)
         ]
-        label_vals[f"g{k}"] = (top[-1], lightness, min(1.0, push[k] * 1.5))
+        label_vals[f"g{k}"] = (push[k], lightness)
     k_ds = n_grey
     if push[k_ds] > 0:
         dtop = [push[k_ds] * v for v in ds]
         lines += [
             {"x": x, "v": v, "s": "ds", "sw": DS_W * fs, "c": color("accent")} for x, v in zip(mid, dtop, strict=True)
         ]
-        label_vals["ds"] = (dtop[-1], 0.0, min(1.0, push[k_ds] * 1.5))
+        label_vals["ds"] = (push[k_ds], 0.0)
 
     # Bars of the step on stage: from the line below (DeepSeek: the axis) to its current top, bottom wiping up.
     bars = []
@@ -487,30 +487,72 @@ def _build_spec(wide, cum, ds, labels_text, state, ticks, pad, w, h, fs, y_title
             .mark_line(interpolate="linear", color=color("accent"), strokeWidth=DS_W * fs)
             .encode(x=alt.X("x:T", scale=x_scale), y=alt.Y("v:Q", scale=y_scale)),
         ]
-    # Right-edge labels, nudged apart; light lines get light labels.
-    if label_vals:
-        px = {s: h * (1 - v / ticks[-1]) for s, (v, _, _) in label_vals.items()}
-        res = _resolve(px, h, LABEL_PX * fs)
-        rows = []
-        for s, (_, lightness, o) in label_vals.items():
-            ink = color("accent") if s == "ds" else _mix(color("text"), color("muted"), lightness)
-            rows.append({"x": edge, "y": ticks[-1] * (1 - res[s] / h), "t": labels_text[s], "c": ink, "o": o})
+    # Right-edge labels at fixed final positions (see _label_layout). Each slides from where it starts to where it
+    # settles as its step grows, and never moves again. Drawn newest first, each on a canvas-coloured plate, so a
+    # label sliding out from behind a settled one stays hidden until it clears it. Light lines get light labels.
+    font_px, gap = LABEL_PX * fs, LABEL_PX * fs * ROW
+    for s in reversed(list(label_vals)):
+        e, lightness = label_vals[s]
+        lab = labels[s]
+        y = lab["from"] + (lab["to"] - lab["from"]) * e
+        ink = color("accent") if s == "ds" else _mix(color("text"), color("muted"), lightness)
+        n_rows = len(lab["rows"])
         layers.append(
-            alt.Chart(alt.Data(values=rows))
-            .mark_text(align="left", baseline="middle", dx=14 * fs, fontSize=LABEL_PX * fs, font=fonts["body"])
+            alt.Chart(alt.Data(values=[{}]))
+            .mark_rect(color=color("canvas"))
             .encode(
-                x=alt.X("x:T", scale=x_scale),
-                y=alt.Y("y:Q", scale=y_scale),
-                text="t:N",
-                color=alt.Color("c:N", scale=None),
-                opacity=alt.Opacity("o:Q", scale=None),
+                x=alt.value(w + 4 * fs),
+                x2=alt.value(w + pad["right"]),
+                y=alt.value(y - gap / 2),
+                y2=alt.value(y + gap * (n_rows - 0.5)),
             )
         )
+        for i, t in enumerate(lab["rows"]):
+            layers.append(
+                alt.Chart(alt.Data(values=[{"t": t}]))
+                .mark_text(
+                    align="left",
+                    baseline="middle",
+                    fontSize=font_px,
+                    font=fonts["body"],
+                    color=ink,
+                    opacity=min(1.0, e * 1.5) if lab["fade"] else 1.0,
+                )
+                .encode(x=alt.value(w + 14 * fs), y=alt.value(y + gap * i), text="t:N")
+            )
     spec = alt.layer(*layers).properties(width=w, height=h).to_dict()
     spec["config"] = vl_config(fs)
     spec["autosize"] = {"type": "none"}
     spec["padding"] = pad
     return spec
+
+
+ROW = 1.25  # label row pitch, in font sizes
+
+
+def _label_layout(finals: dict[str, float], rows: dict[str, list[str]], ticks, h: float, fs: float) -> dict:
+    """Each label's settled pixel position (resolved once, for the final frame) and where it slides in from.
+
+    Labels are kept in their final top-to-bottom order and nudged apart by whole rows (a two-row label takes two).
+    A grey step's label slides out from behind the previous step's settled label (Anthropic's from the axis), and
+    DeepSeek's from behind the all-US label; only the labels that start in the open fade in."""
+    gap = LABEL_PX * fs * ROW
+    px = {s: h * (1 - v / ticks[-1]) for s, v in finals.items()}
+    order = sorted(px, key=px.get)
+    out = dict(px)
+    out[order[0]] = max(out[order[0]], gap / 2)
+    for a, b in zip(order, order[1:], strict=False):
+        out[b] = max(out[b], out[a] + gap * len(rows[a]))
+    last = order[-1]
+    limit = h - gap / 2 - gap * (len(rows[last]) - 1)
+    if out[last] > limit:
+        out[last] = limit
+        for a, b in zip(reversed(order[:-1]), reversed(order[1:]), strict=False):
+            out[a] = min(out[a], out[b] - gap * len(rows[a]))
+    grey = [s for s in finals if s != "ds"]
+    starts = {g: (out[grey[i - 1]] if i else h) for i, g in enumerate(grey)}
+    starts["ds"] = out[grey[-1]]
+    return {s: {"to": out[s], "from": starts[s], "rows": rows[s], "fade": s == grey[0]} for s in finals}
 
 
 def _mix(a: str, b: str, t: float) -> str:
@@ -533,10 +575,11 @@ def build_specs(story: Story, width: int, height: int, font_scale: float, cfg: d
         "g1": "+ OpenAI",
         "g2": "+ Google",
         "g3": "+ Other closed",
-        "g4": f"+ Open = All US {fmt_t(last[US_ALL])}",
+        "g4": [f"All US {fmt_t(last[US_ALL])}", "+ Open"],  # "All US" next to its line, the step on the row below
         "ds": f"DeepSeek {fmt_t(last[DEEPSEEK])}",
     }
-    label_w = max(_text_w(t, round(LABEL_PX * fs)) for t in text.values())
+    rows = {k: v if isinstance(v, list) else [v] for k, v in text.items()}
+    label_w = max(_text_w(t, round(LABEL_PX * fs)) for r in rows.values() for t in r)
     pad = {
         "left": round(72 * fs),
         "right": round(14 * fs + label_w + 8 * fs),
@@ -545,7 +588,9 @@ def build_specs(story: Story, width: int, height: int, font_scale: float, cfg: d
     }
     w, h = width - pad["left"] - pad["right"], height - pad["top"] - pad["bottom"]
     ticks = _nice_ticks(max(max(cum[-1]), max(ds)))
+    finals = {f"g{k}": cum[k][-1] for k in range(len(BUILD_STEPS))} | {"ds": ds[-1]}
+    labels = _label_layout(finals, rows, ticks, h, fs)
     specs = [
-        _build_spec(wide, cum, ds, text, s, ticks, pad, w, h, fs, story.extra["y_title"]) for s in _build_schedule()
+        _build_spec(wide, cum, ds, labels, s, ticks, pad, w, h, fs, story.extra["y_title"]) for s in _build_schedule()
     ]
     return specs, FPS

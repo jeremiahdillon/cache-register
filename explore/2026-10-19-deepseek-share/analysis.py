@@ -126,10 +126,8 @@ def build(con, as_of: date, cfg: dict) -> Story:
     else:
         claim = f"DeepSeek serves {ds / closed:.0%} as many tokens on OpenRouter as closed US models"
     # Present tense, no date: the claim is about the latest complete week, which the subtitle names.
-    lines_sub = (
-        f"Weekly tokens on OpenRouter, {first:%B %Y} to {end:%B %-d, %Y}. Week of {last:%b %-d}: DeepSeek "
-        f"{fmt_t(ds)}, closed US models {fmt_t(closed)}, all US models {fmt_t(us)}."
-    )
+    # The latest figures are on the face of the lines and build charts (their labels), so the subtitle is scope only.
+    lines_sub = f"Weekly tokens on OpenRouter, {first:%B %Y} to {end:%B %-d, %Y}."
     labs_now = ", ".join(f"{b} {fmt_t(r1[b])}" for b in LAB_ORDER)
     stack_sub = (
         f"Weekly tokens on OpenRouter of closed US models by developer, and DeepSeek (line), {first:%B %Y} to "
