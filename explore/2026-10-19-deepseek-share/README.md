@@ -5,7 +5,7 @@ week Oct 12–18)*
 
 ## Question
 How large is DeepSeek on OpenRouter compared with US models: with closed US models (by developer), and with every
-US model, closed or open-weight? Weekly tokens, full history.
+US model, closed or open-weight? Weekly tokens since the start of 2026.
 
 ## Finding (data to the week of Oct 12, 2026)
 - **DeepSeek served more tokens than all US models combined in the last two weeks:** 1.18× in the week of Oct 5
@@ -15,8 +15,8 @@ US model, closed or open-weight? Weekly tokens, full history.
   Oct 12: 45.9T vs 32.0T). It first did so in the week of Aug 3 (1.02×), and again in the week of Aug 17.
 - **In the week of Oct 12 it served 3.8× the tokens of Anthropic, the largest US lab that week:** Anthropic 12.1T, OpenAI 11.3T, Google
   5.0T (closed models only), xAI 0.1T, other closed US models 3.5T (almost all Meta's Muse Spark).
-- **The rise is recent.** DeepSeek served 6% of closed US models' tokens in the week of Jan 6, 2025, 14% in the
-  week of Jan 5, 2026 and 67% in the week of Jul 6, 2026.
+- **The rise is recent.** DeepSeek served 14% of closed US models' tokens in the week of Jan 5, 2026 and 67% in the
+  week of Jul 6, 2026.
 
 ## Visuals
 In `outputs/` (gitignored; `cachereg render explore/2026-10-19-deepseek-share`), each as `x_png` and `linkedin_png`:
@@ -26,9 +26,9 @@ In `outputs/` (gitignored; `cachereg render explore/2026-10-19-deepseek-share`),
 - `latest` — the latest week as three bars: DeepSeek, closed US models by developer, all US models (closed by
   developer plus open-weight).
 - `build` — motion (`x_video`, `linkedin_video`, about 18 s; the stills are its final frame). Grey bars push up one
-  step at a time (Anthropic, + OpenAI, + Google, + xAI, + other US closed, + US open weights), each on top of the
-  stack so far, lifting a bold line; the previous line turns light, and the bars fade. Then lime DeepSeek bars rise
-  from the axis in front, lift the DeepSeek line and fade. The end: cumulative grey lines up to all US models, and
+  step at a time (Anthropic, + OpenAI, + Google, + other US closed incl. xAI, + US open weights), each on top of
+  the stack so far, lifting a bold line; the previous line turns light, and the bars fade. After a 1.5 s pause, lime
+  DeepSeek bars rise from the axis in front, lift the DeepSeek line and fade. The end: cumulative grey lines up to all US models, and
   DeepSeek's line. Lines join weekly values (unsmoothed); the y-axis is fixed throughout.
 
 ## Data
@@ -37,7 +37,7 @@ In `outputs/` (gitignored; `cachereg render explore/2026-10-19-deepseek-share`),
   author prefix of the permaslug, from `config/entities/vendors.yaml`): DeepSeek = `deepseek`, US = `hq: US`.
 
 ## Method
-1. Tokens per model per Monday–Sunday week, from Jan 6, 2025 (93 weeks) to the last complete week. `:free`
+1. Tokens per model per Monday–Sunday week, from Jan 5, 2026 (41 weeks) to the last complete week. `:free`
    variants are included under their model. Embedding models are excluded (as in `open-middle`).
 2. **Open vs closed per model**, not per developer: `us_weights.yaml` lists regular expressions for US open-weight
    models (Gemma, gpt-oss, Llama, Nemotron, Microsoft's Phi/WizardLM/MAI-DS-R1, Arcee Trinity, Poolside Laguna,
@@ -45,10 +45,8 @@ In `outputs/` (gitignored; `cachereg render explore/2026-10-19-deepseek-share`),
    closed, including Meta's Muse models. `extra["us_closed_models"]` lists the closed US models by tokens.
 3. Closed US models are grouped as OpenAI, Anthropic, Google, xAI and "Other US closed" (Meta Muse, Amazon Nova,
    Perplexity). All US = closed US + US open-weight.
-4. **Excluded:** stealth models (`stealth/…`), OpenRouter routers, OpenRouter's `other` row (models outside the
+4. **Identified models only** (the method line on the charts). Excluded: stealth models (`stealth/…`), OpenRouter routers, OpenRouter's `other` row (models outside the
    daily top 50) and developers without an entry in `vendors.yaml`. None of these counts on either side.
-5. OpenRouter's data has no rows for Jun 15 and Jul 15, 2025: the weeks of Jun 9 and Jul 14, 2025 are scaled from
-   six days to seven (× 7/6), every series alike.
 
 ## Caveats
 - **Tokens, not spend or revenue.** DeepSeek's models (mostly V4.1 Flash) cost far less per token than closed US

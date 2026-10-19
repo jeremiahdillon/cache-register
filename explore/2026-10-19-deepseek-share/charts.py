@@ -87,7 +87,7 @@ def _labels(values: dict[str, float], ticks: list[float], plot_h: float, fs: flo
 def _frame(wide: pl.DataFrame, labels: list[dict], text: dict[str, str], ticks, edge: str, w, h, fs, y_title):
     """Shared layers: y tick labels, grid, right-edge swatches and labels. Returns (layers, x_scale, y_scale)."""
     fonts = brand()["fonts"]
-    first = wide["week"].min().isoformat()
+    first = wide["week"].min().replace(day=1).isoformat()
     x_scale = alt.Scale(type="utc", domain=[first, edge])
     y_scale = alt.Scale(domain=[0, ticks[-1]], nice=False, zero=True)
     tick_rows = [{"v": v, "t": f"{v / T:g}T"} for v in ticks]
@@ -329,8 +329,9 @@ def latest(story: Story, width, height, font_scale: float, interactive: bool = F
 
 FPS = 30
 LEAD, PUSH, BEAT, FADE, HOLD = 12, 36, 8, 16, 90  # frames per phase (grey steps)
-DS_PUSH, DS_BEAT, DS_FADE = 54, 14, 24  # DeepSeek's step is slower
-BUILD_STEPS = ["Anthropic", "OpenAI", "Google", "xAI (Grok)", "Other US closed", US_OPEN]
+DS_PAUSE, DS_PUSH, DS_BEAT, DS_FADE = 45, 54, 14, 24  # a longer beat before DeepSeek; its step is slower
+# Each step is one or more columns of the wide frame; xAI is rolled into other closed US models here.
+BUILD_STEPS = [["Anthropic"], ["OpenAI"], ["Google"], ["xAI (Grok)", "Other US closed"], [US_OPEN]]
 BAR_GREY = "#D3D7E0"  # bars a shade brighter than the bold line, so the incoming step stands out
 BOLD_W, LIGHT_W = 3.4, 1.6
 
@@ -350,6 +351,8 @@ def _build_schedule() -> list[dict]:
     frames = [{"push": list(push), "stage": None, "bar_o": 0.0}] * LEAD
     for k in range(n):
         p, b, f = (DS_PUSH, DS_BEAT, DS_FADE) if k == n - 1 else (PUSH, BEAT, FADE)
+        if k == n - 1:
+            frames += [{"push": list(push), "stage": None, "bar_o": 0.0}] * DS_PAUSE
         for i in range(1, p + 1):
             push[k] = ease_out_cubic(i / p)
             frames.append({"push": list(push), "stage": k, "bar_o": 1.0})
@@ -362,7 +365,7 @@ def _build_schedule() -> list[dict]:
 
 def _build_spec(wide, cum, ds, labels_text, state, ticks, pad, w, h, fs, y_title) -> dict:
     fonts = brand()["fonts"]
-    first = wide["week"].min()
+    first = wide["week"].min().replace(day=1)
     edge = (wide["week"].max() + timedelta(days=BAR_DAYS)).isoformat()
     x_scale = alt.Scale(type="utc", domain=[first.isoformat(), edge])
     y_scale = alt.Scale(domain=[0, ticks[-1]], nice=False, zero=True)
@@ -494,17 +497,16 @@ def build_specs(story: Story, width: int, height: int, font_scale: float, cfg: d
     wide = story.frames["wide"]
     last = wide.row(-1, named=True)
     cum, run = [], [0.0] * wide.height
-    for b in BUILD_STEPS:
-        run = [r + v for r, v in zip(run, wide[b].to_list(), strict=True)]
+    for cols in BUILD_STEPS:
+        run = [r + v for r, v in zip(run, wide.select(pl.sum_horizontal(cols))[:, 0].to_list(), strict=True)]
         cum.append(run)
     ds = wide[DEEPSEEK].to_list()
     text = {
         "g0": "Anthropic",
         "g1": "+ OpenAI",
         "g2": "+ Google",
-        "g3": "+ xAI",
-        "g4": "+ Other closed",
-        "g5": f"+ Open = All US {fmt_t(last[US_ALL])}",
+        "g3": "+ Other closed",
+        "g4": f"+ Open = All US {fmt_t(last[US_ALL])}",
         "ds": f"DeepSeek {fmt_t(last[DEEPSEEK])}",
     }
     label_w = max(_text_w(t, round(LABEL_PX * fs)) for t in text.values())

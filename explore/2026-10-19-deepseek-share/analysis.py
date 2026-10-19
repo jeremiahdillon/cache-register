@@ -120,12 +120,12 @@ def build(con, as_of: date, cfg: dict) -> Story:
 
     # Headline follows the data: more than all US models, else more than closed US models, else neither.
     if ds > us:
-        claim = "DeepSeek served more tokens on OpenRouter than every US model combined"
+        claim = "DeepSeek serves more tokens on OpenRouter than every US model combined"
     elif ds > closed:
-        claim = "DeepSeek served more tokens on OpenRouter than every closed US model combined"
+        claim = "DeepSeek serves more tokens on OpenRouter than every closed US model combined"
     else:
-        claim = f"DeepSeek served {ds / closed:.0%} as many tokens as closed US models on OpenRouter"
-    week_of = f"in the week of {last:%b %-d, %Y}"
+        claim = f"DeepSeek serves {ds / closed:.0%} as many tokens on OpenRouter as closed US models"
+    # Present tense, no date: the claim is about the latest complete week, which the subtitle names.
     lines_sub = (
         f"Weekly tokens on OpenRouter, {first:%B %Y} to {end:%B %-d, %Y}. Week of {last:%b %-d}: DeepSeek "
         f"{fmt_t(ds)}, closed US models {fmt_t(closed)}, all US models {fmt_t(us)}."
@@ -139,7 +139,6 @@ def build(con, as_of: date, cfg: dict) -> Story:
         f"Tokens on OpenRouter in the week of {last:%B %-d, %Y}. DeepSeek served {ratio(ds / closed)} the tokens "
         f"of closed US models and {ratio(ds / us)} those of all US models."
     )
-    notes = ["Excludes stealth models and OpenRouter's 'other' row (models outside the daily top 50)."]
 
     closed_models = (
         d.filter(pl.col("band").is_in(LAB_ORDER))
@@ -149,25 +148,25 @@ def build(con, as_of: date, cfg: dict) -> Story:
     )
     open_models = d.filter(pl.col("band") == US_OPEN).group_by("model").agg(pl.col("tokens").sum())
     return Story(
-        title=f"{claim} {week_of}.",
+        title=f"{claim}.",
         subtitle=lines_sub,
         frames={"wide": wide},
         sources=["openrouter_rankings"],
         as_of=as_of,
         method=(
             "tokens as reported by OpenRouter, each model's own tokenizer; free variants included; embeddings "
-            "excluded; top-50 models; open vs closed per model"
+            "excluded; identified top-50 models only; open vs closed per model"
         ),
-        notes=notes,
         by_visual={
-            "stack": {"title": f"{claim} {week_of}.", "subtitle": stack_sub},
-            "latest": {"title": f"{claim} {week_of}.", "subtitle": latest_sub},
+            "stack": {"title": f"{claim}.", "subtitle": stack_sub},
+            "latest": {"title": f"{claim}.", "subtitle": latest_sub},
         },
         caveats=[
             "Tokens, not spend or revenue: DeepSeek's models are far cheaper per token than closed US models.",
             "OpenRouter traffic only (third-party developer routing), which over-represents cheap, free and open "
             "models compared with first-party APIs, subscriptions and enterprise contracts.",
-            "Stealth models and OpenRouter's 'other' row are excluded; either may contain DeepSeek or US models.",
+            "Identified models only: stealth models and OpenRouter's 'other' row (models outside the daily top 50) "
+            "are excluded; either may contain DeepSeek or US models.",
             "DeepSeek fine-tunes by other developers (e.g. TNG's R1T Chimera) are not counted as DeepSeek.",
             "Tokens are counted by each provider's own tokenizer, so volumes are not strictly comparable.",
         ],
