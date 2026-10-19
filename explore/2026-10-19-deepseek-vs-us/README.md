@@ -19,22 +19,21 @@ US model, closed or open-weight? Weekly tokens since the start of 2026.
   week of Jul 6, 2026.
 
 ## Visuals
-In `outputs/` (gitignored), each as `x_png` and `linkedin_png`. `explore.yaml` pins `as_of: 2026-10-19`, so build the
+One visual, `build`, in `outputs/` (gitignored): video for X and LinkedIn (`x_video`, `linkedin_video`, about 19 s),
+and its final frame as the stills (`x_png`, `linkedin_png`). `explore.yaml` pins `as_of: 2026-10-19`, so build the
 marts at that date first: `cachereg build --as-of 2026-10-19`, then `cachereg render explore/2026-10-19-deepseek-vs-us`.
-- `lines` — weekly tokens: DeepSeek, closed US models, all US models.
-- `stack` — closed US models as weekly bars stacked by developer (OpenAI, Anthropic, Google, xAI, other), DeepSeek
-  as a line over them.
-- `latest` — the latest week as three bars: DeepSeek, closed US models by developer, all US models (closed by
-  developer plus open-weight).
-- `build` — motion (`x_video`, `linkedin_video`, about 19 s; the stills are its final frame). Grey bars grow one
-  step at a time (Anthropic, + OpenAI, + Google, + other US closed incl. xAI, + US open weights), each from the line
-  below, lifting a heavy line; the previous line turns light. Each step holds 0.5 s, then its bottom edge wipes up into
-  the line, and the next step grows on from there. Bars are clipped to their bounding lines (slices of the band
-  between them; the first and last bars are half width). After a 1.5 s pause, lime DeepSeek bars grow from the axis
-  in front (slow, then accelerating into a slight overshoot that snaps back), lift the DeepSeek line, hold and wipe
-  up the same way. "+ Open" dims once All US has landed; "All US" stays bright. The end: thin grey lines for each step, the heavy
-  all-US line and the heavy DeepSeek line. Labels settle once and never move: each step's label slides
-  out from behind the previous one (DeepSeek's from behind "All US"). Lines join weekly values (unsmoothed); the y-axis is fixed throughout.
+- Grey bars grow one step at a time (Anthropic, + OpenAI, + Google, + other US closed incl. xAI, + US open weights),
+  each from the line below, lifting a heavy line; the previous line turns light. Each step holds 0.5 s, then its
+  bottom edge wipes up into the line, and the next step grows on from there.
+- Bars are clipped to their bounding lines (slices of the band between them; the first and last bars are half width).
+- After a 1.5 s pause, lime DeepSeek bars grow from the axis in front (slow, then accelerating, then decelerating into
+  place; never past it), lift the DeepSeek line, hold and wipe up the same way.
+- The end: thin grey lines for each step, the heavy all-US line and the heavy DeepSeek line. "+ Open" dims once All US
+  has landed; "All US" stays bright.
+- Labels settle once and never move: each step's label slides out from behind the previous one (DeepSeek's from
+  behind "All US").
+- Lines join weekly values (unsmoothed); the y-axis is fixed throughout. The headline breaks after "OpenRouter" on X;
+  on LinkedIn it wraps to fit.
 
 ## Data
 - `openrouter_rankings`: daily tokens for the top-50 models plus an `other` row (CC BY 4.0, OpenRouter).

@@ -1,4 +1,4 @@
-# Exploration config (same schema as receipt.yaml; no short link — explorations never get one).
+# Exploration config (same schema as receipt.yaml; `link:` reserves the short link the receipt will take).
 title: DeepSeek vs US models on OpenRouter
 link: deepseek-vs-us   # reserved short link (cacheregister.dev/deepseek-vs-us); stamped on the visuals
 as_of: 2026-10-19      # pinned to the author's date: the default (today in UTC) was already Oct 20 that evening
@@ -6,7 +6,4 @@ sources: [openrouter_rankings]
 config:
   start: 2026-01-05   # first complete Monday-to-Sunday week of 2026
 visuals:
-  - {name: lines, chart: lines, targets: [x_png, linkedin_png]}
-  - {name: stack, chart: stack, targets: [x_png, linkedin_png]}
-  - {name: latest, chart: latest, targets: [x_png, linkedin_png]}
   - {name: build, chart: build, targets: [x_video, linkedin_video, x_png, linkedin_png]}

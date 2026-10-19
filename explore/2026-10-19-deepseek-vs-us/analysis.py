@@ -72,10 +72,6 @@ def fmt_t(x: float) -> str:
     return f"{x / T:.1f}T" if x >= 0.995e12 else f"{x / 1e9:.0f}B"
 
 
-def ratio(x: float) -> str:
-    return f"{x:.1f}×" if x >= 0.995 else f"{x:.0%} of"
-
-
 def _streak(wide: pl.DataFrame, a: str, b: str) -> tuple[date | None, int, int]:
     """(first week a > b, length of the current run of weeks with a > b, all weeks with a > b)."""
     above = wide.select("week", (pl.col(a) > pl.col(b)).alias("x"))
@@ -118,25 +114,17 @@ def build(con, as_of: date, cfg: dict) -> Story:
     vs_closed = _streak(wide, DEEPSEEK, US_CLOSED)
     vs_all = _streak(wide, DEEPSEEK, US_ALL)
 
-    # Headline follows the data: more than all US models, else more than closed US models, else neither.
+    # Headline follows the data: more than all US models, else more than closed US models, else neither. Present
+    # tense, no date: the claim is about the latest complete week. The newline is the preferred break on wide
+    # targets (ignored where the first line does not fit).
     if ds > us:
-        claim = "On OpenRouter, DeepSeek serves more tokens than every US model combined"
+        claim = "DeepSeek serves more tokens on OpenRouter\nthan every US model combined"
     elif ds > closed:
-        claim = "On OpenRouter, DeepSeek serves more tokens than every closed US model combined"
+        claim = "DeepSeek serves more tokens on OpenRouter\nthan every closed US model combined"
     else:
-        claim = f"On OpenRouter, DeepSeek serves {ds / closed:.0%} as many tokens as closed US models"
-    # Present tense, no date: the claim is about the latest complete week, which the subtitle names.
-    # The latest figures are on the face of the lines and build charts (their labels), so the subtitle is scope only.
-    lines_sub = f"Weekly tokens on OpenRouter, {first:%B %Y} to {end:%B %-d, %Y}."
-    labs_now = ", ".join(f"{b} {fmt_t(r1[b])}" for b in LAB_ORDER)
-    stack_sub = (
-        f"Weekly tokens on OpenRouter of closed US models by developer, and DeepSeek (line), {first:%B %Y} to "
-        f"{end:%B %-d, %Y}. Week of {last:%b %-d}: DeepSeek {fmt_t(ds)}; {labs_now}."
-    )
-    latest_sub = (
-        f"Tokens on OpenRouter in the week of {last:%B %-d, %Y}. DeepSeek served {ratio(ds / closed)} the tokens "
-        f"of closed US models and {ratio(ds / us)} those of all US models."
-    )
+        claim = f"DeepSeek serves {ds / closed:.0%} as many tokens on OpenRouter\nas closed US models"
+    # The latest figures are on the face of the chart (its labels), so the subtitle is scope only.
+    subtitle = f"Weekly tokens on OpenRouter, {first:%B %Y} to {end:%B %-d, %Y}."
 
     closed_models = (
         d.filter(pl.col("band").is_in(LAB_ORDER))
@@ -147,7 +135,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
     open_models = d.filter(pl.col("band") == US_OPEN).group_by("model").agg(pl.col("tokens").sum())
     return Story(
         title=f"{claim}.",
-        subtitle=lines_sub,
+        subtitle=subtitle,
         frames={"wide": wide},
         sources=["openrouter_rankings"],
         as_of=as_of,
@@ -155,10 +143,6 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "tokens as reported by OpenRouter, each model's own tokenizer; free variants included; embeddings "
             "excluded; identified top-50 models only; open vs closed per model"
         ),
-        by_visual={
-            "stack": {"title": f"{claim}.", "subtitle": stack_sub},
-            "latest": {"title": f"{claim}.", "subtitle": latest_sub},
-        },
         caveats=[
             "Tokens, not spend or revenue: DeepSeek's models are far cheaper per token than closed US models.",
             "OpenRouter traffic only (third-party developer routing), which over-represents cheap, free and open "
