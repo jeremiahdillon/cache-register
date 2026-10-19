@@ -75,6 +75,11 @@ def load_analysis(path: Path):
 FLOAT_SIG_FIGS = 9
 
 
+def one_line(text: str) -> str:
+    """A headline as text (HTML, manifest, site): a preferred line break (newline) becomes a space."""
+    return " ".join(text.split())
+
+
 def build_story(cfg: folder_config.FolderConfig, as_of: date):
     analysis, charts = load_analysis(cfg.path)
     con = connect()
@@ -176,7 +181,7 @@ def render_html(story, analysis, chart, target: Target, rec: Receipt, out: Path)
         for label, text in rec.lines()
     )
     page_html = HTML_TEMPLATE.read_text(encoding="utf-8").format(
-        title=html.escape(story.title),
+        title=html.escape(one_line(story.title)),
         subtitle=html.escape(story.subtitle),
         brand_name=brand()["name"].upper(),
         canvas=color("canvas"),
@@ -295,7 +300,7 @@ def render(
     rel = repo_relative(cfg.path)
     if out_dir is None:
         out_dir = cfg.path / "output" if is_receipt else outputs_dir() / cfg.path.name / str(as_of)
-    result = RenderResult(out_dir=out_dir, title=story.title, as_of=as_of)
+    result = RenderResult(out_dir=out_dir, title=one_line(story.title), as_of=as_of)
 
     if committing:
         prev = read_manifest(out_dir)
@@ -327,7 +332,7 @@ def render(
         vstory = story.for_visual(visual.name)
         rec = receipt(v_sources, _data_as_of(story, v_sources), story.method, rel, cfg.link)
         charts_reason = licence_gate(v_sources)[0] if is_receipt else None
-        texts[visual.name] = {"title": vstory.title, "subtitle": vstory.subtitle, "source": rec.source}
+        texts[visual.name] = {"title": one_line(vstory.title), "subtitle": vstory.subtitle, "source": rec.source}
         for name in visual.targets:
             if targets and name not in targets:
                 continue

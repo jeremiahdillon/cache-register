@@ -51,7 +51,16 @@ def _wrap(draw: ImageDraw.ImageDraw, text: str, font, width: int) -> list[str]:
 
 def _wrap_balanced(draw: ImageDraw.ImageDraw, text: str, font, width: int) -> list[str]:
     """Wrap into the fewest lines, then narrow the measure as far as it goes without adding a line, so
-    the lines come out roughly even (no long first line over a short orphan)."""
+    the lines come out roughly even (no long first line over a short orphan).
+
+    A newline marks a preferred break: kept when every line it makes fits the width, else ignored (the
+    text is wrapped as if it were a space), so a break chosen for a wide target never strands words on
+    a narrow one."""
+    if "\n" in text:
+        forced = [" ".join(part.split()) for part in text.split("\n")]
+        if all(draw.textlength(line, font=font) <= width for line in forced):
+            return forced
+        text = " ".join(text.split())
     lines = _wrap(draw, text, font, width)
     if len(lines) < 2:
         return lines
