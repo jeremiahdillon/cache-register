@@ -320,3 +320,203 @@ def latest(story: Story, width, height, font_scale: float, interactive: bool = F
         .encode(x=alt.X("px:Q", scale=None), y=alt.Y("py:Q", scale=None), text="t:N")
     )
     return _finish([bar, row_names, total_text, sw, lt], w, h, pad, fs)
+
+
+# ---- build: the motion chart -------------------------------------------------------------------------------
+# Each step's bars push up on top of the stack so far (DeepSeek's from the axis, in front), lifting a bold line;
+# the previous bold grey line turns light as they rise; then the bars fade and only the lines stay. The final
+# frame: light grey lines for each step, the bold grey line (all US models) and the lime DeepSeek line.
+
+FPS = 30
+LEAD, PUSH, BEAT, FADE, HOLD = 12, 36, 8, 16, 90  # frames per phase (grey steps)
+DS_PUSH, DS_BEAT, DS_FADE = 54, 14, 24  # DeepSeek's step is slower
+BUILD_STEPS = ["Anthropic", "OpenAI", "Google", "xAI (Grok)", "Other US closed", US_OPEN]
+BAR_GREY = "#D3D7E0"  # bars a shade brighter than the bold line, so the incoming step stands out
+BOLD_W, LIGHT_W = 3.4, 1.6
+
+
+def ease_out_cubic(t: float) -> float:
+    return 1 - (1 - t) ** 3
+
+
+def ease_in_out_cubic(t: float) -> float:
+    return 4 * t**3 if t < 0.5 else 1 - (-2 * t + 2) ** 3 / 2
+
+
+def _build_schedule() -> list[dict]:
+    """Per frame: push progress per step (0..1), bar opacity of the step on stage, and which step that is."""
+    n = len(BUILD_STEPS) + 1  # + DeepSeek
+    push = [0.0] * n
+    frames = [{"push": list(push), "stage": None, "bar_o": 0.0}] * LEAD
+    for k in range(n):
+        p, b, f = (DS_PUSH, DS_BEAT, DS_FADE) if k == n - 1 else (PUSH, BEAT, FADE)
+        for i in range(1, p + 1):
+            push[k] = ease_out_cubic(i / p)
+            frames.append({"push": list(push), "stage": k, "bar_o": 1.0})
+        frames += [{"push": list(push), "stage": k, "bar_o": 1.0}] * b
+        for i in range(1, f + 1):
+            frames.append({"push": list(push), "stage": k, "bar_o": 1 - ease_in_out_cubic(i / f)})
+    frames += [{"push": list(push), "stage": None, "bar_o": 0.0}] * HOLD
+    return frames
+
+
+def _build_spec(wide, cum, ds, labels_text, state, ticks, pad, w, h, fs, y_title) -> dict:
+    fonts = brand()["fonts"]
+    first = wide["week"].min()
+    edge = (wide["week"].max() + timedelta(days=BAR_DAYS)).isoformat()
+    x_scale = alt.Scale(type="utc", domain=[first.isoformat(), edge])
+    y_scale = alt.Scale(domain=[0, ticks[-1]], nice=False, zero=True)
+    weeks = wide["week"].to_list()
+    mid = [(d + timedelta(days=BAR_DAYS / 2)).isoformat() for d in weeks]
+    push, stage = state["push"], state["stage"]
+    n_grey = len(BUILD_STEPS)
+
+    # Lines: grey step k sits at cum[k-1] + push[k] * step value; it is bold until step k+1 pushes, then light.
+    lines, label_vals = [], {}
+    for k in range(n_grey):
+        if push[k] <= 0:
+            continue
+        base = cum[k - 1] if k else [0.0] * len(weeks)
+        top = [b + push[k] * (c - b) for b, c in zip(base, cum[k], strict=True)]
+        lightness = push[k + 1] if k + 1 < n_grey else 0.0  # the all-US line stays bold
+        sw = BOLD_W + (LIGHT_W - BOLD_W) * lightness
+        lines += [
+            {"x": x, "v": v, "s": f"g{k}", "sw": sw * fs, "c": _mix(color("text_secondary"), color("muted"), lightness)}
+            for x, v in zip(mid, top, strict=True)
+        ]
+        label_vals[f"g{k}"] = (top[-1], lightness, min(1.0, push[k] * 1.5))
+    k_ds = n_grey
+    if push[k_ds] > 0:
+        dtop = [push[k_ds] * v for v in ds]
+        lines += [
+            {"x": x, "v": v, "s": "ds", "sw": 4.0 * fs, "c": color("accent")} for x, v in zip(mid, dtop, strict=True)
+        ]
+        label_vals["ds"] = (dtop[-1], 0.0, min(1.0, push[k_ds] * 1.5))
+
+    # Bars of the step on stage: from the stack below it (DeepSeek: from the axis) to its current top.
+    bars = []
+    if stage is not None and state["bar_o"] > 0:
+        if stage == k_ds:
+            lo, hi, fill = [0.0] * len(weeks), [push[k_ds] * v for v in ds], color("accent")
+        else:
+            lo = cum[stage - 1] if stage else [0.0] * len(weeks)
+            hi = [b + push[stage] * (c - b) for b, c in zip(lo, cum[stage], strict=True)]
+            fill = BAR_GREY
+        bars = [
+            {"x0": d.isoformat(), "x1": (d + timedelta(days=BAR_DAYS)).isoformat(), "y0": a, "y1": b}
+            for d, a, b in zip(weeks, lo, hi, strict=True)
+        ]
+
+    tick_rows = [{"v": v, "t": f"{v / T:g}T"} for v in ticks]
+    layers = [
+        alt.Chart(alt.Data(values=tick_rows))
+        .mark_text(align="right", baseline="middle", dx=-10 * fs, fontSize=AXIS_PX * fs, font=fonts["mono"])
+        .encode(x=alt.value(0), y=alt.Y("v:Q", scale=y_scale), text="t:N", color=alt.value(color("text_secondary"))),
+        alt.Chart(alt.Data(values=tick_rows[1:]))
+        .mark_rule(color=GRID, strokeWidth=1)
+        .encode(
+            y=alt.Y("v:Q", scale=y_scale, axis=alt.Axis(labels=False, grid=False, title=y_title, titlePadding=58 * fs))
+        ),
+        # An invisible rule carries the x axis, so it shows from the first frame.
+        alt.Chart(alt.Data(values=[{"x": first.isoformat()}]))
+        .mark_rule(opacity=0)
+        .encode(x=alt.X("x:T", scale=x_scale, title=None, axis=_x_axis(edge, fs))),
+    ]
+    # Grey bars sit under the lines (the line they lift stays visible on top); DeepSeek's are in front.
+    bar_layer = (
+        alt.Chart(alt.Data(values=bars))
+        .mark_bar(color=fill, opacity=state["bar_o"])
+        .encode(x=alt.X("x0:T", scale=x_scale), x2="x1:T", y=alt.Y("y0:Q", scale=y_scale), y2="y1:Q")
+        if bars
+        else None
+    )
+    if bar_layer and stage != k_ds:
+        layers.append(bar_layer)
+    grey = [r for r in lines if r["s"] != "ds"]
+    if grey:
+        layers.append(
+            alt.Chart(alt.Data(values=grey))
+            .mark_line(interpolate="linear")
+            .encode(
+                x=alt.X("x:T", scale=x_scale),
+                y=alt.Y("v:Q", scale=y_scale),
+                detail="s:N",
+                color=alt.Color("c:N", scale=None),
+                strokeWidth=alt.StrokeWidth("sw:Q", scale=None),
+            )
+        )
+    if bar_layer and stage == k_ds:
+        layers.append(bar_layer)
+    dsl = [r for r in lines if r["s"] == "ds"]
+    if dsl:
+        layers += [
+            alt.Chart(alt.Data(values=dsl))
+            .mark_line(interpolate="linear", color=color("canvas"), strokeWidth=8 * fs)
+            .encode(x=alt.X("x:T", scale=x_scale), y=alt.Y("v:Q", scale=y_scale)),
+            alt.Chart(alt.Data(values=dsl))
+            .mark_line(interpolate="linear", color=color("accent"), strokeWidth=4 * fs)
+            .encode(x=alt.X("x:T", scale=x_scale), y=alt.Y("v:Q", scale=y_scale)),
+        ]
+    # Right-edge labels, nudged apart; light lines get light labels.
+    if label_vals:
+        px = {s: h * (1 - v / ticks[-1]) for s, (v, _, _) in label_vals.items()}
+        res = _resolve(px, h, LABEL_PX * fs)
+        rows = []
+        for s, (_, lightness, o) in label_vals.items():
+            ink = color("accent") if s == "ds" else _mix(color("text"), color("muted"), lightness)
+            rows.append({"x": edge, "y": ticks[-1] * (1 - res[s] / h), "t": labels_text[s], "c": ink, "o": o})
+        layers.append(
+            alt.Chart(alt.Data(values=rows))
+            .mark_text(align="left", baseline="middle", dx=14 * fs, fontSize=LABEL_PX * fs, font=fonts["body"])
+            .encode(
+                x=alt.X("x:T", scale=x_scale),
+                y=alt.Y("y:Q", scale=y_scale),
+                text="t:N",
+                color=alt.Color("c:N", scale=None),
+                opacity=alt.Opacity("o:Q", scale=None),
+            )
+        )
+    spec = alt.layer(*layers).properties(width=w, height=h).to_dict()
+    spec["config"] = vl_config(fs)
+    spec["autosize"] = {"type": "none"}
+    spec["padding"] = pad
+    return spec
+
+
+def _mix(a: str, b: str, t: float) -> str:
+    """Blend two #RRGGBB colours: t=0 → a, t=1 → b."""
+    ca, cb = (tuple(int(c[i : i + 2], 16) for i in (1, 3, 5)) for c in (a, b))
+    return "#" + "".join(f"{round(x + (y - x) * t):02X}" for x, y in zip(ca, cb, strict=True))
+
+
+def build_specs(story: Story, width: int, height: int, font_scale: float, cfg: dict) -> tuple[list[dict], int]:
+    fs = font_scale
+    wide = story.frames["wide"]
+    last = wide.row(-1, named=True)
+    cum, run = [], [0.0] * wide.height
+    for b in BUILD_STEPS:
+        run = [r + v for r, v in zip(run, wide[b].to_list(), strict=True)]
+        cum.append(run)
+    ds = wide[DEEPSEEK].to_list()
+    text = {
+        "g0": "Anthropic",
+        "g1": "+ OpenAI",
+        "g2": "+ Google",
+        "g3": "+ xAI",
+        "g4": "+ Other closed",
+        "g5": f"+ Open = All US {fmt_t(last[US_ALL])}",
+        "ds": f"DeepSeek {fmt_t(last[DEEPSEEK])}",
+    }
+    label_w = max(_text_w(t, round(LABEL_PX * fs)) for t in text.values())
+    pad = {
+        "left": round(72 * fs),
+        "right": round(14 * fs + label_w + 8 * fs),
+        "top": round(16 * fs),
+        "bottom": round(44 * fs),
+    }
+    w, h = width - pad["left"] - pad["right"], height - pad["top"] - pad["bottom"]
+    ticks = _nice_ticks(max(max(cum[-1]), max(ds)))
+    specs = [
+        _build_spec(wide, cum, ds, text, s, ticks, pad, w, h, fs, story.extra["y_title"]) for s in _build_schedule()
+    ]
+    return specs, FPS

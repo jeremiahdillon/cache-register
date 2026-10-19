@@ -7,3 +7,4 @@ visuals:
   - {name: lines, chart: lines, targets: [x_png, linkedin_png]}
   - {name: stack, chart: stack, targets: [x_png, linkedin_png]}
   - {name: latest, chart: latest, targets: [x_png, linkedin_png]}
+  - {name: build, chart: build, targets: [x_video, linkedin_video, x_png, linkedin_png]}
