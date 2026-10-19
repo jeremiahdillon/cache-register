@@ -1,7 +1,8 @@
 # DeepSeek vs US models on OpenRouter
 
-*Exploration · started 2026-10-19 · reserved link [cacheregister.dev/deepseek-vs-us](https://cacheregister.dev/deepseek-vs-us) ·
-data as of 2026-10-19 (OpenRouter rankings through Oct 18, 2026; last complete week Oct 12–18)*
+*Exploration · started 2026-10-19 · **Promoted to [`receipts/deepseek-vs-us`](../../receipts/deepseek-vs-us/)**, which is
+the maintained version (cacheregister.dev/deepseek-vs-us) · data as of 2026-10-19 (OpenRouter rankings through Oct 18,
+2026; last complete week Oct 12–18)*
 
 ## Question
 How large is DeepSeek on OpenRouter compared with US models: with closed US models (by developer), and with every
