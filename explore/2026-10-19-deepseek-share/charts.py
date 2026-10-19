@@ -323,44 +323,77 @@ def latest(story: Story, width, height, font_scale: float, interactive: bool = F
 
 
 # ---- build: the motion chart -------------------------------------------------------------------------------
-# Each step's bars push up on top of the stack so far (DeepSeek's from the axis, in front), lifting a bold line;
-# the previous bold grey line turns light as they rise; then the bars fade and only the lines stay. The final
+# Each step's bars grow up from the stack so far (DeepSeek's from the axis, in front), lifting a bold line; the
+# previous bold grey line turns light as they rise. They hold, then their bottom edge wipes up into the line until
+# they are gone, and the next step's bars grow on from there in one continuous upward motion. Bars are clipped to
+# their bounding lines: each is a slice of the band between the line below and the line above, so its top and bottom
+# edges lie on those lines everywhere (the first and last bars are half width, where the lines end). The final
 # frame: light grey lines for each step, the bold grey line (all US models) and the lime DeepSeek line.
 
 FPS = 30
-LEAD, PUSH, BEAT, FADE, HOLD = 12, 36, 8, 16, 90  # frames per phase (grey steps)
-DS_PAUSE, DS_PUSH, DS_BEAT, DS_FADE = 45, 54, 14, 24  # a longer beat before DeepSeek; its step is slower
+LEAD, GROW, STAY, WIPE, HOLD = 12, 30, 30, 24, 75  # frames per phase (grey steps); STAY = 1 s at full height
+DS_PAUSE, DS_GROW, DS_STAY, DS_WIPE = 45, 48, 30, 30  # a longer beat before DeepSeek; its step is slower
 # Each step is one or more columns of the wide frame; xAI is rolled into other closed US models here.
 BUILD_STEPS = [["Anthropic"], ["OpenAI"], ["Google"], ["xAI (Grok)", "Other US closed"], [US_OPEN]]
 BAR_GREY = "#D3D7E0"  # bars a shade brighter than the bold line, so the incoming step stands out
-BOLD_W, LIGHT_W = 3.4, 1.6
+BOLD_W, DS_W, LIGHT_W = 5.0, 6.0, 1.6  # the top US line and DeepSeek's are the heavy ones
 
 
 def ease_out_cubic(t: float) -> float:
     return 1 - (1 - t) ** 3
 
 
-def ease_in_out_cubic(t: float) -> float:
-    return 4 * t**3 if t < 0.5 else 1 - (-2 * t + 2) ** 3 / 2
+def ease_in_cubic(t: float) -> float:
+    return t**3
 
 
 def _build_schedule() -> list[dict]:
-    """Per frame: push progress per step (0..1), bar opacity of the step on stage, and which step that is."""
+    """Per frame: top progress per step (0..1), the step on stage and its wipe progress (0..1, bottom edge).
+
+    The wipe accelerates into the line (ease-in) and the next growth leaves it at speed (ease-out), back to back,
+    so the hand-over reads as one upward motion."""
     n = len(BUILD_STEPS) + 1  # + DeepSeek
     push = [0.0] * n
-    frames = [{"push": list(push), "stage": None, "bar_o": 0.0}] * LEAD
+    idle = {"stage": None, "wipe": 0.0}
+    frames = [{"push": list(push), **idle}] * LEAD
     for k in range(n):
-        p, b, f = (DS_PUSH, DS_BEAT, DS_FADE) if k == n - 1 else (PUSH, BEAT, FADE)
-        if k == n - 1:
-            frames += [{"push": list(push), "stage": None, "bar_o": 0.0}] * DS_PAUSE
-        for i in range(1, p + 1):
-            push[k] = ease_out_cubic(i / p)
-            frames.append({"push": list(push), "stage": k, "bar_o": 1.0})
-        frames += [{"push": list(push), "stage": k, "bar_o": 1.0}] * b
-        for i in range(1, f + 1):
-            frames.append({"push": list(push), "stage": k, "bar_o": 1 - ease_in_out_cubic(i / f)})
-    frames += [{"push": list(push), "stage": None, "bar_o": 0.0}] * HOLD
+        ds = k == n - 1
+        grow, stay, wipe = (DS_GROW, DS_STAY, DS_WIPE) if ds else (GROW, STAY, WIPE)
+        if ds:
+            frames += [{"push": list(push), **idle}] * DS_PAUSE
+        for i in range(1, grow + 1):
+            push[k] = ease_out_cubic(i / grow)
+            frames.append({"push": list(push), "stage": k, "wipe": 0.0})
+        frames += [{"push": list(push), "stage": k, "wipe": 0.0}] * stay
+        for i in range(1, wipe):  # the last wipe frame would be an empty bar: the next step's first frame follows
+            frames.append({"push": list(push), "stage": k, "wipe": ease_in_cubic(i / wipe)})
+        frames.append({"push": list(push), **idle})
+    frames += [{"push": list(push), **idle}] * HOLD
     return frames
+
+
+def _bar_slices(weeks, lo: list[float], hi: list[float], wipe: float) -> list[dict]:
+    """Bars as slices of the band between two lines (lines join week midpoints, linearly).
+
+    Each bar spans BAR_DAYS around its week's midpoint, with 3 points: left edge, midpoint, right edge; the line
+    values at the edges are interpolated toward the neighbouring weeks, so the bar's edges lie on the lines. The
+    first and last bars stop at the midpoint (the lines end there). `wipe` lifts the bottom edge toward the top."""
+    half = BAR_DAYS / 2
+    step = 7.0  # days between week midpoints
+    rows, n = [], len(weeks)
+    for i, d in enumerate(weeks):
+        m = d + timedelta(days=half)
+        pts = []
+        if i > 0:
+            f = half / step
+            pts.append((m - timedelta(days=half), lo[i] + (lo[i - 1] - lo[i]) * f, hi[i] + (hi[i - 1] - hi[i]) * f))
+        pts.append((m, lo[i], hi[i]))
+        if i < n - 1:
+            f = half / step
+            pts.append((m + timedelta(days=half), lo[i] + (lo[i + 1] - lo[i]) * f, hi[i] + (hi[i + 1] - hi[i]) * f))
+        for x, a, b in pts:
+            rows.append({"bar": i, "x": x.isoformat(), "y0": a + (b - a) * wipe, "y1": b})
+    return rows
 
 
 def _build_spec(wide, cum, ds, labels_text, state, ticks, pad, w, h, fs, y_title) -> dict:
@@ -392,23 +425,20 @@ def _build_spec(wide, cum, ds, labels_text, state, ticks, pad, w, h, fs, y_title
     if push[k_ds] > 0:
         dtop = [push[k_ds] * v for v in ds]
         lines += [
-            {"x": x, "v": v, "s": "ds", "sw": 4.0 * fs, "c": color("accent")} for x, v in zip(mid, dtop, strict=True)
+            {"x": x, "v": v, "s": "ds", "sw": DS_W * fs, "c": color("accent")} for x, v in zip(mid, dtop, strict=True)
         ]
         label_vals["ds"] = (dtop[-1], 0.0, min(1.0, push[k_ds] * 1.5))
 
-    # Bars of the step on stage: from the stack below it (DeepSeek: from the axis) to its current top.
+    # Bars of the step on stage: from the line below (DeepSeek: the axis) to its current top, bottom wiping up.
     bars = []
-    if stage is not None and state["bar_o"] > 0:
+    if stage is not None:
         if stage == k_ds:
             lo, hi, fill = [0.0] * len(weeks), [push[k_ds] * v for v in ds], color("accent")
         else:
             lo = cum[stage - 1] if stage else [0.0] * len(weeks)
             hi = [b + push[stage] * (c - b) for b, c in zip(lo, cum[stage], strict=True)]
             fill = BAR_GREY
-        bars = [
-            {"x0": d.isoformat(), "x1": (d + timedelta(days=BAR_DAYS)).isoformat(), "y0": a, "y1": b}
-            for d, a, b in zip(weeks, lo, hi, strict=True)
-        ]
+        bars = _bar_slices(weeks, lo, hi, state["wipe"])
 
     tick_rows = [{"v": v, "t": f"{v / T:g}T"} for v in ticks]
     layers = [
@@ -428,36 +458,33 @@ def _build_spec(wide, cum, ds, labels_text, state, ticks, pad, w, h, fs, y_title
     # Grey bars sit under the lines (the line they lift stays visible on top); DeepSeek's are in front.
     bar_layer = (
         alt.Chart(alt.Data(values=bars))
-        .mark_bar(color=fill, opacity=state["bar_o"])
-        .encode(x=alt.X("x0:T", scale=x_scale), x2="x1:T", y=alt.Y("y0:Q", scale=y_scale), y2="y1:Q")
+        .mark_area(color=fill, interpolate="linear", opacity=1)
+        .encode(x=alt.X("x:T", scale=x_scale), y=alt.Y("y0:Q", scale=y_scale), y2="y1:Q", detail="bar:N")
         if bars
         else None
     )
     if bar_layer and stage != k_ds:
         layers.append(bar_layer)
-    grey = [r for r in lines if r["s"] != "ds"]
-    if grey:
-        layers.append(
-            alt.Chart(alt.Data(values=grey))
-            .mark_line(interpolate="linear")
-            .encode(
-                x=alt.X("x:T", scale=x_scale),
-                y=alt.Y("v:Q", scale=y_scale),
-                detail="s:N",
-                color=alt.Color("c:N", scale=None),
-                strokeWidth=alt.StrokeWidth("sw:Q", scale=None),
+    # One layer per grey line, with a constant width and colour: a data-driven strokeWidth is applied per mark,
+    # not per series, so every line would take the first one's width.
+    for k in range(n_grey):
+        pts = [r for r in lines if r["s"] == f"g{k}"]
+        if pts:
+            layers.append(
+                alt.Chart(alt.Data(values=pts))
+                .mark_line(interpolate="linear", color=pts[0]["c"], strokeWidth=pts[0]["sw"])
+                .encode(x=alt.X("x:T", scale=x_scale), y=alt.Y("v:Q", scale=y_scale))
             )
-        )
     if bar_layer and stage == k_ds:
         layers.append(bar_layer)
     dsl = [r for r in lines if r["s"] == "ds"]
     if dsl:
         layers += [
             alt.Chart(alt.Data(values=dsl))
-            .mark_line(interpolate="linear", color=color("canvas"), strokeWidth=8 * fs)
+            .mark_line(interpolate="linear", color=color("canvas"), strokeWidth=(DS_W + 4) * fs)
             .encode(x=alt.X("x:T", scale=x_scale), y=alt.Y("v:Q", scale=y_scale)),
             alt.Chart(alt.Data(values=dsl))
-            .mark_line(interpolate="linear", color=color("accent"), strokeWidth=4 * fs)
+            .mark_line(interpolate="linear", color=color("accent"), strokeWidth=DS_W * fs)
             .encode(x=alt.X("x:T", scale=x_scale), y=alt.Y("v:Q", scale=y_scale)),
         ]
     # Right-edge labels, nudged apart; light lines get light labels.

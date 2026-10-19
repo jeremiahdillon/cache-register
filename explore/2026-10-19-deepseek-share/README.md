@@ -25,11 +25,13 @@ In `outputs/` (gitignored; `cachereg render explore/2026-10-19-deepseek-share`),
   as a line over them.
 - `latest` — the latest week as three bars: DeepSeek, closed US models by developer, all US models (closed by
   developer plus open-weight).
-- `build` — motion (`x_video`, `linkedin_video`, about 18 s; the stills are its final frame). Grey bars push up one
-  step at a time (Anthropic, + OpenAI, + Google, + other US closed incl. xAI, + US open weights), each on top of
-  the stack so far, lifting a bold line; the previous line turns light, and the bars fade. After a 1.5 s pause, lime
-  DeepSeek bars rise from the axis in front, lift the DeepSeek line and fade. The end: cumulative grey lines up to all US models, and
-  DeepSeek's line. Lines join weekly values (unsmoothed); the y-axis is fixed throughout.
+- `build` — motion (`x_video`, `linkedin_video`, about 22 s; the stills are its final frame). Grey bars grow one
+  step at a time (Anthropic, + OpenAI, + Google, + other US closed incl. xAI, + US open weights), each from the line
+  below, lifting a heavy line; the previous line turns light. Each step holds 1 s, then its bottom edge wipes up into
+  the line, and the next step grows on from there. Bars are clipped to their bounding lines (slices of the band
+  between them; the first and last bars are half width). After a 1.5 s pause, lime DeepSeek bars grow from the axis
+  in front, lift the DeepSeek line, hold and wipe up the same way. The end: thin grey lines for each step, the heavy
+  all-US line and the heavy DeepSeek line. Lines join weekly values (unsmoothed); the y-axis is fixed throughout.
 
 ## Data
 - `openrouter_rankings`: daily tokens for the top-50 models plus an `other` row (CC BY 4.0, OpenRouter).
