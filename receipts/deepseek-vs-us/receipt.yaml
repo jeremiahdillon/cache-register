@@ -1,0 +1,11 @@
+# Receipt: cacheregister.dev/deepseek-vs-us (the folder name is the short link, taken over from the
+# exploration's reservation — never rename without adding an alias in config/link-aliases.yaml).
+title: DeepSeek vs US models on OpenRouter
+sources: [openrouter_rankings]
+as_of: 2026-10-19
+promoted_from: explore/2026-10-19-deepseek-vs-us
+config:
+  start: 2026-01-05   # first complete Monday-to-Sunday week of 2026
+visuals:
+  # one slide: the motion chart; each still is its video's final frame
+  - {name: build, chart: build, targets: [x_png, linkedin_png, x_video, linkedin_video]}

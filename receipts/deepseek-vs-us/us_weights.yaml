@@ -1,0 +1,18 @@
+# Which US-developer models on OpenRouter have open weights (hand-curated 2026-10-19; edit, then re-render).
+#
+# Weights are tagged per model, not per developer: Google (Gemma) and OpenAI (gpt-oss) publish some weights,
+# Meta's Muse models are closed while its Llama models are open, and Poolside and Thinking Machines publish
+# weights although their developer entries are closed. Tags follow receipts/open-middle/tiers.yaml.
+#
+# Each entry is a regular expression matched against the rankings permaslug (`:free` included). A US model that
+# matches none is counted as closed. analysis.py lists every US model it counts as closed, by tokens, in
+# extra["us_closed_models"], so a new open release that should be here shows up there.
+open:
+  - "gemma"                      # Google Gemma (Gemma licence)
+  - "gpt-oss"                    # OpenAI gpt-oss, gpt-oss-safeguard (Apache 2.0)
+  - "^meta-llama/"               # Meta Llama (Llama licence); Meta's Muse models are closed
+  - "^nvidia/"                   # NVIDIA Nemotron (NVIDIA open model licence)
+  - "^microsoft/"                # Phi, WizardLM, MAI-DS-R1 (MIT)
+  - "^arcee-ai/"                 # Arcee Trinity (Apache 2.0)
+  - "^poolside/"                 # Poolside Laguna (weights published)
+  - "^thinkingmachines/inkling"  # Thinking Machines Inkling (weights published)
