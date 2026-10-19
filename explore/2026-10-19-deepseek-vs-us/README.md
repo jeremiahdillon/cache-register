@@ -1,7 +1,7 @@
 # DeepSeek vs US models on OpenRouter
 
-*Exploration · started 2026-10-19 · data as of 2026-10-19 (OpenRouter rankings through Oct 19, 2026; last complete
-week Oct 12–18)*
+*Exploration · started 2026-10-19 · reserved link [cacheregister.dev/deepseek-vs-us](https://cacheregister.dev/deepseek-vs-us) ·
+data as of 2026-10-19 (OpenRouter rankings through Oct 18, 2026; last complete week Oct 12–18)*
 
 ## Question
 How large is DeepSeek on OpenRouter compared with US models: with closed US models (by developer), and with every
@@ -19,7 +19,8 @@ US model, closed or open-weight? Weekly tokens since the start of 2026.
   week of Jul 6, 2026.
 
 ## Visuals
-In `outputs/` (gitignored; `cachereg render explore/2026-10-19-deepseek-share`), each as `x_png` and `linkedin_png`:
+In `outputs/` (gitignored), each as `x_png` and `linkedin_png`. `explore.yaml` pins `as_of: 2026-10-19`, so build the
+marts at that date first: `cachereg build --as-of 2026-10-19`, then `cachereg render explore/2026-10-19-deepseek-vs-us`.
 - `lines` — weekly tokens: DeepSeek, closed US models, all US models.
 - `stack` — closed US models as weekly bars stacked by developer (OpenAI, Anthropic, Google, xAI, other), DeepSeek
   as a line over them.
@@ -30,7 +31,8 @@ In `outputs/` (gitignored; `cachereg render explore/2026-10-19-deepseek-share`),
   below, lifting a heavy line; the previous line turns light. Each step holds 0.5 s, then its bottom edge wipes up into
   the line, and the next step grows on from there. Bars are clipped to their bounding lines (slices of the band
   between them; the first and last bars are half width). After a 1.5 s pause, lime DeepSeek bars grow from the axis
-  in front, lift the DeepSeek line, hold and wipe up the same way. The end: thin grey lines for each step, the heavy
+  in front (slow, then accelerating into a slight overshoot that snaps back), lift the DeepSeek line, hold and wipe
+  up the same way. "+ Open" dims once All US has landed; "All US" stays bright. The end: thin grey lines for each step, the heavy
   all-US line and the heavy DeepSeek line. Labels settle once and never move: each step's label slides
   out from behind the previous one (DeepSeek's from behind "All US"). Lines join weekly values (unsmoothed); the y-axis is fixed throughout.
 

@@ -1,7 +1,7 @@
 """DeepSeek vs US models on OpenRouter: weekly tokens of DeepSeek, closed US models and all US models.
 
 Reads marts only (or_rankings_daily, dim_vendor_alias). Open vs closed is tagged per model (us_weights.yaml).
-See README.md for method and caveats. `cachereg render explore/2026-10-19-deepseek-share` renders the visuals
+See README.md for method and caveats. `cachereg render explore/2026-10-19-deepseek-vs-us` renders the visuals
 declared in explore.yaml.
 """
 
@@ -120,11 +120,11 @@ def build(con, as_of: date, cfg: dict) -> Story:
 
     # Headline follows the data: more than all US models, else more than closed US models, else neither.
     if ds > us:
-        claim = "DeepSeek serves more tokens on OpenRouter than every US model combined"
+        claim = "On OpenRouter, DeepSeek serves more tokens than every US model combined"
     elif ds > closed:
-        claim = "DeepSeek serves more tokens on OpenRouter than every closed US model combined"
+        claim = "On OpenRouter, DeepSeek serves more tokens than every closed US model combined"
     else:
-        claim = f"DeepSeek serves {ds / closed:.0%} as many tokens on OpenRouter as closed US models"
+        claim = f"On OpenRouter, DeepSeek serves {ds / closed:.0%} as many tokens as closed US models"
     # Present tense, no date: the claim is about the latest complete week, which the subtitle names.
     # The latest figures are on the face of the lines and build charts (their labels), so the subtitle is scope only.
     lines_sub = f"Weekly tokens on OpenRouter, {first:%B %Y} to {end:%B %-d, %Y}."

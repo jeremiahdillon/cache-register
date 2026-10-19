@@ -1,4 +1,4 @@
-"""Charts for explore/2026-10-19-deepseek-share (render contract: src/cachereg/render.py). Static only.
+"""Charts for explore/2026-10-19-deepseek-vs-us (render contract: src/cachereg/render.py). Static only.
 
 * `lines`  — weekly tokens: DeepSeek (the accent) against closed US models and all US models (greys).
 * `stack`  — closed US models as weekly bars stacked by developer (vendor colours), DeepSeek as a line over them.
@@ -332,7 +332,8 @@ def latest(story: Story, width, height, font_scale: float, interactive: bool = F
 
 FPS = 30
 LEAD, GROW, STAY, WIPE, HOLD = 12, 30, 15, 24, 75  # frames per phase (grey steps); STAY = 0.5 s at full height
-DS_PAUSE, DS_GROW, DS_STAY, DS_WIPE = 45, 48, 20, 30  # a longer beat before DeepSeek; its step is slower
+DS_PAUSE, DS_GROW, DS_STAY, DS_WIPE = 45, 54, 20, 30  # a longer beat before DeepSeek; its step is slower
+DIM = 15  # frames, at the start of the pause, over which "+ Open" dims once All US has landed
 # Each step is one or more columns of the wide frame; xAI is rolled into other closed US models here.
 BUILD_STEPS = [["Anthropic"], ["OpenAI"], ["Google"], ["xAI (Grok)", "Other US closed"], [US_OPEN]]
 BAR_GREY = "#D3D7E0"  # bars a shade brighter than the bold line, so the incoming step stands out
@@ -347,6 +348,16 @@ def ease_in_cubic(t: float) -> float:
     return t**3
 
 
+def slam(t: float, impact: float = 0.72, over: float = 0.07) -> float:
+    """DeepSeek's growth: slow start, accelerating into a hard stop past the target, then a quick damped snap back.
+
+    Up to `impact` it is ease-in (quartic) to 1 + `over`; after it, a decaying oscillation settles on 1."""
+    if t < impact:
+        return (1 + over) * (t / impact) ** 4
+    u = (t - impact) / (1 - impact)
+    return 1 + over * math.exp(-5 * u) * math.cos(3 * math.pi * u)
+
+
 def _build_schedule() -> list[dict]:
     """Per frame: top progress per step (0..1), the step on stage and its wipe progress (0..1, bottom edge).
 
@@ -354,22 +365,29 @@ def _build_schedule() -> list[dict]:
     so the hand-over reads as one upward motion."""
     n = len(BUILD_STEPS) + 1  # + DeepSeek
     push = [0.0] * n
-    idle = {"stage": None, "wipe": 0.0}
+    idle = {"stage": None, "wipe": 0.0, "dim": 0.0}
     frames = [{"push": list(push), **idle}] * LEAD
     for k in range(n):
         ds = k == n - 1
         grow, stay, wipe = (DS_GROW, DS_STAY, DS_WIPE) if ds else (GROW, STAY, WIPE)
+        dim = 1.0 if ds else 0.0  # "+ Open" dims in the pause and stays dim
         if ds:
-            frames += [{"push": list(push), **idle}] * DS_PAUSE
+            frames += [
+                {"push": list(push), **idle, "dim": ease_in_out(min(1.0, i / DIM))} for i in range(1, DS_PAUSE + 1)
+            ]
         for i in range(1, grow + 1):
-            push[k] = ease_out_cubic(i / grow)
-            frames.append({"push": list(push), "stage": k, "wipe": 0.0})
-        frames += [{"push": list(push), "stage": k, "wipe": 0.0}] * stay
+            push[k] = slam(i / grow) if ds else ease_out_cubic(i / grow)
+            frames.append({"push": list(push), "stage": k, "wipe": 0.0, "dim": dim})
+        frames += [{"push": list(push), "stage": k, "wipe": 0.0, "dim": dim}] * stay
         for i in range(1, wipe):  # the last wipe frame would be an empty bar: the next step's first frame follows
-            frames.append({"push": list(push), "stage": k, "wipe": ease_in_cubic(i / wipe)})
-        frames.append({"push": list(push), **idle})
-    frames += [{"push": list(push), **idle}] * HOLD
+            frames.append({"push": list(push), "stage": k, "wipe": ease_in_cubic(i / wipe), "dim": dim})
+        frames.append({"push": list(push), **idle, "dim": dim})
+    frames += [{"push": list(push), **idle, "dim": 1.0}] * HOLD
     return frames
+
+
+def ease_in_out(t: float) -> float:
+    return 4 * t**3 if t < 0.5 else 1 - (-2 * t + 2) ** 3 / 2
 
 
 def _bar_slices(weeks, lo: list[float], hi: list[float], wipe: float) -> list[dict]:
@@ -494,8 +512,11 @@ def _build_spec(wide, cum, ds, labels, state, ticks, pad, w, h, fs, y_title) -> 
     for s in reversed(list(label_vals)):
         e, lightness = label_vals[s]
         lab = labels[s]
+        e = min(e, 1.0)  # DeepSeek's growth overshoots; its label stops where it settles
         y = lab["from"] + (lab["to"] - lab["from"]) * e
         ink = color("accent") if s == "ds" else _mix(color("text"), color("muted"), lightness)
+        # The second row of the all-US label ("+ Open") names a step, so it dims like the others; "All US" stays.
+        inks = [ink, _mix(color("text"), color("muted"), state["dim"])]
         n_rows = len(lab["rows"])
         layers.append(
             alt.Chart(alt.Data(values=[{}]))
@@ -515,7 +536,7 @@ def _build_spec(wide, cum, ds, labels, state, ticks, pad, w, h, fs, y_title) -> 
                     baseline="middle",
                     fontSize=font_px,
                     font=fonts["body"],
-                    color=ink,
+                    color=inks[i],
                     opacity=min(1.0, e * 1.5) if lab["fade"] else 1.0,
                 )
                 .encode(x=alt.value(w + 14 * fs), y=alt.value(y + gap * i), text="t:N")
