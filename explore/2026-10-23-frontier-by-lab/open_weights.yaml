@@ -1,0 +1,43 @@
+# Open-weight status for the "best open-weight model" line (Artificial Analysis has no flag in its API).
+# A model counts as open-weight from its AA release date if its weights are downloadable under any licence
+# (restrictive ones included) or, as the author decided for this exploration, announced as coming
+# (Kimi K3.1 Pro, 2026-10-23: weights promised by 2026-11-04).
+# analysis.py fails if a model that would set the open-weight line has no status here, so the list only
+# needs the contenders. Checked 2026-10-23 (official Hugging Face repos where given, else press coverage).
+
+# Every model from these AA creators is closed.
+closed_creators: [Anthropic, Amazon, Perplexity, SpaceXAI]
+# The big labs' open families (slug prefixes); everything else from these creators is closed.
+open_prefixes:
+  OpenAI: [gpt-oss]
+  Google: [gemma]
+  Meta: [llama, muse-glimmer]
+
+models:
+  qwen2-5-72b-instruct: open            # huggingface.co/Qwen/Qwen2.5-72B-Instruct
+  deepseek-v3: open                     # huggingface.co/deepseek-ai/DeepSeek-V3
+  deepseek-r1-0120: open                # huggingface.co/deepseek-ai/DeepSeek-R1
+  deepseek-r1: open                     # huggingface.co/deepseek-ai/DeepSeek-R1-0528
+  deepseek-v3-1: open                   # huggingface.co/deepseek-ai/DeepSeek-V3.1
+  kimi-k2-0905: open                    # huggingface.co/moonshotai/Kimi-K2-Instruct-0905
+  qwen3-max: closed                     # API only (qwen.ai)
+  deepseek-v3-2-reasoning-0925: open    # huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp
+  glm-4-6-reasoning: open               # huggingface.co/zai-org/GLM-4.6
+  minimax-m2: open                      # huggingface.co/MiniMaxAI/MiniMax-M2
+  kimi-k2-thinking: open                # huggingface.co/moonshotai/Kimi-K2-Thinking
+  mimo-v2-0206: open                    # MiMo-V2-Flash, MIT (the Feb update's weights not confirmed)
+  kimi-k2-5: open                       # huggingface.co/moonshotai/Kimi-K2.5
+  glm-5: open                           # huggingface.co/zai-org/GLM-5
+  qwen3-5-9b: open                      # huggingface.co/Qwen/Qwen3.5-9B
+  mimo-v2-pro: closed                   # released API-only
+  qwen3-6-max: closed                   # Qwen3.6-Max(-Preview): API only
+  glm-5-1: open                         # huggingface.co/zai-org/GLM-5.1
+  deepseek-v4-pro-0424: open            # huggingface.co/deepseek-ai/DeepSeek-V4-Pro
+  glm-5-2: open                         # weights 2026-06-16/17, MIT
+  jt-4-1-flash-236b-a21b: closed        # AA lists it as proprietary
+  kimi-k3: open                         # huggingface.co/moonshotai/Kimi-K3 (weights ~10 days after the API)
+  qwen3-8-max-0803: closed              # AA lists Qwen3.8 Max as not open-weights (a separate text-only checkpoint was published)
+  glm-5-3: open                         # huggingface.co/zai-org/GLM-5.3 (weights ~2 weeks after the API)
+  qwen3-8-max: closed                   # 0902: API only
+  mimo-v2-6-pro: open                   # MIT, weights ~2026-09-21/22
+  kimi-k3-1-pro: open                   # announced open: weights promised by 2026-11-04 (author's call)

@@ -1,0 +1,8 @@
+# Exploration config (same schema as receipt.yaml; `link:` would reserve a short link — none yet).
+title: Frontier by lab vs the best open-weight model
+as_of: 2026-10-23
+sources: [artificial_analysis]
+config:
+  start: 2025-01-01   # window start; each line enters it at the record it held then
+visuals:
+  - {name: frontier, chart: frontier, targets: [x_png, linkedin_png, blog_html]}
