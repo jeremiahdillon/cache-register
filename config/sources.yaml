@@ -39,6 +39,18 @@ sources:
     requires: []
     enabled: true
 
+  - id: artificial_analysis
+    history: snapshot
+    revisions: none
+    # Verified 2026-10-23 (SOURCE.md): "Attribution is required for all use of our free API"; no
+    # licence grants redistribution of the data, so charts publish with attribution, never the table.
+    redistribution: forbidden
+    derived_charts: allowed-with-attribution
+    attribution: "Artificial Analysis (artificialanalysis.ai), as of {as_of}"
+    cadence: daily
+    requires: [ARTIFICIAL_ANALYSIS_API_KEY]
+    enabled: true
+
   - id: litellm_prices
     history: native
     revisions: none
