@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from cachereg.site import REEL_SIZE, build_site, collect_links, collect_receipts, short_url
+from cachereg.site import build_site, collect_links, collect_receipts, short_url
 
 VIDEOS, STILLS = ["x_video", "linkedin_video"], ["x_png", "linkedin_png"]
 FULL = {"chart": STILLS, "chart-motion": VIDEOS}
@@ -215,8 +215,11 @@ def test_shape_fallback_stills_only_and_nothing_rendered(tmp_path):
     assert receipts["stills-only"].slides[0].video is None
 
 
-def test_reel_on_index_only_with_media_for_every_receipt(tmp_path):
-    for i in range(REEL_SIZE + 2):
+def test_reel_on_index_only_with_media_for_every_receipt(tmp_path, monkeypatch):
+    size = 3  # a small cap, so the receipts beyond it go to the older list
+    monkeypatch.setattr("cachereg.site.REEL_SIZE", size)
+    newest = f"topic-{size + 1}"
+    for i in range(size + 2):
         make_receipt(tmp_path, f"topic-{i}", f"2026-01-{i + 1:02d}", FULL)
     (tmp_path / "config").mkdir()
     (tmp_path / "config" / "link-aliases.yaml").write_text("aliases:\n  old-name: topic-0\n")
@@ -225,22 +228,23 @@ def test_reel_on_index_only_with_media_for_every_receipt(tmp_path):
     index = (out / "index.html").read_text(encoding="utf-8")
 
     slides = re.findall(r'<section class="slide" id="[^"]+" aria-label="([^"]+)"', index)
-    assert slides == [f"Title of topic-{i}" for i in range(REEL_SIZE + 1, 1, -1)]  # aliases never get slides
+    assert slides == [f"Title of topic-{i}" for i in range(size + 1, 1, -1)]  # aliases never get slides
     # each slide's "More" leads to the next screen: the next slide, then the older list
     ids = re.findall(r'<section class="slide" id="([^"]+)"', index)
     mores = re.findall(r'<a class="more" href="#([^"]+)">More</a>', index)
-    assert ids[0] == "receipts" and len(set(ids)) == REEL_SIZE and mores == [*ids[1:], "older"]
+    assert ids[0] == "receipts" and len(set(ids)) == size and mores == [*ids[1:], "older"]
     older = re.search(r'<section class="older" id="older">(.*?)</section>', index).group(1)
     assert re.findall(r'<a href="/([^"]+)/">', older) == ["topic-1", "topic-0"]
     assert '<script src="/assets/reel.js" defer></script>' in index and (out / "assets" / "reel.js").is_file()
-    assert 'data-portrait="/media/topic-7/chart-motion.linkedin_video.mp4?v=' in index
-    assert "#008 · As of 2026-01-08" in index and '<a href="/topic-7/">cacheregister.dev/topic-7 →</a>' in index
+    assert f'data-portrait="/media/{newest}/chart-motion.linkedin_video.mp4?v=' in index
+    assert f"#{size + 2:03d} · As of 2026-01-{size + 2:02d}" in index
+    assert f'<a href="/{newest}/">cacheregister.dev/{newest} →</a>' in index
     csp = re.search(r'Content-Security-Policy" content="([^"]+)"', index).group(1)
     assert "media-src 'self'" in csp and "script-src 'self'" in csp and "unsafe-inline" not in csp.split("style-src")[0]
 
     copied = {p.parent.name for p in (out / "media").glob("*/*")}
-    assert copied == {f"topic-{i}" for i in range(REEL_SIZE + 2)}  # every receipt has a page that needs its media
-    assert len(list((out / "media" / "topic-7").iterdir())) == 4
+    assert copied == {f"topic-{i}" for i in range(size + 2)}  # every receipt has a page that needs its media
+    assert len(list((out / "media" / newest).iterdir())) == 4
 
     not_found = (out / "404.html").read_text(encoding="utf-8")
     for markup in ('class="slide"', 'src="/assets/reel.js"', 'class="hint', 'body class="reel"'):
@@ -250,7 +254,7 @@ def test_reel_on_index_only_with_media_for_every_receipt(tmp_path):
     # The scroll hint links to the first slide; the repo is the last call to action, after the reel.
     assert '<a class="hint reveal" href="#receipts">' in index
     assert index.count('id="receipts"') == 1
-    assert '<section class="slide" id="receipts" aria-label="Title of topic-7"' in index
+    assert f'<section class="slide" id="receipts" aria-label="Title of {newest}"' in index
     main = index.split("<main>")[1].split("</main>")[0]
     assert 'class="cta' not in main
     assert index.index('class="older"') < index.index('class="cta') < index.index("<footer")
@@ -302,6 +306,18 @@ def test_short_links_lead_to_receipt_pages(tmp_path):
     assert f"<loc>{site}/</loc><lastmod>2026-01-01</lastmod>" in sitemap
     assert f"<loc>{site}/mixed/</loc><lastmod>2026-01-01</lastmod>" in sitemap
     assert "unrendered" not in sitemap and "old-mixed" not in sitemap and "an-idea" not in sitemap
+
+
+def test_reel_gives_every_receipt_a_slide_under_the_default_cap(tmp_path):
+    for i in range(8):
+        make_receipt(tmp_path, f"topic-{i}", f"2026-01-{i + 1:02d}", FULL)
+    out = tmp_path / "_site"
+    build_site(out, tmp_path)
+    index = (out / "index.html").read_text(encoding="utf-8")
+    slides = re.findall(r'<section class="slide" id="[^"]+" aria-label="([^"]+)"', index)
+    assert slides == [f"Title of topic-{i}" for i in range(7, -1, -1)]  # newest first, none left over
+    mores = re.findall(r'<a class="more" href="#([^"]+)">More</a>', index)
+    assert mores[-1] == "end" and 'class="older"' not in index
 
 
 def test_reel_without_older_receipts_has_no_list(tmp_path):

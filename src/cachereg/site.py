@@ -38,7 +38,7 @@ MAX_SLUG = 32
 RESERVED = {"index", "404", "assets", "about", "api", "static", "media"}
 TEMPLATES = REPO_ROOT / "assets" / "templates"
 SITE_STATIC = REPO_ROOT / "assets" / "site"  # served as-is under /assets: shared stylesheet, reel player
-REEL_SIZE = 6  # newest receipts that get a full slide; older ones are listed as text
+REEL_SIZE = 100  # a ceiling for later, not reached yet: receipts beyond it are listed as text, not given slides
 SHAPES = {"portrait": "linkedin", "landscape": "x"}  # viewport orientation → render target prefix
 SPLASH_FONTS = ("display", "body", "mono")  # the faces site.html declares
 # Splash intro timing (ms): cursor alone, then one keystroke per letter (a fixed, slightly uneven

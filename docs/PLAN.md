@@ -400,9 +400,9 @@ pointing at the exploration takes it over; any other clash fails the build. A re
 permanent as a receipt's once posted. The root
 (and 404) is a branded splash page from `assets/templates/site.html`, open to search and AI crawlers
 (`robots.txt` allows all, `sitemap.xml` lists the root and the receipt pages). Below the root's splash, a scroll-snapped
-reel shows the newest receipts (by `as_of`), one per screen, built from their committed `output/`:
+reel shows every receipt, newest first (by `as_of`), one per screen, up to a cap (`REEL_SIZE`, 100), built from their committed `output/`:
 the still in the shape that fits the viewport (portrait `linkedin_*`, landscape `x_*`) with the motion
-visual played over it while on screen by `assets/site/reel.js`; older receipts are listed as text.
+visual played over it while on screen by `assets/site/reel.js`; receipts beyond the cap are listed as text.
 Every slide (root and receipt pages) ends in a quiet, clickable "More" linking to the next screen (the next
 slide, the older list or the closing screen), smaller and stiller than the splash's hint (2026-10-11).
 
