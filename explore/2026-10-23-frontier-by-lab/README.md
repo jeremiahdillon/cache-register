@@ -23,13 +23,18 @@ from anyone, on the Artificial Analysis Intelligence Index and on Terminal-Bench
   No US open-weight model (gpt-oss, Gemma, Llama) set the record in the window.
 
 ## Visuals
-One visual, `frontier`, in `outputs/` (gitignored): `x_png`, `linkedin_png` and `blog_html`. Build first:
+Two visuals in `outputs/` (gitignored), each as `x_png`, `linkedin_png` and `blog_html`. Build first:
 `cachereg build --as-of 2026-10-23 --sources artificial_analysis`, then
 `cachereg render explore/2026-10-23-frontier-by-lab`.
-- Two panels on one time axis, January 2025 to October 23, 2026: the Intelligence Index above, Terminal-Bench 4.0
-  below.
+- `intelligence`: the Intelligence Index, January 2025 to October 23, 2026.
+- `terminal-bench`: Terminal-Bench 4.0, January 2026 to October 23, 2026. Before 2026 every model scores about 0.
 - Step lines, one per lab in its vendor colour, and the best open-weight line in the accent. A dot marks each new
-  record; each line ends in a dot labelled with its current model and score.
+  record; each line ends in a dot labelled with its current model and score; a legend names the lines.
+- On `terminal-bench` the open-weight line names the lab each time the record changes hands (Alibaba, Z.ai,
+  DeepSeek, Z.ai), except the last (Moonshot), whose model the end label names. `intelligence` has no such labels:
+  the record changes hands 14 times, five of them in September–November 2025, and labels there collide. Thinning
+  them would leave a label over a stretch held by another lab. A motion version could flash each lab's name in
+  as it takes the record and out again, ending on the current holder only.
 
 ## Data
 - `artificial_analysis`: one snapshot of AA's LLM data API (attribution required, redistribution forbidden, so
@@ -48,16 +53,17 @@ One visual, `frontier`, in `outputs/` (gitignored): `x_png`, `linkedin_png` and 
    Meta are closed except gpt-oss, Gemma, Llama and Muse Glimmer. Statuses come from official Hugging Face repos or
    model cards where they exist, otherwise press coverage, checked 2026-10-23. `analysis.py` fails if a model that
    would set the line has no status, so new contenders must be tagged.
-4. **The window starts on 2025-01-01**, and each line enters at the record it held then. A lab with no score
-   before then starts at its first scored model; on Terminal-Bench 4.0, Anthropic's line starts in September 2025.
+4. **Windows start on 2025-01-01 (index) and 2026-01-01 (Terminal-Bench)** (`config.start` in `explore.yaml`), and
+   each line enters at the record it held then. A lab with no score before then starts at its first scored model.
+5. **Labs are named as companies** where AA uses a brand: Moonshot for AA's "Kimi", Z.ai for "Z AI".
 
 ## Caveats
 - **Today's scores, placed at past release dates.** AA re-runs models and re-versions its index and evals, so the
   lines show how models released at each date score now, not what the leaderboard showed then. AA offers no
   history; our snapshots start on 2026-10-23.
-- **Terminal-Bench 4.0 is new and hard.** Models from 2025 score near zero on it, so that panel's flat 2025 line
-  reflects the benchmark, not a lack of progress. These are AA's own runs, all with AA's harness. They differ from
-  labs' self-reported figures: Moonshot reports 65.7% for Kimi K3.1 Pro with the Claude Code harness, and 66.4% for
+- **Terminal-Bench 4.0 is new and hard.** Models from 2025 score near zero on it, so its chart starts in 2026
+  (a flat 2025 would reflect the benchmark, not a lack of progress). These are AA's own runs, all with AA's harness.
+  They differ from labs' self-reported figures: Moonshot reports 65.7% for Kimi K3.1 Pro with the Claude Code harness, and 66.4% for
   Claude Opus 5.5, which AA scores at 59.6. They also differ from the tbench.ai leaderboard, which compares agents.
 - **Kimi K3.1 Pro counts as open-weight on announcement** (the author's call). Its weights are promised by
   November 4, 2026 and were not out on 2026-10-23. Without it, the open-weight line ends at MiMo-V2.6-Pro (46.3 on

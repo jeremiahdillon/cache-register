@@ -21,10 +21,13 @@ HERE = Path(__file__).parent
 OPEN = "Best open-weight"
 LABS = ["Anthropic", "OpenAI", "Google", "Meta"]  # AA creator names
 SERIES = [*LABS, OPEN]
-METRICS = {  # AA eval key -> (panel title, multiplier to the plotted scale)
-    "artificial_analysis_intelligence_index": ("Artificial Analysis Intelligence Index", 1.0),
-    "terminalbench_v4_0": ("Terminal-Bench 4.0, % of tasks solved", 100.0),
+II, TB = "artificial_analysis_intelligence_index", "terminalbench_v4_0"
+METRICS = {  # AA eval key -> (y-axis title, multiplier to the plotted scale, visual name = key of config `start`)
+    II: ("Intelligence Index", 1.0, "intelligence"),
+    TB: ("% of tasks solved", 100.0, "terminal-bench"),
 }
+# AA creator name -> the lab as named on the charts (where AA uses a brand rather than the company)
+LAB_NAMES = {"Kimi": "Moonshot", "Z AI": "Z.ai"}
 TABLE_PERCENT_COLUMNS: list[str] = []
 
 
@@ -95,11 +98,12 @@ def open_frontier(df: pl.DataFrame, rules: dict, start: date) -> list[dict]:
 
 
 def build(con, as_of: date, cfg: dict) -> Story:
-    start = date.fromisoformat(str(cfg["start"]))
     rules = yaml.safe_load((HERE / "open_weights.yaml").read_text())
     snapshot = query(con, "SELECT DISTINCT snapshot_date FROM aa_models")["snapshot_date"][0]
     rows, latest = [], {}
-    for metric, (_, mult) in METRICS.items():
+    starts = {}
+    for metric, (_, mult, visual) in METRICS.items():
+        start = starts[metric] = date.fromisoformat(str(cfg["start"][visual]))
         df = _scores(con, metric)
         steps = {lab: frontier(df.filter(pl.col("creator") == lab)) for lab in LABS}
         steps[OPEN] = open_frontier(df, rules, start)
@@ -120,6 +124,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
                         "model": short_name(r["name"]),
                         "variant": r["name"],
                         "creator": r["creator"],
+                        "lab": LAB_NAMES.get(r["creator"], r["creator"]),
                         "carried": bool(r.get("carried", False)),
                     }
                 )
@@ -136,28 +141,30 @@ def build(con, as_of: date, cfg: dict) -> Story:
         gap = latest[(metric, leader)]["score"] - latest[(metric, OPEN)]["score"]
         standing[metric] = {"rank": ranked.index(OPEN) + 1, "leader": leader, "gap": gap, "order": ranked}
 
-    ii, tb = standing["artificial_analysis_intelligence_index"], standing["terminalbench_v4_0"]
-    open_model = latest[("terminalbench_v4_0", OPEN)]["model"]
-    # Headline follows the data (rank of the open-weight line on each panel, among these five lines).
-    if tb["rank"] == 1 and ii["rank"] == 1:
-        claim = "The best open-weight model now leads\nevery big US lab on both benchmarks"
-    elif tb["rank"] == 1:
-        claim = (
-            f"An open-weight model leads Terminal-Bench,\n"
-            f"and trails {ii['leader']} by {ii['gap']:.1f} points on the Intelligence Index"
-        )
+    ii, tb = standing[II], standing[TB]
+    lt = latest[(TB, OPEN)]
+    # Headlines follow the data: where the open-weight line stands among the five lines today.
+    if tb["rank"] == 1:
+        tb_claim = f"An open-weight model now leads Terminal-Bench:\n{lt['model']} beats every big US lab's best"
     else:
-        claim = (
-            f"The best open-weight model ranks {tb['rank']} of 5 on Terminal-Bench\n"
-            f"and {ii['rank']} of 5 on the Intelligence Index"
+        tb_claim = f"The best open-weight model is {tb['gap']:.1f} points behind\nthe leader on Terminal-Bench"
+    if ii["rank"] == 1:
+        ii_claim = "The best open-weight model now leads\nthe Artificial Analysis Intelligence Index"
+    else:
+        ii_claim = (
+            f"The best open-weight model is {ii['gap']:.1f} points behind {ii['leader']}\n"
+            f"on the Artificial Analysis Intelligence Index"
         )
-    subtitle = (
-        f"Best model released so far by Anthropic, OpenAI, Google and Meta, and by anyone with open weights; "
-        f"scores as measured by Artificial Analysis on {snapshot:%B %-d, %Y}."
-    )
+    who = "Best model released so far by Anthropic, OpenAI, Google and Meta, and by anyone with open weights"
+    measured = f"as measured by Artificial Analysis on {snapshot:%B %-d, %Y}"
+    by_visual = {
+        "intelligence": {"title": ii_claim, "subtitle": f"{who}; Intelligence Index {measured}."},
+        "terminal-bench": {"title": tb_claim, "subtitle": f"{who}; Terminal-Bench 4.0, {measured}."},
+    }
     return Story(
-        title=claim,
-        subtitle=subtitle,
+        title=ii_claim,
+        subtitle=by_visual["intelligence"]["subtitle"],
+        by_visual=by_visual,
         frames={"steps": steps_df},
         sources=["artificial_analysis"],
         as_of=as_of,
@@ -168,8 +175,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
         caveats=[
             "Today's scores placed at each model's release date: AA re-runs models and re-versions its "
             "index and evals, so this is not what the leaderboard showed at the time.",
-            "Terminal-Bench 4.0 is new and hard: models from 2025 score near zero on it, so that panel's "
-            "early flat line reflects the benchmark, not a lack of progress.",
+            "Terminal-Bench 4.0 is new and hard: models from 2025 score near zero on it, so its chart starts in 2026.",
             "Open-weight status comes from our own tagging (open_weights.yaml), counted from the AA release "
             "date even where weights came days or weeks later. Kimi K3.1 Pro counts on announcement; its "
             "weights are promised by November 4, 2026.",
@@ -179,17 +185,16 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "from Meta Superintelligence Labs' closed Muse models since April 2026.",
         ],
         extra={
-            "panels": {m: t for m, (t, _) in METRICS.items()},
+            "y_titles": {m: t for m, (t, _, _) in METRICS.items()},
             "series": SERIES,
-            "start": str(start),
+            "start": {m: str(d) for m, d in starts.items()},
             "snapshot": str(snapshot),
             "latest": {f"{m}|{s}": v for (m, s), v in latest.items()},
             "standing": standing,
-            "open_model": open_model,
         },
     )
 
 
 def table(story: Story) -> pl.DataFrame:
     """Every step of every line."""
-    return story.frames["steps"].select("metric", "series", "date", "model", "variant", "creator", "score")
+    return story.frames["steps"].select("metric", "series", "date", "model", "variant", "lab", "score")
