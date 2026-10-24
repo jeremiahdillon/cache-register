@@ -1,0 +1,39 @@
+{
+  "as_of": "2026-10-23",
+  "cache_register_version": "0.0.1",
+  "data_hash": "1309e2f2571ce40c9aa6d47907e8f83b675cc52da491807aa8d152fc19ce6830",
+  "folder": "receipts/open-leaps-ahead",
+  "git_dirty": false,
+  "git_sha": "1da1bc8e43f2ac1168a6f3d16fb673cdb7e23016",
+  "inputs_hash": "cf268d4040fb090e58c3c2adaf11875a3eca45b050340cad9942bf1629008992",
+  "kind": "receipt",
+  "outputs": {
+    "terminal-bench.linkedin_png.png": "fdf7a4a2d026b2e02f551227bc539ea7a4b6f89541afa19567705c340730fb9b",
+    "terminal-bench.linkedin_video.mp4": "b2bcdde2125c5a66be8f71730fbb70cca49d2d2ae25364fa36995b8f12cd8f30",
+    "terminal-bench.x_png.png": "fdd1cf388dd92d2a49311ff290fb876182215515d8b02ff56d9554878385caa2",
+    "terminal-bench.x_video.mp4": "7fd6852038009a84a2a8af40b765e2c155e6e157ae24960313ccf2c0c5d5e862"
+  },
+  "sources": {
+    "artificial_analysis": {
+      "class": "Author-only",
+      "content_sha256": "7a96fd35f311d57c592e36830034ae01b97da3f3b1a8aede27a0fabb434c8499",
+      "fetch_date": "2026-10-23",
+      "vintage": {
+        "kind": "snapshot",
+        "value": "2026-10-23"
+      },
+      "vintage_after_as_of": false
+    }
+  },
+  "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "visuals": {
+    "terminal-bench": {
+      "source": "Artificial Analysis (artificialanalysis.ai), as of 2026-10-23",
+      "subtitle": "Best model released so far by Anthropic, OpenAI, Google and Meta, and by anyone with open weights; Terminal-Bench 4.0, as measured by Artificial Analysis on October 23, 2026.",
+      "title": "An open-weight model now leads Terminal-Bench: Kimi K3.1 Pro beats every big US lab's best"
+    }
+  },
+  "withheld": {
+    "data.json": "redistribution not allowed for: artificial_analysis"
+  }
+}
