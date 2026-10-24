@@ -1,0 +1,11 @@
+# Receipt: cacheregister.dev/open-leaps-ahead (the folder name is the short link, taken over from the
+# exploration's reservation — never rename without adding an alias in config/link-aliases.yaml).
+title: Open weights lead Terminal-Bench
+sources: [artificial_analysis]
+as_of: 2026-10-23
+promoted_from: explore/2026-10-23-frontier-by-lab
+config:
+  start: 2026-01-01   # Terminal-Bench 4.0 scores are about zero for every model before 2026
+visuals:
+  # one slide: the motion chart; each still is its video's final frame
+  - {name: terminal-bench, chart: terminal_bench, targets: [x_png, linkedin_png, x_video, linkedin_video]}
