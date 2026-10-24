@@ -1,10 +1,10 @@
 """Charts for the frontier-by-lab exploration (render contract: src/cachereg/render.py).
 
 Two visuals, one per benchmark (`intelligence`, `terminal_bench`). Each line is a step line of the best score
-released so far: the four labs in their vendor colours, the best open-weight model in the accent. A dot marks each
-new record; each line ends in a dot labelled with its current model and score; a legend above names the lines. On
-Terminal-Bench the open-weight line names the lab each time the record changes hands (too many changes to do so on
-the index).
+released so far: the four labs in greys (distinct, but telling them apart is not the point), the best open-weight
+model in the accent and heavier. A dot marks each new record; each line ends in a dot labelled with its current
+model and score; a legend above names the lines. On Terminal-Bench the open-weight line names the model family
+(GLM, Qwen, ...) each time the record changes hands (too many changes to do so on the index).
 """
 
 from __future__ import annotations
@@ -21,7 +21,9 @@ from cachereg.viz.fit import fit
 from cachereg.viz.theme import vl_config
 
 LABEL_PX, AXIS_PX = 16, 14
-VENDOR = {"Anthropic": "anthropic", "OpenAI": "openai", "Google": "google", "Meta": "meta"}
+# The labs in greys (distinct, but telling them apart is not the point); the open-weight line in the accent, heavier.
+GREYS = {"Anthropic": "#C3C8D3", "OpenAI": "#9AA0AE", "Google": "#7A8090", "Meta": "#5F6575"}
+LAB_STROKE, OPEN_STROKE = 2.0, 4.0
 
 
 def _ms(d) -> int:
@@ -29,7 +31,7 @@ def _ms(d) -> int:
 
 
 def _ink(series: str) -> str:
-    return color("accent") if series == OPEN else brand()["colors"]["vendor_colors"][VENDOR[series]]
+    return color("accent") if series == OPEN else GREYS[series]
 
 
 def _spread(values: list[float], gap: float, lo: float) -> list[float]:
@@ -51,10 +53,10 @@ def terminal_bench(story: Story, width, height, font_scale: float = 1.0, interac
 
 
 def holder_labels(rec: pl.DataFrame, first, last) -> pl.DataFrame:
-    """The open-weight line's records where the record passes to another lab (the first record included), except
+    """The open-weight line's records where the record passes to another model family (the first included), except
     one in the last 5% of the window: the end label beside it already names the model."""
     o = rec.filter(pl.col("series") == OPEN).sort("date")
-    o = o.filter(pl.col("lab") != pl.col("lab").shift(1).fill_null(""))
+    o = o.filter(pl.col("family") != pl.col("family").shift(1).fill_null(""))
     return o.filter(pl.col("date") < last - (last - first) * 0.05)
 
 
@@ -68,8 +70,8 @@ def _chart(
 
     clr = alt.Color("series:N", scale=alt.Scale(domain=series, range=[_ink(s) for s in series]), legend=None)
     legend = alt.Legend(
-        orient="top", direction="horizontal", title=None, labelFontSize=LABEL_PX * fs, symbolSize=110 * fs**2,
-        symbolStrokeWidth=0, columnPadding=22 * fs, offset=14 * fs, labelColor=color("text"),
+        orient="top", direction="horizontal", title=None, labelFontSize=LABEL_PX * fs, symbolType="stroke",
+        symbolSize=260 * fs, symbolStrokeWidth=3 * fs, columnPadding=22 * fs, offset=14 * fs, labelColor=color("text"),
     )  # fmt: skip
     ends = d.group_by("series", maintain_order=True).last().with_columns(date=pl.lit(last), carried=pl.lit(True))
     ends = ends.select(d.columns)
@@ -105,6 +107,13 @@ def _chart(
     def with_t(df: pl.DataFrame) -> pl.DataFrame:
         return df.with_columns(t=pl.col("date").map_elements(_ms, return_dtype=pl.Int64)).drop("date")
 
+    width_enc = alt.StrokeWidth(
+        "series:N",
+        scale=alt.Scale(domain=series, range=[(OPEN_STROKE if s == OPEN else LAB_STROKE) * fs for s in series]),
+        legend=None,
+    )
+    # Dot size keys on its own field: a size encoding on `series` would merge into the legend and shrink its swatches.
+    size_enc = alt.Size("heavy:N", scale=alt.Scale(domain=[False, True], range=[26 * fs**2, 60 * fs**2]), legend=None)
     # Each line runs on to the as-of date at its last record; the open-weight line is drawn last (on top).
     order = {s: i for i, s in enumerate(series)}
     line_rows = with_t(pl.concat([d, ends])).with_columns(
@@ -112,14 +121,14 @@ def _chart(
     )
     lines = (
         alt.Chart(alt.Data(values=line_rows.sort("z", "t").to_dicts()))
-        .mark_line(interpolate="step-after", strokeWidth=2.4 * fs)
-        .encode(x=x, y=y, color=clr.legend(legend), detail="series:N", order="z:Q")
+        .mark_line(interpolate="step-after")
+        .encode(x=x, y=y, color=clr.legend(legend), strokeWidth=width_enc, detail="series:N", order="z:Q")
     )
     rec = d.filter(~pl.col("carried"))
     dots = (
-        alt.Chart(alt.Data(values=with_t(rec).to_dicts()))
-        .mark_circle(size=34 * fs**2, opacity=1)
-        .encode(x=x, y=y, color=clr)
+        alt.Chart(alt.Data(values=with_t(rec).with_columns(heavy=pl.col("series") == OPEN).to_dicts()))
+        .mark_circle(opacity=1)
+        .encode(x=x, y=y, color=clr, size=size_enc)
     )
     if interactive:
         dots = dots.encode(
@@ -132,13 +141,13 @@ def _chart(
             ]
         )
 
-    # Who holds the open-weight record: the lab's name above the dot each time the record changes hands.
+    # Who holds the open-weight record: the model family above the dot each time the record changes hands.
     held = with_t(holder_labels(rec, first, last) if holders else rec.clear())
     holder_text = (
         alt.Chart(alt.Data(values=held.to_dicts()))
         .mark_text(align="left", baseline="bottom", dx=-2 * fs, dy=-7 * fs, fontSize=(LABEL_PX - 3) * fs,
-                   font=fonts["body"], color=color("accent"))
-        .encode(x=x, y=y, text="lab:N")
+                   font=fonts["body"], fontWeight=600, color=color("accent"))
+        .encode(x=x, y=y, text="family:N")
     )  # fmt: skip
 
     # End labels, one line each: "<model> <score>" in the line's colour (the legend names the lines).

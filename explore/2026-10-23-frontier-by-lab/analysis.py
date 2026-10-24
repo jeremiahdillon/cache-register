@@ -26,8 +26,18 @@ METRICS = {  # AA eval key -> (y-axis title, multiplier to the plotted scale, vi
     II: ("Intelligence Index", 1.0, "intelligence"),
     TB: ("% of tasks solved", 100.0, "terminal-bench"),
 }
-# AA creator name -> the lab as named on the charts (where AA uses a brand rather than the company)
+# AA creator name -> the lab as named in tables (where AA uses a brand rather than the company)
 LAB_NAMES = {"Kimi": "Moonshot", "Z AI": "Z.ai"}
+FAMILY_OVERRIDES = {"gpt": "gpt-oss"}  # family = the name's leading letters, except where that is ambiguous
+
+
+def family(name: str) -> str:
+    """Model family from an AA name: 'GLM-5.1' -> 'GLM', 'Qwen3.5 9B' -> 'Qwen', 'DeepSeek V4 Pro' -> 'DeepSeek'."""
+    m = re.match(r"[A-Za-z]+", name)
+    head = m.group(0) if m else name
+    return FAMILY_OVERRIDES.get(head, head)
+
+
 TABLE_PERCENT_COLUMNS: list[str] = []
 
 
@@ -125,6 +135,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
                         "variant": r["name"],
                         "creator": r["creator"],
                         "lab": LAB_NAMES.get(r["creator"], r["creator"]),
+                        "family": family(r["name"]),
                         "carried": bool(r.get("carried", False)),
                     }
                 )

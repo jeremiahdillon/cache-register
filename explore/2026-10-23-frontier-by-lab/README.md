@@ -28,12 +28,13 @@ Two visuals in `outputs/` (gitignored), each as `x_png`, `linkedin_png` and `blo
 `cachereg render explore/2026-10-23-frontier-by-lab`.
 - `intelligence`: the Intelligence Index, January 2025 to October 23, 2026.
 - `terminal-bench`: Terminal-Bench 4.0, January 2026 to October 23, 2026. Before 2026 every model scores about 0.
-- Step lines, one per lab in its vendor colour, and the best open-weight line in the accent. A dot marks each new
-  record; each line ends in a dot labelled with its current model and score; a legend names the lines.
-- On `terminal-bench` the open-weight line names the lab each time the record changes hands (Alibaba, Z.ai,
-  DeepSeek, Z.ai), except the last (Moonshot), whose model the end label names. `intelligence` has no such labels:
+- Step lines: the four labs in greys (distinct, but telling them apart is not the point) and the best open-weight
+  line in the accent, heavier. A dot marks each new record; each line ends in a dot labelled with its current model
+  and score; a legend names the lines.
+- On `terminal-bench` the open-weight line names the model family each time the record changes hands (Qwen, GLM,
+  DeepSeek, GLM), except the last (Kimi), whose model the end label names. `intelligence` has no such labels:
   the record changes hands 14 times, five of them in September–November 2025, and labels there collide. Thinning
-  them would leave a label over a stretch held by another lab. A motion version could flash each lab's name in
+  them would leave a label over a stretch held by another family. A motion version could flash each name in
   as it takes the record and out again, ending on the current holder only.
 
 ## Data
