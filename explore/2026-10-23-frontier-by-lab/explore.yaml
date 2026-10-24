@@ -1,5 +1,6 @@
-# Exploration config (same schema as receipt.yaml; `link:` would reserve a short link — none yet).
+# Exploration config (same schema as receipt.yaml; `link:` reserves the short link the receipt will take).
 title: Frontier by lab vs the best open-weight model
+link: open-leaps-ahead   # reserved short link (cacheregister.dev/open-leaps-ahead), stamped on the visuals; for the Terminal-Bench receipt
 as_of: 2026-10-23
 sources: [artificial_analysis]
 config:

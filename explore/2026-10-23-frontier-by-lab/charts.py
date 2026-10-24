@@ -48,7 +48,7 @@ class Pace:
     final_hold: float = 3.0
 
 
-PACE = {II: Pace(grey=4.5, open=5.5, hold=0.45), TB: Pace(grey=3.5, open=4.5, hold=0.8)}
+PACE = {II: Pace(grey=4.5, open=4.5, hold=0.45), TB: Pace(grey=3.5, open=3.5, hold=0.8)}
 
 
 def _ms(d) -> int:

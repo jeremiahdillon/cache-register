@@ -1,6 +1,7 @@
 # Frontier by lab vs the best open-weight model
 
-*Exploration · started 2026-10-23 · data as of 2026-10-23 (one Artificial Analysis snapshot, fetched that day)*
+*Exploration · started 2026-10-23 · data as of 2026-10-23 (one Artificial Analysis snapshot, fetched that day) ·
+reserves cacheregister.dev/open-leaps-ahead for the Terminal-Bench chart (the index chart stays here)*
 
 ## Question
 How do the best models from Anthropic, OpenAI, Google and Meta compare over time with the best open-weight model
@@ -27,8 +28,8 @@ Two visuals in `outputs/` (gitignored), each as video (`x_video`, `linkedin_vide
 (`x_png`, `linkedin_png`) and `blog_html` (the final frame, interactive). Build first:
 `cachereg build --as-of 2026-10-23 --sources artificial_analysis`, then
 `cachereg render explore/2026-10-23-frontier-by-lab` (about 4.5 minutes).
-- `intelligence`: the Intelligence Index, January 2025 to October 23, 2026 (video about 26 s).
-- `terminal-bench`: Terminal-Bench 4.0, January 2026 to October 23, 2026 (about 19 s). Before 2026 every model
+- `intelligence`: the Intelligence Index, January 2025 to October 23, 2026 (video about 25 s).
+- `terminal-bench`: Terminal-Bench 4.0, January 2026 to October 23, 2026 (about 18 s). Before 2026 every model
   scores about 0.
 - Step lines: the four labs in greys (distinct, but telling them apart is not the point) and the best open-weight
   line in the accent, heavier. A dot marks each new record; each line ends in a dot labelled with its current model
