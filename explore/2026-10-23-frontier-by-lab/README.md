@@ -23,19 +23,24 @@ from anyone, on the Artificial Analysis Intelligence Index and on Terminal-Bench
   No US open-weight model (gpt-oss, Gemma, Llama) set the record in the window.
 
 ## Visuals
-Two visuals in `outputs/` (gitignored), each as `x_png`, `linkedin_png` and `blog_html`. Build first:
+Two visuals in `outputs/` (gitignored), each as video (`x_video`, `linkedin_video`), its final frame as the stills
+(`x_png`, `linkedin_png`) and `blog_html` (the final frame, interactive). Build first:
 `cachereg build --as-of 2026-10-23 --sources artificial_analysis`, then
-`cachereg render explore/2026-10-23-frontier-by-lab`.
-- `intelligence`: the Intelligence Index, January 2025 to October 23, 2026.
-- `terminal-bench`: Terminal-Bench 4.0, January 2026 to October 23, 2026. Before 2026 every model scores about 0.
+`cachereg render explore/2026-10-23-frontier-by-lab` (about 4.5 minutes).
+- `intelligence`: the Intelligence Index, January 2025 to October 23, 2026 (video about 24 s).
+- `terminal-bench`: Terminal-Bench 4.0, January 2026 to October 23, 2026 (about 19 s). Before 2026 every model
+  scores about 0.
 - Step lines: the four labs in greys (distinct, but telling them apart is not the point) and the best open-weight
   line in the accent, heavier. A dot marks each new record; each line ends in a dot labelled with its current model
   and score; a legend names the lines.
-- On `terminal-bench` the open-weight line names the model family, centred above the dot with a dark halo, each time
-  the record changes hands (Qwen, GLM, DeepSeek, GLM), except the last (Kimi), whose model the end label names.
-  `intelligence` has no such labels: the record changes hands 14 times, five of them in September–November 2025, and
-  labels there collide. Thinning them would leave a label over a stretch held by another family. A motion version
-  could flash each name in as it takes the record and out again, ending on the current holder only.
+- Motion: empty axes; the four grey lines draw in together, left to right, and their end labels fade in; a pause;
+  then the open-weight line draws in. One calendar clock drives every line, so they stay in step: when it passes a
+  record, that line's riser grows upward in 0.13–0.47 s (taller jumps take longer), and the new horizontal stretch
+  rides up with its tip, so no riser snaps in. On the open-weight line the clock pauses at each handover to a new
+  model family (0.45 s on the index, 0.8 s on Terminal-Bench): the riser climbs, a ring pulses from the dot, and the
+  family's name (DeepSeek, Kimi, GLM, MiniMax, MiMo, Qwen) pops in oversized, settles, and fades when the next family
+  takes over. The last name gives way to the open-weight end label, so the final frame and the stills show end
+  labels only. A handover at a score of 0 (Terminal-Bench before March 2026) is not announced.
 
 ## Data
 - `artificial_analysis`: one snapshot of AA's LLM data API (attribution required, redistribution forbidden, so

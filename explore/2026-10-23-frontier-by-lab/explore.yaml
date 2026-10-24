@@ -7,5 +7,5 @@ config:
     intelligence: 2025-01-01
     terminal-bench: 2026-01-01 # Terminal-Bench 4.0 scores are about zero for every model before 2026
 visuals:
-  - {name: intelligence, chart: intelligence, targets: [x_png, linkedin_png, blog_html]}
-  - {name: terminal-bench, chart: terminal_bench, targets: [x_png, linkedin_png, blog_html]}
+  - {name: intelligence, chart: intelligence, targets: [x_video, linkedin_video, x_png, linkedin_png, blog_html]}
+  - {name: terminal-bench, chart: terminal_bench, targets: [x_video, linkedin_video, x_png, linkedin_png, blog_html]}
