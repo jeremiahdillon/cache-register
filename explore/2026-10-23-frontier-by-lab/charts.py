@@ -40,7 +40,7 @@ class Pace:
 
     grey: float  # grey lines drawing in
     open: float  # open-weight line drawing in, not counting the holds
-    hold: float  # pause at each handover
+    hold: float  # pause at each handover once its riser has landed (the pulse and the name)
     intro: float = 0.5  # empty axes
     grey_labels: float = 0.5  # grey end labels fading in
     pause: float = 1.0  # between the grey lines and the open-weight line (the labels fade in during it)
@@ -48,7 +48,7 @@ class Pace:
     final_hold: float = 3.0
 
 
-PACE = {II: Pace(grey=4.5, open=7.0, hold=0.45), TB: Pace(grey=3.5, open=6.0, hold=0.8)}
+PACE = {II: Pace(grey=4.5, open=5.5, hold=0.45), TB: Pace(grey=3.5, open=4.5, hold=0.8)}
 
 
 def _ms(d) -> int:
@@ -283,8 +283,11 @@ def _frames(s: float) -> int:
     return max(round(s * FPS), 1)
 
 
-def _riser_frames(dy: float, top: float) -> int:
-    """Frames a riser takes to grow: 0.13 s plus up to 0.33 s more for a full-height jump."""
+def _riser_frames(dy: float, top: float, slow: bool = False) -> int:
+    """Frames a riser takes to grow: grey 0.13 s plus up to 0.33 s more for a full-height jump; the open-weight line
+    (``slow``) 0.27 s plus up to 0.4 s more, so its climbs read as the event."""
+    if slow:
+        return min(max(round(8 + 12 * abs(dy) / top), 8), 20)
     return min(max(round(4 + 10 * abs(dy) / top), 4), 14)
 
 
@@ -296,7 +299,9 @@ def _crossings(clock: list[float | None], steps: list[dict]) -> list[int | None]
     return out
 
 
-def _draw(steps: list[dict], cross: list[int | None], clock: float | None, f: int, top: float) -> tuple[list, list]:
+def _draw(
+    steps: list[dict], cross: list[int | None], clock: float | None, f: int, top: float, slow: bool
+) -> tuple[list, list]:
     """The line's vertices and its record dots at frame f: risers grow from their crossing frame, the tip rides up."""
     if clock is None:
         return [], []
@@ -309,7 +314,7 @@ def _draw(steps: list[dict], cross: list[int | None], clock: float | None, f: in
             p = 1.0
             lvl = r["score"]
         else:
-            p = ease_out(_clamp((f - cf) / _riser_frames(r["score"] - vis[k - 1][0]["score"], top)))
+            p = ease_out(_clamp((f - cf) / _riser_frames(r["score"] - vis[k - 1][0]["score"], top, slow)))
             lvl = vis[k - 1][0]["score"] + (r["score"] - vis[k - 1][0]["score"]) * p
         levels.append(lvl)
         if not r["carried"]:
@@ -338,12 +343,16 @@ def _schedule(story: Story, metric: str) -> dict:
     steps = lines[OPEN]
     # A score of 0 is no record to announce (on Terminal-Bench every model scored 0 before 2026).
     events = [i for i, r in enumerate(steps) if r["score"] > 0 and (i == 0 or r["family"] != steps[i - 1]["family"])]
-    hold, v = _frames(pace.hold), (t1 - t0) / _frames(pace.open)
+    # The clock pauses at each handover while its riser climbs, then for the hold; the pulse and the name fire on the
+    # frame the riser lands (event_frames).
+    hold, v, top = _frames(pace.hold), (t1 - t0) / _frames(pace.open), _top(story, metric)
     event_frames, c, k = {}, t0, 0
     while True:
         while k < len(events) and steps[events[k]]["t"] <= c:
-            event_frames[events[k]] = len(opn)
-            opn += [c] * hold
+            i = events[k]
+            rise = _riser_frames(steps[i]["score"] - steps[i - 1]["score"], top, slow=True) if i > 0 else 0
+            event_frames[i] = len(opn) + rise
+            opn += [c] * (rise + hold)
             k += 1
         if c >= t1:
             break
@@ -365,14 +374,14 @@ def _state(story: Story, metric: str, sch: dict, f: int, cross: dict) -> dict:
     lines, dots, head, names, rings = {}, [], [], [], []
     for s, steps in sch["lines"].items():
         clock = (sch["open"] if s == OPEN else sch["grey"])[f]
-        pts, ds = _draw(steps, cross[s], clock, f, top)
+        pts, ds = _draw(steps, cross[s], clock, f, top, slow=s == OPEN)
         lines[s] = pts
         dots += [{"series": s, "t": r["t"], "score": lvl, "op": p, **_meta(r)} for r, lvl, p in ds]
         if s == OPEN and pts and f < sch["open_done"]:
             head.append({"t": pts[-1][0], "score": pts[-1][1]})
 
-    # Handover emphasis: a ring pulses out from the record; the name pops in oversized, settles, and fades when the
-    # next family takes over (the last one when the end label fades in).
+    # Handover emphasis, from the frame its riser lands: a ring pulses out from the record; the name pops in oversized,
+    # settles, and fades when the next family's riser lands (the last one when the end label fades in).
     steps = sch["lines"][OPEN]
     order = sorted(sch["events"].items(), key=lambda kv: kv[1])
     for n, (i, fe) in enumerate(order):

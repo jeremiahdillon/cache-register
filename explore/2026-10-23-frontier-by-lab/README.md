@@ -27,7 +27,7 @@ Two visuals in `outputs/` (gitignored), each as video (`x_video`, `linkedin_vide
 (`x_png`, `linkedin_png`) and `blog_html` (the final frame, interactive). Build first:
 `cachereg build --as-of 2026-10-23 --sources artificial_analysis`, then
 `cachereg render explore/2026-10-23-frontier-by-lab` (about 4.5 minutes).
-- `intelligence`: the Intelligence Index, January 2025 to October 23, 2026 (video about 24 s).
+- `intelligence`: the Intelligence Index, January 2025 to October 23, 2026 (video about 26 s).
 - `terminal-bench`: Terminal-Bench 4.0, January 2026 to October 23, 2026 (about 19 s). Before 2026 every model
   scores about 0.
 - Step lines: the four labs in greys (distinct, but telling them apart is not the point) and the best open-weight
@@ -35,12 +35,13 @@ Two visuals in `outputs/` (gitignored), each as video (`x_video`, `linkedin_vide
   and score; a legend names the lines.
 - Motion: empty axes; the four grey lines draw in together, left to right, and their end labels fade in; a pause;
   then the open-weight line draws in. One calendar clock drives every line, so they stay in step: when it passes a
-  record, that line's riser grows upward in 0.13–0.47 s (taller jumps take longer), and the new horizontal stretch
-  rides up with its tip, so no riser snaps in. On the open-weight line the clock pauses at each handover to a new
-  model family (0.45 s on the index, 0.8 s on Terminal-Bench): the riser climbs, a ring pulses from the dot, and the
-  family's name (DeepSeek, Kimi, GLM, MiniMax, MiMo, Qwen) pops in oversized, settles, and fades when the next family
-  takes over. The last name gives way to the open-weight end label, so the final frame and the stills show end
-  labels only. A handover at a score of 0 (Terminal-Bench before March 2026) is not announced.
+  record, that line's riser grows upward (grey 0.13–0.47 s, taller jumps taking longer) and the new horizontal
+  stretch rides up with its tip, so no riser snaps in. The open-weight line draws faster across and climbs slower
+  (0.27–0.67 s). At each handover to a new model family its clock pauses while the riser climbs; when the riser
+  lands, a ring pulses from the dot and the family's name (DeepSeek, Kimi, GLM, MiniMax, MiMo, Qwen) pops in
+  oversized and settles, and the clock holds (0.45 s on the index, 0.8 s on Terminal-Bench). Each name fades when
+  the next family's riser lands; the last gives way to the open-weight end label, so the final frame and the stills
+  show end labels only. A handover at a score of 0 (Terminal-Bench before March 2026) is not announced.
 
 ## Data
 - `artificial_analysis`: one snapshot of AA's LLM data API (attribution required, redistribution forbidden, so
