@@ -1,7 +1,9 @@
 # Frontier by lab vs the best open-weight model
 
-*Exploration · started 2026-10-23 · data as of 2026-10-23 (one Artificial Analysis snapshot, fetched that day) ·
-reserves cacheregister.dev/open-leaps-ahead for the Terminal-Bench chart (the index chart stays here)*
+*Exploration · started 2026-10-23 · **Terminal-Bench chart promoted to
+[`receipts/open-leaps-ahead`](../../receipts/open-leaps-ahead/)**, which is the maintained version
+(cacheregister.dev/open-leaps-ahead); the Intelligence Index chart stays here · data as of 2026-10-23 (one
+Artificial Analysis snapshot, fetched that day)*
 
 ## Question
 How do the best models from Anthropic, OpenAI, Google and Meta compare over time with the best open-weight model
