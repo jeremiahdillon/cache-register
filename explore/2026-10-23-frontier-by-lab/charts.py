@@ -190,25 +190,26 @@ def _frame(story: Story, metric: str, width: float, height: float, fs: float, st
         ]
 
     greys = [s for s in series if s != OPEN]
+    # Lines and dots are not clipped: clipping at the plot edge would cut the half of a stroke that runs along 0.
     # The grey layer carries the legend (one shared colour scale, so it lists every series); the open line on top.
     grey_lines = (
         alt.Chart(data(line_rows(greys)))
-        .mark_line(strokeWidth=LAB_STROKE * fs, clip=True)
+        .mark_line(strokeWidth=LAB_STROKE * fs)
         .encode(x=x, y=y, color=clr.legend(legend), detail="series:N", order="i:Q")
     )
     open_line = (
         alt.Chart(data(line_rows([OPEN])))
-        .mark_line(strokeWidth=OPEN_STROKE * fs, clip=True)
+        .mark_line(strokeWidth=OPEN_STROKE * fs)
         .encode(x=x, y=y, color=clr, detail="series:N", order="i:Q")
     )
     grey_dots = (
         alt.Chart(data([r for r in st["dots"] if r["series"] != OPEN]))
-        .mark_circle(size=26 * fs**2, clip=True)
+        .mark_circle(size=26 * fs**2)
         .encode(x=x, y=y, color=clr, opacity=op)
     )
     open_dots = (
         alt.Chart(data([r for r in st["dots"] if r["series"] == OPEN]))
-        .mark_circle(size=60 * fs**2, clip=True)
+        .mark_circle(size=60 * fs**2)
         .encode(x=x, y=y, color=clr, opacity=op)
     )
     if interactive:
@@ -220,11 +221,7 @@ def _frame(story: Story, metric: str, width: float, height: float, fs: float, st
             alt.Tooltip("score:Q", title="Score", format=".1f"),
         ]
         grey_dots, open_dots = grey_dots.encode(tooltip=tips), open_dots.encode(tooltip=tips)
-    head = (
-        alt.Chart(data(st["head"]))
-        .mark_circle(size=70 * fs**2, color=color("accent"), opacity=1, clip=True)
-        .encode(x=x, y=y)
-    )
+    head = alt.Chart(data(st["head"])).mark_circle(size=70 * fs**2, color=color("accent"), opacity=1).encode(x=x, y=y)
     rings = (
         alt.Chart(data(st["rings"]))
         .mark_point(shape="circle", filled=False, color=color("accent"), strokeWidth=2 * fs, clip=True)
