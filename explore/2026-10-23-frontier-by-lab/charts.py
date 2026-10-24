@@ -143,12 +143,19 @@ def _chart(
 
     # Who holds the open-weight record: the model family above the dot each time the record changes hands.
     held = with_t(holder_labels(rec, first, last) if holders else rec.clear())
-    holder_text = (
-        alt.Chart(alt.Data(values=held.to_dicts()))
-        .mark_text(align="left", baseline="bottom", dx=-2 * fs, dy=-7 * fs, fontSize=(LABEL_PX - 3) * fs,
-                   font=fonts["body"], fontWeight=600, color=color("accent"))
+    # Centred over the dot (the riser where the record changed hands), lifted clear of it, with a canvas-coloured halo
+    # drawn first so a grey line passing behind breaks around the letters.
+    held_data = alt.Data(values=held.to_dicts())
+    style = {"align": "center", "baseline": "bottom", "dy": -10 * fs, "fontSize": (LABEL_PX - 3) * fs,
+             "font": fonts["body"], "fontWeight": 600}  # fmt: skip
+    halo = (
+        alt.Chart(held_data)
+        .mark_text(**style, color=color("canvas"), stroke=color("canvas"), strokeWidth=5 * fs, strokeJoin="round")
         .encode(x=x, y=y, text="family:N")
-    )  # fmt: skip
+    )
+    holder_text = alt.layer(
+        halo, alt.Chart(held_data).mark_text(**style, color=color("accent")).encode(x=x, y=y, text="family:N")
+    )
 
     # End labels, one line each: "<model> <score>" in the line's colour (the legend names the lines).
     lab = with_t(ends.sort("score", descending=True))

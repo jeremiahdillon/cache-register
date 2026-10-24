@@ -31,11 +31,11 @@ Two visuals in `outputs/` (gitignored), each as `x_png`, `linkedin_png` and `blo
 - Step lines: the four labs in greys (distinct, but telling them apart is not the point) and the best open-weight
   line in the accent, heavier. A dot marks each new record; each line ends in a dot labelled with its current model
   and score; a legend names the lines.
-- On `terminal-bench` the open-weight line names the model family each time the record changes hands (Qwen, GLM,
-  DeepSeek, GLM), except the last (Kimi), whose model the end label names. `intelligence` has no such labels:
-  the record changes hands 14 times, five of them in September–November 2025, and labels there collide. Thinning
-  them would leave a label over a stretch held by another family. A motion version could flash each name in
-  as it takes the record and out again, ending on the current holder only.
+- On `terminal-bench` the open-weight line names the model family, centred above the dot with a dark halo, each time
+  the record changes hands (Qwen, GLM, DeepSeek, GLM), except the last (Kimi), whose model the end label names.
+  `intelligence` has no such labels: the record changes hands 14 times, five of them in September–November 2025, and
+  labels there collide. Thinning them would leave a label over a stretch held by another family. A motion version
+  could flash each name in as it takes the record and out again, ending on the current holder only.
 
 ## Data
 - `artificial_analysis`: one snapshot of AA's LLM data API (attribution required, redistribution forbidden, so
