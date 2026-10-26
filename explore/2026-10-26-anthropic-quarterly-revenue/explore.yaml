@@ -1,0 +1,10 @@
+# Exploration config (same schema as receipt.yaml; no short link reserved). Prompted by a chart of Anthropic's
+# quarterly revenue from its S-1 (filed 2026-10-26), shared with the author the same day; this replicates its
+# analysis from the filing's own table, recorded as curated disclosures (metric revenue_quarterly).
+title: Anthropic quarterly revenue
+sources: [curated_disclosures]
+config:
+  entity: anthropic
+  metric: revenue_quarterly
+visuals:
+  - {name: quarters, chart: quarters, targets: [x_png, linkedin_png, blog_html]}
