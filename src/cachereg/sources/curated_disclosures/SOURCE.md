@@ -54,7 +54,10 @@ Read the source page; copy the quote; fill a row with `recorded_on` = today; run
 curated_disclosures` (validates; an unchanged file stores nothing) and `make check`. Corrections are new
 rows. Secondary sources only when no primary exists, marked so. Excluded: forecasts ("on track to"),
 investor or anonymous-source figures, third-party arithmetic (e.g. a monthly figure × 12, or tokens per
-month ÷ 4), segment figures under an all-surfaces metric. openai.com blocks automated fetches; its
+month ÷ 4), segment figures under an all-surfaces metric. Figures from a filing's table keep the table's
+scale in the unit (`revenue_quarterly` is in `usd_millions_per_quarter`, so `$ 11,555` is the value 11555);
+the quote joins the table's unit line and the figure's row, and the row's `notes` say so (first used
+2026-10-26, Anthropic's S-1). openai.com blocks automated fetches; its
 pages may be read in the author's browser (approved 2026-10-09).
 
 ## Seed (2026-10-09)
