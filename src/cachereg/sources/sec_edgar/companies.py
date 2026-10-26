@@ -9,7 +9,7 @@ import yaml
 from cachereg.core.paths import REPO_ROOT, entities_dir
 
 TICKERS_FILE = REPO_ROOT / "config" / "entities" / "tickers.yaml"  # tests point this at a synthetic file
-GROUPS = {"hyperscaler", "neocloud", "supplier"}
+GROUPS = {"hyperscaler", "neocloud", "supplier", "devinfra"}
 
 
 @dataclass(frozen=True)

@@ -17,14 +17,20 @@
 --     difference of two year-to-date facts with the same start (Q4 = FY − 9M). The two legs come
 --     from different filings (no filing holds both), each the latest filed on or before as_of, so
 --     an amendment that restates only one leg moves the whole restatement into that quarter.
---   * a fiscal quarter belongs to the calendar quarter containing its midpoint.
+--   * a fiscal quarter belongs to the calendar quarter containing its midpoint; facts with the same start
+--     and length in months are one period (the latest filing's end date and value win).
+--   * edgar_quarterly also carries `revenue` (tag precedence RevenueFromContractWithCustomerExcludingAssessedTax,
+--     ...IncludingAssessedTax (Fastly), then Revenues), derived the same way; 031_revenue reads it. The capex tables below ignore it.
 
 CREATE OR REPLACE TABLE edgar_quarterly AS
 WITH measures(measure, tag, pref) AS (
     VALUES
         ('capex', 'PaymentsToAcquireProductiveAssets', 1),
         ('capex', 'PaymentsToAcquirePropertyPlantAndEquipment', 2),
-        ('finance_lease_additions', 'RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability', 1)
+        ('finance_lease_additions', 'RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability', 1),
+        ('revenue', 'RevenueFromContractWithCustomerExcludingAssessedTax', 1),
+        ('revenue', 'RevenueFromContractWithCustomerIncludingAssessedTax', 2),
+        ('revenue', 'Revenues', 3)
 ),
 facts AS (
     SELECT f.cik, m.measure, m.tag, m.pref, f.period_start, f.period_end, f.val, f.accn, f.filed,
@@ -37,10 +43,12 @@ facts AS (
       AND f.filed <= getvariable('as_of')
 ),
 latest AS (  -- one value per period as known on as_of
+    -- a period is its start and length in months: a later filing may move the end by a day or two
+    -- (NVIDIA's 2012 10-K ends the quarter of 2010-05-03 on 07-31, its 10-Q on 08-01)
     SELECT * FROM facts
     WHERE months IN (3, 6, 9, 12) AND abs(days - months * 30.4375) <= 8
     QUALIFY row_number() OVER (
-        PARTITION BY cik, measure, tag, period_start, period_end ORDER BY filed DESC, accn DESC
+        PARTITION BY cik, measure, tag, period_start, months ORDER BY filed DESC, accn DESC
     ) = 1
 ),
 reported AS (
@@ -79,9 +87,10 @@ SELECT
     q.filed
 FROM quarters q
 JOIN stg_sec_edgar_companies c USING (cik)
+-- one row per quarter (by its start: a reported and a derived quarter may end a day apart), the
 -- highest-precedence tag first, then a reported quarter over a derived one
 QUALIFY row_number() OVER (
-    PARTITION BY q.cik, q.measure, q.period_end ORDER BY q.pref, q.method = 'ytd_difference', q.filed DESC
+    PARTITION BY q.cik, q.measure, q.period_start ORDER BY q.pref, q.method = 'ytd_difference', q.filed DESC
 ) = 1;
 
 -- Two fiscal quarters in one calendar quarter (e.g. a changed fiscal year end) would be summed:

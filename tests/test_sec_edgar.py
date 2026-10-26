@@ -284,6 +284,65 @@ def test_two_fiscal_quarters_in_one_calendar_quarter_fail_the_build(
         build(date(2026, 9, 1), ["sec_edgar"])
 
 
+def test_a_later_filing_that_moves_a_quarter_end_by_a_day_is_one_quarter(
+    data_env, tmp_path, monkeypatch, synthetic_entities
+):
+    # as NVIDIA's 2012 10-K: the 10-Q's quarter ends 08-01, the later 10-K's 07-31
+    tickers(tmp_path, monkeypatch, {"AAA": {"cik": 1, "name": "Alpha", "group": "supplier"}})
+    doc = facts_doc(
+        1,
+        {
+            PPE: [
+                fact("2025-02-01", "2025-05-02", 4, "2025-05-20"),
+                fact("2025-02-01", "2025-08-01", 10, "2025-08-30"),  # 6M: derives May 3 – Aug 1 = 6
+                fact("2025-05-03", "2025-08-01", 6, "2025-08-30"),
+                fact("2025-05-03", "2025-07-31", 6, "2026-03-13", form="10-K"),
+            ]
+        },
+    )
+    write_fetch({"0000000001": doc}, datetime(2026, 9, 1, 12, tzinfo=UTC))
+    _, q = marts(date(2026, 9, 1))
+    rows = _quarters(q, "0000000001")
+    assert [(r[0], r[1], r[3], r[4]) for r in rows] == [
+        (date(2025, 2, 1), date(2025, 5, 2), 4, "reported"),
+        (date(2025, 5, 3), date(2025, 7, 31), 6, "reported"),  # the latest filing's end date
+    ]
+
+
+def test_revenue_quarters_tag_precedence(data_env, tmp_path, monkeypatch, synthetic_entities):
+    rev_ex = "RevenueFromContractWithCustomerExcludingAssessedTax"
+    rev_in = "RevenueFromContractWithCustomerIncludingAssessedTax"
+    tickers(
+        tmp_path,
+        monkeypatch,
+        {
+            "AAA": {"cik": 1, "name": "Alpha", "group": "devinfra"},
+            "BBB": {"cik": 2, "name": "Beta", "group": "devinfra"},
+        },
+    )
+    alpha = facts_doc(
+        1,
+        {
+            "Revenues": [fact("2025-01-01", "2025-03-31", 99, "2025-04-20")],  # lower precedence: ignored
+            rev_ex: [
+                fact("2025-01-01", "2025-03-31", 100, "2025-04-20"),
+                fact("2025-01-01", "2025-09-30", 330, "2025-10-20"),
+                fact("2025-01-01", "2025-12-31", 480, "2026-02-10", form="10-K"),
+            ],
+        },
+    )
+    beta = facts_doc(2, {rev_in: [fact("2025-04-01", "2025-06-30", 7, "2025-07-20")]})
+    write_fetch({"0000000001": alpha, "0000000002": beta}, datetime(2026, 9, 1, 12, tzinfo=UTC))
+    _, q = marts(date(2026, 9, 1))
+    rows = q("SELECT ticker, cal_quarter, revenue_usd, method, tag FROM revenue_quarterly ORDER BY ticker, cal_quarter")
+    assert rows.rows() == [
+        ("AAA", date(2025, 1, 1), 100, "reported", rev_ex),
+        ("AAA", date(2025, 10, 1), 150, "ytd_difference", rev_ex),  # FY − 9M; no 6M fact, so no Q2 or Q3
+        ("BBB", date(2025, 4, 1), 7, "reported", rev_in),
+    ]
+    assert q("SELECT count(*) AS n FROM capex_quarterly")["n"][0] == 0  # revenue never reaches capex
+
+
 def test_build_records_the_filing_used_as_the_revision(edgar_raw):
     report = build(date(2025, 9, 1), ["sec_edgar"])
     rev = report.vintages["sec_edgar"]["revision"]

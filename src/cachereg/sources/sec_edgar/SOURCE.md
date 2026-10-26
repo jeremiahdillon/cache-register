@@ -53,5 +53,12 @@ Weekly: filings are quarterly.
   through 2023; Oracle and CoreWeave in a few quarters).
 - **Restatements and rounding:** the same period appears in several filings; values differ for
   some periods (e.g. Meta 2021 Q1). The latest filing on or before as-of wins.
+- **Period ends move:** a later filing can end the same quarter a day earlier (NVIDIA's 2012 10-K
+  ends the quarter of 2010-05-03 on 07-31; its 10-Q on 08-01). Marts treat facts with the same
+  start and length in months as one period.
+- **Revenue tags** (`031_revenue`): `RevenueFromContractWithCustomerExcludingAssessedTax` for most
+  companies, `...IncludingAssessedTax` for Fastly, `Revenues` in older filings (Twilio to 2017).
+  The `devinfra` group (Snowflake, Datadog, MongoDB, Cloudflare, DigitalOcean, Twilio, Fastly) is
+  fetched for revenue only; Snowflake and MongoDB end their fiscal years on January 31.
 - 8-K facts (earnings releases) are in the file and are not used by marts.
 - Company-wide figures only: segment facts (Azure, Data Center) are out of scope (PLAN §2.1).
