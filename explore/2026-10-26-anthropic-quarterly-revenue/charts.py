@@ -4,13 +4,18 @@ Two panels on one quarter axis (two scales, never one dual axis): revenue per qu
 Anthropic's vendor colour with the latest quarter at full strength, and the change from the previous
 quarter below, in grey. A bracket joins the latest quarter to the same quarter a year earlier and carries
 the year-over-year multiple. Values are labelled on every bar (six bars: few enough to read).
+
+`seasonal`: each comparator's typical growth by calendar quarter (grouped bars with min–max whiskers).
+`adjusted`: Anthropic's growth by quarter as filed and with each comparator's pattern removed. Colour follows
+the comparator in both: GitHub cyan, cloud revenue gold (categorical slots 1 and 4; orange is Anthropic's),
+working days grey; Anthropic as filed in its vendor colour.
 """
 
 from __future__ import annotations
 
 import altair as alt
 import polars as pl
-from analysis import fmt_musd
+from analysis import SERIES, VARIANTS, fmt_musd
 
 from cachereg.story.model import Story
 from cachereg.viz.brand import brand, color
@@ -192,3 +197,134 @@ def quarters(story: Story, width, height, font_scale: float = 1.0, interactive: 
         return alt.vconcat(top, bottom, spacing=gap).resolve_scale(x="shared").configure(**vl_config(fs))
 
     return fit(make, width, height, default=(size_or(width, 900), size_or(height, 560)))
+
+
+def _ink() -> dict[str, str]:
+    cat = brand()["colors"]["categorical"]
+    return {"github": cat[0], "peers": cat[3], "workdays": color("text_secondary"), "filed": _vendor()}
+
+
+def _signed(v: float) -> str:
+    return f"{v:+.0f}%"
+
+
+def _grouped(
+    rows: pl.DataFrame,
+    *,
+    x: str,
+    x_order: list[str],
+    key: str,
+    labels: dict[str, str],
+    value: str,
+    width,
+    height,
+    fs: float,
+    y_title: str,
+    whiskers: tuple[str, str] | None = None,
+    label_px: float = LABEL_PX,
+    interactive: bool = False,
+) -> alt.Chart:
+    """Grouped bars (one group per x, one bar per key) with value labels and an optional min–max whisker."""
+    fonts = brand()["fonts"]
+    ink = _ink()
+    keys = [k for k in labels if k in set(rows[key])]
+    data = alt.Data(
+        values=rows.with_columns(
+            name=pl.col(key).replace_strict(labels),
+            text=pl.col(value).map_elements(_signed, return_dtype=pl.String),
+            up=pl.col(value) >= 0,
+        ).to_dicts()
+    )
+    lo = min(rows[whiskers[0]].min() if whiskers else 0, rows[value].min(), 0)
+    hi = max(rows[whiskers[1]].max() if whiskers else 0, rows[value].max(), 0)
+    pad = (hi - lo) * 0.12
+    scale = alt.Scale(domain=[lo - (pad if lo < 0 else 0), hi + pad], nice=False)
+    clr = alt.Color(
+        "name:N",
+        scale=alt.Scale(domain=[labels[k] for k in keys], range=[ink[k] for k in keys]),
+        legend=alt.Legend(title=None, labelFontSize=15 * fs, symbolSize=140 * fs**2, labelLimit=0, columns=2),
+        sort=[labels[k] for k in keys],
+    )
+    xo = alt.XOffset("name:N", sort=[labels[k] for k in keys], scale=alt.Scale(paddingInner=0.12))
+
+    def make(w: float, h: float) -> alt.LayerChart:
+        xe = alt.X(
+            f"{x}:N",
+            sort=x_order,
+            title=None,
+            scale=alt.Scale(paddingInner=0.24, paddingOuter=0.1),
+            axis=alt.Axis(labelAngle=0, labelFontSize=15 * fs, labelPadding=14 * fs, orient="bottom"),
+        )
+        ye = alt.Y(
+            f"{value}:Q",
+            scale=scale,
+            axis=alt.Axis(labelExpr="format(datum.value, '+.0f') + '%'", title=y_title, titlePadding=12 * fs),
+        )
+        tip = (
+            [alt.Tooltip(f"{x}:N"), alt.Tooltip("name:N", title="Series"), alt.Tooltip(f"{value}:Q", format="+.1f")]
+            if interactive
+            else alt.Undefined
+        )
+        bars = alt.Chart(data).mark_bar(cornerRadius=3 * fs).encode(x=xe, xOffset=xo, y=ye, color=clr, tooltip=tip)
+        layers = [bars]
+        if whiskers:
+            layers.append(
+                alt.Chart(data)
+                .mark_rule(strokeWidth=1.6 * fs, color=color("text"), opacity=0.7)
+                .encode(x=xe, xOffset=xo, y=alt.Y(f"{whiskers[0]}:Q", scale=scale), y2=f"{whiskers[1]}:Q")
+            )
+        # Labels sit beyond the bar's end (or its whisker): above for gains, below for falls.
+        hi_f, lo_f = (f"datum.{whiskers[1]}", f"datum.{whiskers[0]}") if whiskers else (f"datum.{value}",) * 2
+        for up, base, dy in ((True, "bottom", -6), (False, "top", 6)):
+            layers.append(
+                alt.Chart(data)
+                .transform_filter(alt.datum.up if up else ~alt.datum.up)
+                .transform_calculate(at=hi_f if up else lo_f)
+                .mark_text(fontSize=label_px * fs, font=fonts["mono"], color=color("text"), baseline=base, dy=dy * fs)
+                .encode(x=xe, xOffset=xo, y=alt.Y("at:Q", scale=scale), text="text:N")
+            )
+        zero = (
+            alt.Chart(alt.Data(values=[{"z": 0}]))
+            .mark_rule(color=color("muted"), strokeWidth=1.5)
+            .encode(y=alt.Y("z:Q", scale=scale))
+        )
+        return alt.layer(*layers, zero).properties(width=w, height=h).configure(**vl_config(fs))
+
+    return fit(make, width, height)
+
+
+def seasonal(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.Chart:
+    d = story.frames["seasonal"].with_columns(quarter="Q" + pl.col("k").cast(pl.String))
+    return _grouped(
+        d,
+        x="quarter",
+        x_order=["Q1", "Q2", "Q3", "Q4"],
+        key="series",
+        labels=SERIES,
+        value="factor_pct",
+        width=width,
+        height=height,
+        fs=font_scale,
+        y_title="Growth vs the year's average quarter",
+        whiskers=("min_pct", "max_pct"),
+        interactive=interactive,
+    )
+
+
+def adjusted(story: Story, width, height, font_scale: float = 1.0, interactive: bool = False) -> alt.Chart:
+    d = story.frames["adjusted"]
+    order = d["quarter"].unique(maintain_order=True).to_list()
+    return _grouped(
+        d,
+        x="quarter",
+        x_order=order,
+        key="variant",
+        labels=VARIANTS,
+        value="growth_pct",
+        width=width,
+        height=height,
+        fs=font_scale,
+        y_title="Growth from the previous quarter",
+        label_px=13,
+        interactive=interactive,
+    )

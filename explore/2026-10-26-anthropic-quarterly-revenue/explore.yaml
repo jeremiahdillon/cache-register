@@ -2,9 +2,14 @@
 # quarterly revenue from its S-1 (filed 2026-10-26), shared with the author the same day; this replicates its
 # analysis from the filing's own table, recorded as curated disclosures (metric revenue_quarterly).
 title: Anthropic quarterly revenue
-sources: [curated_disclosures]
+sources: [curated_disclosures, github_innovation_graph, sec_edgar]
 config:
   entity: anthropic
   metric: revenue_quarterly
+  github_economy: US        # Innovation Graph economy whose git pushes are the engineering-activity comparator
+  peer_group: devinfra      # tickers.yaml group whose summed revenue is the usage-priced comparator
+  base_years: [2021, 2024]  # years the seasonal factors are averaged over (before the 2025 rise in pushes)
 visuals:
   - {name: quarters, chart: quarters, targets: [x_png, linkedin_png, blog_html]}
+  - {name: seasonal, chart: seasonal, targets: [x_png, linkedin_png]}
+  - {name: adjusted, chart: adjusted, targets: [x_png, linkedin_png]}
