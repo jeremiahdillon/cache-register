@@ -147,6 +147,18 @@ sources:
     requires: []
     enabled: true
 
+  # GitHub Innovation Graph (verified 2026-10-26, SOURCE.md): CC0 1.0, quarterly public GitHub activity by
+  # economy. Each release is a commit; fetched pinned to it, so a past as-of resolves to the same release.
+  - id: github_innovation_graph
+    history: native
+    revisions: none
+    redistribution: allowed
+    derived_charts: allowed
+    attribution: "GitHub Innovation Graph (github.com/github/innovationgraph), CC0 1.0, as of {as_of}"
+    cadence: weekly
+    requires: []
+    enabled: true
+
   # Vercel AI Gateway leaderboards (verified 2026-10-08, SOURCE.md): public export, no key, CC BY 4.0.
   # Daily shares (never volumes) by lab and model; past days may be revised, so Latest-only until two
   # months of vintages show them unchanged.
