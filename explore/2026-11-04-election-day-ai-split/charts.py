@@ -6,14 +6,18 @@ the group (the accent for the hyperscalers, categorical slot 2 for the supply ch
 S&P baseline is a dimmed text colour, and each line is named at its end, with labels spread apart and tied back
 by thin leaders.
 
-Video (`session_specs`): the S&P draws, its label fades in, and both dim; the hyperscalers draw together; the
-supply chain draws together; a hold on the final frame, which the PNG targets equal. Every frame draws every mark
+Video (`session_specs`): the S&P draws, its label fades in, a caption narrates it and fades away, and the S&P dims;
+the hyperscalers draw together, then their caption; the supply chain draws together, then its caption; the key
+fades in once the captions are gone, and the video holds on the final frame, which the PNG targets equal. Captions
+are large and use the band under the 0% line that the key takes up only at the end.
+Every frame draws every mark
 (hidden ones at opacity ~0) at the final frame's fitted size, so the canvas never moves.
 """
 
 from __future__ import annotations
 
 import math
+import textwrap
 
 import altair as alt
 from analysis import SESSION_MIN
@@ -25,18 +29,21 @@ from cachereg.viz.theme import vl_config
 
 OVERNIGHT = -3  # x position of the previous close, in minutes before the open
 LABEL_GAP_MIN = 10  # minutes of x between the close and its label
-LABEL_PX, AXIS_PX, LEGEND_PX = 17, 16, 17
+LABEL_PX, AXIS_PX, LEGEND_PX, NOTE_PX = 17, 16, 17, 30
+NOTE_CHAR_EM = 0.48  # average advance of the body font, for wrapping a note to the room it has
 TICKS = {OVERNIGHT: "Tue close", 90: "11:00", 210: "1:00", 330: "3:00", 390: "4:00"}
 GROUPS = ("baseline", "rose", "fell")  # the order they draw in
 LEGEND = {"rose": ("Hyperscalers", -2.4), "fell": ("Data center supply chain", -4.2)}
+NOTE_Y, NOTE_MIN = -2.7, 40  # the captions' center and left edge: the band under the 0% line, clear of the first dip
 DIM_LINE, DIM_LABEL = 0.4, 0.6  # the S&P's opacity once dimmed
 
 FPS = 30
-INTRO_S, BASE_DRAW_S, GROUP_DRAW_S, LABEL_S, PAUSE_S, DIM_S, FINAL_HOLD_S = 0.5, 2.2, 2.6, 0.4, 0.5, 0.6, 3.0
+INTRO_S, BASE_DRAW_S, GROUP_DRAW_S, LABEL_S, DIM_S, FINAL_HOLD_S = 0.5, 2.2, 2.6, 0.4, 0.6, 3.0
+NOTE_FADE_S, NOTE_HOLD_S = 0.4, 3.0
 FINAL = {  # the final frame (and the PNGs)
-    "baseline": {"until": math.inf, "legend": 1.0, "label": 1.0, "dim": 1.0},
-    "rose": {"until": math.inf, "legend": 1.0, "label": 1.0, "dim": 0.0},
-    "fell": {"until": math.inf, "legend": 1.0, "label": 1.0, "dim": 0.0},
+    "baseline": {"until": math.inf, "legend": 1.0, "label": 1.0, "dim": 1.0, "note": 0.0},
+    "rose": {"until": math.inf, "legend": 1.0, "label": 1.0, "dim": 0.0, "note": 0.0},
+    "fell": {"until": math.inf, "legend": 1.0, "label": 1.0, "dim": 0.0, "note": 0.0},
 }
 
 
@@ -161,6 +168,19 @@ def _chart(story: Story, w: float, h: float, fs: float, state: dict) -> alt.Laye
                        color=color("text_secondary"), opacity=shown)
             .encode(x=x, y=y, text="t:N")
         )  # fmt: skip
+    note_px = NOTE_PX * fs
+    room_px = (x_end - NOTE_MIN) / (x_end - OVERNIGHT) * w
+    chars = int(room_px / (NOTE_CHAR_EM * note_px))
+    for group, text in story.extra["notes"].items():
+        lines = textwrap.wrap(text, chars)
+        for i, line in enumerate(lines):
+            layers.append(
+                alt.Chart(alt.Data(values=[{"minute": NOTE_MIN, "pct": NOTE_Y, "t": line}]))
+                .mark_text(align="left", baseline="middle", font=fonts["body"], fontSize=note_px, fontWeight=600,
+                           color=color("text"), opacity=_op(state[group]["note"]),
+                           dy=(i - (len(lines) - 1) / 2) * note_px * 1.3)
+                .encode(x=x, y=y, text="t:N")
+            )  # fmt: skip
     return alt.layer(*layers).properties(width=w, height=h).configure(**vl_config(fs))
 
 
@@ -168,7 +188,7 @@ def session_specs(story: Story, width: int, height: int, font_scale: float, cfg:
     """Frame states → one spec per frame, all at the final frame's fitted size (see the module docstring)."""
     fs = font_scale
     w, h = fit_size(lambda a, b: _chart(story, a, b, fs, FINAL), width, height)
-    state = {g: {"until": -math.inf, "legend": 0.0, "label": 0.0, "dim": 0.0} for g in GROUPS}
+    state = {g: {"until": -math.inf, "legend": 0.0, "label": 0.0, "dim": 0.0, "note": 0.0} for g in GROUPS}
     states: list[dict] = []
 
     def snap() -> None:
@@ -182,28 +202,40 @@ def session_specs(story: Story, width: int, height: int, font_scale: float, cfg:
         fade_in = frames(LABEL_S)
         for i in range(n):
             state[group]["until"] = OVERNIGHT + (SESSION_MIN - OVERNIGHT) * _smooth((i + 1) / n)
-            state[group]["legend"] = _smooth((i + 1) / fade_in)
             snap()
         state[group]["until"] = math.inf
         for i in range(fade_in):
             state[group]["label"] = _smooth((i + 1) / fade_in)
             snap()
-        state[group]["legend"] = 1.0
+
+    def narrate(group: str) -> None:
+        n = frames(NOTE_FADE_S)
+        for i in range(n):
+            state[group]["note"] = _smooth((i + 1) / n)
+            snap()
+        for _ in range(frames(NOTE_HOLD_S)):
+            snap()
+        for i in range(n):
+            state[group]["note"] = 1 - _smooth((i + 1) / n)
+            snap()
 
     for _ in range(frames(INTRO_S)):
         snap()
     draw("baseline", BASE_DRAW_S)
-    state["baseline"]["legend"] = 1.0
-    for _ in range(frames(PAUSE_S)):
-        snap()
+    narrate("baseline")
     n = frames(DIM_S)
     for i in range(n):
         state["baseline"]["dim"] = _smooth((i + 1) / n)
         snap()
     draw("rose", GROUP_DRAW_S)
-    for _ in range(frames(PAUSE_S)):
-        snap()
+    narrate("rose")
     draw("fell", GROUP_DRAW_S)
+    narrate("fell")
+    n = frames(LABEL_S)
+    for i in range(n):  # the key comes last, once every caption is gone
+        for group in GROUPS:
+            state[group]["legend"] = _smooth((i + 1) / n)
+        snap()
     for _ in range(frames(FINAL_HOLD_S)):
         snap()
     if states[-1] != FINAL:

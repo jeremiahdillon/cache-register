@@ -8,6 +8,10 @@ config:
   headline: "Hyperscalers rose and data center suppliers fell\nthe day after the midterms"
   session: 2026-11-04
   baseline: {ticker: SPY, name: S&P 500 (SPY)}
+  notes:                 # on-screen narration, shown once each group has drawn; {baseline} is the S&P's move
+    baseline: "The broad market rose {baseline:.1f}%."
+    rose: Hyperscalers rose on bets that a slower buildout will temper their capex.
+    fell: The supply chain fell on fears that a slower buildout will cut demand.
   rose:
     - {ticker: MSFT, name: Microsoft}
     - {ticker: AMZN, name: Amazon}

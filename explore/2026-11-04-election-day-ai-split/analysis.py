@@ -72,6 +72,10 @@ def build(con, as_of: date, cfg: dict) -> Story:
         rows += r
         summaries.append(s)
     summary = pl.DataFrame(summaries).sort("close_pct", descending=True)
+    base = summary.filter(pl.col("group") == "baseline")["close_pct"][0]
+    if base <= 0:
+        raise ValueError(f"the baseline note says the market rose, but it moved {base:.1f}%")
+    notes = {group: text.format(baseline=base) for group, text in cfg["notes"].items()}
     subtitle = f"Change from Tuesday’s close through Wednesday’s close, {day(session)}."
     return Story(
         title=cfg["headline"],
@@ -84,7 +88,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "One session, with stocks chosen after the move: this illustrates the split and does not measure it.",
             "Prices do not show why a stock moved; attributing the split to the election follows same-day coverage.",
         ],
-        extra={"session": str(session)},
+        extra={"session": str(session), "notes": notes},
     )
 
 
