@@ -2,7 +2,7 @@
 
 `session`: every stock as a % change from Tuesday's close on one time axis. A short, steep segment of each line
 crosses the overnight gap and the first 5 minutes, from the previous close to the first bar's end. Colour carries
-the group (the accent for the hyperscalers, categorical slot 2 for the supply chain; no vendor appears here), the
+the group (categorical slots 1 and 2, validated on the canvas; no vendor appears here), the
 S&P baseline is a dimmed text colour, and each line is named at its end, with labels spread apart and tied back
 by thin leaders.
 
@@ -30,7 +30,7 @@ from cachereg.viz.theme import vl_config
 OVERNIGHT = -3  # x position of the previous close, in minutes before the open
 LABEL_GAP_MIN = 10  # minutes of x between the close and its label
 LABEL_PX, AXIS_PX, LEGEND_PX, NOTE_PX = 17, 16, 17, 30
-NOTE_CHAR_EM = 0.48  # average advance of the body font, for wrapping a note to the room it has
+NOTE_CHAR_EM = 0.47  # average advance of the body font, for wrapping a note to the room it has
 TICKS = {OVERNIGHT: "Tue close", 90: "11:00", 210: "1:00", 330: "3:00", 390: "4:00"}
 GROUPS = ("baseline", "rose", "fell")  # the order they draw in
 LEGEND = {"rose": ("Hyperscalers", -2.4), "fell": ("Data center supply chain", -4.2)}
@@ -38,7 +38,7 @@ NOTE_Y, NOTE_MIN = -2.7, 40  # the captions' center and left edge: the band unde
 DIM_LINE, DIM_LABEL = 0.4, 0.6  # the S&P's opacity once dimmed
 
 FPS = 30
-INTRO_S, BASE_DRAW_S, GROUP_DRAW_S, LABEL_S, DIM_S, FINAL_HOLD_S = 0.5, 2.2, 2.6, 0.4, 0.6, 3.0
+INTRO_S, BASE_DRAW_S, GROUP_DRAW_S, LABEL_S, DIM_S, FINAL_HOLD_S = 0.5, 2.2, 2.6, 0.4, 0.6, 5.0
 NOTE_FADE_S, NOTE_HOLD_S = 0.4, 3.0
 FINAL = {  # the final frame (and the PNGs)
     "baseline": {"until": math.inf, "legend": 1.0, "label": 1.0, "dim": 1.0, "note": 0.0},
@@ -92,7 +92,7 @@ def _chart(story: Story, w: float, h: float, fs: float, state: dict) -> alt.Laye
     fonts = brand()["fonts"]
     paths = story.frames["paths"]
     summary = story.frames["summary"].to_dicts()
-    hues = {"rose": color("accent"), "fell": color("categorical")[1], "baseline": color("text")}
+    hues = {"rose": color("categorical")[0], "fell": color("categorical")[1], "baseline": color("text")}
 
     top = 5.0 * ((paths["pct"].max() // 5) + 1)
     bottom = float(paths["pct"].min() // 1) - 1

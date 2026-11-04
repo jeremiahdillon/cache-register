@@ -20,12 +20,12 @@ close (November 4).
   10.6% (frame `summary`).
 
 ## Visual
-- `session`: one line per stock, in % from Tuesday's close, on one axis. Accent green rose, orange fell, and the
+- `session`: one line per stock, in % from Tuesday's close, on one axis. Blue rose, orange fell, and the
   S&P 500 is a dimmed white. A short, steep segment of each line crosses the overnight gap and the first 5
   minutes. Each line is named at its end with its close-to-close change. `x_png` is 16:9, `linkedin_png` 4:5.
-- Videos (`x_video` 16:9, `linkedin_video` 4:5, ~25 s): the S&P 500 draws, a caption gives its move and fades away,
+- Videos (`x_video` 16:9, `linkedin_video` 4:5, ~27 s): the S&P 500 draws, a caption gives its move and fades away,
   and it dims; the hyperscalers draw together, then a caption; the supply chain stocks draw together, then a
-  caption; the key fades in once the captions are gone; a 3 s hold on the final frame, which the PNGs equal.
+  caption; the key fades in once the captions are gone; a 5 s hold on the final frame, which the PNGs equal.
 - The hyperscaler and supply chain captions report investors' reasons as given in same-day coverage (Reuters, Seeking
   Alpha, Yahoo Finance). They are one reading of the move: coverage also credits more valuable existing data
   centers and rules that favor incumbents, and prices alone do not show why a stock moved.
