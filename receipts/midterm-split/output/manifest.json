@@ -1,0 +1,62 @@
+{
+  "as_of": "2026-11-04",
+  "cache_register_version": "0.0.1",
+  "data_hash": "d45e8aa82d446dca25066f0d3616cd9d675f818d736563aee4566c39626fe9ae",
+  "folder": "receipts/midterm-split",
+  "git_dirty": false,
+  "git_sha": "e71abf0cc9dfdb38252568c3867b944a04211798",
+  "inputs_hash": "e6e9bd2ff4339d972756bcedc292c3f4e5dd47d433e0b26ae90c43c95fb44510",
+  "kind": "receipt",
+  "outputs": {
+    "session.linkedin_png.png": "3e5c11254b93d574e6055bf92dbaa1bab4fee8ef8c0c293f906bcbf2cbee8013",
+    "session.linkedin_video.mp4": "7a1dd5ddea039a8e0ce58d712052ec417017a52553ba97e9fecc983b4e11e824",
+    "session.x_png.png": "2fa19f723b6b9fa238f56177e98683eaf10e74275d212f0c8f22b41c314e7f85",
+    "session.x_video.mp4": "fbcb13a3f5c00e7cda54a33ea1c1f6dd39a8051ec88492bec8e35711cfb20eb5"
+  },
+  "sources": {
+    "yahoo_intraday": {
+      "class": "Author-only",
+      "content_sha256": "03fc4935478953512079aaebaa5bdcd4899b7ed93af641f9efe20a85bb1ad639",
+      "fetch_date": "2026-11-04",
+      "vintage": {
+        "kind": "content",
+        "value": "a51c68beca58a5382cad65ec6884f9a50c7948387231c5bcce3725921ad6ed31",
+        "window": [
+          "60d",
+          "2026-11-04"
+        ]
+      },
+      "vintage_after_as_of": false
+    },
+    "yahoo_prices": {
+      "class": "Latest-only",
+      "content_sha256": "10f4ef9ee08c63d179b8350eec5cf70d4211f84a822be2b8bdedb2afb036abca",
+      "fetch_date": "2026-11-04",
+      "vintage": {
+        "kind": "content",
+        "value": "3bf97e432062cbce442a5b91498991c97a95220208bad736ad0417d61a7db8d6",
+        "window": [
+          "2025-01-01",
+          "2026-11-04"
+        ]
+      },
+      "vintage_after_as_of": false
+    }
+  },
+  "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "visual_sources": {
+    "session": [
+      "yahoo_intraday"
+    ]
+  },
+  "visuals": {
+    "session": {
+      "source": "Yahoo Finance (finance.yahoo.com), daily and 5-minute prices, as of 2026-11-04",
+      "subtitle": "Change from Tuesday\u2019s close through Wednesday\u2019s close, November 4.",
+      "title": "Hyperscalers rose and data center suppliers fell the day after the midterms"
+    }
+  },
+  "withheld": {
+    "data.json": "redistribution not allowed for: yahoo_prices, yahoo_intraday"
+  }
+}
