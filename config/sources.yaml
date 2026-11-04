@@ -209,6 +209,18 @@ sources:
     requires: []
     enabled: false
 
+  # 5-minute bars for explore/2026-11-04-election-day-ai-split, same terms and policy as yahoo_prices.
+  # Yahoo serves about 60 days at this interval, so older sessions exist only in our own fetches.
+  - id: yahoo_intraday
+    history: snapshot
+    revisions: revised
+    redistribution: forbidden
+    derived_charts: allowed-with-attribution
+    attribution: "Yahoo Finance (finance.yahoo.com), 5-minute prices, as of {as_of}"
+    cadence: daily
+    requires: []
+    enabled: false
+
   - id: finra_trace
     history: native
     revisions: revised

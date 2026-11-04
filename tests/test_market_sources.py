@@ -1,4 +1,4 @@
-"""yahoo_prices and finra_trace sources and marts 100/101 on synthetic data (no network, no recorded data)."""
+"""yahoo_prices, yahoo_intraday, finra_trace and marts 100/101/102 on synthetic data (no network, no recorded data)."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ from cachereg.build import build
 from cachereg.core.http import Response
 from cachereg.core.warehouse import connect, query
 from cachereg.sources.finra_trace import fetch as ff
+from cachereg.sources.yahoo_intraday import fetch as yi
 from cachereg.sources.yahoo_prices import fetch as yf
 
 ET = -4 * 3600  # exchange offset in the synthetic bodies (EDT)
@@ -100,6 +101,45 @@ def test_yahoo_refuses_a_body_for_another_symbol(yahoo):
     yahoo["symbol"] = "NVDA"
     with pytest.raises(ValueError, match="answered for"):
         yf.fetch()
+
+
+def intraday_body(ticker: str, day: date, closes: list[float]) -> dict:
+    """Bars every 5 minutes from 09:30, then a stub at 16:00 holding the closing price."""
+    start = _open_ts(day)
+    end = int(datetime(day.year, day.month, day.day, 20, 0, tzinfo=UTC).timestamp())
+    stamps = [start + 300 * i for i in range(len(closes))] + [end]
+    values = [*closes, closes[-1]]
+    return {"chart": {"result": [{
+        "meta": {"symbol": ticker, "currency": "USD", "gmtoffset": ET,
+                 "currentTradingPeriod": {"regular": {"start": start, "end": end}}},
+        "timestamp": stamps,
+        "indicators": {"quote": [{"open": values, "high": values, "low": values, "close": values,
+                                  "volume": [1000] * len(stamps)}]},
+    }], "error": None}}  # fmt: skip
+
+
+def test_intraday_keeps_final_sessions_and_drops_the_closing_stub(data_env, monkeypatch):
+    day = DAYS[0]
+    state = {"closes": [10.0, 11.0]}
+
+    def fake_get(url, params=None, headers=None, **kw):
+        assert url == yi.URL.format(ticker="CRWV") and params["interval"] == "5m"
+        return Response(url + "?synthetic", 200, json.dumps(intraday_body("CRWV", day, state["closes"])).encode())
+
+    monkeypatch.setattr(yi.http, "get", fake_get)
+    monkeypatch.setattr(yi, "TICKERS", ["CRWV"])
+    close = datetime(day.year, day.month, day.day, 20, 0, tzinfo=UTC)
+    write_at(yi.fetch(), close - timedelta(hours=2))  # during the session
+    build(day, ["yahoo_intraday"])
+    assert q("SELECT * FROM stock_intraday") == []
+
+    state["closes"] = [10.0, 11.0, 12.0]
+    write_at(yi.fetch(), close + timedelta(minutes=30))
+    build(day, ["yahoo_intraday"])
+    rows = q("SELECT session, bar_time, close FROM stock_intraday ORDER BY bar_time")
+    assert [(r["session"], r["bar_time"], r["close"]) for r in rows] == [
+        (day, "09:30", 10.0), (day, "09:35", 11.0), (day, "09:40", 12.0),
+    ]  # fmt: skip
 
 
 def test_finra_fetches_each_bond_and_the_mart_joins_terms(finra):

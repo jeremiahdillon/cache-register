@@ -2,7 +2,7 @@
 
 **Endpoint:** `GET https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?period1=&period2=&interval=1d&includeAdjustedClose=true`
 (unofficial and undocumented; it refuses requests without a browser-like `User-Agent`)
-**Auth:** none. **Tickers:** `TICKERS` in `fetch.py` (CRWV only, for `explore/2026-10-14-coreweave-credit`).
+**Auth:** none. **Tickers:** `TICKERS` in `fetch.py` (added as analyses need them).
 **Terms:** Yahoo's terms (legal.yahoo.com) allow personal, non-commercial use and prohibit redistribution.
 Used here under the author's policy (2026-10-14): personal, non-commercial analysis; raw data is never
 committed, inlined or redistributed; only derived charts and figures are published, credited. Anyone
