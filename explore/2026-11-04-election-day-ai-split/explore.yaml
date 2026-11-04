@@ -1,0 +1,23 @@
+# Exploration config (same schema as receipt.yaml; no short link reserved). Prompted by the author on
+# 2026-11-04, after same-day coverage of hyperscalers rising and data center stocks falling on the midterm results.
+# Yahoo's data is redistribution-forbidden, so there is no blog_html (it would inline the data) and no data.json.
+title: Election-day split in AI stocks
+sources: [yahoo_prices, yahoo_intraday]
+config:
+  headline: "Hyperscalers rose and data center suppliers fell\nthe day after the midterms"
+  session: 2026-11-04
+  baseline: {ticker: SPY, name: S&P 500 (SPY)}
+  rose:
+    - {ticker: MSFT, name: Microsoft}
+    - {ticker: AMZN, name: Amazon}
+    - {ticker: EQIX, name: Equinix}
+    - {ticker: GOOGL, name: Alphabet}
+    - {ticker: DLR, name: Digital Realty}
+  fell:
+    - {ticker: VST, name: Vistra}
+    - {ticker: VRT, name: Vertiv}
+    - {ticker: PWR, name: Quanta Services}
+    - {ticker: CRWV, name: CoreWeave}
+    - {ticker: GEV, name: GE Vernova}
+visuals:
+  - {name: session, chart: session, targets: [x_png, linkedin_png]}
