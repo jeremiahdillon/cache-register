@@ -72,11 +72,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
         rows += r
         summaries.append(s)
     summary = pl.DataFrame(summaries).sort("close_pct", descending=True)
-    base = summary.filter(pl.col("group") == "baseline").row(0, named=True)
-    subtitle = (
-        f"Change from Tuesday’s close through Wednesday’s close, {day(session)}. "
-        f"{base['name']} {base['close_pct']:+.1f}%."
-    ).replace("-", "−")
+    subtitle = f"Change from Tuesday’s close through Wednesday’s close, {day(session)}."
     return Story(
         title=cfg["headline"],
         subtitle=subtitle,

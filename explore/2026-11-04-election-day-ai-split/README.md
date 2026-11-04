@@ -1,6 +1,6 @@
 # Election-day split in AI stocks
 
-*Exploration · started 2026-11-04 · prompted by the author, after same-day coverage of hyperscalers rising and
+*Exploration · started 2026-11-04 · short link reserved: cacheregister.dev/midterm-split · prompted by the author, after same-day coverage of hyperscalers rising and
 data center stocks falling on the midterm results*
 
 ## Question
@@ -20,9 +20,11 @@ close (November 4).
   10.6% (frame `summary`).
 
 ## Visual
-- `session`: one line per stock, in % from Tuesday's close, on one axis. Cyan rose, orange fell, white is the S&P
-  500. A short, steep segment of each line crosses the overnight gap and the first 5 minutes. Each line is named at
-  its end with its close-to-close change.
+- `session`: one line per stock, in % from Tuesday's close, on one axis. Accent green rose, orange fell, and the
+  S&P 500 is a dimmed white. A short, steep segment of each line crosses the overnight gap and the first 5
+  minutes. Each line is named at its end with its close-to-close change. `x_png` is 16:9, `linkedin_png` 4:5.
+- Videos (`x_video` 16:9, `linkedin_video` 4:5, ~14 s): the S&P 500 draws and dims; the hyperscalers draw together;
+  the supply chain stocks draw together; a 3 s hold on the final frame, which the PNGs equal.
 
 ## Method
 - **Start and end points:** Yahoo's official daily closes (mart `stock_daily`, source `yahoo_prices`).

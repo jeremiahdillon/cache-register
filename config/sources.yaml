@@ -216,7 +216,7 @@ sources:
     revisions: revised
     redistribution: forbidden
     derived_charts: allowed-with-attribution
-    attribution: "Yahoo Finance (finance.yahoo.com), 5-minute prices, as of {as_of}"
+    attribution: "Yahoo Finance (finance.yahoo.com), daily and 5-minute prices, as of {as_of}"
     cadence: daily
     requires: []
     enabled: false

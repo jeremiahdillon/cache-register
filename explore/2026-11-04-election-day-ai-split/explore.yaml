@@ -1,7 +1,8 @@
-# Exploration config (same schema as receipt.yaml; no short link reserved). Prompted by the author on
+# Exploration config (same schema as receipt.yaml). Prompted by the author on
 # 2026-11-04, after same-day coverage of hyperscalers rising and data center stocks falling on the midterm results.
 # Yahoo's data is redistribution-forbidden, so there is no blog_html (it would inline the data) and no data.json.
 title: Election-day split in AI stocks
+link: midterm-split   # reserved short link (cacheregister.dev/midterm-split), stamped on the visuals
 sources: [yahoo_prices, yahoo_intraday]
 config:
   headline: "Hyperscalers rose and data center suppliers fell\nthe day after the midterms"
@@ -18,4 +19,5 @@ config:
     - {ticker: CRWV, name: CoreWeave}
     - {ticker: GEV, name: GE Vernova}
 visuals:
-  - {name: session, chart: session, targets: [x_png, linkedin_png]}
+  # Footer credit: yahoo_intraday's line covers both Yahoo sources (same provider, same terms), on one line.
+  - {name: session, chart: session, targets: [x_png, linkedin_png, x_video, linkedin_video], sources: [yahoo_intraday]}
