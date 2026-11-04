@@ -1,9 +1,10 @@
 """Charts for the election-day split exploration (render contract: src/cachereg/render.py).
 
-`session`: every stock as a % change from Tuesday's close on one time axis. A dashed segment crosses the
-overnight gap and the first 5 minutes, from the previous close to the first bar's end. Colour carries the
-group (categorical slots 1 and 2, validated on the canvas; no vendor appears here), the S&P baseline is the
-text colour, and each line is named at its end, with labels spread apart and tied back by thin leaders.
+`session`: every stock as a % change from Tuesday's close on one time axis. A short, steep segment of each line
+crosses the overnight gap and the first 5 minutes, from the previous close to the first bar's end. Colour
+carries the group (categorical slots 1 and 2, validated on the canvas; no vendor appears here), the S&P
+baseline is the text colour, and each line is named at its end, with labels spread apart and tied back by
+thin leaders.
 """
 
 from __future__ import annotations
@@ -16,10 +17,10 @@ from cachereg.viz.brand import brand, color
 from cachereg.viz.fit import fit
 from cachereg.viz.theme import vl_config
 
-OVERNIGHT = -60  # x position of the previous close, in minutes before the open
+OVERNIGHT = -3  # x position of the previous close, in minutes before the open
 LABEL_GAP_MIN = 10  # minutes of x between the close and its label
 LABEL_PX, AXIS_PX, LEGEND_PX = 17, 16, 17
-TICKS = {OVERNIGHT: "Tue close", 0: "9:30", 90: "11:00", 210: "1:00", 330: "3:00", 390: "4:00"}
+TICKS = {OVERNIGHT: "Tue close", 90: "11:00", 210: "1:00", 330: "3:00", 390: "4:00"}
 
 
 def _spread(values: list[float], gap: float) -> list[float]:
@@ -74,14 +75,9 @@ def session(story: Story, width, height, font_scale: float = 1.0, interactive: b
             for s in (r for r in summary if r["group"] == group):
                 rows = paths.filter(paths["ticker"] == s["ticker"]).sort("minute").to_dicts()
                 width_px = (3.5 if group == "baseline" else 2.2) * fs
-                night = [{"minute": OVERNIGHT, "pct": 0.0}, {"minute": rows[0]["minute"], "pct": rows[0]["pct"]}]
+                points = [{"minute": OVERNIGHT, "pct": 0.0}, *({"minute": r["minute"], "pct": r["pct"]} for r in rows)]
                 layers.append(
-                    alt.Chart(alt.Data(values=night))
-                    .mark_line(color=hues[group], strokeWidth=1.4 * fs, strokeDash=[3 * fs, 4 * fs], opacity=0.8)
-                    .encode(x=x, y=y)
-                )
-                layers.append(
-                    alt.Chart(alt.Data(values=[{"minute": r["minute"], "pct": r["pct"]} for r in rows]))
+                    alt.Chart(alt.Data(values=points))
                     .mark_line(color=hues[group], strokeWidth=width_px, opacity=1 if group == "baseline" else 0.9)
                     .encode(x=x, y=y)
                 )
@@ -105,8 +101,8 @@ def session(story: Story, width, height, font_scale: float = 1.0, interactive: b
                 .encode(x=x, y=y, text="t:N")
             )  # fmt: skip
 
-        legend = [("rose", "Hyperscalers and data center landlords", -2.4),
-                  ("fell", "Data center power, equipment and neoclouds", -4.2)]  # fmt: skip
+        legend = [("rose", "Hyperscalers", -2.4),
+                  ("fell", "Data center supply chain", -4.2)]  # fmt: skip
         for group, text, at in legend:
             layers.append(
                 alt.Chart(alt.Data(values=[{"minute": 110, "pct": at}, {"minute": 128, "pct": at}]))

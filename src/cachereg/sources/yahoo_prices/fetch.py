@@ -18,7 +18,7 @@ SOURCE = "yahoo_prices"
 ADAPTER_VERSION = "1"
 URL = "https://query1.finance.yahoo.com/v8/finance/chart/{ticker}"
 TICKERS = [  # CoreWeave credit and election-day explorations; add tickers as analyses need them
-    "CRWV", "MSFT", "AMZN", "GOOGL", "EQIX", "DLR", "VST", "VRT", "PWR", "GEV", "SPY",
+    "CRWV", "MSFT", "AMZN", "GOOGL", "VST", "VRT", "PWR", "GEV", "SPY",
 ]  # fmt: skip
 FLOOR = date(2025, 1, 1)
 HEADERS = {"User-Agent": "Mozilla/5.0"}  # the endpoint refuses unknown agents

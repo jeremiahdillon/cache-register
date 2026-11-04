@@ -17,7 +17,7 @@ SOURCE = "yahoo_intraday"
 ADAPTER_VERSION = "1"
 URL = "https://query1.finance.yahoo.com/v8/finance/chart/{ticker}"
 TICKERS = [  # explore/2026-11-04-election-day-ai-split; add tickers as analyses need them
-    "MSFT", "AMZN", "GOOGL", "EQIX", "DLR", "VST", "VRT", "PWR", "CRWV", "GEV", "SPY",
+    "MSFT", "AMZN", "GOOGL", "VST", "VRT", "PWR", "CRWV", "GEV", "SPY",
 ]  # fmt: skip
 RANGE, INTERVAL = "60d", "5m"
 HEADERS = {"User-Agent": "Mozilla/5.0"}  # the endpoint refuses unknown agents

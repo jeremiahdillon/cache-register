@@ -83,10 +83,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
         frames={"paths": pl.DataFrame(rows), "summary": summary},
         sources=["yahoo_prices", "yahoo_intraday"],
         as_of=as_of,
-        method=(
-            "% change from the previous session's close: 5-minute bar closes, ending on the official close; "
-            "the dashed segment joins the previous close to the end of the first 5 minutes"
-        ),
+        method="% change from Tuesday’s close, 5-minute prices",
         caveats=[
             "One session, with stocks chosen after the move: this illustrates the split and does not measure it.",
             "Prices do not show why a stock moved; attributing the split to the election follows same-day coverage.",

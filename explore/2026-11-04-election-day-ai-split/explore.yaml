@@ -10,9 +10,7 @@ config:
   rose:
     - {ticker: MSFT, name: Microsoft}
     - {ticker: AMZN, name: Amazon}
-    - {ticker: EQIX, name: Equinix}
     - {ticker: GOOGL, name: Alphabet}
-    - {ticker: DLR, name: Digital Realty}
   fell:
     - {ticker: VST, name: Vistra}
     - {ticker: VRT, name: Vertiv}
