@@ -1,6 +1,7 @@
 # Election-day split in AI stocks
 
-*Exploration · started 2026-11-04 · short link reserved: cacheregister.dev/midterm-split · prompted by the author, after same-day coverage of hyperscalers rising and
+*Exploration · started 2026-11-04 · **promoted to [`receipts/midterm-split`](../../receipts/midterm-split/)**, which is the
+maintained version and now owns cacheregister.dev/midterm-split · prompted by the author, after same-day coverage of hyperscalers rising and
 data center stocks falling on the midterm results*
 
 ## Question

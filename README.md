@@ -19,6 +19,7 @@ charts and videos. Every published visual links back to the exact code that made
 > | [`coreweave-credit`](receipts/coreweave-credit/) | [cacheregister.dev/coreweave-credit](https://cacheregister.dev/coreweave-credit) | The yield on CoreWeave's 9.75% notes due 2031 rose from 9.0% when they began trading on Apr 14, 2026 to 14.7% on Oct 13, while CRWV fell 44%, from $117.20 to $65.78 (Oct 14). |
 > | [`deepseek-vs-us`](receipts/deepseek-vs-us/) | [cacheregister.dev/deepseek-vs-us](https://cacheregister.dev/deepseek-vs-us) | DeepSeek served more OpenRouter tokens than every US model combined in the week of Oct 12, 2026 (45.9T vs 41.9T), and more than every closed US model each week since Sep 14 (1.4× in the week of Oct 12). |
 > | [`open-leaps-ahead`](receipts/open-leaps-ahead/) | [cacheregister.dev/open-leaps-ahead](https://cacheregister.dev/open-leaps-ahead) | On Terminal-Bench 4.0 (Artificial Analysis, Oct 23, 2026) the best open-weight model, Kimi K3.1 Pro at 67.2%, leads the best of Anthropic (63.6%), OpenAI (59.6%), Google and Meta (57.1% each), the first time in 2026 an open-weight model is on top. |
+> | [`midterm-split`](receipts/midterm-split/) | [cacheregister.dev/midterm-split](https://cacheregister.dev/midterm-split) | The day after the 2026 midterms, Microsoft, Amazon and Alphabet rose 3–7% and five data center supply chain stocks fell 9–14%, while the S&P 500 rose 1.7% |
 
 ## How it works
 

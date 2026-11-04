@@ -1,0 +1,29 @@
+# Receipt: cacheregister.dev/midterm-split (the folder name is the short link, taken over from the
+# exploration's reservation; never rename without adding an alias in config/link-aliases.yaml).
+# Yahoo's data is redistribution-forbidden, so there is no blog_html (it would inline the data) and no data.json;
+# derived charts are credited (author's personal, non-commercial use).
+title: Midterm split in AI stocks
+sources: [yahoo_prices, yahoo_intraday]
+as_of: 2026-11-04
+promoted_from: explore/2026-11-04-election-day-ai-split
+config:
+  headline: "Hyperscalers rose and data center suppliers fell\nthe day after the midterms"
+  session: 2026-11-04
+  baseline: {ticker: SPY, name: S&P 500 (SPY)}
+  notes:                 # on-screen narration, shown once each group has drawn; {baseline} is the S&P's move
+    baseline: "The broad market rose {baseline:.1f}%."
+    rose: Hyperscalers rose on bets that a slower AI buildout will temper their capex.
+    fell: The data center supply chain fell on fears that a slower AI buildout will cut demand.
+  rose:
+    - {ticker: MSFT, name: Microsoft}
+    - {ticker: AMZN, name: Amazon}
+    - {ticker: GOOGL, name: Alphabet}
+  fell:
+    - {ticker: VST, name: Vistra}
+    - {ticker: VRT, name: Vertiv}
+    - {ticker: PWR, name: Quanta Services}
+    - {ticker: CRWV, name: CoreWeave}
+    - {ticker: GEV, name: GE Vernova}
+visuals:
+  # Footer credit: yahoo_intraday's line covers both Yahoo sources (same provider, same terms), on one line.
+  - {name: session, chart: session, targets: [x_png, linkedin_png, x_video, linkedin_video], sources: [yahoo_intraday]}
