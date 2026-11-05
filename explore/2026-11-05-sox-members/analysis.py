@@ -69,17 +69,12 @@ def build(con, as_of: date, cfg: dict) -> Story:
     if members["close_pct"].max() >= 0 or index >= 0:
         raise ValueError("the headline and notes say every member and the index fell")
     tickers = members["ticker"].to_list()
-    labelled = {*tickers[:3], *tickers[-3:], *cfg["also_label"], cfg["index"]["ticker"]}
-    summary = summary.with_columns(pl.col("ticker").is_in(list(labelled)).alias("labelled"))
-    total = members.height
-    notes = {
-        "members": cfg["notes"]["members"].format(
-            total=total, low=-members["close_pct"].max(), high=-members["close_pct"].min()
-        ),
-        "index": cfg["notes"]["index"].format(index=-index),
-    }
+    if unknown := set(cfg["label"]) - set(tickers):
+        raise ValueError(f"labels that are not members: {sorted(unknown)}")
+    labelled = [*cfg["label"], cfg["index"]["ticker"]]
+    summary = summary.with_columns(pl.col("ticker").is_in(labelled).alias("labelled"))
     return Story(
-        title=cfg["headline"].format(total=total),
+        title=cfg["headline"].format(total=members.height),
         subtitle="Change from Tuesday’s close through Thursday’s close, November 3 to 5.",
         frames={"paths": pl.DataFrame(rows), "summary": summary},
         sources=["yahoo_prices", "yahoo_intraday"],
@@ -89,7 +84,6 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "Two sessions: this shows the selloff's spread within the index and does not explain it.",
             "Prices do not show why a stock moved; tying the selloff to the election follows same-day coverage.",
         ],
-        extra={"notes": notes},
     )
 
 

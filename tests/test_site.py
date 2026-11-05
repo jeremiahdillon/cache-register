@@ -55,7 +55,14 @@ def test_repo_links_come_from_receipts_and_reserving_explorations():
     links = {link.slug: link for link in collect_links()}  # the real repo
     assert links["openrouter-wallet-share"].analysis == "receipts/openrouter-wallet-share"
     explored = {link.slug for link in links.values() if link.analysis.startswith("explore/")}
-    reserving = {"source-matters", "coreweave-credit", "deepseek-vs-us", "open-leaps-ahead", "midterm-split"}
+    reserving = {
+        "source-matters",
+        "coreweave-credit",
+        "deepseek-vs-us",
+        "open-leaps-ahead",
+        "midterm-split",
+        "sox-wave",
+    }
     assert explored <= reserving  # only explorations that reserve a link
 
 

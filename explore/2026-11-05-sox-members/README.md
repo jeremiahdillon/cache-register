@@ -1,6 +1,6 @@
 # The SOX and its 30 members
 
-*Exploration · started 2026-11-05 · prompted by the author, as a companion to
+*Exploration · started 2026-11-05 · reserves [cacheregister.dev/sox-wave](https://cacheregister.dev/sox-wave) · prompted by the author, as a companion to
 [`explore/2026-11-05-chip-selloff`](../2026-11-05-chip-selloff/)*
 
 ## Question
@@ -18,11 +18,14 @@ chart follows all 30 members and the index from Tuesday's close (November 3) thr
 
 ## Visual
 - `members`: one line per member, in % from Tuesday's close, with a dashed rule at Wednesday's close and a heavy white
-  line for the index, drawn on top. Thirty labels do not fit, so the chart names the index, the largest member (Nvidia)
-  and the three smallest and three largest drops, and draws those lines stronger. Every other member is a thinner line.
-  `x_png` is 16:9, `linkedin_png` 4:5.
-- Videos (`x_video` 16:9, `linkedin_video` 4:5): the members draw together, then a caption; the index draws, then a
-  caption; the key fades in once the captions are gone; a 5 s hold on the final frame, which the PNGs equal.
+  line for the index, drawn on top. Thirty labels do not fit, so the chart names the index, the largest and most
+  recognizable members (Nvidia, Broadcom, TSMC, Intel, AMD, Micron, Qualcomm) and the largest drop (Credo), and draws
+  the named lines stronger. Micron is also among the largest drops and Qualcomm is the smallest. Every other member is
+  a thinner line. Label leaders are grey so that they do not read as data. There is no key or caption. `x_png` is 16:9,
+  `linkedin_png` 4:5.
+- Videos (`x_video` 16:9, `linkedin_video` 4:5, ~13 s): the members fade in one after another, from the smallest two-day
+  drop to the largest, each label with its line; the index then draws across both sessions and its label fades in; a
+  5 s hold on the final frame, which the PNGs equal.
 - A thin line's width does not show its weight in the index. Nasdaq's methodology is modified market-cap weighting,
   with the top three members capped, so the index line is not a simple average of the lines around it.
 

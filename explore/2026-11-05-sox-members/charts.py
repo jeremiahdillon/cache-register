@@ -2,19 +2,19 @@
 
 `members`: all 30 members and the index as a % change from Tuesday's close, across two sessions, with a rule at
 Wednesday's close. Members are thin lines in one colour (categorical slot 3, the chip colour of the chip-selloff
-charts); the index is a heavy line in the text colour, drawn on top. Thirty labels will not fit, so only the index,
-the largest member and the three smallest and three largest drops are named, and those lines are stronger.
+charts); the index is a heavy line in the text colour, drawn on top. Thirty labels will not fit, so only the index and
+the members in the config's `label` list are named, and those lines are stronger. Leaders are grey so that they do not
+read as data. There is no key and there are no captions: the headline and the labels carry the chart.
 
-Video (`members_specs`): the members draw together, their labels fade in and a caption narrates them; the index draws,
-its label fades in and a caption narrates it; the key fades in once the captions are gone, and the video holds on the
-final frame, which the PNG targets equal. Every frame draws every mark (hidden ones at opacity ~0) at the final frame's
+Video (`members_specs`): the members fade in one after another, from the smallest two-day drop to the largest, each
+label with its line; the index then draws across both sessions, and its label fades in; the video holds on the final
+frame, which the PNG targets equal. Every frame draws every mark (hidden ones at opacity ~0) at the final frame's
 fitted size, so the canvas never moves.
 """
 
 from __future__ import annotations
 
 import math
-import textwrap
 
 import altair as alt
 from analysis import SECOND_OPEN, SESSION_MIN
@@ -29,21 +29,14 @@ END = SECOND_OPEN + SESSION_MIN
 TICKS = {OVERNIGHT: "Tue close", SESSION_MIN: "Wed close", END: "Thu close"}
 LABEL_ROOM = 0.24  # room for the end labels, as a share of the axis
 LABEL_GAP_MIN = 20  # minutes of x between the close and its label
-LABEL_PX, AXIS_PX, LEGEND_PX, NOTE_PX = 17, 16, 17, 30
-NOTE_CHAR_EM = 0.47  # average advance of the body font, for wrapping a note to the room it has
-GROUPS = ("members", "index")  # the order they draw in
-LEGEND = {"members": ("The 30 stocks in the index", 5.8), "index": ("PHLX Semiconductor Index (SOX)", 2.6)}
-BAND, NOTE_Y, NOTE_MIN, BOTTOM_ROOM = 8.0, 4.2, 80, 2  # the captions' band above the highest line
+LABEL_PX, AXIS_PX = 17, 16
+TOP_ROOM, BOTTOM_ROOM = 0.5, 2  # % points above the highest line and below the lowest
 THIN, NAMED, HEAVY = 1.4, 2.2, 5.5  # line widths at font scale 1
 THIN_OPACITY = 0.55
 
 FPS = 30
-INTRO_S, MEMBERS_DRAW_S, INDEX_DRAW_S, LABEL_S, FINAL_HOLD_S = 0.5, 4.0, 3.0, 0.4, 5.0
-NOTE_FADE_S, NOTE_HOLD_S = 0.4, 3.0
-FINAL = {  # the final frame (and the PNGs)
-    "members": {"until": math.inf, "legend": 1.0, "label": 1.0, "note": 0.0},
-    "index": {"until": math.inf, "legend": 1.0, "label": 1.0, "note": 0.0},
-}
+INTRO_S, STAGGER_S, FADE_S, PAUSE_S, INDEX_DRAW_S, LABEL_S, FINAL_HOLD_S = 0.5, 0.12, 0.25, 0.3, 3.0, 0.4, 5.0
+FINAL = {"members": {}, "index_until": math.inf, "index_label": 1.0}  # the final frame (and the PNGs); no entry = shown
 
 
 def _op(v: float) -> float:
@@ -93,12 +86,16 @@ def _chart(story: Story, w: float, h: float, fs: float, state: dict) -> alt.Laye
     summary = story.frames["summary"].to_dicts()
     hues = {"members": color("categorical")[2], "index": color("text")}
 
-    foot = max(0.0, float(math.ceil(paths["pct"].max())))  # the band above the highest line
-    top = foot + BAND
+    def shown(s: dict) -> float:
+        """How far a line and its label have faded in."""
+        if s["group"] == "index":
+            return state["index_label"]
+        return state["members"].get(s["ticker"], 1.0)
+
+    top = float(math.ceil(paths["pct"].max())) + TOP_ROOM
     bottom = float(paths["pct"].min() // 1) - BOTTOM_ROOM
-    y_ticks = [v for v in range(int(5 * (bottom // 5)), int(foot) + 1, 5) if v >= bottom]
-    span = END - OVERNIGHT
-    x_end = END + span * LABEL_ROOM
+    y_ticks = [v for v in range(int(5 * (bottom // 5)), int(top) + 1, 5) if v >= bottom]
+    x_end = END + (END - OVERNIGHT) * LABEL_ROOM
     x_scale = alt.Scale(domain=[OVERNIGHT, x_end], nice=False, zero=False)
     y_scale = alt.Scale(domain=[bottom, top], nice=False)
     expr = " : ".join(f"datum.value == {k} ? '{v}'" for k, v in TICKS.items()) + " : ''"
@@ -114,23 +111,23 @@ def _chart(story: Story, w: float, h: float, fs: float, state: dict) -> alt.Laye
         alt.Chart(alt.Data(values=[{"minute": OVERNIGHT, "pct": 0}, {"minute": END, "pct": 0}]))
         .mark_line(color=color("muted"), strokeWidth=1.5 * fs)
         .encode(x=x, y=y),
-        alt.Chart(alt.Data(values=[{"minute": SESSION_MIN, "pct": bottom}, {"minute": SESSION_MIN, "pct": foot}]))
+        alt.Chart(alt.Data(values=[{"minute": SESSION_MIN, "pct": bottom}, {"minute": SESSION_MIN, "pct": top}]))
         .mark_line(color=color("muted"), strokeWidth=1 * fs, strokeDash=[4 * fs, 4 * fs])
         .encode(x=x, y=y),
     ]
     # Thin lines first, so the named lines and then the index draw over them.
-    order = sorted(summary, key=lambda r: (r["group"] == "index", r["labelled"]))
-    for s in order:
-        st = state[s["group"]]
+    for s in sorted(summary, key=lambda r: (r["group"] == "index", r["labelled"])):
         rows = paths.filter(paths["ticker"] == s["ticker"]).sort("minute").to_dicts()
         points = [{"minute": OVERNIGHT, "pct": 0.0}, *({"minute": r["minute"], "pct": r["pct"]} for r in rows)]
-        started = st["until"] >= OVERNIGHT
-        heavy = s["group"] == "index"
-        width = HEAVY if heavy else NAMED if s["labelled"] else THIN
-        full = 1.0 if heavy or s["labelled"] else THIN_OPACITY
+        if s["group"] == "index":
+            until = state["index_until"]
+            line, width, opacity = _drawn(points, until), HEAVY, 1.0 if until >= OVERNIGHT else 0.0
+        else:
+            full = 1.0 if s["labelled"] else THIN_OPACITY
+            line, width, opacity = points, NAMED if s["labelled"] else THIN, full * shown(s)
         layers.append(
-            alt.Chart(alt.Data(values=_drawn(points, st["until"])))
-            .mark_line(color=hues[s["group"]], strokeWidth=width * fs, opacity=_op(full if started else 0))
+            alt.Chart(alt.Data(values=line))
+            .mark_line(color=hues[s["group"]], strokeWidth=width * fs, opacity=_op(opacity))
             .encode(x=x, y=y)
         )
 
@@ -140,50 +137,20 @@ def _chart(story: Story, w: float, h: float, fs: float, state: dict) -> alt.Laye
     lift = max(0.0, bottom + row / 2 - placed[-1])  # keep the stack above the time axis
     label_x = END + LABEL_GAP_MIN
     for s, at in zip(named, [p + lift for p in placed], strict=True):
-        fade = state[s["group"]]["label"]
-        heavy = s["group"] == "index"
+        fade = shown(s)
         leader = [{"minute": END, "pct": s["close_pct"]}, {"minute": label_x - 4, "pct": at}]
         layers.append(
             alt.Chart(alt.Data(values=leader))
-            .mark_line(color=hues[s["group"]], strokeWidth=1.2 * fs, opacity=_op(fade))
+            .mark_line(color=color("muted"), strokeWidth=1.2 * fs, opacity=_op(fade))
             .encode(x=x, y=y)
         )
         value = f"{s['close_pct']:+.1f}%".replace("-", "−")
         layers.append(
             alt.Chart(alt.Data(values=[{"minute": label_x, "pct": at, "t": f"{s['name']} {value}"}]))
             .mark_text(align="left", baseline="middle", font=fonts["body"], fontSize=LABEL_PX * fs,
-                       fontWeight=700 if heavy else 400, color=color("text"), opacity=_op(fade))
+                       fontWeight=700 if s["group"] == "index" else 400, color=color("text"), opacity=_op(fade))
             .encode(x=x, y=y, text="t:N")
         )  # fmt: skip
-
-    stretch = span / (SESSION_MIN - OVERNIGHT)
-    for group, (text, at) in LEGEND.items():
-        shown = _op(state[group]["legend"])
-        at_y = foot + at
-        layers.append(
-            alt.Chart(alt.Data(values=[{"minute": 110, "pct": at_y}, {"minute": 110 + 18 * stretch, "pct": at_y}]))
-            .mark_line(color=hues[group], strokeWidth=(HEAVY if group == "index" else 3) * fs, opacity=shown)
-            .encode(x=x, y=y)
-        )
-        layers.append(
-            alt.Chart(alt.Data(values=[{"minute": 110 + 24 * stretch, "pct": at_y, "t": text}]))
-            .mark_text(align="left", baseline="middle", font=fonts["body"], fontSize=LEGEND_PX * fs,
-                       color=color("text_secondary"), opacity=shown)
-            .encode(x=x, y=y, text="t:N")
-        )  # fmt: skip
-    note_px = NOTE_PX * fs
-    room_px = (x_end - NOTE_MIN) / (x_end - OVERNIGHT) * w
-    chars = int(room_px / (NOTE_CHAR_EM * note_px))
-    for group, text in story.extra["notes"].items():
-        lines = textwrap.wrap(text, chars)
-        for i, line in enumerate(lines):
-            layers.append(
-                alt.Chart(alt.Data(values=[{"minute": NOTE_MIN, "pct": foot + NOTE_Y, "t": line}]))
-                .mark_text(align="left", baseline="middle", font=fonts["body"], fontSize=note_px, fontWeight=600,
-                           color=color("text"), opacity=_op(state[group]["note"]),
-                           dy=(i - (len(lines) - 1) / 2) * note_px * 1.3)
-                .encode(x=x, y=y, text="t:N")
-            )  # fmt: skip
     return alt.layer(*layers).properties(width=w, height=h).configure(**vl_config(fs))
 
 
@@ -191,50 +158,33 @@ def members_specs(story: Story, width: int, height: int, font_scale: float, cfg:
     """Frame states → one spec per frame, all at the final frame's fitted size (see the module docstring)."""
     fs = font_scale
     w, h = fit_size(lambda a, b: _chart(story, a, b, fs, FINAL), width, height)
-    state = {g: {"until": -math.inf, "legend": 0.0, "label": 0.0, "note": 0.0} for g in GROUPS}
+    summary = story.frames["summary"].to_dicts()
+    order = [s["ticker"] for s in summary if s["group"] == "members"]  # the frame is sorted, smallest drop first
     states: list[dict] = []
-
-    def snap() -> None:
-        states.append({k: dict(v) for k, v in state.items()})
 
     def frames(seconds: float) -> int:
         return max(int(round(seconds * FPS)), 1)
 
-    def draw(group: str, seconds: float) -> None:
-        n = frames(seconds)
-        fade_in = frames(LABEL_S)
-        for i in range(n):
-            state[group]["until"] = OVERNIGHT + (END - OVERNIGHT) * _smooth((i + 1) / n)
-            snap()
-        state[group]["until"] = math.inf
-        for i in range(fade_in):
-            state[group]["label"] = _smooth((i + 1) / fade_in)
-            snap()
+    def snap(members: dict, until: float = -math.inf, label: float = 0.0) -> None:
+        states.append({"members": dict(members), "index_until": until, "index_label": label})
 
-    def narrate(group: str) -> None:
-        n = frames(NOTE_FADE_S)
-        for i in range(n):
-            state[group]["note"] = _smooth((i + 1) / n)
-            snap()
-        for _ in range(frames(NOTE_HOLD_S)):
-            snap()
-        for i in range(n):
-            state[group]["note"] = 1 - _smooth((i + 1) / n)
-            snap()
-
+    hidden = dict.fromkeys(order, 0.0)
     for _ in range(frames(INTRO_S)):
-        snap()
-    draw("members", MEMBERS_DRAW_S)
-    narrate("members")
-    draw("index", INDEX_DRAW_S)
-    narrate("index")
+        snap(hidden)
+    for i in range(frames(STAGGER_S * len(order) + FADE_S)):
+        t = (i + 1) / FPS
+        snap({k: _smooth((t - j * STAGGER_S) / FADE_S) for j, k in enumerate(order)})
+    done = dict.fromkeys(order, 1.0)
+    for _ in range(frames(PAUSE_S)):
+        snap(done)
+    n = frames(INDEX_DRAW_S)
+    for i in range(n):
+        snap(done, OVERNIGHT + (END - OVERNIGHT) * _smooth((i + 1) / n))
     n = frames(LABEL_S)
-    for i in range(n):  # the key comes last, once every caption is gone
-        for group in GROUPS:
-            state[group]["legend"] = _smooth((i + 1) / n)
-        snap()
+    for i in range(n):
+        snap(done, math.inf, _smooth((i + 1) / n))
     for _ in range(frames(FINAL_HOLD_S)):
-        snap()
+        snap({}, math.inf, 1.0)
     if states[-1] != FINAL:
         raise ValueError("sox-members: the final frame must equal the still")
     return [_chart(story, w, h, fs, st).to_dict() for st in states], FPS
