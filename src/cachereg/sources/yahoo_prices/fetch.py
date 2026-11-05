@@ -20,6 +20,8 @@ URL = "https://query1.finance.yahoo.com/v8/finance/chart/{ticker}"
 TICKERS = [  # CoreWeave credit and election-day explorations; add tickers as analyses need them
     "CRWV", "MSFT", "AMZN", "GOOGL", "VST", "VRT", "PWR", "GEV", "SPY",
     "NVDA", "TSM", "TXN", "AVGO", "AMD", "ADI", "MU", "ASML", "ETN", "CEG", "ANET", "DELL",
+    "AMAT", "ARM", "ALAB", "COHR", "CRDO", "ENTG", "GFS", "INTC", "KLAC", "LRCX", "LSCC", "MTSI", "MRVL", "MCHP",
+    "MPWR", "NXPI", "ON", "Q", "QCOM", "SITM", "TER", "TSEM", "^SOX",
 ]  # fmt: skip
 FLOOR = date(2025, 1, 1)
 HEADERS = {"User-Agent": "Mozilla/5.0"}  # the endpoint refuses unknown agents
