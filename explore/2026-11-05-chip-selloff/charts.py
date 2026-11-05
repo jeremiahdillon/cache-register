@@ -7,7 +7,7 @@ S&P baseline is a dimmed text colour, and each line is named at its end, with la
 by thin leaders.
 
 `two_day`: the same, from Tuesday's close through Thursday's across both sessions, with a rule at Wednesday's close.
-Its lines end in a small table: each stock's change on Wednesday, on Thursday and over the two days.
+Each line's end label gives the two-day change.
 
 Video (`session_specs`, `two_day_specs`): the S&P draws, its label fades in, a caption narrates it and fades away,
 and the S&P dims;
@@ -41,11 +41,9 @@ VIEWS = {
                 "band": 5.0, "note_y": 2.6, "legend_y": {"semis": 3.6, "supply": 1.6}, "bottom_room": 4,
                 "ticks": {OVERNIGHT: "Wed close", 90: "11:00", 210: "1:00", 330: "3:00", 390: "4:00"}},
     "two_day": {"paths": "two_day_paths", "summary": "two_day_summary", "end": TWO_DAY_END, "divider": SESSION_MIN,
-                "band": 8.0, "note_y": 4.2, "legend_y": {"semis": 5.8, "supply": 2.6}, "bottom_room": 1,
+                "band": 8.0, "note_y": 4.2, "legend_y": {"semis": 5.8, "supply": 2.6}, "bottom_room": 4,
                 "ticks": {OVERNIGHT: "Tue close", SESSION_MIN: "Wed close", TWO_DAY_END: "Thu close"}},
 }  # fmt: skip
-NAME_COL_PX, NUM_COL_PX = 158, 70  # the two-day table: the name's width and each number column's, at font scale 1
-TABLE_COLS = (("first_pct", "Wed"), ("second_pct", "Thu"), ("close_pct", "2 days"))
 GROUPS = ("baseline", "semis", "supply")  # the order they draw in
 LEGEND = {"semis": "Largest chip ETF holdings", "supply": "Data center supply chain"}
 NOTE_MIN = 40  # the captions' left edge
@@ -109,7 +107,6 @@ def _pct(v: float) -> str:
 def _chart(story: Story, w: float, h: float, fs: float, state: dict, name: str = "session") -> alt.LayerChart:
     fonts = brand()["fonts"]
     view = VIEWS[name]
-    table = name == "two_day"
     end = view["end"]
     paths = story.frames[view["paths"]]
     summary = story.frames[view["summary"]].to_dicts()
@@ -121,12 +118,7 @@ def _chart(story: Story, w: float, h: float, fs: float, state: dict, name: str =
     y_ticks = [v for v in range(int(5 * (bottom // 5)), int(foot) + 1, 5) if v >= bottom]
     span = end - OVERNIGHT
     label_gap = LABEL_GAP_MIN * span / (SESSION_MIN - OVERNIGHT)
-    if table:
-        room_px = (NAME_COL_PX + NUM_COL_PX * len(TABLE_COLS) + 8) * fs + label_gap * w / span
-        x_end = end + span * room_px / (w - room_px)
-    else:
-        x_end = end + span * 0.3  # room for the end labels
-    per_min_px = (x_end - OVERNIGHT) / w  # minutes of x per pixel
+    x_end = end + span * 0.3  # room for the end labels
     ticks = view["ticks"]
     x_scale = alt.Scale(domain=[OVERNIGHT, x_end], nice=False, zero=False)
     y_scale = alt.Scale(domain=[bottom, top], nice=False)
@@ -174,13 +166,11 @@ def _chart(story: Story, w: float, h: float, fs: float, state: dict, name: str =
 
     per_pt = h / (top - bottom)
     ordered = sorted(summary, key=lambda r: -r["close_pct"])
-    row = (top - bottom) / (len(ordered) + 1)  # the two-day table: evenly spaced rows, under a header, filling the plot
-    if table:
-        placed = [top - (i + 1.5) * row for i in range(len(ordered))]
-    else:
-        placed = _spread([r["close_pct"] for r in ordered], (LABEL_PX + 5) * fs / per_pt)
+    row = (LABEL_PX + 5) * fs / per_pt
+    placed = _spread([r["close_pct"] for r in ordered], row)
+    lift = max(0.0, bottom + row / 2 - placed[-1])  # keep the stack above the time axis
+    placed = [p + lift for p in placed]
     label_x = end + label_gap
-    col_right = [label_x + (NAME_COL_PX + NUM_COL_PX * (i + 1)) * fs * per_min_px for i in range(len(TABLE_COLS))]
     for s, at in zip(ordered, placed, strict=True):
         st = state[s["group"]]
         fade = st["label"] * (1 - (1 - DIM_LABEL) * st["dim"])
@@ -193,30 +183,13 @@ def _chart(story: Story, w: float, h: float, fs: float, state: dict, name: str =
             .mark_line(color=hues[s["group"]], strokeWidth=1.2 * fs, opacity=_op(fade))
             .encode(x=x, y=y)
         )
-        text = s["name"] if table else f"{s['name']} {_pct(s['close_pct'])}"
+        text = f"{s['name']} {_pct(s['close_pct'])}"
         layers.append(
             alt.Chart(alt.Data(values=[{"minute": label_x, "pct": at, "t": text}]))
             .mark_text(align="left", baseline="middle", font=fonts["body"], fontSize=LABEL_PX * fs,
                        color=color("text"), opacity=_op(fade))
             .encode(x=x, y=y, text="t:N")
         )  # fmt: skip
-        if table:
-            for (col, _), right in zip(TABLE_COLS, col_right, strict=True):
-                layers.append(
-                    alt.Chart(alt.Data(values=[{"minute": right, "pct": at, "t": _pct(s[col])}]))
-                    .mark_text(align="right", baseline="middle", font=fonts["body"], fontSize=LABEL_PX * fs,
-                               color=color("text"), opacity=_op(fade), fontWeight=600 if col == "close_pct" else 400)
-                    .encode(x=x, y=y, text="t:N")
-                )  # fmt: skip
-    if table:
-        head_y = top - 0.5 * row
-        for (_, head), right in zip(TABLE_COLS, col_right, strict=True):
-            layers.append(
-                alt.Chart(alt.Data(values=[{"minute": right, "pct": head_y, "t": head}]))
-                .mark_text(align="right", baseline="middle", font=fonts["body"], fontSize=LABEL_PX * fs,
-                           color=color("text_secondary"), opacity=_op(state["baseline"]["label"]))
-                .encode(x=x, y=y, text="t:N")
-            )  # fmt: skip
 
     stretch = span / (SESSION_MIN - OVERNIGHT)
     for group, text in LEGEND.items():
@@ -234,7 +207,7 @@ def _chart(story: Story, w: float, h: float, fs: float, state: dict, name: str =
             .encode(x=x, y=y, text="t:N")
         )  # fmt: skip
     note_px = NOTE_PX * fs
-    room_px = ((end if table else x_end) - NOTE_MIN) / (x_end - OVERNIGHT) * w
+    room_px = (x_end - NOTE_MIN) / (x_end - OVERNIGHT) * w
     chars = int(room_px / (NOTE_CHAR_EM * note_px))
     for group, text in story.extra["notes"][name].items():
         lines = textwrap.wrap(text, chars)

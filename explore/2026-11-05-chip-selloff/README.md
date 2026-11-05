@@ -33,9 +33,7 @@ S&P 500 from Wednesday's close (November 4) through Thursday's close (November 5
   overnight gap and the first 5 minutes. Each line is named at its end with its close-to-close change.
   `x_png` is 16:9, `linkedin_png` 4:5.
 - `two-day`: the same basket as a continuous path from Tuesday's close through Thursday's close, in % from Tuesday's
-  close, with a dashed rule at Wednesday's close. The lines end in a table of each stock's change on Wednesday, on
-  Thursday and over the two days, sorted by the two-day change. The session columns compound to the two-day column, so
-  they do not add exactly.
+  close, with a dashed rule at Wednesday's close. Each line is named at its end with its two-day change.
 - Videos (`x_video` 16:9, `linkedin_video` 4:5, for both visuals): the S&P 500 draws, a caption gives its move and fades away, and it
   dims; the chip stocks draw together, then a caption; the supply chain draws together, then a caption; the key fades
   in once the captions are gone; a 5 s hold on the final frame, which the PNGs equal.
