@@ -44,10 +44,12 @@ def rows_of(body: dict, fetched_at: datetime) -> list[dict]:
     out = []
     for i, t in enumerate(res["timestamp"]):
         close = _num(q["close"][i])
-        if close is None:
-            continue  # a bar without a close (a halted or not-yet-traded day)
         day = datetime.fromtimestamp(t, tz).date()
         live = session_end is not None and datetime.fromtimestamp(session_end, tz).date() == day
+        if close is None and live and fetched_at.timestamp() >= session_end:
+            close = _num(meta.get("regularMarketPrice"))  # the bar of a just-closed session can come back empty
+        if close is None:
+            continue  # a bar without a close (a halted or not-yet-traded day)
         out.append({
             "ticker": meta["symbol"], "date": day,
             "open": _num(q["open"][i]), "high": _num(q["high"][i]), "low": _num(q["low"][i]), "close": close,

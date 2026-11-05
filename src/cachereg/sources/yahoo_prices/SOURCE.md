@@ -31,3 +31,5 @@ requested symbol and every quote column matches the timestamps. Vintage: sha256 
 ## Known quirks and caveats
 - Unofficial endpoint: it may change shape, rate-limit or disappear; the fetch then fails loudly.
 - A fetch during the session holds an intraday last price for today, marked not final.
+- A fetch after the close can serve today's bar with empty columns for a while (seen 2026-11-05). Stage then takes
+  the close from `meta.regularMarketPrice`; the other columns stay empty until a later fetch fills them.

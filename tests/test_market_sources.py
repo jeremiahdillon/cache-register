@@ -97,6 +97,24 @@ def test_yahoo_intraday_bar_is_not_final_until_the_session_closes(yahoo):
     assert len(rows) == 5 and rows[-1]["close"] == 15.0  # latest fetch, final bar
 
 
+def test_yahoo_empty_bar_of_a_closed_session_takes_the_market_price(data_env, monkeypatch):
+    day = DAYS[-1]
+    close = datetime(day.year, day.month, day.day, 20, 0, tzinfo=UTC)
+    body = yahoo_body("CRWV", [10.0, 11.0, 12.0, 13.0, None], day)
+    body["chart"]["result"][0]["meta"]["regularMarketPrice"] = 15.0
+    monkeypatch.setattr(yf.http, "get", lambda url, *a, **k: Response(url, 200, json.dumps(body).encode()))
+    monkeypatch.setattr(yf, "TICKERS", ["CRWV"])
+
+    write_at(yf.fetch(), close - timedelta(hours=2))  # during the session the empty bar stays out
+    build(day, ["yahoo_prices"])
+    assert [r["date"] for r in q("SELECT date FROM stock_daily ORDER BY date")] == DAYS[:-1]
+
+    write_at(yf.fetch(), close + timedelta(minutes=30))
+    build(day, ["yahoo_prices"])
+    rows = q("SELECT date, close FROM stock_daily ORDER BY date")
+    assert len(rows) == 5 and rows[-1]["close"] == 15.0
+
+
 def test_yahoo_refuses_a_body_for_another_symbol(yahoo):
     yahoo["symbol"] = "NVDA"
     with pytest.raises(ValueError, match="answered for"):
