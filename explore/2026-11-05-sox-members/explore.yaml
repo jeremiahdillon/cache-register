@@ -1,0 +1,48 @@
+# Exploration config (same schema as receipt.yaml). Prompted by the author on 2026-11-05, as a companion to
+# explore/2026-11-05-chip-selloff: every member of the PHLX Semiconductor Index, then the index itself.
+# Yahoo's data is redistribution-forbidden, so there is no blog_html (it would inline the data) and no data.json.
+title: The SOX and its 30 members
+sources: [yahoo_prices, yahoo_intraday]
+config:
+  headline: "All {total} stocks in the SOX chip index fell\nin the two days after the midterms"
+  first_session: 2026-11-04
+  session: 2026-11-05
+  notes:                 # on-screen narration, shown once each group has drawn; moves are computed in analysis.py
+    members: "All {total} stocks in the index fell, by {low:.0f}% to {high:.0f}%."
+    index: "The index, weighted by company size, fell {index:.1f}%."
+  index: {ticker: ^SOX, name: SOX index}
+  also_label: [NVDA]     # the largest member; the chart also labels the three smallest and three largest drops
+  members:               # Nasdaq's weighting page for SOX, 2026-11-05, supplied by the author
+    - {ticker: AMD, name: AMD}
+    - {ticker: ADI, name: Analog Devices}
+    - {ticker: AMAT, name: Applied Materials}
+    - {ticker: ARM, name: Arm}
+    - {ticker: ASML, name: ASML}
+    - {ticker: ALAB, name: Astera Labs}
+    - {ticker: AVGO, name: Broadcom}
+    - {ticker: COHR, name: Coherent}
+    - {ticker: CRDO, name: Credo}
+    - {ticker: ENTG, name: Entegris}
+    - {ticker: GFS, name: GlobalFoundries}
+    - {ticker: INTC, name: Intel}
+    - {ticker: KLAC, name: KLA}
+    - {ticker: LRCX, name: Lam Research}
+    - {ticker: LSCC, name: Lattice}
+    - {ticker: MTSI, name: MACOM}
+    - {ticker: MRVL, name: Marvell}
+    - {ticker: MCHP, name: Microchip}
+    - {ticker: MU, name: Micron}
+    - {ticker: MPWR, name: Monolithic Power}
+    - {ticker: NVDA, name: Nvidia}
+    - {ticker: NXPI, name: NXP}
+    - {ticker: "ON", name: ON Semiconductor}
+    - {ticker: Q, name: Qnity}
+    - {ticker: QCOM, name: Qualcomm}
+    - {ticker: SITM, name: SiTime}
+    - {ticker: TSM, name: TSMC}
+    - {ticker: TER, name: Teradyne}
+    - {ticker: TXN, name: Texas Instruments}
+    - {ticker: TSEM, name: Tower}
+visuals:
+  # Footer credit: yahoo_intraday's line covers both Yahoo sources (same provider, same terms), on one line.
+  - {name: members, chart: members, targets: [x_png, linkedin_png, x_video, linkedin_video], sources: [yahoo_intraday]}
