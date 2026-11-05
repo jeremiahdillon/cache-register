@@ -1,6 +1,7 @@
 # The SOX and its 30 members
 
-*Exploration · started 2026-11-05 · reserves [cacheregister.dev/sox-wave](https://cacheregister.dev/sox-wave) · prompted by the author, as a companion to
+*Exploration · started 2026-11-05 · **promoted to [`receipts/sox-wave`](../../receipts/sox-wave/)**, which is the maintained
+version and now owns cacheregister.dev/sox-wave · prompted by the author, as a companion to
 [`explore/2026-11-05-chip-selloff`](../2026-11-05-chip-selloff/)*
 
 ## Question
