@@ -1,0 +1,62 @@
+{
+  "as_of": "2026-11-06",
+  "cache_register_version": "0.0.1",
+  "data_hash": "fe2492a2b8718dde1eb345bb8020aed9307be3feb986049990ba42c91f98be9e",
+  "folder": "receipts/sox-wave",
+  "git_dirty": false,
+  "git_sha": "349680d4a7810fc13ef2bc81a10e80a97cad2bde",
+  "inputs_hash": "e4a744be39fdb54041124ea27d2651b391a9a159975ce5770571bdf421746db2",
+  "kind": "receipt",
+  "outputs": {
+    "members.linkedin_png.png": "1fde19048f91cae70c01a9b72ca9feefd71ad67cfee34712adbfaf043c7bdfeb",
+    "members.linkedin_video.mp4": "e4fc9199436704dbaaf4e1161fb6060fa825fe685bbe6670b0f66a5c5bdd075b",
+    "members.x_png.png": "fb82664c17e7504a1e587b5ab2d2e0f532a41c744e77ecaee7009ebc50ffa034",
+    "members.x_video.mp4": "8db9994c7661f6c2dbfaf2b3174c9a8f370d726870acb27b7a5382d33d6b48ac"
+  },
+  "sources": {
+    "yahoo_intraday": {
+      "class": "Author-only",
+      "content_sha256": "3d1b2d230a90e9c8201ee925e54d0efcae4eaeb5f7cc7d5868adfd0d21ea1cf3",
+      "fetch_date": "2026-11-06",
+      "vintage": {
+        "kind": "content",
+        "value": "179829736e406cdf0af69677b815456184f0726b0beb92ac7b42b83ad7928be1",
+        "window": [
+          "60d",
+          "2026-11-06"
+        ]
+      },
+      "vintage_after_as_of": false
+    },
+    "yahoo_prices": {
+      "class": "Latest-only",
+      "content_sha256": "a6f5d80c932ca10dd158fcd92541b73a1647b89b1ebc943a1160f5cb08199170",
+      "fetch_date": "2026-11-06",
+      "vintage": {
+        "kind": "content",
+        "value": "b7020bd8955b9b260a69faff381de0bc3ea0e6774a2a65b264913cfc249c9bc9",
+        "window": [
+          "2025-01-01",
+          "2026-11-06"
+        ]
+      },
+      "vintage_after_as_of": false
+    }
+  },
+  "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
+  "visual_sources": {
+    "members": [
+      "yahoo_intraday"
+    ]
+  },
+  "visuals": {
+    "members": {
+      "source": "Yahoo Finance (finance.yahoo.com), daily and 5-minute prices, as of 2026-11-06",
+      "subtitle": "Change from Tuesday\u2019s close through Thursday\u2019s close, November 3 to 5.",
+      "title": "All 30 stocks in the SOX chip index fell in the two days after the midterms"
+    }
+  },
+  "withheld": {
+    "data.json": "redistribution not allowed for: yahoo_prices, yahoo_intraday"
+  }
+}
