@@ -1,0 +1,42 @@
+# Exploration config (same schema as receipt.yaml). Prompted by the author on 2026-11-05, after same-day coverage
+# of chip stocks falling on fears of a slower AI buildout. No hyperscalers and no upside group, at the author's request.
+# Yahoo's data is redistribution-forbidden, so there is no blog_html (it would inline the data) and no data.json.
+title: Chip and data center selloff
+sources: [yahoo_prices, yahoo_intraday]
+config:
+  headline: "{worse} of {total} chip and data center stocks fell more\nthan the S&P 500 two days after the midterms"
+  two_day_headline: "All {total} chip and data center stocks fell more\nthan the S&P 500 in the two days after the midterms"
+  session: 2026-11-05
+  prior_session: 2026-11-04
+  baseline: {ticker: SPY, name: S&P 500 (SPY)}
+  notes:                 # on-screen narration, shown once each group has drawn; moves are computed in analysis.py
+    baseline: "The broad market fell {baseline:.1f}%."
+    semis: "The eight largest holdings of a chip ETF fell {low:.0f}% to {high:.0f}%."
+    supply: "Data center suppliers fell {low:.0f}% to {high:.0f}%."
+  two_day_notes:
+    baseline: "The S&P 500 rose {rose:.1f}%, then fell {fell:.1f}%."
+    semis: "Chip stocks lost {low:.0f}% to {high:.0f}% over the two days."
+    supply: "Data center suppliers lost {low:.0f}% to {high:.0f}%."
+  semis:                 # SMH's eight largest holdings as of 2026-11-04 (README)
+    - {ticker: NVDA, name: Nvidia}
+    - {ticker: TSM, name: TSMC}
+    - {ticker: TXN, name: Texas Instruments}
+    - {ticker: AVGO, name: Broadcom}
+    - {ticker: AMD, name: AMD}
+    - {ticker: ADI, name: Analog Devices}
+    - {ticker: MU, name: Micron}
+    - {ticker: ASML, name: ASML}
+  supply:                # Wednesday's five, plus a large name in each layer (README)
+    - {ticker: VST, name: Vistra}
+    - {ticker: CEG, name: Constellation}
+    - {ticker: GEV, name: GE Vernova}
+    - {ticker: ETN, name: Eaton}
+    - {ticker: VRT, name: Vertiv}
+    - {ticker: PWR, name: Quanta Services}
+    - {ticker: ANET, name: Arista}
+    - {ticker: DELL, name: Dell}
+    - {ticker: CRWV, name: CoreWeave}
+visuals:
+  # Footer credit: yahoo_intraday's line covers both Yahoo sources (same provider, same terms), on one line.
+  - {name: session, chart: session, targets: [x_png, linkedin_png, x_video, linkedin_video], sources: [yahoo_intraday]}
+  - {name: two-day, chart: two_day, targets: [x_png, linkedin_png, x_video, linkedin_video], sources: [yahoo_intraday]}
