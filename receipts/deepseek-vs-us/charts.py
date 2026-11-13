@@ -5,8 +5,17 @@ previous bold grey line turns light as they rise. They hold, then their bottom e
 they are gone, and the next step's bars grow on from there in one continuous upward motion. Bars are clipped to
 their bounding lines: each is a slice of the band between the line below and the line above, so its top and bottom
 edges lie on those lines everywhere (the first and last bars are half width, where the lines end). The final
-frame: light grey lines for each step, the bold grey line (all US models) and the lime DeepSeek line. Labels settle
-once and never move: each slides out from behind the one above it.
+frame: light grey lines for each step, the bold grey line (all US models) and the lime DeepSeek line. Grey labels
+settle once as their step grows, each sliding out from behind the one above it.
+
+The y-axis is set by the US lines first (the smallest 25T multiple above them) and grows, camera-style, during
+DeepSeek's step: one smooth ease-in-out from AXIS_START of the step that lands on the smallest 25T multiple above
+DeepSeek as the line lands, so the final frame is the still. DeepSeek's rise is defined on screen, not in tokens:
+its line end climbs the plot on the `weighty` path it would follow on the final axis, and the axis stretches
+underneath, so the line's token value is the product of the two. Both land together with zero velocity, and the
+line never moves down (a product of two non-decreasing motions), so it cannot seem to shrink as the axis finishes.
+Gridlines keep their values (25T steps) and slide down; new ones enter from the top. The DeepSeek label rides the
+end of its line, hidden until it emerges from behind the all-US label.
 """
 
 from __future__ import annotations
@@ -34,12 +43,22 @@ def _text_w(text: str, px: int) -> float:
     return ImageFont.truetype(str(font_path("body")), px).getlength(text)
 
 
-def _nice_ticks(y_max: float, n: int = 4) -> list[float]:
-    """Round tick values (in tokens) from 0 to at least y_max."""
-    raw = y_max / n
-    mag = 10 ** math.floor(math.log10(raw))
-    step = next(m * mag for m in (1, 2, 2.5, 5, 10) if m * mag >= raw)
-    return [i * step for i in range(math.ceil(y_max / step) + 1)]
+def _axis_ceiling(y_max: float) -> float:
+    """The smallest multiple of TICK_STEP above y_max (at least one step)."""
+    return max(1, math.ceil(y_max / TICK_STEP - 1e-9)) * TICK_STEP
+
+
+def smoothstep(t: float) -> float:
+    t = max(0.0, min(1.0, t))
+    return t * t * (3 - 2 * t)
+
+
+def _axis_at(ds_t: float, base: float, final: float) -> float:
+    """The y-axis maximum at `ds_t` (DeepSeek's growth, 0..1 in time): `base` until AXIS_START, then one
+    ease-in-out to `final`, landing as the line lands (ds_t = 1)."""
+    if final <= base:
+        return base
+    return base + (final - base) * smoothstep((ds_t - AXIS_START) / (1 - AXIS_START))
 
 
 def _x_axis(edge: str, fs: float) -> alt.Axis:
@@ -50,12 +69,14 @@ def _x_axis(edge: str, fs: float) -> alt.Axis:
 
 FPS = 30
 LEAD, GROW, STAY, WIPE, HOLD = 12, 30, 15, 24, 75  # frames per phase (grey steps); STAY = 0.5 s at full height
-DS_PAUSE, DS_GROW, DS_STAY, DS_WIPE = 45, 54, 20, 30  # a longer beat before DeepSeek; its step is slower
+DS_PAUSE, DS_GROW, DS_STAY, DS_WIPE = 45, 72, 20, 30  # a longer beat before DeepSeek; its step is slower
 DIM = 15  # frames, at the start of the pause, over which "+ Open" dims once All US has landed
 # Each step is one or more columns of the wide frame; xAI is rolled into other closed US models here.
 BUILD_STEPS = [["Anthropic"], ["OpenAI"], ["Google"], ["xAI (Grok)", "Other US closed"], [US_OPEN]]
 BAR_GREY = "#D3D7E0"  # bars a shade brighter than the bold line, so the incoming step stands out
 BOLD_W, DS_W, LIGHT_W = 5.0, 6.0, 1.6  # the top US line and DeepSeek's are the heavy ones
+TICK_STEP = 25 * T  # y-axis gridlines, before and after the axis grows
+AXIS_START = 0.4  # the axis starts growing this far (in time) into DeepSeek's step
 
 
 def ease_out_cubic(t: float) -> float:
@@ -85,7 +106,7 @@ def _build_schedule() -> list[dict]:
     so the hand-over reads as one upward motion."""
     n = len(BUILD_STEPS) + 1  # + DeepSeek
     push = [0.0] * n
-    idle = {"stage": None, "wipe": 0.0, "dim": 0.0}
+    idle = {"stage": None, "wipe": 0.0, "dim": 0.0, "ds_t": 0.0}
     frames = [{"push": list(push), **idle}] * LEAD
     for k in range(n):
         ds = k == n - 1
@@ -95,14 +116,15 @@ def _build_schedule() -> list[dict]:
             frames += [
                 {"push": list(push), **idle, "dim": ease_in_out(min(1.0, i / DIM))} for i in range(1, DS_PAUSE + 1)
             ]
+        ds_t = 1.0 if k == n - 1 else 0.0  # DeepSeek's growth in time, for the axis (1 once it has grown)
         for i in range(1, grow + 1):
             push[k] = weighty(i / grow) if ds else ease_out_cubic(i / grow)
-            frames.append({"push": list(push), "stage": k, "wipe": 0.0, "dim": dim})
-        frames += [{"push": list(push), "stage": k, "wipe": 0.0, "dim": dim}] * stay
+            frames.append({"push": list(push), "stage": k, "wipe": 0.0, "dim": dim, "ds_t": i / grow if ds else 0.0})
+        frames += [{"push": list(push), "stage": k, "wipe": 0.0, "dim": dim, "ds_t": ds_t}] * stay
         for i in range(1, wipe):  # the last wipe frame would be an empty bar: the next step's first frame follows
-            frames.append({"push": list(push), "stage": k, "wipe": ease_in_cubic(i / wipe), "dim": dim})
-        frames.append({"push": list(push), **idle, "dim": dim})
-    frames += [{"push": list(push), **idle, "dim": 1.0}] * HOLD
+            frames.append({"push": list(push), "stage": k, "wipe": ease_in_cubic(i / wipe), "dim": dim, "ds_t": ds_t})
+        frames.append({"push": list(push), **idle, "dim": dim, "ds_t": ds_t})
+    frames += [{"push": list(push), **idle, "dim": 1.0, "ds_t": 1.0}] * HOLD
     return frames
 
 
@@ -134,12 +156,13 @@ def _bar_slices(weeks, lo: list[float], hi: list[float], wipe: float) -> list[di
     return rows
 
 
-def _build_spec(wide, cum, ds, labels, state, ticks, pad, w, h, fs, y_title) -> dict:
+def _build_spec(wide, cum, ds, labels, state, axis, pad, w, h, fs, y_title) -> dict:
     fonts = brand()["fonts"]
     first = wide["week"].min().replace(day=1)
     edge = (wide["week"].max() + timedelta(days=BAR_DAYS)).isoformat()
     x_scale = alt.Scale(type="utc", domain=[first.isoformat(), edge])
-    y_scale = alt.Scale(domain=[0, ticks[-1]], nice=False, zero=True)
+    y_scale = alt.Scale(domain=[0, axis], nice=False, zero=True)
+    ticks = [i * TICK_STEP for i in range(int(axis / TICK_STEP + 1e-9) + 1)]  # 25T steps up to the axis
     weeks = wide["week"].to_list()
     mid = [(d + timedelta(days=BAR_DAYS / 2)).isoformat() for d in weeks]
     push, stage = state["push"], state["stage"]
@@ -230,9 +253,9 @@ def _build_spec(wide, cum, ds, labels, state, ticks, pad, w, h, fs, y_title) -> 
     # label sliding out from behind a settled one stays hidden until it clears it. Light lines get light labels.
     font_px, gap = LABEL_PX * fs, LABEL_PX * fs * ROW
     for s in reversed(list(label_vals)):
-        e, lightness = label_vals[s]
+        _, lightness = label_vals[s]
         lab = labels[s]
-        y = lab["from"] + (lab["to"] - lab["from"]) * e
+        y = lab["y"]
         ink = color("accent") if s == "ds" else _mix(color("text"), color("muted"), lightness)
         # The second row of the all-US label ("+ Open") names a step, so it dims like the others; "All US" stays.
         inks = [ink, _mix(color("text"), color("muted"), state["dim"])]
@@ -256,7 +279,7 @@ def _build_spec(wide, cum, ds, labels, state, ticks, pad, w, h, fs, y_title) -> 
                     fontSize=font_px,
                     font=fonts["body"],
                     color=inks[i],
-                    opacity=min(1.0, e * 1.5) if lab["fade"] else 1.0,
+                    opacity=lab["opacity"],
                 )
                 .encode(x=alt.value(w + 14 * fs), y=alt.value(y + gap * i), text="t:N")
             )
@@ -270,14 +293,14 @@ def _build_spec(wide, cum, ds, labels, state, ticks, pad, w, h, fs, y_title) -> 
 ROW = 1.25  # label row pitch, in font sizes
 
 
-def _label_layout(finals: dict[str, float], rows: dict[str, list[str]], ticks, h: float, fs: float) -> dict:
-    """Each label's settled pixel position (resolved once, for the final frame) and where it slides in from.
+def _label_layout(finals: dict[str, float], rows: dict[str, list[str]], axis: float, h: float, fs: float) -> dict:
+    """Each label's settled pixel position at this frame's y-axis, and where it slides in from.
 
-    Labels are kept in their final top-to-bottom order and nudged apart by whole rows (a two-row label takes two).
-    A grey step's label slides out from behind the previous step's settled label (Anthropic's from the axis), and
-    DeepSeek's from behind the all-US label; only the labels that start in the open fade in."""
+    Labels are kept in their top-to-bottom order and nudged apart by whole rows (a two-row label takes two). A grey
+    step's label slides out from behind the previous step's settled label (Anthropic's from the axis); DeepSeek's
+    (if present) from behind the all-US label. Only the labels that start in the open fade in."""
     gap = LABEL_PX * fs * ROW
-    px = {s: h * (1 - v / ticks[-1]) for s, v in finals.items()}
+    px = {s: h * (1 - v / axis) for s, v in finals.items()}
     order = sorted(px, key=px.get)
     out = dict(px)
     out[order[0]] = max(out[order[0]], gap / 2)
@@ -291,8 +314,38 @@ def _label_layout(finals: dict[str, float], rows: dict[str, list[str]], ticks, h
             out[a] = min(out[a], out[b] - gap * len(rows[a]))
     grey = [s for s in finals if s != "ds"]
     starts = {g: (out[grey[i - 1]] if i else h) for i, g in enumerate(grey)}
-    starts["ds"] = out[grey[-1]]
+    if "ds" in finals:
+        starts["ds"] = out[grey[-1]]
     return {s: {"to": out[s], "from": starts[s], "rows": rows[s], "fade": s == grey[0]} for s in finals}
+
+
+def _labels_at(finals: dict[str, float], rows, state, axis: float, ds_vals: tuple[float, float, float], h, fs):
+    """Label positions and opacities for one frame.
+
+    Grey labels slide from `from` to `to` as their step grows (the layout is re-solved at the frame's axis, so they
+    compress with their lines once the axis grows). DeepSeek's label rides the end of its line, plus the nudge its
+    settled layout needs at the final axis; it is hidden until it emerges from behind the all-US label, fading in
+    over one row as it clears that label's centre."""
+    ds_top, ds_max, final_axis = ds_vals
+    grey = {s: v for s, v in finals.items() if s != "ds"}
+    lay = _label_layout(grey, rows, axis, h, fs)
+    out = {}
+    for k, s in enumerate(grey):
+        e = state["push"][k]
+        if e <= 0:
+            continue
+        lab = lay[s]
+        y = lab["from"] + (lab["to"] - lab["from"]) * e
+        out[s] = {"y": y, "rows": rows[s], "opacity": min(1.0, e * 1.5) if lab["fade"] else 1.0}
+    e_ds = state["push"][len(grey)]
+    if e_ds > 0:
+        settled = _label_layout(finals, rows, final_axis, h, fs)["ds"]["to"]
+        nudge = settled - h * (1 - ds_max / final_axis)
+        y = h * (1 - ds_top / axis) + nudge * e_ds
+        gap = LABEL_PX * fs * ROW
+        last_grey = list(grey)[-1]
+        out["ds"] = {"y": y, "rows": rows["ds"], "opacity": max(0.0, min(1.0, (out[last_grey]["y"] - y) / gap))}
+    return out
 
 
 def _mix(a: str, b: str, t: float) -> str:
@@ -327,10 +380,16 @@ def build_specs(story: Story, width: int, height: int, font_scale: float, cfg: d
         "bottom": round(44 * fs),
     }
     w, h = width - pad["left"] - pad["right"], height - pad["top"] - pad["bottom"]
-    ticks = _nice_ticks(max(max(cum[-1]), max(ds)))
+    base, ds_max, k_ds = _axis_ceiling(max(cum[-1])), max(ds), len(BUILD_STEPS)
+    final = max(base, _axis_ceiling(ds_max))
     finals = {f"g{k}": cum[k][-1] for k in range(len(BUILD_STEPS))} | {"ds": ds[-1]}
-    labels = _label_layout(finals, rows, ticks, h, fs)
-    specs = [
-        _build_spec(wide, cum, ds, labels, s, ticks, pad, w, h, fs, story.extra["y_title"]) for s in _build_schedule()
-    ]
+    specs = []
+    for s in _build_schedule():
+        axis = _axis_at(s["ds_t"], base, final)
+        # DeepSeek's push is its line end's height on the final axis (screen space); in tokens it is that times
+        # axis / final, so the line climbs the plot on its own path while the axis stretches beneath it.
+        push = [*s["push"][:k_ds], s["push"][k_ds] * axis / final]
+        s = {**s, "push": push}
+        labels = _labels_at(finals, rows, s, axis, (s["push"][len(BUILD_STEPS)] * ds[-1], ds[-1], final), h, fs)
+        specs.append(_build_spec(wide, cum, ds, labels, s, axis, pad, w, h, fs, story.extra["y_title"]))
     return specs, FPS

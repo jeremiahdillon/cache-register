@@ -1,28 +1,30 @@
 # DeepSeek vs US models on OpenRouter
 
-*Receipt · [cacheregister.dev/deepseek-vs-us](https://cacheregister.dev/deepseek-vs-us) · data as of 2026-10-19
-(OpenRouter rankings through Oct 18, 2026; last complete week Oct 12–18) · promoted from
+*Receipt · [cacheregister.dev/deepseek-vs-us](https://cacheregister.dev/deepseek-vs-us) · data as of 2026-11-13
+(OpenRouter rankings through Nov 12, 2026; last complete week Nov 2–8; first rendered 2026-10-19 with data to Oct 18)
+· promoted from
 [`explore/2026-10-19-deepseek-vs-us`](../../explore/2026-10-19-deepseek-vs-us/)*
 
 ## Question
 How large is DeepSeek on OpenRouter compared with US models: with closed US models (by developer), and with every
 US model, closed or open-weight? Weekly tokens since the start of 2026.
 
-## Finding (data to the week of Oct 12, 2026)
-- **DeepSeek served more tokens than all US models combined in the last two weeks:** 1.18× in the week of Oct 5
-  (51.1T, DeepSeek's peak) and 1.09× in the week of Oct 12 (45.9T vs 41.9T). In the week of Sep 28 it was level
-  (0.997×).
-- **It has served more tokens than all closed US models every week since Sep 14** (5 weeks; 1.44× in the week of
-  Oct 12: 45.9T vs 32.0T). It first did so in the week of Aug 3 (1.02×), and again in the week of Aug 17.
-- **In the week of Oct 12 it served 3.8× the tokens of Anthropic, the largest US lab that week:** Anthropic 12.1T,
-  OpenAI 11.3T, Google 5.0T (closed models only), xAI 0.1T, other closed US models 3.5T (almost all Meta's Muse
-  Spark).
-- **The rise is recent.** DeepSeek served 14% of closed US models' tokens in the week of Jan 5, 2026 and 67% in the
-  week of Jul 6, 2026.
+## Finding (data to the week of Nov 2, 2026)
+- **DeepSeek has served more tokens than all US models combined for five weeks running** (since the week of Oct 5),
+  and the gap widens every week: 1.09× in the week of Oct 12 (45.9T vs 41.9T), 1.28×, 1.49×, then **1.82× in the
+  week of Nov 2 (80.6T, DeepSeek's peak, vs 44.4T)**. In the week of Sep 28 it was level (0.997×).
+- **It has served more tokens than all closed US models every week since Sep 14** (8 weeks; 2.28× in the week of
+  Nov 2: 80.6T vs 35.4T). It first did so in the week of Aug 3 (1.02×), and again in the week of Aug 17.
+- **In the week of Nov 2 it served 5.1× the tokens of OpenAI, the largest US lab that week:** OpenAI 15.9T,
+  Anthropic 12.4T, Google 4.0T (closed models only), xAI none in the top 50, other closed US models 3.1T (almost
+  all Meta's Muse Spark); US open-weight models 9.0T.
+- **DeepSeek nearly doubled in three weeks while US models stood still:** 45.9T in the week of Oct 12 to 80.6T in
+  the week of Nov 2, against 41.9T to 44.4T for all US models together. The rise is recent: DeepSeek served 14% of
+  closed US models' tokens in the week of Jan 5, 2026 and 67% in the week of Jul 6, 2026.
 
 ## Visuals
 In [`output/`](output/) (`output/manifest.json` records the data versions and hashes; `data.json` holds the weekly
-figures behind the visual). One visual, `build`: video for X and LinkedIn (`x_video`, `linkedin_video`, about 19 s),
+figures behind the visual). One visual, `build`: video for X and LinkedIn (`x_video`, `linkedin_video`, about 20 s),
 and its final frame as the stills (`x_png`, `linkedin_png`).
 - Grey bars grow one step at a time (Anthropic, + OpenAI, + Google, + other US closed incl. xAI, + US open weights),
   each from the line below, lifting a heavy line; the previous line turns light. Each step holds briefly, then its
@@ -31,7 +33,11 @@ and its final frame as the stills (`x_png`, `linkedin_png`).
 - Then lime DeepSeek bars grow from the axis in front of the grey lines, lift the DeepSeek line and wipe up the same
   way.
 - The end: thin grey lines for each step, the heavy all-US line and the heavy DeepSeek line. Lines join weekly values
-  (unsmoothed); the y-axis is fixed throughout.
+  (unsmoothed). The y-axis is set by the US lines (0–50T) through the grey steps; during DeepSeek's step it grows
+  in one smooth ease-in-out to 100T, from 40% of the step, landing as the line lands. DeepSeek's rise is defined
+  on screen: its line end climbs the plot on the path it would take on the final axis while the axis stretches
+  beneath it, so the two land together and the line never dips. Gridlines keep their 25T values and slide down.
+  The DeepSeek label rides the end of its line and is hidden until it emerges from behind the all-US label.
 
 ## Data
 - `openrouter_rankings`: daily tokens for the top-50 models plus an `other` row (CC BY 4.0, OpenRouter).
@@ -54,12 +60,13 @@ and its final frame as the stills (`x_png`, `linkedin_png`).
 ## Caveats
 - **Tokens, not spend or revenue.** DeepSeek's models (mostly V4.1 Flash) cost far less per token than closed US
   models, so its share of spend is much smaller than its share of tokens.
-- **Unattributed traffic is excluded**, and it is large: over the last 4 weeks stealth models served about 57T
-  tokens and the `other` row about 43T. If a stealth model belongs to a US lab, the latest crossovers could reverse.
-- **DeepSeek fine-tunes by other developers** (TNG's R1T Chimera, Nex-N1; about 2.5T in all) are not counted as
-  DeepSeek.
+- **Unattributed traffic is excluded**, and it is large: over the last 4 weeks the `other` row served about 47T
+  tokens and stealth models about 4T (57T in the 4 weeks to Oct 18). If a stealth model belongs to a US lab, the
+  margin narrows; at 1.82× it would take more than the whole `other` row to reverse the latest week.
+- **DeepSeek fine-tunes by other developers** (Nex-N1, TNG's R1T Chimera; about 2.8T in all since January) are not
+  counted as DeepSeek.
 - **Open-weight tags are hand-curated.** A new US model that publishes weights counts as closed until it is added to
-  `us_weights.yaml`. Perplexity's `pplx-decider-v1.1-27b` (0.07T) is counted as closed for lack of information.
+  `us_weights.yaml`. Perplexity's `pplx-decider` models (0.4T in all) are counted as closed for lack of information.
 - **OpenRouter only.** It is a routing marketplace with free tiers, and it over-represents cheap, free and open
   models compared with first-party APIs, subscriptions and enterprise contracts. US labs' own APIs are not here.
 - **Tokens are counted by each provider's own tokenizer**, so volumes are not strictly comparable.
@@ -68,7 +75,7 @@ and its final frame as the stills (`x_png`, `linkedin_png`).
 
 ## Reproduce
 `uv run cachereg reproduce receipts/deepseek-vs-us` (after `cachereg fetch` of openrouter_rankings and
-`cachereg build --as-of 2026-10-19 --sources openrouter_rankings`). Token counts come from OpenRouter's rankings
+`cachereg build --as-of 2026-11-13 --sources openrouter_rankings`). Token counts come from OpenRouter's rankings
 dataset, which OpenRouter may revise in place, so a later fetch can differ.
 
 Author: re-render the committed visuals with `cachereg render receipts/deepseek-vs-us`.

@@ -2,7 +2,7 @@
 # exploration's reservation — never rename without adding an alias in config/link-aliases.yaml).
 title: DeepSeek vs US models on OpenRouter
 sources: [openrouter_rankings]
-as_of: 2026-10-19
+as_of: 2026-11-13
 promoted_from: explore/2026-10-19-deepseek-vs-us
 config:
   start: 2026-01-05   # first complete Monday-to-Sunday week of 2026
