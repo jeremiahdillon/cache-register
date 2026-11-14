@@ -1,30 +1,30 @@
 {
-  "as_of": "2026-10-19",
+  "as_of": "2026-11-13",
   "cache_register_version": "0.0.1",
-  "data_hash": "be2aaf5fe2d77038fbfa91a2137417ccd802824872f986d78fd5d55b4dd0e85f",
+  "data_hash": "5759731edc4489ee808877f4a6d2f67cb3237650c4a1711b7d13a8d41245f0da",
   "folder": "receipts/deepseek-vs-us",
   "git_dirty": false,
-  "git_sha": "717df3324c77a368d1a4056e42dcb6ec15bf2459",
-  "inputs_hash": "51ca618b1c7ecadebebea81237c8df56f0e259d009b9a97678358dfcd91fb1c2",
+  "git_sha": "205c8737c5136eb7507e221babf60334fcbc9aa7",
+  "inputs_hash": "420e62b381fb0aa910674daab81bd4cb4ab723ee98312724afb16473a30842e2",
   "kind": "receipt",
   "outputs": {
-    "build.linkedin_png.png": "df7e675acf168c3b702cbe55ac0522fa8ab0f4438f860e9fb6a056b29928c8b3",
-    "build.linkedin_video.mp4": "b1c638c8a78d346ffb111127857dcfb721495bc38c7f1bfb95a444e2f85a3dc6",
-    "build.x_png.png": "0cd8fa30aa3600e24ce2506372f68a07d218a749ee6601295fdd09427333d3e4",
-    "build.x_video.mp4": "33af96f9643ad10dd9c45919045049999da4876aead9182b88978f8573babca5",
-    "data.json": "e71882f0483d9baced9930e703afe4e18d301476de9c4cb1d108a10191360b7b"
+    "build.linkedin_png.png": "13577fb37bea86c6ae38b08590bd525ba5a6603c7a7d283ab03dd65e8445b921",
+    "build.linkedin_video.mp4": "4e269822d7aa7616fa8b5b73130d0fc910517e5e5d4b4e0963d59e94f5530b62",
+    "build.x_png.png": "17c9132cc6c2b9cd2cc2a93c50e64f3ac723d8138cc73aa633f2f36b6fe338cd",
+    "build.x_video.mp4": "8ba245aff2fe2afd3cd122445749f70e02da6a94d47344ab794929a25e4c6051",
+    "data.json": "7798b702dae1321161ec5ad10bb35347f53cba764d6c8142e63b91943674b868"
   },
   "sources": {
     "openrouter_rankings": {
       "class": "Latest-only",
-      "content_sha256": "fde03a8f377acf5bc82fc564b452a14ab504c5895bb27823ab823f26677fd541",
-      "fetch_date": "2026-10-19",
+      "content_sha256": "fa5c5707285a5141f07eeb57c2b005ca6c0f4a2fb2aab85ec9b3b8b1ec3be174",
+      "fetch_date": "2026-11-13",
       "vintage": {
         "kind": "api_as_of",
-        "value": "2026-10-19T12:47:05.121Z",
+        "value": "2026-11-13T13:47:05.766Z",
         "window": [
-          "2026-09-14",
-          "2026-10-18"
+          "2026-10-09",
+          "2026-11-12"
         ]
       },
       "vintage_after_as_of": false
@@ -33,8 +33,8 @@
   "uv_lock_sha256": "df674c1398ab837cf95d21d5372750e72bd771e725c2527b581574abba4d427e",
   "visuals": {
     "build": {
-      "source": "OpenRouter (openrouter.ai/rankings), as of 2026-10-19",
-      "subtitle": "Weekly tokens on OpenRouter, January 2026 to October 18, 2026.",
+      "source": "OpenRouter (openrouter.ai/rankings), as of 2026-11-13",
+      "subtitle": "Weekly tokens on OpenRouter, January 2026 to November 8, 2026.",
       "title": "DeepSeek serves more tokens on OpenRouter than every US model combined."
     }
   },

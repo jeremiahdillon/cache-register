@@ -532,6 +532,45 @@
    "US closed models": "31969942999999.996",
    "All US models": "41916373800000.0",
    "days": "7"
+  },
+  {
+   "week": "2026-10-19",
+   "DeepSeek": "59978337699999.99",
+   "US open-weight models": "10411357000000.0",
+   "OpenAI": "14248815099999.998",
+   "Anthropic": "14723166099999.998",
+   "Google": "4182473820000.0",
+   "xAI (Grok)": "457167093000.0",
+   "Other US closed": "2766490690000.0",
+   "US closed models": "36378112800000.0",
+   "All US models": "46789469800000.0",
+   "days": "7"
+  },
+  {
+   "week": "2026-10-26",
+   "DeepSeek": "70952292600000.0",
+   "US open-weight models": "8423842570000.0",
+   "OpenAI": "19480113600000.0",
+   "Anthropic": "12754964199999.998",
+   "Google": "4198248090000.0",
+   "xAI (Grok)": "0.0",
+   "Other US closed": "2649666970000.0",
+   "US closed models": "39082992800000.0",
+   "All US models": "47506835400000.0",
+   "days": "7"
+  },
+  {
+   "week": "2026-11-02",
+   "DeepSeek": "80572458200000.0",
+   "US open-weight models": "9019178930000.0",
+   "OpenAI": "15926793299999.998",
+   "Anthropic": "12368418999999.998",
+   "Google": "3984553370000.0",
+   "xAI (Grok)": "0.0",
+   "Other US closed": "3073320600000.0",
+   "US closed models": "35353086300000.0",
+   "All US models": "44372265200000.0",
+   "days": "7"
   }
  ]
 }
