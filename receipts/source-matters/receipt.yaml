@@ -7,8 +7,8 @@ blurb: >-   # site text below the charts (author-approved 2026-10-16); not hashe
   Anthropic's share of spend and of tokens, as reported by Ramp, Vercel AI Gateway and OpenRouter. Each source
   sees a different slice of the market, so their levels differ. The charts show how far apart they are, not
   which source is right.
-sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings, litellm_prices]
-as_of: 2026-10-10
+sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings, litellm_prices, databricks_ai_index]
+as_of: 2026-11-18
 promoted_from: explore/2026-10-10-anthropic-share-by-source
 config:
   start: null   # null = each source from its first week; or YYYY-MM-DD to start every line there
@@ -21,5 +21,5 @@ visuals:
   - name: tokens-with-free
     chart: tokens_with_free
     targets: [x_png, linkedin_png, x_video, linkedin_video, web_video]
-    sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings]
+    sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings, databricks_ai_index]
   - {name: spend, chart: spend, targets: [x_png, linkedin_png, x_video, linkedin_video, web_video]}

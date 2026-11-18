@@ -1,13 +1,15 @@
 """Anthropic's share of spend and tokens, by data source.
 
 Receipt (cacheregister.dev/source-matters), promoted from explore/2026-10-10-anthropic-share-by-source. Reads
-marts 010 (or_model_daily), 062 (ramp_token_share) and 090 (vercel_lab_share); never cachereg.sources. See
+marts 010 (or_model_daily), 062 (ramp_token_share), 090 (vercel_lab_share) and 095/096 (dbx_vendor_share_week,
+dbx_vendor_spend_week, dbx_segment_price_week, dbx_spend_mix_week); never cachereg.sources. See
 README.md for method and docs/plans/2026-10-10-anthropic-share-by-source.md for the design and the author's
 decisions. `cachereg render receipts/source-matters` renders the visuals declared in receipt.yaml into output/.
 
 Every line is the same measure, Anthropic's share of all its source reports, so the sources share one axis
 (author decision). The sources see different populations and measure spend differently; the README says
-which differences may be method rather than segment.
+which differences may be method rather than segment. Each line runs to its own source's latest week (author,
+2026-11-18), so the lines end at different dates.
 """
 
 from __future__ import annotations
@@ -20,8 +22,8 @@ from cachereg.core.warehouse import query
 from cachereg.story.model import Story
 
 LAB = "anthropic"
-SOURCES = ["ramp", "vercel", "openrouter"]
-NAMES = {"ramp": "Ramp", "vercel": "Vercel", "openrouter": "OpenRouter"}
+SOURCES = ["ramp", "databricks", "vercel", "openrouter"]
+NAMES = {"ramp": "Ramp", "databricks": "Databricks", "vercel": "Vercel", "openrouter": "OpenRouter"}
 # (measure, OpenRouter token variant) per visual
 VISUALS = {"spend": ("spend", None), "tokens-with-free": ("tokens", "all")}  # paid-only tokens stay in `weekly`
 
@@ -102,7 +104,47 @@ def ramp_weeks(con) -> pl.DataFrame:
     )
 
 
-def weekly(orw: pl.DataFrame, vw: pl.DataFrame, rw: pl.DataFrame, min_days: int) -> pl.DataFrame:
+def databricks_weeks(con) -> pl.DataFrame:
+    """Databricks (Unity Gateway), per Monday–Sunday week dated by its Sunday: Anthropic's share of ALL tokens
+    (its share of proprietary tokens × the proprietary share of tokens) and of ALL spend (its wallet share of
+    proprietary × (1 − the estimated open-weight share of spend), with that estimate's sensitivity range;
+    mart 096)."""
+    return query(
+        con,
+        """
+        SELECT t.week, t.share_of_all_pct AS tokens_pct, s.share_of_all_pct AS spend_pct,
+               s.share_of_all_lo_pct AS spend_lo_pct, s.share_of_all_hi_pct AS spend_hi_pct,
+               t.share_of_segment_pct AS tokens_of_proprietary_pct, s.wallet_of_segment_pct AS spend_of_proprietary_pct,
+               s.open_spend_pct
+        FROM dbx_vendor_share_week t
+        LEFT JOIN dbx_vendor_spend_week s USING (week, vendor_id, segment)
+        WHERE t.vendor_id = ? AND t.metric = 'tokens' AND t.segment = 'proprietary'
+        ORDER BY t.week
+        """,
+        [LAB],
+    )
+
+
+def databricks_coverage(con) -> pl.DataFrame:
+    """Per week: the token mix, the estimated open-weight share of spend and how much of each segment's tokens the
+    price estimate rests on (named models with a LiteLLM price; stale = nearest listing, not that day's)."""
+    return query(
+        con,
+        """
+        SELECT m.week, m.proprietary_token_pct, m.open_token_pct, m.open_spend_pct, m.open_spend_pct_lo,
+               m.open_spend_pct_hi, 1e6 * m.p_prop AS prop_usd_per_m, 1e6 * m.p_open AS open_usd_per_m,
+               pp.priced_token_pct AS prop_priced_token_pct, po.priced_token_pct AS open_priced_token_pct,
+               pp.stale_priced_token_pct AS prop_stale_token_pct, po.stale_priced_token_pct AS open_stale_token_pct,
+               pp.named_unpriced AS prop_named_unpriced, po.named_unpriced AS open_named_unpriced
+        FROM dbx_spend_mix_week m
+        JOIN dbx_segment_price_week pp ON pp.week_start = m.week_start AND pp.segment = 'proprietary'
+        JOIN dbx_segment_price_week po ON po.week_start = m.week_start AND po.segment = 'open_weight'
+        ORDER BY m.week
+        """,
+    )
+
+
+def weekly(orw: pl.DataFrame, vw: pl.DataFrame, rw: pl.DataFrame, dw: pl.DataFrame, min_days: int) -> pl.DataFrame:
     """Long frame: week × source × measure × variant, weeks with at least `min_days` days of data (gateways;
     Ramp's weeks are whole), with a trailing 4-week mean. `days` shows the 6-day weeks."""
     o = orw.filter(pl.col("days") >= min_days)
@@ -146,6 +188,22 @@ def weekly(orw: pl.DataFrame, vw: pl.DataFrame, rw: pl.DataFrame, min_days: int)
             variant=pl.lit("all"),
             share_pct=100 * pl.col("lab_tokens_all").fill_null(0) / pl.col("tokens_all"),
             days="days",
+        ),
+        dw.select(
+            "week",
+            source=pl.lit("databricks"),
+            measure=pl.lit("tokens"),
+            variant=pl.lit(None, pl.String),
+            share_pct="tokens_pct",
+            days=pl.lit(7),
+        ),
+        dw.drop_nulls("spend_pct").select(
+            "week",
+            source=pl.lit("databricks"),
+            measure=pl.lit("spend"),
+            variant=pl.lit(None, pl.String),
+            share_pct="spend_pct",
+            days=pl.lit(7),
         ),
     ]
     df = pl.concat([p.with_columns(pl.col("days").cast(pl.Int64)) for p in parts])
@@ -227,6 +285,13 @@ def or_bound(orw: pl.DataFrame, min_days: int) -> pl.DataFrame:
     return rolling(b, "sensitivity_pct", "sensitivity_r4")
 
 
+def dbx_bound(dw: pl.DataFrame) -> pl.DataFrame:
+    """Databricks spend: the estimate and its sensitivity (open-weight prices × 2 → lo, × ½ → hi), 4-week means."""
+    b = dw.drop_nulls("spend_pct").select("week", est_pct="spend_pct", lo_pct="spend_lo_pct", hi_pct="spend_hi_pct")
+    b = rolling(b, "lo_pct", "lo_r4")
+    return rolling(b, "hi_pct", "hi_r4")
+
+
 def check_lab_priced(orw: pl.DataFrame, min_days: int) -> None:
     """Author decision 4b: stop when a week drawn has unpriced Anthropic tokens (a model not yet mapped)."""
     bad = orw.filter((pl.col("days") >= min_days) & (pl.col("lab_unpriced_tokens") > 0))
@@ -241,13 +306,14 @@ def check_lab_priced(orw: pl.DataFrame, min_days: int) -> None:
 # ---- story -----------------------------------------------------------------------------------
 
 
-def latest_common(w: pl.DataFrame, measure: str, variant: str | None) -> tuple[date, dict[str, float]]:
-    """The latest week where all three sources have a 4-week value, and those values."""
+def latest_each(w: pl.DataFrame, measure: str, variant: str | None) -> dict[str, dict]:
+    """Each source's latest week with a 4-week value, and that value (the lines end at different weeks)."""
     s = series(w, measure, variant).filter(pl.col("rolling4_pct").is_not_null())
-    weeks = set.intersection(*(set(s.filter(pl.col("source") == src)["week"]) for src in SOURCES))
-    wk = max(weeks)
-    vals = dict(s.filter(pl.col("week") == wk).select("source", "rolling4_pct").iter_rows())
-    return wk, vals
+    out = {}
+    for src in SOURCES:
+        r = s.filter(pl.col("source") == src).sort("week").row(-1, named=True)
+        out[src] = {"week": str(r["week"]), "value": r["rolling4_pct"]}
+    return out
 
 
 def series(w: pl.DataFrame, measure: str, variant: str | None) -> pl.DataFrame:
@@ -266,45 +332,51 @@ STAMP = {
 }
 
 
-def _when(week: date) -> str:
-    """'by the end of September' when the week ends in the month's last 7 days, else 'in the week to 13 September'."""
-    if (week + timedelta(days=7)).month != week.month:
-        return f"by the end of {week:%B}"
-    return f"in the week to {week:%-d %B}"
-
-
-def _subtitle(kind: str, week: date, vals: dict[str, float]) -> str:
-    parts = [f"{vals[s]:.0f}% on {NAMES[s]}" for s in SOURCES]
-    listed = ", ".join(parts[:-1]) + " and " + parts[-1]
+def _subtitle(kind: str, ends: dict[str, dict]) -> str:
+    """Each source's latest 4-week value, grouped by the week it ends (earliest first)."""
+    by_week: dict[str, list[str]] = {}
+    for src in sorted(SOURCES, key=lambda x: (ends[x]["week"], -ends[x]["value"])):
+        by_week.setdefault(ends[src]["week"], []).append(f"{ends[src]['value']:.0f}% on {NAMES[src]}")
+    groups = []
+    for wk, parts in by_week.items():
+        d = date.fromisoformat(wk)
+        listed = ", ".join(parts[:-1]) + " and " + parts[-1] if len(parts) > 1 else parts[0]
+        groups.append(f"{listed} (to {d:%-d %b})")
+    last = max(date.fromisoformat(v["week"]) for v in ends.values())
     return (
-        f"Anthropic's share of all {kind} varies widely between sources and over time; {_when(week)} "
-        f"{week:%Y} it stood at {listed} (4-week averages)."
+        f"Anthropic's share of all {kind} varies widely between sources and over time. Latest 4-week averages "
+        f"({last:%Y}): " + "; ".join(groups) + "."
     )
 
 
 def build(con, as_of: date, cfg: dict) -> Story:
-    orw, vw, rw = openrouter_weeks(con), vercel_weeks(con), ramp_weeks(con)
+    orw, vw, rw, dw = openrouter_weeks(con), vercel_weeks(con), ramp_weeks(con), databricks_weeks(con)
     min_days = int(cfg.get("min_days", 6))  # a gateway week with one day missing still gives its share
     check_lab_priced(orw, min_days)
-    w = weekly(orw, vw, rw, min_days)
+    w = weekly(orw, vw, rw, dw, min_days)
     if cfg.get("start"):
         w = w.filter(pl.col("week") >= _sunday(date.fromisoformat(str(cfg["start"]))))
     bound = or_bound(orw, min_days).filter(pl.col("week") >= w["week"].min())
+    dbound = dbx_bound(dw).filter(pl.col("week") >= w["week"].min())
 
     by_visual, extra = {}, {}
     for name, (measure, variant) in VISUALS.items():
-        wk, vals = latest_common(w, measure, variant)
-        extra[name] = {"week": str(wk), "values": vals}
+        ends = latest_each(w, measure, variant)
+        extra[name] = {"ends": ends}
         kind = "spend" if measure == "spend" else "tokens"
         if measure == "spend":
             notes = [
                 "OpenRouter spend is Cache Register's list-price estimate (caching ignored); band: unpriced tokens "
-                "at the week's average price."
+                "at the week's average price. Databricks: its list-price share of proprietary spend × our estimate "
+                "of the proprietary share of all spend; band: open-weight prices ×½ to ×2."
             ]
         else:
             scope = "includes free models" if variant == "all" else "excludes free models"
-            notes = [f"OpenRouter {scope}. Tokens are counted by each provider's tokenizer."]
-        by_visual[name] = {"title": TITLE, "subtitle": _subtitle(kind, wk, vals), "notes": notes}
+            notes = [
+                f"OpenRouter {scope}. Databricks: its share of proprietary tokens × the proprietary share of tokens. "
+                "Tokens are counted by each provider's tokenizer."
+            ]
+        by_visual[name] = {"title": TITLE, "subtitle": _subtitle(kind, ends), "notes": notes}
 
     lw = orw.filter(pl.col("days") >= min_days)
     coverage = (
@@ -352,6 +424,9 @@ def build(con, as_of: date, cfg: dict) -> Story:
             "weekly": w,
             "or_bound": bound,
             "or_bound_quarterly": bound_q,
+            "dbx_bound": dbound,
+            "dbx_weekly": dw,
+            "dbx_coverage": databricks_coverage(con),
             "coverage": coverage,
             "first_last": first_last,
             "partial_weeks_dropped": dropped,
@@ -370,17 +445,18 @@ def build(con, as_of: date, cfg: dict) -> Story:
                 )
             ),
         },
-        sources=["ramp_ai_index", "vercel_ai_gateway", "openrouter_rankings", "litellm_prices"],
+        sources=["ramp_ai_index", "vercel_ai_gateway", "openrouter_rankings", "litellm_prices", "databricks_ai_index"],
         as_of=as_of,
         method=(
             f"Anthropic's share of each source's reported total per Mon–Sun week; weeks with ≥ {min_days} days of data"
         ),
         notes=first["notes"],
         caveats=[
-            "Three populations: Ramp customers who connected their AI providers; Vercel AI Gateway users; "
-            "OpenRouter users. None is the market.",
-            "Spend measured three ways: Ramp realised, Vercel's measure, OpenRouter our list-price estimate (caching "
-            "ignored), so part of a gap may be method, not segment.",
+            "Four populations: Ramp customers who connected their AI providers; Databricks Unity Gateway "
+            "enterprises; Vercel AI Gateway users; OpenRouter users. None is the market.",
+            "Spend measured four ways: Ramp realised, Vercel's measure, Databricks list prices (rescaled by our "
+            "estimate of the open-weight share), OpenRouter our list-price estimate (caching ignored), so part of a "
+            "gap may be method, not segment.",
         ],
         extra={"visuals": extra, "stamp": STAMP, "start": str(w["week"].min())},
         by_visual=by_visual,

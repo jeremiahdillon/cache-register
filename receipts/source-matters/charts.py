@@ -1,14 +1,17 @@
 """Charts for the source-matters receipt (render contract: src/cachereg/render.py).
 
 One layout for two visuals (`spend`, `tokens-with-free`): Anthropic's share of each source's reported total,
-three sources on one 0–100% axis (same measure in each; author decision), weekly dots and a trailing 4-week
-line per source, labelled at the line ends. On `spend`, a faint band shows OpenRouter's sensitivity to its
-unpriced tokens. The render contract passes no visual name, so each visual has a thin function over the shared
+four sources on one 0–100% axis (same measure in each; author decision), weekly dots and a trailing 4-week
+line per source. Each line runs to its own source's latest week (author, 2026-11-18); the end labels stand in
+one column after the latest week, and a line that ends earlier reaches its label by a thin grey leader. On
+`spend`, faint bands show OpenRouter's sensitivity to its unpriced tokens and Databricks' to the open-weight
+price estimate. The render contract passes no visual name, so each visual has a thin function over the shared
 helper.
 
 Video (`<visual>_specs`): the weekly dots sweep in bright from left to right; then each source's line draws in
-turn (Ramp, OpenRouter, Vercel) at one calendar speed; once it is drawn, its dots dim and its end label fades
-in; on `spend`, OpenRouter's band fades in after its line; a long hold on the final frame, which
+turn (Ramp, OpenRouter, Vercel, Databricks) at one calendar speed; once it is drawn, its dots dim and its end
+label (and leader) fades in; on `spend`, OpenRouter's and Databricks' bands fade in after their lines; a long
+hold on the final frame, which
 equals the static chart. Every frame draws every mark (hidden ones at opacity 0) at the final frame's fitted
 size, so the canvas never moves.
 """
@@ -26,7 +29,7 @@ from cachereg.viz.fit import fit, fit_size
 from cachereg.viz.theme import vl_config
 
 LABEL_PX, AXIS_PX = 17, 15
-NAMES = {"ramp": "Ramp", "vercel": "Vercel", "openrouter": "OpenRouter"}
+NAMES = {"ramp": "Ramp", "vercel": "Vercel", "openrouter": "OpenRouter", "databricks": "Databricks"}
 # One colour per source, close to its brand but tuned for the dark canvas and each other (author, 2026-10-10:
 # brand-aligned, legibility first). OpenRouter: its "Grape" logo fill #7624F4, lifted to OKLCH L 0.60 (label
 # contrast 3.1 -> 4.5:1). Ramp: its yellow-green #E4F222 (site CSS), darkened to L 0.82 so it does not outshine
@@ -35,10 +38,14 @@ NAMES = {"ramp": "Ramp", "vercel": "Vercel", "openrouter": "OpenRouter"}
 # Anthropic's orange. OpenRouter brightened to L 0.65 (contrast 5.6:1) with its hue nudged 4° toward violet and
 # Vercel's toward cyan, which keeps the two apart. Validator (dark, all pairs): CVD worst ΔE 9.2, normal 19.7,
 # contrast >= 3:1 for all.
-SOURCE_COLOR = {"ramp": "#C4D00A", "openrouter": "#9C6BFF", "vercel": "#0AA3D6"}
+# Databricks (2026-11-18): its "lava" red #FF3621 moved toward rose and darkened to OKLCH L 0.64, clear of
+# Anthropic's orange; validator (dark, all four pairs): CVD worst ΔE 9.2 (OpenRouter–Vercel, unchanged), normal
+# 19.7, contrast >= 3:1, and Databricks inside the lightness band.
+SOURCE_COLOR = {"ramp": "#C4D00A", "openrouter": "#9C6BFF", "vercel": "#0AA3D6", "databricks": "#F0466E"}
+BANDS = ("openrouter", "databricks")  # spend: (frame, lo, hi) per source in _band_rows
 LINE_PX = 3.4  # 4-week lines (scaled by font_scale); heavier for small screens
 END_LABEL_PX = 20  # line-end labels, sized for small screens
-LINE_ORDER = ["ramp", "openrouter", "vercel"]  # the video draws the lines in this order (author)
+LINE_ORDER = ["ramp", "openrouter", "vercel", "databricks"]  # the video draws the lines in this order (author)
 DOT_SIZE, DOT_OP = 16, 0.35  # weekly dots as in the static chart (dim)
 DOT_SIZE_BRIGHT, DOT_OP_BRIGHT = 30, 0.9  # as they sweep in
 BAND_OP = 0.18
@@ -78,10 +85,9 @@ def _smooth(u: float) -> float:
 
 
 def _series(story: Story, visual: str) -> pl.DataFrame:
-    """The visual's weekly rows, every line ending at the week the subtitle describes."""
+    """The visual's weekly rows, each source to its own latest week."""
     measure, variant = {"spend": ("spend", None), "tokens-with-free": ("tokens", "all")}[visual]
-    end = date.fromisoformat(story.extra["visuals"][visual]["week"])
-    w = story.frames["weekly"].filter((pl.col("measure") == measure) & (pl.col("week") <= end))
+    w = story.frames["weekly"].filter(pl.col("measure") == measure)
     if measure == "tokens":
         w = w.filter((pl.col("source") != "openrouter") | (pl.col("variant") == variant))
     return w.with_columns(t=pl.col("week").map_elements(_ms, return_dtype=pl.Int64)).sort("t")
@@ -104,7 +110,7 @@ def _specs(story: Story, width: int, height: int, fs: float, visual: str) -> tup
         "dot": {src: (0.0, DOT_SIZE_BRIGHT) for src in LINE_ORDER},
         "line": {src: None for src in LINE_ORDER},
         "label": {src: 0.0 for src in LINE_ORDER},
-        "band": 0.0,
+        "band": {src: 0.0 for src in BANDS},
     }
     states: list[dict] = []
 
@@ -138,14 +144,14 @@ def _specs(story: Story, width: int, height: int, fs: float, visual: str) -> tup
             )
             state["label"][src] = _smooth((i + 1) / label)
             snap()
-        if src == "openrouter" and visual == "spend":  # its band fades in once its line is drawn
+        if src in BANDS and visual == "spend":  # its band fades in once its line is drawn
             for i in range(frames(BAND_S)):
-                state["band"] = _smooth((i + 1) / frames(BAND_S))
+                state["band"][src] = _smooth((i + 1) / frames(BAND_S))
                 snap()
         if k < len(LINE_ORDER) - 1:
             for _ in range(frames(PAUSE_S)):
                 snap()
-    state["band"] = 1.0
+    state["band"] = {src: 1.0 for src in BANDS}
     for _ in range(frames(FINAL_HOLD_S)):
         snap()
     return [_share(story, w, h, fs, visual, state=st).to_dict() for st in states], FPS
@@ -169,12 +175,10 @@ def _share(story: Story, width: float, height: float, fs: float, visual: str, st
     """The chart, finished (state None: the static chart and the video's final frame) or as one video frame.
 
     state: {"cut": dots shown up to this time (ms) or None for none, "dot": {source: (opacity, size)},
-    "line": {source: drawn up to this time (ms) or None}, "label": {source: opacity}, "band": opacity}.
+    "line": {source: drawn up to this time (ms) or None}, "label": {source: opacity}, "band": {source: opacity}}.
     """
     fonts = brand()["fonts"]
     measure = "spend" if visual == "spend" else "tokens"
-    # every line ends at the week the subtitle describes (the latest week all three sources cover)
-    end = date.fromisoformat(story.extra["visuals"][visual]["week"])
     w = _series(story, visual)
     first, last = w["week"].min(), w["week"].max()
     label_px = (len("OpenRouter 100%") * 0.55 * END_LABEL_PX + 28) * fs
@@ -203,22 +207,27 @@ def _share(story: Story, width: float, height: float, fs: float, visual: str, st
     rows = w
     layers = []
     if measure == "spend":
-        b = story.frames["or_bound"].filter(pl.col("week") <= end).sort("week")
-        # one area per unbroken run of 4-week values, so the band breaks where the line does
-        b = b.with_columns(run=pl.col("computed_r4").is_null().cum_sum()).drop_nulls(["computed_r4", "sensitivity_r4"])
-        for (_,), part in b.group_by("run", maintain_order=True):
-            band = alt.Data(
-                values=part.select(
-                    t=pl.col("week").map_elements(_ms, return_dtype=pl.Int64), lo="sensitivity_r4", hi="computed_r4"
-                ).to_dicts()
-            )
-            layers.append(
-                alt.Chart(band)
-                .mark_area(color=_color("openrouter"), opacity=BAND_OP * (1.0 if state is None else state["band"]))
-                .encode(x=x, y=alt.Y("lo:Q", scale=y_scale, axis=y_axis), y2="hi:Q")
-            )
+        bands = {
+            "openrouter": (story.frames["or_bound"], "sensitivity_r4", "computed_r4"),
+            "databricks": (story.frames["dbx_bound"], "lo_r4", "hi_r4"),
+        }
+        for src, (frame, lo, hi) in bands.items():
+            b = frame.sort("week")
+            # one area per unbroken run of 4-week values, so the band breaks where the line does
+            b = b.with_columns(run=pl.col(hi).is_null().cum_sum()).drop_nulls([lo, hi])
+            for (_,), part in b.group_by("run", maintain_order=True):
+                band = alt.Data(
+                    values=part.select(
+                        t=pl.col("week").map_elements(_ms, return_dtype=pl.Int64), lo=lo, hi=hi
+                    ).to_dicts()
+                )
+                layers.append(
+                    alt.Chart(band)
+                    .mark_area(color=_color(src), opacity=BAND_OP * (1.0 if state is None else state["band"][src]))
+                    .encode(x=x, y=alt.Y("lo:Q", scale=y_scale, axis=y_axis), y2="hi:Q")
+                )
     ends = []
-    for src in ("ramp", "vercel", "openrouter"):
+    for src in ("ramp", "databricks", "vercel", "openrouter"):
         s = rows.filter(pl.col("source") == src)
         c = _color(src)
         dot_op, dot_size = (DOT_OP, DOT_SIZE) if state is None else state["dot"][src]
@@ -256,10 +265,20 @@ def _share(story: Story, width: float, height: float, fs: float, visual: str, st
     low = min(placed)
     for e in ends:
         e["ly"] = e["ly"] - min(low, 0)
+    # labels stand in one column after the latest week; a line that ends earlier reaches it by a grey leader
+    t_label = max(e["t"] for e in ends)
+    for e in ends:
+        e["lt"] = t_label
     for e in ends:
         c = _color(e["src"])
         d = alt.Data(values=[e])
         op = 1.0 if state is None else state["label"][e["src"]]  # drawn at opacity 0 until shown
+        if e["t"] < t_label:
+            layers.append(
+                alt.Chart(d)
+                .mark_rule(color=color("muted"), strokeWidth=1.5 * fs, opacity=0.8 * op)
+                .encode(x=x, y=alt.Y("v:Q", scale=y_scale, axis=y_axis), x2="lt:T", y2="ly:Q")
+            )
         layers += [
             alt.Chart(d)
             .mark_circle(size=100 * fs**2, opacity=op, color=c, stroke=color("canvas"), strokeWidth=2, strokeOpacity=op)
@@ -275,7 +294,9 @@ def _share(story: Story, width: float, height: float, fs: float, visual: str, st
                 color=c,
                 opacity=op,
             )
-            .encode(x=x, y=alt.Y("ly:Q", scale=y_scale, axis=y_axis), text="name:N"),
+            .encode(
+                x=alt.X("lt:T", scale=x_scale, axis=x_axis), y=alt.Y("ly:Q", scale=y_scale, axis=y_axis), text="name:N"
+            ),
         ]
     # the measure, stamped on the chart's face (upper right), just below the 100% gridline
     layers.append(
