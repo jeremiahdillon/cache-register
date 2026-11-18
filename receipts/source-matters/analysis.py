@@ -367,15 +367,11 @@ def build(con, as_of: date, cfg: dict) -> Story:
         if measure == "spend":
             notes = [
                 "OpenRouter spend is Cache Register's list-price estimate (caching ignored); band: unpriced tokens "
-                "at the week's average price. Databricks: its list-price share of proprietary spend × our estimate "
-                "of the proprietary share of all spend; band: open-weight prices ×½ to ×2."
+                "at the week's average price."
             ]
         else:
             scope = "includes free models" if variant == "all" else "excludes free models"
-            notes = [
-                f"OpenRouter {scope}. Databricks: its share of proprietary tokens × the proprietary share of tokens. "
-                "Tokens are counted by each provider's tokenizer."
-            ]
+            notes = [f"OpenRouter {scope}. Tokens are counted by each provider's tokenizer."]
         by_visual[name] = {"title": TITLE, "subtitle": _subtitle(kind, ends), "notes": notes}
 
     lw = orw.filter(pl.col("days") >= min_days)
@@ -447,9 +443,7 @@ def build(con, as_of: date, cfg: dict) -> Story:
         },
         sources=["ramp_ai_index", "vercel_ai_gateway", "openrouter_rankings", "litellm_prices", "databricks_ai_index"],
         as_of=as_of,
-        method=(
-            f"Anthropic's share of each source's reported total per Mon–Sun week; weeks with ≥ {min_days} days of data"
-        ),
+        method=f"Anthropic's share of each source's total per Mon–Sun week (≥ {min_days} days of data)",
         notes=first["notes"],
         caveats=[
             "Four populations: Ramp customers who connected their AI providers; Databricks Unity Gateway "
