@@ -5,8 +5,8 @@
 # Ids starting with "_" are not model makers (anonymous pre-release models, routers, platforms).
 # `cachereg entities check` (Phase 3) reports prefixes that are not mapped here.
 vendors:
-  openai:           {name: OpenAI,                  open_weights: false, hq: US, aliases: {openrouter: [openai], ramp: [OpenAI], vercel: [openai]}}
-  anthropic:        {name: Anthropic,               open_weights: false, hq: US, aliases: {openrouter: [anthropic], ramp: [Anthropic], vercel: [anthropic]}}
+  openai:           {name: OpenAI,                  open_weights: false, hq: US, aliases: {openrouter: [openai], ramp: [OpenAI], vercel: [openai], databricks: [OpenAI]}}
+  anthropic:        {name: Anthropic,               open_weights: false, hq: US, aliases: {openrouter: [anthropic], ramp: [Anthropic], vercel: [anthropic], databricks: [Anthropic]}}
   google:           {name: Google,                  open_weights: false, hq: US, aliases: {openrouter: [google], ramp: [Google], vercel: [google]}}
   xai:              {name: xAI,                     open_weights: false, hq: US, aliases: {openrouter: [x-ai], ramp: [xAI], vercel: [spacexai]}}
   meta:             {name: Meta,                    open_weights: true,  hq: US, aliases: {openrouter: [meta-llama, meta], ramp: [Meta], vercel: [meta]}}
@@ -20,10 +20,10 @@ vendors:
   mistral:          {name: Mistral,                 open_weights: true,  hq: FR, aliases: {openrouter: [mistralai], ramp: [Mistral AI, Mistral], vercel: [mistral]}}
   cohere:           {name: Cohere,                  open_weights: true,  hq: CA, aliases: {openrouter: [cohere], vercel: [cohere]}}
   upstage:          {name: Upstage,                 open_weights: true,  hq: KR, aliases: {openrouter: [upstage]}}
-  deepseek:         {name: DeepSeek,                open_weights: true,  hq: CN, aliases: {openrouter: [deepseek], ramp: [DeepSeek], vercel: [deepseek]}}
+  deepseek:         {name: DeepSeek,                open_weights: true,  hq: CN, aliases: {openrouter: [deepseek], ramp: [DeepSeek], vercel: [deepseek], databricks: [DeepSeek]}}
   alibaba:          {name: Alibaba (Qwen),          open_weights: true,  hq: CN, aliases: {openrouter: [qwen, alibaba], ramp: [Alibaba], vercel: [alibaba]}}
-  moonshot:         {name: Moonshot AI,             open_weights: true,  hq: CN, aliases: {openrouter: [moonshotai], ramp: [Moonshot], vercel: [moonshotai]}}
-  zai:              {name: Z.ai,                    open_weights: true,  hq: CN, aliases: {openrouter: [z-ai, thudm], ramp: [Z.ai], vercel: [zai]}}
+  moonshot:         {name: Moonshot AI,             open_weights: true,  hq: CN, aliases: {openrouter: [moonshotai], ramp: [Moonshot], vercel: [moonshotai], databricks: [Moonshot]}}
+  zai:              {name: Z.ai,                    open_weights: true,  hq: CN, aliases: {openrouter: [z-ai, thudm], ramp: [Z.ai], vercel: [zai], databricks: [Zhipu]}}
   minimax:          {name: MiniMax,                 open_weights: true,  hq: CN, aliases: {openrouter: [minimax], ramp: [MiniMax], vercel: [minimax]}}
   xiaomi:           {name: Xiaomi,                  open_weights: true,  hq: CN, aliases: {openrouter: [xiaomi], vercel: [xiaomi]}}
   tencent:          {name: Tencent,                 open_weights: true,  hq: CN, aliases: {openrouter: [tencent], vercel: [tencent]}}

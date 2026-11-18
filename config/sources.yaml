@@ -172,6 +172,20 @@ sources:
     requires: []
     enabled: true
 
+  # Databricks AI Index (verified 2026-11-18, SOURCE.md): public page, no key, no API; weekly token and wallet
+  # shares on Unity Gateway, read from the page's embedded chart data. No licence or terms are stated:
+  # author policy 2026-11-18 treats derived charts as allowed with attribution (fair use) and does not
+  # republish the series (redistribution unknown). Revisions unknown, so Latest-only.
+  - id: databricks_ai_index
+    history: native
+    revisions: revised
+    redistribution: unknown
+    derived_charts: allowed-with-attribution
+    attribution: "Databricks AI Index (developers.databricks.com/ai-index), as of {as_of}"
+    cadence: daily
+    requires: []
+    enabled: true
+
   # Curated disclosures (ours, CC BY 4.0; SOURCE.md): config/curated/disclosures.csv, append-only rows
   # with `supersedes`, each cited to the company statement it quotes. Exact by `recorded_on`.
   - id: curated_disclosures
