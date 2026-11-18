@@ -1,74 +1,89 @@
 {
-  "as_of": "2026-10-10",
+  "as_of": "2026-11-18",
   "cache_register_version": "0.0.1",
-  "data_hash": "0e013ec47fc9b91dc5398257e6e65604b7a204b1acdc33cd166e48dac3d66a9e",
+  "data_hash": "62e5d1b05e69b504ad8a86d91cc9b9bff39fb57ecf95c05f7254a0faa1ba0716",
   "folder": "receipts/source-matters",
   "git_dirty": false,
-  "git_sha": "e531485dc49515bdb7e7eccc49a22ecbc6718fb9",
-  "inputs_hash": "0ba1027e70190d51066e8745f2844e111a690e11e2af28cc83a57d96b140bb4a",
+  "git_sha": "f3adcfffd68ced42340957a388deaf7a5ae9fc03",
+  "inputs_hash": "46d62c843ea46b10bc42f776f4fdeedb7a6f0ca73e8eb8b46dcf646a21438aaa",
   "kind": "receipt",
   "outputs": {
-    "spend.linkedin_png.png": "370715e8722ec50bd8d1ba27d484a7cbe91041addab809a0769d0a40bd36fba0",
-    "spend.linkedin_video.mp4": "687c95b5d0c1ac14420a16ad2a01a39911d20002136a6c91ed66516a9858dd4c",
-    "spend.web_video.webm": "e56fca8cd4865fad2cbf28f96e934b8ec66807b395dee2bd78a0f3713d23f6c8",
-    "spend.x_png.png": "7b6337e971b1f5a4e1ccb69479a2b3e3834991378da27256eefda6099feaa835",
-    "spend.x_video.mp4": "265989b50eeff79eca5c5f4a664328e3629d1a97280d57cd8f0f6e700e55b76d",
-    "tokens-with-free.linkedin_png.png": "92924ed4625295a544382f2dcb786d41cd8b28070a4146469fbe754b39a10a45",
-    "tokens-with-free.linkedin_video.mp4": "1cd5395f9f5d69b19ac1c23ea9f3958ab6f2de0fb283914ed7e481a12c5c8a42",
-    "tokens-with-free.web_video.webm": "1f2c4eef6bc634c3b83747d7b990b2646b6ccbd74606d6de104ea5148c931232",
-    "tokens-with-free.x_png.png": "5cc36d5b919e9387ffb4bd5ed822b9ad98a13d3e7380a9207b15ce8faeb6901d",
-    "tokens-with-free.x_video.mp4": "ac131139ec646f1fd6c8ba1488dc8d3b706e0ba3bbf4e9e4eead3284b17ed209"
+    "spend.linkedin_png.png": "c8c84a0927af0e8ce149b5e08f645d0a23964ae6d8e0b0f7472ee8af38e76374",
+    "spend.linkedin_video.mp4": "7fda3b34ca48bb0285464b6c3cf4fab4c9464376dd00621bf5cec14012da3d9b",
+    "spend.web_video.webm": "bd52251457ba6b9e594c7c4009261e3a7f0ac590ae807252900c08de3784f9ec",
+    "spend.x_png.png": "dba20b524a950e4ae3573d61bd39ededb4d13b6aa9f5f7492594e6d668e59c43",
+    "spend.x_video.mp4": "55c2ae092e2665cb8f68d16f7e5d9c8cf739a746e61d90448a880e7e4fee9ea8",
+    "tokens-with-free.linkedin_png.png": "7fa81c93ca59bbc4cb0e542a0e2862af417be775bbea6139cdf8dc8cf193e152",
+    "tokens-with-free.linkedin_video.mp4": "79527b472dcb8815aedc1f69befb7fb0482f429e6708b0588e4bd7c6cd1f4ab0",
+    "tokens-with-free.web_video.webm": "9912a7978b5a7f9d776e699a9f10440d0b394f48b606c6adc4402ccc83631c41",
+    "tokens-with-free.x_png.png": "a9e9f4f9b01ccef2ca31f7ff9f7a27fbda6b0a7b44447d1bb9cda88de1eadf83",
+    "tokens-with-free.x_video.mp4": "276fa81f744939a38b35318623f7909459e502704598403ce3e605b59d40354f"
   },
   "sources": {
+    "databricks_ai_index": {
+      "class": "Latest-only",
+      "content_sha256": "b38338325e11d029facbb147ecedfeb041154446400980d65f2f1ce75b0f1e05",
+      "fetch_date": "2026-11-18",
+      "vintage": {
+        "kind": "content",
+        "updated": "2026-11-02",
+        "value": "fba82c72302e9f43fef104395276b341dee8ff99aa4d865e9b5c6819f18614b5",
+        "window": [
+          "2026-07-20",
+          "2026-11-02"
+        ]
+      },
+      "vintage_after_as_of": false
+    },
     "litellm_prices": {
       "class": "Exact",
-      "content_sha256": "33e230af550c45c7a5daf0d1aed7366a2297004c553d9b6a14e130db5b6b2e8f",
-      "revision_date": "2026-10-10",
+      "content_sha256": "448bc40a90bd4b7c51728c6271ac41635e7a0927fc865400a665b11fd098faf5",
+      "revision_date": "2026-11-17",
       "vintage": {
-        "date": "2026-10-10",
+        "date": "2026-11-17",
         "kind": "git_commit",
-        "value": "9e2aae8490654e79632d2a666126c5ca0b2da439"
+        "value": "cae28c5515eee5bb157ae221dda4dad7d52e2a33"
       },
       "vintage_after_as_of": false
     },
     "openrouter_rankings": {
       "class": "Latest-only",
-      "content_sha256": "e177861defca611a2b5c75d1bfbacedb71f0940d5bf87b669a723c1620c6e72c",
-      "fetch_date": "2026-10-10",
+      "content_sha256": "7de9a8d225c5bc715221f5ff375761d7e5a1076e9a07b68a6f8b081d07b068b2",
+      "fetch_date": "2026-11-18",
       "vintage": {
         "kind": "api_as_of",
-        "value": "2026-10-10T12:47:01.896Z",
+        "value": "2026-11-18T13:47:06.563Z",
         "window": [
-          "2026-09-05",
-          "2026-10-09"
+          "2026-10-14",
+          "2026-11-17"
         ]
       },
       "vintage_after_as_of": false
     },
     "ramp_ai_index": {
       "class": "Latest-only",
-      "content_sha256": "85c9b9baf2628b4349e91f15adc804247bb1d6520941d91903c0505b792ef132",
-      "fetch_date": "2026-10-07",
+      "content_sha256": "bd1592952241d3d43ea92957bae058c8d37451044dd4c3ddde5ce4358da76298",
+      "fetch_date": "2026-11-18",
       "vintage": {
-        "cut": "token_price/output",
-        "first_period": "2025-01-07",
+        "cut": "token_volume/maker",
+        "first_period": "2025-01-12",
         "kind": "content",
-        "last_period": "2026-09-29",
-        "value": "867dced435f3a9ba6dda9ed5608f03284e8ef7f038bd4bd707370c9ee739c76f"
+        "last_period": "2026-11-01",
+        "value": "660b7d4ffccef68fd5444fc98118040af393756908450c97d0b7329b53ad6fd7"
       },
       "vintage_after_as_of": false
     },
     "vercel_ai_gateway": {
       "class": "Latest-only",
-      "content_sha256": "fa3dcf216943f7902e039dddafd2e29317e52b31d069158b823bd70f8a8b608a",
-      "fetch_date": "2026-10-10",
+      "content_sha256": "13f820413084588b8ce628ad386446472f854c0ef36d5fdf6c3fb5d8c6aa4f7a",
+      "fetch_date": "2026-11-18",
       "vintage": {
         "earliest_available_date": "2025-10-01",
         "kind": "content",
-        "value": "314dbab1d4c62206aa0d71c1aeb837b961cd32b9561a5dfae553ea20c2a2e014",
+        "value": "687b7bdea7152b7dba11f587d65196093e3f855498335e366cb42426cc27bc38",
         "window": [
-          "2026-09-01",
-          "2026-10-09"
+          "2026-10-01",
+          "2026-11-17"
         ]
       },
       "vintage_after_as_of": false
@@ -79,22 +94,23 @@
     "tokens-with-free": [
       "ramp_ai_index",
       "vercel_ai_gateway",
-      "openrouter_rankings"
+      "openrouter_rankings",
+      "databricks_ai_index"
     ]
   },
   "visuals": {
     "spend": {
-      "source": "Ramp AI Index (ramp.com/data/ai-index), as of 2026-10-10; \u00a9 2026 Vercel, \"AI Gateway Leaderboard Data\" (vercel.com/ai-gateway/leaderboards), CC BY 4.0, as of 2026-10-10; OpenRouter (openrouter.ai/rankings), as of 2026-10-10; LiteLLM model prices (github.com/BerriAI/litellm), MIT",
-      "subtitle": "Anthropic's share of all spend varies widely between sources and over time; by the end of September 2026 it stood at 53% on Ramp, 47% on Vercel and 28% on OpenRouter (4-week averages).",
+      "source": "Ramp AI Index (ramp.com/data/ai-index), as of 2026-11-18; \u00a9 2026 Vercel, \"AI Gateway Leaderboard Data\" (vercel.com/ai-gateway/leaderboards), CC BY 4.0, as of 2026-11-18; OpenRouter (openrouter.ai/rankings), as of 2026-11-18; LiteLLM model prices (github.com/BerriAI/litellm), MIT; Databricks AI Index (developers.databricks.com/ai-index), as of 2026-11-18",
+      "subtitle": "Anthropic's share of all spend varies widely between sources and over time. Latest 4-week averages (2026): 52% on Ramp (to 1 Nov); 63% on Databricks (to 8 Nov); 39% on Vercel and 37% on OpenRouter (to 15 Nov).",
       "title": "Different data sources tell different stories about the AI economy"
     },
     "tokens-with-free": {
-      "source": "Ramp AI Index (ramp.com/data/ai-index), as of 2026-10-10; \u00a9 2026 Vercel, \"AI Gateway Leaderboard Data\" (vercel.com/ai-gateway/leaderboards), CC BY 4.0, as of 2026-10-10; OpenRouter (openrouter.ai/rankings), as of 2026-10-10",
-      "subtitle": "Anthropic's share of all tokens varies widely between sources and over time; by the end of September 2026 it stood at 42% on Ramp, 11% on Vercel and 3% on OpenRouter (4-week averages).",
+      "source": "Ramp AI Index (ramp.com/data/ai-index), as of 2026-11-18; \u00a9 2026 Vercel, \"AI Gateway Leaderboard Data\" (vercel.com/ai-gateway/leaderboards), CC BY 4.0, as of 2026-11-18; OpenRouter (openrouter.ai/rankings), as of 2026-11-18; Databricks AI Index (developers.databricks.com/ai-index), as of 2026-11-18",
+      "subtitle": "Anthropic's share of all tokens varies widely between sources and over time. Latest 4-week averages (2026): 56% on Ramp (to 1 Nov); 45% on Databricks (to 8 Nov); 12% on Vercel and 7% on OpenRouter (to 15 Nov).",
       "title": "Different data sources tell different stories about the AI economy"
     }
   },
   "withheld": {
-    "data.json": "redistribution not allowed for: ramp_ai_index"
+    "data.json": "redistribution not allowed for: ramp_ai_index, databricks_ai_index"
   }
 }
