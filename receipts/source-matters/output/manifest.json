@@ -1,29 +1,29 @@
 {
-  "as_of": "2026-11-18",
+  "as_of": "2026-11-20",
   "cache_register_version": "0.0.1",
-  "data_hash": "62e5d1b05e69b504ad8a86d91cc9b9bff39fb57ecf95c05f7254a0faa1ba0716",
+  "data_hash": "044585c2d72211d9351d4659ef464256eac31e385098f70f84b1f93f55cfbbdf",
   "folder": "receipts/source-matters",
   "git_dirty": false,
-  "git_sha": "f3adcfffd68ced42340957a388deaf7a5ae9fc03",
+  "git_sha": "77ac114cbd821860c9b4e1c37d5ff0edc9f359cd",
   "inputs_hash": "46d62c843ea46b10bc42f776f4fdeedb7a6f0ca73e8eb8b46dcf646a21438aaa",
   "kind": "receipt",
   "outputs": {
-    "spend.linkedin_png.png": "c8c84a0927af0e8ce149b5e08f645d0a23964ae6d8e0b0f7472ee8af38e76374",
-    "spend.linkedin_video.mp4": "7fda3b34ca48bb0285464b6c3cf4fab4c9464376dd00621bf5cec14012da3d9b",
-    "spend.web_video.webm": "bd52251457ba6b9e594c7c4009261e3a7f0ac590ae807252900c08de3784f9ec",
-    "spend.x_png.png": "dba20b524a950e4ae3573d61bd39ededb4d13b6aa9f5f7492594e6d668e59c43",
-    "spend.x_video.mp4": "55c2ae092e2665cb8f68d16f7e5d9c8cf739a746e61d90448a880e7e4fee9ea8",
-    "tokens-with-free.linkedin_png.png": "7fa81c93ca59bbc4cb0e542a0e2862af417be775bbea6139cdf8dc8cf193e152",
-    "tokens-with-free.linkedin_video.mp4": "79527b472dcb8815aedc1f69befb7fb0482f429e6708b0588e4bd7c6cd1f4ab0",
-    "tokens-with-free.web_video.webm": "9912a7978b5a7f9d776e699a9f10440d0b394f48b606c6adc4402ccc83631c41",
-    "tokens-with-free.x_png.png": "a9e9f4f9b01ccef2ca31f7ff9f7a27fbda6b0a7b44447d1bb9cda88de1eadf83",
-    "tokens-with-free.x_video.mp4": "276fa81f744939a38b35318623f7909459e502704598403ce3e605b59d40354f"
+    "spend.linkedin_png.png": "1597f9ee54ccc55bed627ee734be8ee961b792c804afe9b14b079ba476786d30",
+    "spend.linkedin_video.mp4": "f20084b2d0b9556f76970c751eda462e7a09715ed93d1cfcce9892ad742c978a",
+    "spend.web_video.webm": "d042cb1d6fa507f8bc03ae5ec19bc3c716239c2ad3b5ad423cb3dd6b8c150b46",
+    "spend.x_png.png": "f88a678b5217255e696cb935b7a11f661ad180d6ece381961bffc98801a2b76e",
+    "spend.x_video.mp4": "8aef555248640f611e886177cbdd09e99ca2dcab5f22d3d70f60c335a2d7d933",
+    "tokens-with-free.linkedin_png.png": "51b2326a8f319092558554b4a49adc75d6c531c3545193f4594038899e5a8270",
+    "tokens-with-free.linkedin_video.mp4": "5a8286017b8070ac429907d1ef6ad4db04227649c093a2dd2a62b017af76606d",
+    "tokens-with-free.web_video.webm": "77c555c2af6232dd1f713a6b5a8fd5dd4eb0c4e3e9593177eaa6cec2386605a3",
+    "tokens-with-free.x_png.png": "7239000513c5dcdf45e0b4a5bff7b914920c06276903dc21342385b1d9a2e1f1",
+    "tokens-with-free.x_video.mp4": "fe64b4934bf79630db4f3c4c46bab877918f9b7ce5811b20ede455d51cfc2e68"
   },
   "sources": {
     "databricks_ai_index": {
       "class": "Latest-only",
       "content_sha256": "b38338325e11d029facbb147ecedfeb041154446400980d65f2f1ce75b0f1e05",
-      "fetch_date": "2026-11-18",
+      "fetch_date": "2026-11-20",
       "vintage": {
         "kind": "content",
         "updated": "2026-11-02",
@@ -37,53 +37,53 @@
     },
     "litellm_prices": {
       "class": "Exact",
-      "content_sha256": "448bc40a90bd4b7c51728c6271ac41635e7a0927fc865400a665b11fd098faf5",
-      "revision_date": "2026-11-17",
+      "content_sha256": "857501a0eb851bbe1eef3228e22a555e13be909f6c35db3a2d6cfff24fc4ca38",
+      "revision_date": "2026-11-19",
       "vintage": {
-        "date": "2026-11-17",
+        "date": "2026-11-19",
         "kind": "git_commit",
-        "value": "cae28c5515eee5bb157ae221dda4dad7d52e2a33"
+        "value": "1ff582fc2be18890687f05a9973066e5fec17dab"
       },
       "vintage_after_as_of": false
     },
     "openrouter_rankings": {
       "class": "Latest-only",
-      "content_sha256": "7de9a8d225c5bc715221f5ff375761d7e5a1076e9a07b68a6f8b081d07b068b2",
-      "fetch_date": "2026-11-18",
+      "content_sha256": "be256b753b8db82482f932bb187bd8ba7dd54659321a12073216897efbbc06e4",
+      "fetch_date": "2026-11-19",
       "vintage": {
         "kind": "api_as_of",
-        "value": "2026-11-18T13:47:06.563Z",
+        "value": "2026-11-19T13:47:04.137Z",
         "window": [
-          "2026-10-14",
-          "2026-11-17"
+          "2026-10-15",
+          "2026-11-18"
         ]
       },
       "vintage_after_as_of": false
     },
     "ramp_ai_index": {
       "class": "Latest-only",
-      "content_sha256": "bd1592952241d3d43ea92957bae058c8d37451044dd4c3ddde5ce4358da76298",
-      "fetch_date": "2026-11-18",
+      "content_sha256": "d41f7d08c5035197fa4b549311b05b1b041ac941746792eef920ff397de6f848",
+      "fetch_date": "2026-11-20",
       "vintage": {
-        "cut": "token_volume/maker",
-        "first_period": "2025-01-12",
+        "cut": "adoption/overall",
+        "first_period": "2023-07-01",
         "kind": "content",
-        "last_period": "2026-11-01",
-        "value": "660b7d4ffccef68fd5444fc98118040af393756908450c97d0b7329b53ad6fd7"
+        "last_period": "2026-10-01",
+        "value": "f154abe216323a2401a95bff785018553b5db73b55dee35f9188f8c959472758"
       },
       "vintage_after_as_of": false
     },
     "vercel_ai_gateway": {
       "class": "Latest-only",
-      "content_sha256": "13f820413084588b8ce628ad386446472f854c0ef36d5fdf6c3fb5d8c6aa4f7a",
-      "fetch_date": "2026-11-18",
+      "content_sha256": "3e7170d58e0f062b2a4c15b7dcb779d631fcbb50cfa8d42151faaa0640bda57a",
+      "fetch_date": "2026-11-20",
       "vintage": {
         "earliest_available_date": "2025-10-01",
         "kind": "content",
-        "value": "687b7bdea7152b7dba11f587d65196093e3f855498335e366cb42426cc27bc38",
+        "value": "e24d2d4bbd1275363cc454ff13990d40e5436a5a49303aa47f205e9aad51c566",
         "window": [
           "2026-10-01",
-          "2026-11-17"
+          "2026-11-19"
         ]
       },
       "vintage_after_as_of": false
@@ -100,13 +100,13 @@
   },
   "visuals": {
     "spend": {
-      "source": "Ramp AI Index (ramp.com/data/ai-index), as of 2026-11-18; \u00a9 2026 Vercel, \"AI Gateway Leaderboard Data\" (vercel.com/ai-gateway/leaderboards), CC BY 4.0, as of 2026-11-18; OpenRouter (openrouter.ai/rankings), as of 2026-11-18; LiteLLM model prices (github.com/BerriAI/litellm), MIT; Databricks AI Index (developers.databricks.com/ai-index), as of 2026-11-18",
-      "subtitle": "Anthropic's share of all spend varies widely between sources and over time. Latest 4-week averages (2026): 52% on Ramp (to 1 Nov); 63% on Databricks (to 8 Nov); 39% on Vercel and 37% on OpenRouter (to 15 Nov).",
+      "source": "Ramp AI Index (ramp.com/data/ai-index), as of 2026-11-19; \u00a9 2026 Vercel, \"AI Gateway Leaderboard Data\" (vercel.com/ai-gateway/leaderboards), CC BY 4.0, as of 2026-11-19; OpenRouter (openrouter.ai/rankings), as of 2026-11-19; LiteLLM model prices (github.com/BerriAI/litellm), MIT; Databricks AI Index (developers.databricks.com/ai-index), as of 2026-11-19",
+      "subtitle": "Anthropic's share of all spend varies widely between sources and over time. Latest 4-week averages (2026): 63% on Databricks (to 8 Nov); 55% on Ramp, 39% on Vercel and 35% on OpenRouter (to 15 Nov).",
       "title": "Different data sources tell different stories about the AI economy"
     },
     "tokens-with-free": {
-      "source": "Ramp AI Index (ramp.com/data/ai-index), as of 2026-11-18; \u00a9 2026 Vercel, \"AI Gateway Leaderboard Data\" (vercel.com/ai-gateway/leaderboards), CC BY 4.0, as of 2026-11-18; OpenRouter (openrouter.ai/rankings), as of 2026-11-18; Databricks AI Index (developers.databricks.com/ai-index), as of 2026-11-18",
-      "subtitle": "Anthropic's share of all tokens varies widely between sources and over time. Latest 4-week averages (2026): 56% on Ramp (to 1 Nov); 45% on Databricks (to 8 Nov); 12% on Vercel and 7% on OpenRouter (to 15 Nov).",
+      "source": "Ramp AI Index (ramp.com/data/ai-index), as of 2026-11-19; \u00a9 2026 Vercel, \"AI Gateway Leaderboard Data\" (vercel.com/ai-gateway/leaderboards), CC BY 4.0, as of 2026-11-19; OpenRouter (openrouter.ai/rankings), as of 2026-11-19; Databricks AI Index (developers.databricks.com/ai-index), as of 2026-11-19",
+      "subtitle": "Anthropic's share of all tokens varies widely between sources and over time. Latest 4-week averages (2026): 45% on Databricks (to 8 Nov); 58% on Ramp, 12% on Vercel and 7% on OpenRouter (to 15 Nov).",
       "title": "Different data sources tell different stories about the AI economy"
     }
   },
