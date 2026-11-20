@@ -17,6 +17,7 @@ vendors:
   arcee:            {name: Arcee AI,                open_weights: true,  hq: US, aliases: {openrouter: [arcee-ai], vercel: [arcee-ai]}}
   perplexity:       {name: Perplexity,              open_weights: false, hq: US, aliases: {openrouter: [perplexity], vercel: [perplexity]}}
   thinkingmachines: {name: Thinking Machines,       open_weights: false, hq: US, aliases: {openrouter: [thinkingmachines], vercel: [thinkingmachines], ramp: [Thinking Machines Lab]}}
+  typesafe:         {name: TypeSafe AI,             open_weights: false, hq: US, aliases: {openrouter: [typesafe], ramp: [Typesafe]}}  # San Francisco; Jev's weights unreleased (2026-11-19)
   mistral:          {name: Mistral,                 open_weights: true,  hq: FR, aliases: {openrouter: [mistralai], ramp: [Mistral AI, Mistral], vercel: [mistral]}}
   cohere:           {name: Cohere,                  open_weights: true,  hq: CA, aliases: {openrouter: [cohere], vercel: [cohere]}}
   upstage:          {name: Upstage,                 open_weights: true,  hq: KR, aliases: {openrouter: [upstage]}}
