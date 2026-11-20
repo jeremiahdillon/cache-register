@@ -38,7 +38,11 @@ def isolated_git(monkeypatch):
 
 @pytest.fixture
 def data_env(tmp_path, monkeypatch):
+    # All three path variables of core/paths.py, so a build in a test can never reach a real folder (a
+    # CACHEREG_BUILD_DIR exported for a private build would otherwise win over the data folder).
+    # CACHEREG_SECRETS_FILE is left alone: tests that need secret isolation point it at a missing file.
     monkeypatch.setenv("CACHEREG_DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("CACHEREG_BUILD_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("CACHEREG_OUTPUTS_DIR", str(tmp_path / "outputs"))
     return tmp_path
 
