@@ -35,6 +35,8 @@ class Cut:
     columns: tuple[str, ...]  # long: the exact header; wide: required anchors after Date
     pattern: str = ANY  # wide: every non-anchor column must match
     text_columns: tuple[str, ...] = ()  # long: non-numeric value columns
+    optional: tuple[str, ...] = ()  # long: columns a paste may lack (the header must then equal the rest)
+    series: tuple[str, ...] = ()  # long: if set, the only keys the view may hold (tells apart equal headers)
 
     @property
     def file_name(self) -> str:
@@ -50,7 +52,10 @@ PRICES = ("OpenAI & Anthropic", "OpenAI", "Anthropic")
 # In the order of the monthly routine (the page's menu order).
 CUTS: tuple[Cut, ...] = (
     Cut("adoption/overall", "Adoption : Overall", f"{PAGE}#adoption#overall", "adoption", "long", "month",
-        ("Date", "Series", *ADOPTION, YOY, "Census question version"), text_columns=("Census question version",)),
+        ("Date", "Series", *ADOPTION, YOY, "Census question version"), text_columns=("Census question version",),
+        # Ramp dropped the Census Estimate series and this column by 2026-11-20; without it the header equals
+        # adoption/models', so the series tell the two views apart.
+        optional=("Census question version",), series=("Ramp Overall", "Census Estimate")),
     Cut("adoption/models", "Adoption : Overall + Models", PAGE, "adoption", "long", "month",
         ("Date", "Series", *ADOPTION, YOY)),
     Cut("adoption/sector", "Adoption : Sector", f"{PAGE}#adoption#sector", "adoption", "long", "month",
@@ -136,7 +141,10 @@ def _lines(body: bytes) -> list[list[str]]:
 
 def _check_header(header: list[str], cut: Cut) -> None:
     if cut.shape == "long":
-        if header != list(cut.columns):
+        allowed = [list(cut.columns)]
+        if cut.optional:
+            allowed.append([c for c in cut.columns if c not in cut.optional])
+        if header not in allowed:
             raise ValueError(f"header {header} does not match {cut.id} (expected {list(cut.columns)})")
         return
     if header[0] != "Date":
@@ -174,6 +182,10 @@ def parse(body: bytes, cut: Cut) -> list[Cell]:
             key = fields[1].strip()
             if not key:
                 raise ValueError(f"{where}: empty {header[1]}")
+            if cut.series and key not in cut.series:
+                raise ValueError(
+                    f"{where}: {header[1]} {key!r} does not belong to {cut.id} (expected {list(cut.series)})"
+                )
             if (period, key) in keys:
                 raise ValueError(f"{where}: duplicate row for {period} {key!r}")
             keys.add((period, key))

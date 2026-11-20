@@ -8,7 +8,7 @@ the author imports it with `cachereg fetch ramp_ai_index --from-clipboard --cut 
 **License:** none granted. Ramp "does not license this data, but provides non-exclusive, opt-in,
 aggregated data to the public". The page has no licence, "cite as" or terms text. Charts credit
 "Source: Ramp AI Index", so we credit "Ramp AI Index (ramp.com/data/ai-index), as of {as_of}".
-**Last verified:** 2026-10-07 (pastes of every imported view and a read of the page; design in
+**Last verified:** 2026-11-20 (all 13 views re-imported; layout changes below); first 2026-10-07 (pastes of every imported view and a read of the page; design in
 `docs/plans/2026-10-07-ramp-ai-index.md`)
 
 ## What it contains
@@ -79,6 +79,13 @@ and Token spend, so neither is relied on.
   not comparable; marts use shares within a week. The volume chart's (i) tooltip repeats the spend
   text ("Token spend").
 - `Monthly change` is `0` (not empty) in the first month of every series; staged as null.
+- **Layout changes seen on 2026-11-20:** Adoption : Overall dropped the `Census Estimate` series and its
+  `Census question version` column, and its history now starts 2023-07 (was 2023-01). The cut accepts both
+  layouts; without the column its header equals Adoption : Overall + Models', so the cut also checks its
+  series (`Ramp Overall`, `Census Estimate`). Business sizes became four segments (Micro-SMB, SMB,
+  Mid-Market, Enterprise); the token views' maker list varies between imports (8 makers on 2026-11-18, 14
+  on 2026-11-20, including Typesafe and Thinking Machines Lab). `ramp_census_restated` is empty from the
+  2026-11-20 import on (earlier imports keep it at their as-of).
 - Adoption : Overall carries `Census Estimate`, Ramp's monthly restatement of the Census Bureau's BTOS,
   with a wording break in November 2025 (`pre_`/`post_nov_2025_wording_change`) and an empty 2025-10.
   It is kept in its own table and never used as a lens; the BTOS source (PLAN #9) is.

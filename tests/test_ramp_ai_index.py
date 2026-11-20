@@ -443,3 +443,27 @@ def test_blended_below_input_is_not_flagged_but_input_above_output_is(data_env, 
     )
     pc = marts(date(2026, 4, 30))("SELECT * FROM ramp_price_check")
     assert (pc["blended"] < pc["input"]).all() and pc["within_bounds"].all()
+
+
+NEW_OVERALL_HEADER = ["Date", "Series", *cuts.ADOPTION, cuts.YOY]  # Ramp's layout from 2026-11 (no Census series)
+
+
+def test_adoption_overall_accepts_the_layout_without_census():
+    cut = cuts.BY_ID["adoption/overall"]
+    body = tsv(
+        NEW_OVERALL_HEADER,
+        [["2026-10-01", "Ramp Overall", 56.8, 1.0, 13.3], ["2026-09-01", "Ramp Overall", 55.8, 0.5, ""]],
+    )
+    cells = cuts.parse(body, cut)
+    assert {c.key for c in cells} == {"Ramp Overall"}
+    assert {c.column for c in cells} == set(NEW_OVERALL_HEADER[2:])
+
+
+def test_adoption_overall_refuses_the_models_view_although_the_headers_match():
+    cut = cuts.BY_ID["adoption/overall"]
+    body = tsv(
+        NEW_OVERALL_HEADER,
+        [["2026-10-01", "Ramp Overall", 56.8, 1.0, 13.3], ["2026-10-01", "Anthropic", 44.0, 1.0, 20.0]],
+    )
+    with pytest.raises(ValueError, match="does not belong to adoption/overall"):
+        cuts.parse(body, cut)
