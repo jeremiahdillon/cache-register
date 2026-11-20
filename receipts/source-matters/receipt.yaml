@@ -9,7 +9,7 @@ blurb: >-   # site text below the charts (author-approved 2026-10-16; Databricks
   sees a different slice of the market, so their levels differ. The charts show how far apart they are, not
   which source is right.
 sources: [ramp_ai_index, vercel_ai_gateway, openrouter_rankings, litellm_prices, databricks_ai_index]
-as_of: 2026-11-18
+as_of: 2026-11-20
 promoted_from: explore/2026-10-10-anthropic-share-by-source
 config:
   start: null   # null = each source from its first week; or YYYY-MM-DD to start every line there

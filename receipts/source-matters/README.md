@@ -1,8 +1,8 @@
 # Anthropic's share of AI spend and tokens, by data source
 
-*Receipt · [cacheregister.dev/source-matters](https://cacheregister.dev/source-matters) · data as of 2026-11-18
-(Ramp token views imported 2026-11-18, to the week ending 1 November; Databricks to the week of 2 November;
-gateways to 15 November) · promoted from
+*Receipt · [cacheregister.dev/source-matters](https://cacheregister.dev/source-matters) · data as of 2026-11-20
+(Ramp imported 2026-11-20, to the week ending 15 November; Databricks to the week of 2 November; gateways to
+15 November) · promoted from
 [`explore/2026-10-10-anthropic-share-by-source`](../../explore/2026-10-10-anthropic-share-by-source/) · design:
 [`docs/plans/2026-10-10-anthropic-share-by-source.md`](../../docs/plans/2026-10-10-anthropic-share-by-source.md)*
 
@@ -15,28 +15,32 @@ Management), Databricks (Unity Gateway; added 2026-11-18), Vercel AI Gateway and
 same measure, a lab's share of its source's reported total, so the sources share one axis (author decision;
 analysis (e)'s "never on one axis" rule concerned different measures).
 
-## Findings (data as of 2026-11-18)
+## Findings (data as of 2026-11-20)
 - **The sources still disagree on the level.** Latest 4-week averages, each source to its own latest week:
-  spend **52% on Ramp** (to 1 November), **63% on Databricks** (to 8 November; 58–66% across the open-weight
-  price range below), **39% on Vercel** and **37% on OpenRouter** (to 15 November). Tokens: **56% on Ramp, 45%
-  on Databricks, 12% on Vercel, 7% on OpenRouter** (free models included; frame `weekly`, `rolling4_pct`). In
-  the last week all four cover (ending 1 November): spend 63 / 52 / 39 / 37 (Databricks, Ramp, OpenRouter,
-  Vercel), tokens 56 / 46 / 13 / 7 (Ramp, Databricks, Vercel, OpenRouter).
-- **They disagreed on the direction for most of 2025.** Spend: Ramp rose from 38% (2025 Q1 mean of weeks) to
-  56% (Q4) while OpenRouter fell from 93% to 62%. Tokens: Ramp rose from 19% (2025 Q1) to 63% (2026 Q2) while
-  OpenRouter fell from 42% to 15% (free models included; 45% to 16% paid only) and Vercel from 52% (2025 Q4)
-  to 31%.
+  spend **63% on Databricks** (to 8 November; 58–66% across the open-weight price range below), **55% on
+  Ramp**, **39% on Vercel** and **35% on OpenRouter** (to 15 November). Tokens: **58% on Ramp, 45% on
+  Databricks, 12% on Vercel, 7% on OpenRouter** (free models included; frame `weekly`, `rolling4_pct`). In the
+  last week all four cover (ending 8 November): spend 63.3 / 55.0 / 37.1 / 35.3 (Databricks, Ramp, Vercel,
+  OpenRouter), tokens 57.9 / 44.9 / 12.5 / 6.9 (Ramp, Databricks, Vercel, OpenRouter).
+- **Ramp and OpenRouter fell together through 2025 Q3, then parted.** Spend: Ramp fell from 72% (2025 Q1 mean
+  of weeks) to 46% (Q3) and OpenRouter from 93% to 70%; from 2025 Q4 Ramp rose to 69% (2026 Q2) while
+  OpenRouter held at 62–64%. Tokens: Ramp fell from 62% to 30% (Q1 to Q3 2025), then rose to 66% (2026 Q2),
+  while OpenRouter fell from 42% to 15% (free models included; 45% to 16% paid only) and Vercel from 52%
+  (2025 Q4) to 31%. (Until Ramp's revision of 2026-11-20, below, Ramp rose through 2025.)
 - **Since mid-2026 every source shows Anthropic's spend share falling, from different levels.** From 2026 Q2 to
-  the weeks of Q4 so far: Ramp 64.9 → 52.4, Vercel 64.0 → 39.0, OpenRouter 63.8 → 36.3. Databricks, whose
+  the weeks of Q4 so far: Ramp 69.4 → 55.9, Vercel 64.0 → 39.0, OpenRouter 63.8 → 34.7. Databricks, whose
   series starts in July, fell from 84% (week ending 26 July) to 64% (8 November), with Anthropic's share of
   proprietary spend down from 85.6% to 70.1% and open-weight models up to ~31% of its tokens.
-- **The newest source sits highest on spend and second on tokens.** Databricks' enterprises put 63% of spend
-  on Anthropic, above every other source, but 45% of tokens, below Ramp's 56%: on Databricks, open-weight
-  models carry ~31% of tokens but, at list prices, only ~8% of spend.
-- **Ramp revised its token history.** The import of 2026-11-18 raised Anthropic's token share by 10–14 points
-  per quarter in 2026 Q2–Q3 against the 2026-10-07 import (Q2 52.5 → 62.8, Q3 45.7 → 59.9; ~1 point per quarter
-  in 2025), almost all of it OpenAI's token volume revised down; spend shares moved by ≤ 1.6 points in any
-  week. Ramp does not say why.
+- **Databricks sits highest on spend and second on tokens.** Its enterprises put 63% of spend on Anthropic,
+  above every other source, but 45% of tokens, below Ramp's 58%: on Databricks, open-weight models carry ~31%
+  of tokens but, at list prices, only ~8% of spend.
+- **Ramp has revised its token history twice in November.** The import of 2026-11-18 raised Anthropic's token
+  share by 10–14 points per quarter in 2026 Q2–Q3 against the 2026-10-07 import (OpenAI's token volume revised
+  down; spend ≤ 1.6 points). The import of 2026-11-20 rewrote 2025: Anthropic's spend share in the week ending
+  12 January 2025 went from 34% to 73% and its token share from 14% to 59%; 2025 Q1 spend from 38% to 72%,
+  Q3 from 45% to 46%; recent weeks moved 1–3 points. The new paste matches Ramp's own page (58.7% of token
+  spend in the week ending 15 November). Ramp does not say why; its customers who connect provider accounts
+  may bring their history with them, which would rewrite past weeks as the population changes.
 - **Free variants hardly move Anthropic's OpenRouter token share** (0.4–3.3 pp lower per quarter with them):
   Anthropic has no free models, so free tokens only enlarge the denominator.
 - **What this shows and does not show.** The same measure at different levels says the sources see different
@@ -59,7 +63,7 @@ author, 2026-10-10):
 
 **Each line runs to its own source's latest week** (author, 2026-11-18; before, every line stopped at the latest
 week all sources covered). The end labels stand in one column after the latest week; a line that ends earlier
-(Ramp, Databricks) reaches its label by a thin grey leader. The subtitle gives each source's latest 4-week
+(on 2026-11-20, Databricks) reaches its label by a thin grey leader. The subtitle gives each source's latest 4-week
 value with the week it ends. Both share one headline, "Different data sources tell different stories about the
 AI economy" (author's framing); the measure is stamped on the chart's face (upper right). Colours are fixed per
 source and close to each source's brand, tuned for the dark canvas and legibility: Ramp yellow-green
@@ -80,18 +84,18 @@ target inlines the data (see Licence).
 ## Tables
 
 **Quarterly means of weekly values (%)** (frame `weekly`; each source on its own weeks; 2026 Q4 = weeks to
-15 November, Ramp to 1 November, Databricks to 8 November):
+15 November, Databricks to 8 November):
 
 | Quarter | Ramp spend | Databricks spend (est.) | OpenRouter est. spend | Vercel spend | Ramp tokens | Databricks tokens | OpenRouter tokens, paid | OpenRouter tokens, all | Vercel tokens |
 |---|---|---|---|---|---|---|---|---|---|
-| 2025 Q1 | 38.3 | — | 92.7 | — | 19.3 | — | 45.0 | 41.7 | — |
-| 2025 Q2 | 44.8 | — | 77.7 | — | 24.3 | — | 26.0 | 22.8 | — |
-| 2025 Q3 | 45.1 | — | 69.8 | — | 27.3 | — | 22.6 | 19.6 | — |
-| 2025 Q4 | 55.5 | — | 62.1 | 76.8 | 34.2 | — | 15.7 | 14.3 | 52.2 |
-| 2026 Q1 | 62.2 | — | 63.8 | 77.4 | 47.6 | — | 16.4 | 14.9 | 44.0 |
-| 2026 Q2 | 64.9 | — | 63.8 | 64.0 | 62.8 | — | 16.1 | 14.6 | 30.8 |
-| 2026 Q3 | 58.8 | 73.9 | 40.7 | 59.4 | 59.9 | 54.3 | 8.2 | 7.2 | 21.7 |
-| 2026 Q4 | 52.4 | 63.9 | 36.3 | 39.0 | 56.3 | 45.1 | 6.6 | 6.2 | 12.7 |
+| 2025 Q1 | 72.3 | — | 92.7 | — | 61.6 | — | 45.0 | 41.7 | — |
+| 2025 Q2 | 53.2 | — | 77.7 | — | 48.0 | — | 26.0 | 22.8 | — |
+| 2025 Q3 | 45.6 | — | 69.8 | — | 30.1 | — | 22.6 | 19.6 | — |
+| 2025 Q4 | 60.9 | — | 62.1 | 76.8 | 45.3 | — | 15.7 | 14.3 | 52.2 |
+| 2026 Q1 | 65.3 | — | 63.8 | 77.4 | 54.5 | — | 16.4 | 14.9 | 44.0 |
+| 2026 Q2 | 69.4 | — | 63.8 | 64.0 | 65.9 | — | 16.1 | 14.6 | 30.8 |
+| 2026 Q3 | 62.2 | 73.9 | 40.7 | 59.4 | 61.3 | 54.3 | 8.2 | 7.2 | 21.7 |
+| 2026 Q4 | 55.9 | 63.9 | 34.7 | 39.0 | 58.0 | 45.1 | 6.6 | 6.2 | 12.7 |
 
 (Databricks 2026 Q3 = its 10 weeks from the week ending 26 July.)
 
@@ -107,7 +111,7 @@ target inlines the data (see Licence).
 | 2026 Q1 | 63.8 | 56.3 | 40.1 | 11.8 |
 | 2026 Q2 | 63.8 | 54.0 | 34.2 | 15.4 |
 | 2026 Q3 | 40.7 | 37.0 | 20.1 | 9.5 |
-| 2026 Q4 | 36.3 | 33.7 | 16.0 | 7.1 |
+| 2026 Q4 | 34.7 | 32.3 | 15.7 | 7.1 |
 
 **Databricks: the spend-mix estimate, latest week (week of 2 November, ending 8 November)** (frames
 `dbx_weekly`, `dbx_coverage`): Anthropic 61.5% of proprietary tokens × proprietary 69.1% of tokens = 42.5% of
@@ -119,9 +123,9 @@ estimated share of spend from 1.7% to 8.2%.
 
 **Checks** (frames `first_last`, `partial_weeks_dropped`, `coverage`, `checks`, `dbx_coverage`): Ramp's maker
 shares sum to 100% every week; Anthropic is present in every week drawn for each source (lowest weekly spend
-share: Ramp 31.7% over 95 weeks, OpenRouter 24.5% over 97, Vercel 34.1% over 58, Databricks 61.1% over 16).
+share: Ramp 36.0% over 97 weeks, OpenRouter 24.5% over 97, Vercel 34.1% over 58, Databricks 61.1% over 16).
 Ramp and OpenRouter from the week ending 2025-01-12, Vercel from 2025-10-12, Databricks from 2026-07-26; last
-weeks: Ramp 2026-11-01, Databricks 2026-11-08, OpenRouter and Vercel 2026-11-15. Dropped as partial: the first
+weeks: Databricks 2026-11-08, Ramp, OpenRouter and Vercel 2026-11-15. Dropped as partial: the first
 weeks (OpenRouter 2025-01-05, Vercel 2025-10-05, 5 days each) and the current week. No week drawn has unpriced
 Anthropic tokens on OpenRouter (Claude Fable 5.2, on OpenRouter from 2026-11-09, mapped to LiteLLM's
 `claude-fable-5-2` on 2026-11-18; the analysis stops once a week drawn has any).
@@ -130,9 +134,8 @@ Anthropic tokens on OpenRouter (Claude Fable 5.2, on OpenRouter from 2026-11-09,
 - **Weeks:** Monday–Sunday, dated by the Sunday (Ramp's convention); a gateway week needs at least 6 of its 7
   days (`min_days`). Databricks' weeks are its own ("week of" a Monday), dated by that week's Sunday.
 - **Ramp:** `ramp_token_share` (mart 062): Anthropic's share of the week's token spend (`spend`) or token
-  volume (`volume`) over every maker Ramp reports (8 in the 2026-11-18 import, which no longer lists Amazon,
-  Meta, Alibaba, Mistral, NVIDIA or MiniMax; they never held more than 0.014% of tokens or spend in the earlier
-  import). Shares sum to 100% every week.
+  volume (`volume`) over every maker Ramp reports (13–14 a week in the 2026-11-20 import, including TypeSafe
+  and Thinking Machines Lab; the 2026-11-18 import listed 8). Shares sum to 100% every week.
 - **Databricks:** marts 095/096 (`dbx_vendor_share_week`, `dbx_vendor_spend_week`). The page publishes shares
   *within* proprietary and *within* open-weight models (to 0.1 point) and the proprietary / open-weight mix of
   tokens. **Tokens:** Anthropic's share of proprietary tokens × the proprietary share of all tokens.
@@ -147,15 +150,14 @@ Anthropic tokens on OpenRouter (Claude Fable 5.2, on OpenRouter from 2026-11-09,
   total (volume-weighted). Spend and the `paid` token variant exclude free models; the `all` variant includes
   them. Tokens with no price count as no spend.
 - **OpenRouter spend estimate:** tokens × (0.8 × input + 0.2 × output) LiteLLM list price, caching ignored.
-  LiteLLM lists no `openrouter/…` keys after 2026-10-09, so since then most models are priced from their last
-  OpenRouter listing (`price_date_stale`: 16–48% of paid tokens per week since 11 October). 13 models that
-  reached OpenRouter's top 50 after that date were mapped on 2026-11-18 to first-party LiteLLM keys, or to
-  hosts' list prices where none exists (DeepSeek V4.1 Flash 1017, StepFun Step 5 Preview, Nemotron 3.5 Super
-  VL), marked `# manual 2026-11-18` in `config/entities/models.yaml`. Unpriced before that mapping, they were
-  36–49% of paid tokens in the weeks to 1–15 November and lifted Anthropic's weekly share to 46–60% (31–38%
-  once priced). **Upper bound** = as computed; **lower bound** = unpriced paid tokens at the week's dearest
-  priced blended price; **sensitivity** = unpriced paid tokens at the week's mean priced price. The chart shades
-  [sensitivity, computed] (author decision 4).
+  LiteLLM dropped every `openrouter/…` key on 2026-10-09. Since then a model is priced from a **fallback**
+  key (`litellm_fallback` in `config/entities/models.yaml`: the lab's own LiteLLM key, else a host's key at
+  the most common host price; 15 models) on days when all its `litellm` keys have been removed, else from its
+  last OpenRouter listing (`price_date_stale`: 1–15% of paid tokens per week since 11 October, 16–48% before
+  the fallbacks); days before the removal are priced as before. 14 models that reached OpenRouter's top 50
+  after 2026-10-09 were mapped on 2026-11-18 (`# manual 2026-11-18`). **Upper bound** = as computed; **lower
+  bound** = unpriced paid tokens at the week's dearest priced blended price; **sensitivity** = unpriced paid
+  tokens at the week's mean priced price. The chart shades [sensitivity, computed] (author decision 4).
 - **Smoothing:** trailing mean over 4 consecutive weeks; a missing week would break the line for four weeks.
 - **Headline:** each chart's values are each source's 4-week mean at its own latest week.
 
@@ -186,7 +188,7 @@ OpenRouter rankings: CC BY 4.0; LiteLLM: MIT). The frames are not published.
   model (with its "Other" buckets), OpenRouter's top 50 models plus its tail.
 - **Tokens** are counted by each provider's tokenizer, so token shares compare labs only roughly.
 - All four sources are Latest-only (revised): figures move with each fetch and import, as Ramp's token history
-  did on 2026-11-18. Vercel's history starts in October 2025, Databricks' in July 2026.
+  did on 2026-11-18 and again on 2026-11-20. Vercel's history starts in October 2025, Databricks' in July 2026.
 
 ## Output
 In [`output/`](output/): `tokens-with-free` and `spend`, each as `x_png`, `linkedin_png`, `x_video`,
