@@ -811,3 +811,12 @@ Phase 1 only where marked):
    render; matplotlib fallback.
 7. **Spend estimates** are model-derived; risk of overclaiming — require bounds + method note
    on every spend figure.
+8. **Non-generative models in token comparisons** (open, author 2026-11-20): classification, decision,
+   evaluation and embedding models (e.g. TypeSafe AI's Jev: typed answers, LiteLLM mode `evaluation`,
+   ~2–2.8% of OpenRouter's paid tokens from late September 2026, mostly input tokens at $0.042/M) are
+   counted in every source's token totals alongside chat models, though their tokens are not like-for-like
+   and can distort token-share trends (a new high-volume classifier lowers every lab's share; counted as a
+   lab, it can move a lab-group line, as in deepseek-vs-us). Before the next token-based analysis: add a
+   model-type field to `models.yaml` (generative / evaluation / embedding, from LiteLLM's `mode` where
+   known), measure each type's token share per source over time, and decide per analysis whether to
+   exclude or show non-generative tokens separately. Spend is barely affected (they are cheap).

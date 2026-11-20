@@ -187,6 +187,11 @@ OpenRouter rankings: CC BY 4.0; LiteLLM: MIT). The frames are not published.
 - **Denominators** are each source's own reported total: Ramp's 8 makers, every Vercel lab, every Databricks
   model (with its "Other" buckets), OpenRouter's top 50 models plus its tail.
 - **Tokens** are counted by each provider's tokenizer, so token shares compare labs only roughly.
+- **Non-generative traffic is in the token totals.** TypeSafe AI's Jev, a "decision" model that returns typed
+  answers (LiteLLM mode `evaluation`, $0.042 per million input tokens, output free), is ~2–2.8% of OpenRouter's
+  paid tokens a week since late September 2026 (~0.08% of its estimated spend) and is listed among Ramp's
+  makers from the 2026-11-20 import. Its mostly-input tokens are not like-for-like with generative models'
+  and slightly lower every lab's token share (PLAN §11, open question).
 - All four sources are Latest-only (revised): figures move with each fetch and import, as Ramp's token history
   did on 2026-11-18 and again on 2026-11-20. Vercel's history starts in October 2025, Databricks' in July 2026.
 
