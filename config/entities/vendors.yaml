@@ -16,7 +16,7 @@ vendors:
   poolside:         {name: Poolside,                open_weights: false, hq: US, aliases: {openrouter: [poolside], vercel: [poolside]}}
   arcee:            {name: Arcee AI,                open_weights: true,  hq: US, aliases: {openrouter: [arcee-ai], vercel: [arcee-ai]}}
   perplexity:       {name: Perplexity,              open_weights: false, hq: US, aliases: {openrouter: [perplexity], vercel: [perplexity]}}
-  thinkingmachines: {name: Thinking Machines,       open_weights: false, hq: US, aliases: {openrouter: [thinkingmachines], vercel: [thinkingmachines]}}
+  thinkingmachines: {name: Thinking Machines,       open_weights: false, hq: US, aliases: {openrouter: [thinkingmachines], vercel: [thinkingmachines], ramp: [Thinking Machines Lab]}}
   mistral:          {name: Mistral,                 open_weights: true,  hq: FR, aliases: {openrouter: [mistralai], ramp: [Mistral AI, Mistral], vercel: [mistral]}}
   cohere:           {name: Cohere,                  open_weights: true,  hq: CA, aliases: {openrouter: [cohere], vercel: [cohere]}}
   upstage:          {name: Upstage,                 open_weights: true,  hq: KR, aliases: {openrouter: [upstage]}}
