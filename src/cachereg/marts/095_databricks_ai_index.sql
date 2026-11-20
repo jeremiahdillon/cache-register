@@ -16,8 +16,7 @@ CREATE OR REPLACE TABLE dbx_layer_week AS
 WITH pick AS (
     SELECT week_start, max(fetch_id) AS fetch_id
     FROM stg_databricks_ai_index_layers
-    -- the fetch's UTC date (from its id), as build's cutoff; CAST(fetched_at AS DATE) would use the local zone
-    WHERE CAST(strptime(left(fetch_id, 8), '%Y%m%d') AS DATE) <= getvariable('databricks_ai_index_cutoff')
+    WHERE fetch_date(fetch_id) <= getvariable('databricks_ai_index_cutoff')
     GROUP BY week_start
 )
 SELECT

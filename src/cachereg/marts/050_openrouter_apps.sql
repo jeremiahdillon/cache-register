@@ -13,7 +13,7 @@ CREATE OR REPLACE TABLE or_app_weekly AS
 WITH pick AS (
     SELECT week_start, max(fetch_id) AS fetch_id
     FROM stg_openrouter_apps_weekly
-    WHERE CAST(fetched_at AS DATE) <= getvariable('openrouter_apps_cutoff')
+    WHERE fetch_date(fetch_id) <= getvariable('openrouter_apps_cutoff')
     GROUP BY week_start
 )
 SELECT
@@ -35,7 +35,7 @@ SELECT t.app_id, t.app_name, t.tag_kind, t.tag, t.rank_in_tag, t.tag_week_start,
 FROM stg_openrouter_apps_tags t
 WHERE t.fetch_id = (
     SELECT max(fetch_id) FROM stg_openrouter_apps_tags
-    WHERE CAST(fetched_at AS DATE) <= getvariable('openrouter_apps_cutoff')
+    WHERE fetch_date(fetch_id) <= getvariable('openrouter_apps_cutoff')
 );
 
 CREATE OR REPLACE TABLE or_app_dim AS

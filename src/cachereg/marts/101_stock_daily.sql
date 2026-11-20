@@ -9,7 +9,7 @@ CREATE OR REPLACE TABLE stock_daily AS
 WITH pick AS (
     SELECT ticker, max(fetch_id) AS fetch_id
     FROM stg_yahoo_prices_daily
-    WHERE CAST(fetched_at AS DATE) <= getvariable('yahoo_prices_cutoff')
+    WHERE fetch_date(fetch_id) <= getvariable('yahoo_prices_cutoff')
     GROUP BY ticker
 )
 SELECT d.date, d.ticker, d.close, d.adj_close, d.volume, d.currency, d.fetch_id

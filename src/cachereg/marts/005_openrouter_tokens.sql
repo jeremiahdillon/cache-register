@@ -9,6 +9,6 @@ FROM (
     SELECT *, row_number() OVER (PARTITION BY date, model_permaslug ORDER BY fetched_at DESC) AS rn
     FROM stg_openrouter_rankings_daily
     WHERE date <= getvariable('as_of')
-      AND CAST(fetched_at AS DATE) <= getvariable('openrouter_rankings_cutoff')
+      AND fetch_date(fetch_id) <= getvariable('openrouter_rankings_cutoff')
 )
 WHERE rn = 1;

@@ -271,6 +271,9 @@ sources with `input: manual` in the registry are imported by the author with `ca
     still filtered to periods ≤ as-of;
   - **Author-only** (snapshot): the latest snapshot *fetched* on or before as-of; none →
     the analysis reports the gap rather than substituting later data.
+  - "Fetched on" is the **UTC date** of the fetch (its fetch id), both in the cutoff and in mart SQL
+    (`fetch_date(fetch_id)`, never `CAST(fetched_at AS DATE)`, which follows the session's local zone;
+    fixed 2026-11-19).
 - **Reproducibility classes** (declared per source, shown in each analysis README and in the
   public manifest) — the guarantee is stated honestly, not uniformly:
 

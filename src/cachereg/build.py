@@ -4,7 +4,9 @@ A mart is one SQL file in `cachereg/marts/` whose header declares its inputs
 (`-- inputs: source_a, source_b`). `build(sources=…)` stages only those sources and runs only the
 marts whose inputs are all among them, so one receipt can be rebuilt without anything else.
 Before marts run, each staged source gets a DuckDB variable `<source_id>_cutoff` (the fetch date
-chosen for `as_of`), plus `as_of`; mart SQL reads only these.
+chosen for `as_of`), plus `as_of`; mart SQL reads only these. Fetch dates are UTC dates: marts compare a
+staged row's fetch with a cutoff through the macro `fetch_date(fetch_id)` (the UTC date in the fetch id),
+never `CAST(fetched_at AS DATE)`, which DuckDB evaluates in the session's local time zone.
 """
 
 from __future__ import annotations
@@ -21,6 +23,16 @@ import yaml
 from cachereg.core.paths import entities_dir, staged_dir, warehouse_path
 from cachereg.core.registry import load_sources, reproducibility_class
 from cachereg.core.store import list_fetches
+
+# The UTC date of a fetch, from its id (`RawFetch.fetch_id`, `%Y%m%dT%H%M%SZ`): the date `cutoff()` uses.
+# CREATE OR REPLACE: macros persist in warehouse.duckdb, and every build reuses the file.
+FETCH_DATE_MACRO = "CREATE OR REPLACE MACRO fetch_date(fid) AS CAST(strptime(left(fid, 8), '%Y%m%d') AS DATE)"
+
+
+def _connect(path) -> duckdb.DuckDBPyConnection:
+    """The build's read-write connection (a seam: tests set the session time zone through it)."""
+    return duckdb.connect(str(path))
+
 
 INPUTS_RE = re.compile(r"^--\s*inputs:\s*(.+)$", re.M)
 TABLE_RE = re.compile(r"CREATE\s+OR\s+REPLACE\s+TABLE\s+([A-Za-z_][A-Za-z0-9_]*)", re.I)
@@ -179,8 +191,9 @@ def build(as_of: date, sources: list[str] | None = None) -> BuildReport:
 
     wh = warehouse_path()
     wh.parent.mkdir(parents=True, exist_ok=True)
-    con = duckdb.connect(str(wh))
+    con = _connect(wh)
     try:
+        con.execute(FETCH_DATE_MACRO)
         for sid in selected:
             for parquet in sorted(staged_dir(sid).glob("*.parquet")):
                 view = f"stg_{sid}_{parquet.stem}"

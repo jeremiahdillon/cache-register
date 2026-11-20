@@ -10,10 +10,10 @@ CREATE OR REPLACE TABLE ramp_cut_coverage AS
 WITH used AS (
     SELECT cut, max(fetch_id) AS import_used
     FROM stg_ramp_ai_index_imports
-    WHERE CAST(fetched_at AS DATE) <= getvariable('ramp_ai_index_cutoff')
+    WHERE fetch_date(fetch_id) <= getvariable('ramp_ai_index_cutoff')
     GROUP BY cut
 ), firsts AS (
-    SELECT cut, min(CAST(fetched_at AS DATE)) AS first_import FROM stg_ramp_ai_index_imports GROUP BY cut
+    SELECT cut, min(fetch_date(fetch_id)) AS first_import FROM stg_ramp_ai_index_imports GROUP BY cut
 )
 SELECT
     c.position,
@@ -24,7 +24,7 @@ SELECT
     u.import_used,
     u.import_used IS NOT NULL AS present_at_cutoff,
     u.import_used IS NULL AND f.first_import IS NOT NULL AS cut_after_cutoff,
-    CAST(i.fetched_at AS DATE) AS imported_on,
+    fetch_date(i.fetch_id) AS imported_on,
     i.via,
     i.first_period,
     i.last_period

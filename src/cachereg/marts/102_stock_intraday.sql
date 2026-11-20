@@ -10,7 +10,7 @@ CREATE OR REPLACE TABLE stock_intraday AS
 WITH pick AS (
     SELECT ticker, max(fetch_id) AS fetch_id
     FROM stg_yahoo_intraday_bars
-    WHERE CAST(fetched_at AS DATE) <= getvariable('yahoo_intraday_cutoff')
+    WHERE fetch_date(fetch_id) <= getvariable('yahoo_intraday_cutoff')
     GROUP BY ticker
 )
 SELECT b.session, b.bar_time, b.ticker, b.open, b.high, b.low, b.close, b.volume, b.currency, b.fetch_id

@@ -10,7 +10,7 @@ CREATE OR REPLACE TABLE bond_eod AS
 WITH pick AS (
     SELECT cusip, max(fetch_id) AS fetch_id
     FROM stg_finra_trace_eod
-    WHERE CAST(fetched_at AS DATE) <= getvariable('finra_trace_cutoff')
+    WHERE fetch_date(fetch_id) <= getvariable('finra_trace_cutoff')
     GROUP BY cusip
 )
 SELECT

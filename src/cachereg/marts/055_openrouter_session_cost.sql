@@ -11,7 +11,7 @@ CREATE OR REPLACE TABLE or_session_cost AS
 WITH pick AS (
     SELECT window_end_date, max(fetch_id) AS fetch_id
     FROM stg_openrouter_session_cost_cells
-    WHERE CAST(fetched_at AS DATE) <= getvariable('openrouter_session_cost_cutoff')
+    WHERE fetch_date(fetch_id) <= getvariable('openrouter_session_cost_cutoff')
       AND window_end_date <= getvariable('as_of')
     GROUP BY window_end_date
 ), latest AS (

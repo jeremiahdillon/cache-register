@@ -15,7 +15,7 @@ CREATE OR REPLACE TABLE vercel_lab_share AS
 WITH pick AS (
     SELECT date, max(fetch_id) AS fetch_id
     FROM stg_vercel_ai_gateway_shares
-    WHERE dataset = 'labs' AND CAST(fetched_at AS DATE) <= getvariable('vercel_ai_gateway_cutoff')
+    WHERE dataset = 'labs' AND fetch_date(fetch_id) <= getvariable('vercel_ai_gateway_cutoff')
     GROUP BY date
 )
 SELECT
@@ -68,7 +68,7 @@ CREATE OR REPLACE TABLE vercel_model_share AS
 WITH pick AS (
     SELECT window_start, date, max(fetch_id) AS fetch_id
     FROM stg_vercel_ai_gateway_shares
-    WHERE dataset = 'models' AND CAST(fetched_at AS DATE) <= getvariable('vercel_ai_gateway_cutoff')
+    WHERE dataset = 'models' AND fetch_date(fetch_id) <= getvariable('vercel_ai_gateway_cutoff')
     GROUP BY window_start, date
 )
 SELECT
