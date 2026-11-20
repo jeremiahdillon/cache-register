@@ -9,6 +9,11 @@
 --     When no mapped key is listed that day, the entry nearest the date (any of the model's keys)
 --     is used and the row is flagged price_date_stale: first the last entry before D (after_removal), then the first entry after
 --     D (before_listing). Days after the staged LiteLLM history use its last day (beyond_history).
+--   * fallback keys (models.yaml `litellm_fallback`, from 2026-11-20): LiteLLM dropped every `openrouter/` key
+--     on 2026-10-09. On a day when none of a model's `litellm` keys is listed, at least one has been removed
+--     and none is listed only later, a fallback key listed that day prices it (basis `fallback`, not stale),
+--     ahead of the removed key's last price. Days with any `litellm` key current or still to come are priced
+--     exactly as before, so history before the removal does not change.
 --   * only LiteLLM data known on as_of is read: entries starting later are ignored and an entry
 --     that ended after as_of is treated as still listed.
 --   * `:free` variants priced at 0 and reported separately.
@@ -46,16 +51,43 @@ WITH r AS (
     JOIN dim_model_alias a ON a.source = 'openrouter' AND a.alias = r.model_permaslug
     JOIN dim_model_alias l ON l.source = 'litellm' AND l.model_id = a.model_id
     JOIN lp_price_intervals p ON p.key = l.alias
+), status AS (
+    SELECT date, model_permaslug,
+        bool_or(basis = 'current') AS any_current,
+        bool_or(basis = 'after_removal') AS any_removed,
+        bool_or(basis IN ('before_listing', 'beyond_history')) AS any_other
+    FROM cand
+    GROUP BY ALL
+), fb AS (
+    SELECT
+        r.date,
+        r.model_permaslug,
+        a.model_id,
+        l.alias AS price_key,
+        l.rank,
+        p.input_usd_per_token,
+        p.output_usd_per_token,
+        p.valid_from,
+        p.commit_sha,
+        'fallback' AS basis
+    FROM r
+    JOIN status s USING (date, model_permaslug)
+    JOIN dim_model_alias a ON a.source = 'openrouter' AND a.alias = r.model_permaslug
+    JOIN dim_model_alias l ON l.source = 'litellm_fallback' AND l.model_id = a.model_id
+    JOIN lp_price_intervals p ON p.key = l.alias
+    WHERE NOT s.any_current AND s.any_removed AND NOT s.any_other
+      AND p.valid_from <= r.date AND (p.valid_to IS NULL OR p.valid_to > r.date)
 )
 SELECT *
-FROM cand
+FROM (SELECT * FROM cand UNION ALL BY NAME SELECT * FROM fb)
 QUALIFY row_number() OVER (
     PARTITION BY date, model_permaslug
     ORDER BY
-        CASE basis WHEN 'current' THEN 0 WHEN 'beyond_history' THEN 1 WHEN 'after_removal' THEN 2 ELSE 3 END,
-        -- listed that day: preference order decides. Otherwise the entry nearest the date decides
+        CASE basis WHEN 'current' THEN 0 WHEN 'fallback' THEN 1 WHEN 'beyond_history' THEN 2
+            WHEN 'after_removal' THEN 3 ELSE 4 END,
+        -- listed that day (or a fallback): preference order decides. Otherwise the entry nearest the date decides
         -- (the latest one before it, or the earliest one after it), then preference order.
-        CASE WHEN basis = 'current' THEN rank ELSE 0 END,
+        CASE WHEN basis IN ('current', 'fallback') THEN rank ELSE 0 END,
         CASE WHEN basis = 'before_listing' THEN epoch(valid_from) ELSE -epoch(valid_from) END,
         rank,
         price_key
@@ -90,7 +122,7 @@ SELECT
     px.basis AS price_basis,
     px.valid_from AS price_valid_from,
     px.commit_sha AS price_commit,
-    coalesce(px.basis <> 'current', false) AS price_date_stale
+    coalesce(px.basis NOT IN ('current', 'fallback'), false) AS price_date_stale
 FROM r
 LEFT JOIN dim_vendor_alias v ON v.source = 'openrouter' AND v.alias = r.author_prefix
 LEFT JOIN or_model_price_daily px ON px.date = r.date AND px.model_permaslug = r.model_permaslug;

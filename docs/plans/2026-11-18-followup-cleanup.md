@@ -131,6 +131,14 @@ general pricing redesign.
      (flagged stale). So option 3 is only workable as a hybrid: LiteLLM up to 2026-10-09, OpenRouter's
      snapshots after.
 - Recommendation: 1 if available, else 2; 3 only if the author accepts losing inlined data on those receipts.
+- **Outcome (2026-11-20):** 3a found the provider dropped, not moved (494 keys removed, none re-added), so
+  option 1 was out; the author chose option 2. Measured on a prototype, plain appended keys repriced
+  `before_listing` days back to June 2026 (China's share up to +4.5 pp in August, via host keys listed before
+  OpenRouter's own), so the keys went into a separate `litellm_fallback` list that mart 010 uses only on days
+  when all of a model's `litellm` keys have been removed. Result: no week before 2026-10-05 changes; from
+  2026-10-11 the stale share of paid tokens falls from 16–48% to 1–15% a week, Anthropic's OpenRouter spend
+  share by 1.2–3.5 pp and China's rises by 1.8–4.9 pp. 15 fallbacks (6 first-party, 9 hosts); 8 models
+  stay without one (no listing or no consensus price).
 - Measurement, before and after, over the **full history** of the three receipts that read 010 (from
   2025-01, not only since 2026-10): per week, the stale and unpriced shares of paid tokens, and each receipt's
   headline series (Anthropic's and China's OpenRouter spend share). Any posted figure that moves > 1 point is

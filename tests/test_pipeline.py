@@ -664,3 +664,53 @@ def test_receipt_cannot_reserve_a_link(tmp_path):
     )
     with pytest.raises(ValueError, match="link is its folder name"):
         folder_config.load(d)
+
+
+def test_fallback_keys_price_only_days_after_every_litellm_key_was_removed(data_env, synthetic_entities, monkeypatch):
+    """`litellm_fallback` keys (models.yaml) price a model only once its `litellm` keys are all gone (as after
+    LiteLLM dropped `openrouter/` keys): never before a key is first listed, never while one is listed."""
+    from datetime import UTC, datetime
+
+    import yaml
+
+    from cachereg.core.store import RawFetch
+    from tests import conftest
+    from tests.conftest import LITELLM_MID, synthetic_rankings, write_synthetic_litellm
+
+    real = conftest.synthetic_litellm_files
+
+    def with_fallbacks():
+        files = real()
+        fb = {"input_cost_per_token": 9e-6, "output_cost_per_token": 9e-6, "litellm_provider": "x", "mode": "chat"}
+        for body in files.values():  # listed throughout
+            body["host/gemini-9-pro"] = dict(fb)
+            body["host/kimi-9"] = dict(fb)
+        return files
+
+    monkeypatch.setattr(conftest, "synthetic_litellm_files", with_fallbacks)
+    f = synthetic_entities / "models.yaml"
+    models = yaml.safe_load(f.read_text())["models"]
+    models["google/gemini-9-pro"]["aliases"]["litellm_fallback"] = ["host/gemini-9-pro"]  # its key removed mid-window
+    models["moonshotai/kimi-9"]["aliases"]["litellm_fallback"] = ["host/kimi-9"]  # its key listed only mid-window
+    f.write_text(yaml.safe_dump({"models": models}))
+
+    fetched = datetime(2026, 8, 31, 12, tzinfo=UTC)
+    r = RawFetch("openrouter_rankings", "1", fetched_at=fetched)
+    r.add("rankings.json", json.dumps(synthetic_rankings(date(2026, 6, 1), 91)).encode(), "https://example.test", 200)
+    r.write()
+    write_synthetic_litellm(fetched, date(2026, 8, 30))
+    build(date(2026, 8, 31), ["openrouter_rankings", "litellm_prices"])
+    con = connect()
+    try:
+        d = query(con, "SELECT date, model_permaslug, price_key, price_basis, price_date_stale FROM or_model_daily")
+    finally:
+        con.close()
+    gem = d.filter(pl.col("model_permaslug") == "google/gemini-9-pro")
+    early, late = gem.filter(pl.col("date") < LITELLM_MID), gem.filter(pl.col("date") >= LITELLM_MID)
+    assert set(early["price_basis"]) == {"current"} and set(early["price_key"]) == {"gemini/gemini-9-pro"}
+    assert set(late["price_basis"]) == {"fallback"} and set(late["price_key"]) == {"host/gemini-9-pro"}
+    assert not late["price_date_stale"].any()
+    kimi = d.filter((pl.col("model_permaslug") == "moonshotai/kimi-9") & (pl.col("date") < LITELLM_MID))
+    assert set(kimi["price_basis"]) == {"before_listing"} and set(kimi["price_key"]) == {"openrouter/moonshotai/kimi-9"}
+    gpt = d.filter(pl.col("model_permaslug") == "openai/gpt-9-20260101")
+    assert "fallback" not in set(gpt["price_basis"])

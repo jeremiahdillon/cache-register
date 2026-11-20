@@ -4,6 +4,10 @@
 # listing first (`openrouter/<id>`), then the vendor's first-party key (dated before undated).
 # `aliases.epoch` lists Epoch model groups (the ECI `Model` name); one group per model.
 # `aliases.vercel` lists Vercel AI Gateway leaderboard display names (mapped by hand).
+# `aliases.litellm_fallback` (from 2026-11-20): LiteLLM keys used only on days when none of the model's
+# `litellm` keys is listed, one has been removed and none is yet to come (LiteLLM dropped every `openrouter/`
+# key on 2026-10-09): the lab's own key, else a host's key at the most common host price (mart 010).
+# `aliases.databricks` lists Databricks AI Index display names.
 # Bootstrapped with `cachereg entities suggest --source openrouter|epoch`, then reviewed;
 # hand-added entries are marked `# manual` with the reason. An alias may appear under one model only.
 models:
@@ -426,6 +430,8 @@ models:
       - deepseek/deepseek-v4-flash-20260731
       litellm:
       - openrouter/deepseek/deepseek-v4-flash-0731
+      litellm_fallback:
+      - novita/deepseek/deepseek-v4-flash-0731  # fallback 2026-11-20: host, modal 0.44/1.32
       epoch:
       - DeepSeek V4 Flash 0731
       vercel:
@@ -454,6 +460,8 @@ models:
       - deepseek/deepseek-v4-pro-20260813
       litellm:
       - openrouter/deepseek/deepseek-v4-pro-0813
+      litellm_fallback:
+      - together_ai/deepseek-ai/DeepSeek-V4-Pro-0813  # fallback 2026-11-20: host, modal 1.32/3.96
       epoch:
       - DeepSeek V4 Pro 0813
   deepseek/deepseek-v4.1-flash:
@@ -464,6 +472,8 @@ models:
       - deepseek/deepseek-v4.1-flash-20260910
       litellm:
       - openrouter/deepseek/deepseek-v4.1-flash
+      litellm_fallback:
+      - together_ai/deepseek-ai/DeepSeek-V4.1-Flash  # fallback 2026-11-20: host, modal 0.3/1.2
       epoch:
       - DeepSeek V4.1 Flash
       vercel:
@@ -776,6 +786,8 @@ models:
       - google/gemma-4-26b-a4b-it-20260403
       litellm:
       - openrouter/google/gemma-4-26b-a4b-it
+      litellm_fallback:
+      - vertex_ai/gemma-4-26b-a4b-it  # fallback 2026-11-20: first-party (Vertex)
       epoch:
       - Gemma 4 26B A4B
   google/gemma-4-31b-it:
@@ -784,6 +796,8 @@ models:
       - google/gemma-4-31b-it-20260402
       litellm:
       - openrouter/google/gemma-4-31b-it
+      litellm_fallback:
+      - novita/google/gemma-4-31b-it  # fallback 2026-11-20: host, modal 0.14/0.4
       epoch:
       - Gemma 4 31B IT
   gryphe/mythomax-l2-13b:
@@ -892,6 +906,8 @@ models:
       - meta/muse-spark-1.3-20260902
       litellm:
       - openrouter/meta/muse-spark-1.3
+      litellm_fallback:
+      - meta/muse-spark-1.3  # fallback 2026-11-20: first-party
       epoch:
       - Muse Spark 1.3
   meta/muse-spark-1.3-contributor:
@@ -900,6 +916,8 @@ models:
       - meta/muse-spark-1.3-contributor-20260902
       litellm:
       - openrouter/meta/muse-spark-1.3-contributor
+      litellm_fallback:
+      - meta/muse-spark-1.3-contributor  # fallback 2026-11-20: first-party
   microsoft/phi-4:
     aliases:
       openrouter:
@@ -962,6 +980,8 @@ models:
       - minimax/minimax-m3-20260531
       litellm:
       - openrouter/minimax/minimax-m3
+      litellm_fallback:
+      - minimax/MiniMax-M3  # fallback 2026-11-20: first-party
       epoch:
       - MiniMax-M3
       vercel:
@@ -1587,6 +1607,8 @@ models:
       - openai/gpt-oss-120b
       litellm:
       - openrouter/openai/gpt-oss-120b
+      litellm_fallback:
+      - fireworks_ai/accounts/fireworks/models/gpt-oss-120b  # fallback 2026-11-20: host, modal 0.15/0.6
       epoch:
       - gpt-oss-120b
       vercel:
@@ -1930,6 +1952,8 @@ models:
       - qwen/qwen3.6-35b-a3b-20260415
       litellm:
       - openrouter/qwen/qwen3.6-35b-a3b
+      litellm_fallback:
+      - novita/qwen/qwen3.6-35b-a3b  # fallback 2026-11-20: host, modal 0.248/1.485
       epoch:
       - Qwen 3.6 35B-A3B
   qwen/qwen3.6-flash:
@@ -1980,6 +2004,8 @@ models:
       - qwen/qwen3.8-27b-20260814
       litellm:
       - openrouter/qwen/qwen3.8-27b
+      litellm_fallback:
+      - deepinfra/Qwen/Qwen3.8-27B  # fallback 2026-11-20: host, modal 0.4/3.0
       epoch:
       - Qwen 3.8 27B
   qwen/qwen3.8-flash:
@@ -2042,6 +2068,8 @@ models:
       - stepfun/step-3.7-flash-20260528
       litellm:
       - openrouter/stepfun/step-3.7-flash
+      litellm_fallback:
+      - novita/stepfun/step-3.7-flash  # fallback 2026-11-20: host, modal 0.2/1.15
       vercel:
       - Step 3.7 Flash
   stepfun/step-5-preview:  # manual 2026-11-18: LiteLLM lists no openrouter/ keys after 2026-10-09; no first-party key; hosts' list price (1.0/2.7)
@@ -2057,6 +2085,8 @@ models:
       - tencent/hy3-20260706
       litellm:
       - openrouter/tencent/hy3
+      litellm_fallback:
+      - deepinfra/tencent/Hy3  # fallback 2026-11-20: host, modal 0.14/0.58
   tencent/hy3-preview:
     aliases:
       openrouter:
@@ -2075,6 +2105,8 @@ models:
       - tencent/hy4-preview-20260827
       litellm:
       - openrouter/tencent/hy4-preview
+      litellm_fallback:
+      - tencent/hy4-preview  # fallback 2026-11-20: first-party
   thedrummer/unslopnemo-12b:
     aliases:
       openrouter:
@@ -2087,6 +2119,8 @@ models:
       - typesafe/jev-1.13-20260917
       litellm:
       - openrouter/typesafe/jev-1.13
+      litellm_fallback:
+      - typesafe/jev-1.13.0  # fallback 2026-11-20: first-party
   typesafe/jev-1.14:  # manual 2026-11-18: LiteLLM lists no openrouter/ keys after 2026-10-09
     aliases:
       openrouter:

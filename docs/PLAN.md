@@ -756,9 +756,11 @@ Goal: stop the scroll on white (LinkedIn) and dark (X) feeds.
   Left unmapped: Ling 3.1 Flash (LiteLLM's only key is priced $0/$0 and it is not in OpenRouter's
   snapshot; re-check when LiteLLM shows a price) and Step 5 Preview (no LiteLLM key; 2.6T tokens on
   2026-10-09, most of that day's unpriced paid tokens). LiteLLM's 2026-10-09 revision drops all 494
-  `openrouter/` keys: mapped models fall back to their vendor-direct key, or else to the last
-  `openrouter/` price (`after_removal`, flagged stale). Check whether the keys return before relying on
-  OpenRouter spend after 2026-10-08.
+  `openrouter/` keys (the whole provider; none returned by 2026-11-20). Mapped models fall back to their
+  vendor-direct key, or else to the last `openrouter/` price (`after_removal`, flagged stale). From
+  2026-11-20, `litellm_fallback` aliases (the lab's own key, else a host's key at the most common host price)
+  price a model on days when all its `litellm` keys have been removed (mart 010, basis `fallback`); history
+  before the removal is unchanged (docs/plans/2026-11-18-followup-cleanup.md, Step 3).
 
 | Phase | Deliverable | Done when |
 |---|---|---|
