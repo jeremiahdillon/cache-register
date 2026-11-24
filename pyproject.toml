@@ -26,7 +26,7 @@ dev = [
 ]
 # Motion-renderer spike only (docs/PLAN.md §6.3, candidate B). Uses the system Chrome.
 spike = [
-    "playwright>=1.63",
+    "playwright>=1.64.0",
 ]
 
 [build-system]
